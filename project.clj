@@ -6,5 +6,7 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [ring "1.6.3"]
                  [compojure "1.6.1"]
-                 [ring/ring-defaults "0.3.2"]]
+                 [metosin/ring-http-response "0.9.0"]
+                 [ring/ring-defaults "0.3.2"]
+                 [selmer "1.12.0"]]
   :main soul-talk.core)

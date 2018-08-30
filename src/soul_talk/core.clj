@@ -1,19 +1,19 @@
 (ns soul-talk.core
   (:require [ring.adapter.jetty :as jetty]
-            [ring.util.response :as response]
             [ring.middleware.reload :refer [wrap-reload]]
-            [compojure.core :refer [routes GET]]))
+            [ring.util.response :as resp]
+            [compojure.core :refer [routes GET defroutes]]
+            [ring.middleware.defaults :refer :all]
+            [compojure.route :as route]))
 
-(defn response-handler [request]
-  (response/response
-    (str "<html><body>your IP is "
-                 (:remote-addr request)
-                 "</body></html>")))
+(defn home-handle [request]
+  (resp/response (str "<html><body>" (:remote-addr request) "</body></html>")))
 
-(def handler
+(def app-routes
   (routes
-    (GET "/" request response-handler)
-    (GET "/about" [] (str "这是关于我的页面"))))
+    (GET "/" request (home-handle request))
+    (GET "/about" [] (str "这是关于我的页面"))
+    (route/not-found "<h1>Page not found</h1>")))
 
 (defn wrap-nocache [handler]
   (fn [request]
@@ -22,9 +22,11 @@
         (assoc-in [:headers "Pragma"] "no-cache"))))
 
 (def app
-  (-> handler
-      wrap-nocache
-      wrap-reload))
+  (-> app-routes
+      (wrap-nocache)
+      (wrap-reload)
+      ;(wrap-defaults site-defaults)
+      ))
 
 (defn -main []
   (jetty/run-jetty
