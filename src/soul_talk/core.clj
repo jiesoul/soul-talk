@@ -1,19 +1,27 @@
 (ns soul-talk.core
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.reload :refer [wrap-reload]]
-            [ring.util.response :as resp]
+            [ring.util.http-response :as resp]
             [compojure.core :refer [routes GET defroutes]]
             [ring.middleware.defaults :refer :all]
-            [compojure.route :as route]))
+            [compojure.route :as route]
+            [clojure.java.io :as io]
+            [selmer.parser :as parser]
+            [ring.middleware.webjars :refer [wrap-webjars]]))
 
 (defn home-handle [request]
-  (resp/response (str "<html><body>" (:remote-addr request) "</body></html>")))
+  (parser/render-file "index.html" {:ip (:remote-addr request)}))
+
+(defn error-page [error-details]
+  {:status (:status error-details)
+   :headers {"Content-Type" "text/html; charset=utf-8"}
+   :body (parser/render-file "error.html" error-details)})
 
 (def app-routes
   (routes
     (GET "/" request (home-handle request))
     (GET "/about" [] (str "这是关于我的页面"))
-    (route/not-found "<h1>Page not found</h1>")))
+    (route/not-found error-page)))
 
 (defn wrap-nocache [handler]
   (fn [request]
@@ -25,6 +33,7 @@
   (-> app-routes
       (wrap-nocache)
       (wrap-reload)
+      (wrap-webjars)
       ;(wrap-defaults site-defaults)
       ))
 
