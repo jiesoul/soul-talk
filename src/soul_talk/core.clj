@@ -17,9 +17,13 @@
    :headers {"Content-Type" "text/html; charset=utf-8"}
    :body (parser/render-file "error.html" error-details)})
 
+(defn login-page [request]
+  (parser/render-file "login.html" {}))
+
 (def app-routes
   (routes
     (GET "/" request (home-handle request))
+    (GET "/login" request (login-page request))
     (GET "/about" [] (str "这是关于我的页面"))
     (route/not-found error-page)))
 
@@ -34,7 +38,7 @@
       (wrap-nocache)
       (wrap-reload)
       (wrap-webjars)
-      ;(wrap-defaults site-defaults)
+      (wrap-defaults site-defaults)
       ))
 
 (defn -main []

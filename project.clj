@@ -21,7 +21,7 @@
             [lein-figwheel "0.5.17-SNAPSHOT"]]
   :ring {:handler soul-talk.core/app}
   :source-paths ["src"]
-  :resource-paths ["resources" "target/cljsbuild"]
+  :resource-paths ["resources"]
 
   :clean-targets                                            ;; 清理临时文件
   ^{:protect false}
@@ -30,15 +30,16 @@
    [:cljsbuild :builds :dev :compiler :output-to]]
 
   :cljsbuild
-  {:builds [{:id "dev"                                      ;; 开发配置
-             :source-paths ["src-cljs"]                     ;; 源代码目录
-             :figwheel true                                 ;; 开启 figwheel
-             :compiler {:main soul-talk.core                ;; 主命名空间
-                        :asset-path "js/out"              ;; 加载文件的地方 和 临时目录相关
-                        :output-to "target/cljsbuild/resources/public/js/main.js" ;; 主文件地方
-                        :output-dir "target/cljsbuild/resources/public/js/out" ;; 临时文件目录
-                        :source-map-timestamp true          ;; 源代码
-                        :pretty-print true}}]}              ;; 打印格式
+  {:builds {:dev                             ;; 开发配置
+            {:source-paths ["src-cljs"]                     ;; 源代码目录
+             :figwheel     true                             ;; 开启 figwheel
+             :compiler     {:main                 soul-talk.core ;; 主命名空间
+                            :asset-path           "js/out"  ;; 加载文件的地方 和 临时目录相关
+                            :output-to            "resources/public/js/main.js" ;; 主文件地方
+                            :output-dir           "resources/public/js/out" ;; 临时文件目录
+                            :optimizations :none
+                            :source-map-timestamp true      ;; 源代码
+                            :pretty-print         true}}}}  ;; 打印格式
   :figwheel
   {:css-dirs ["resources/public/css"]}
   )
