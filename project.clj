@@ -16,13 +16,15 @@
                  [org.webjars/popper.js "1.14.1"]
                  [org.webjars/font-awesome "5.2.0"]
                  [domina "1.0.3"]
-                 [reagent "0.8.1"]]
+                 [reagent "0.8.1"]
+                 [cljs-ajax "0.7.4"]
+                 [re-com "2.1.0"]]
   :main ^:skip-aot soul-talk.core
   :plugins [[lein-ring "0.12.4"]
             [lein-cljsbuild "1.1.7" :excludes [[org.clojure/clojure]]]
             [lein-figwheel "0.5.17-SNAPSHOT"]]
   :ring {:handler soul-talk.core/app}
-  :source-paths ["src/clj"]
+  :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources"]
 
   :clean-targets                                            ;; 清理临时文件
@@ -33,7 +35,7 @@
 
   :cljsbuild
   {:builds {:dev                             ;; 开发配置
-            {:source-paths ["src/cljs"] ;; 源代码目录
+            {:source-paths ["src/cljs" "src/cljc"] ;; 源代码目录
              ;:resource-paths ["target/cljsbuild"]
              :figwheel     true                             ;; 开启 figwheel
              :compiler     {:main                 soul-talk.core ;; 主命名空间

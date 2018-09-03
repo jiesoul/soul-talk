@@ -6,6 +6,3 @@
   (prn "Hello, Clojurescript"))
 
 (main)
-
-(defn ^:export init []
-  (js/alert "hello, Clojurescript"))
