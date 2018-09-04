@@ -5,11 +5,15 @@
 (def ^:dynamic *email-re* #"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$")
 
 (defn validate-email [email]
-  (if (re-matches *email-re* email)
+  (if (and (not (nil? email))
+           (string? email)
+           (re-matches *email-re* email))
     true
     false))
 
 (defn validate-passoword [password]
-  (if (re-matches *password-re* password)
+  (if (and (not (nil? password))
+           (string? password)
+           (re-matches *password-re* password))
     true
     false))
