@@ -10,16 +10,6 @@
     (dom/add-class! input-id "is-invalid")
     (dom/remove-class! input-id "is-invalid")))
 
-(defn validate-form []
-  (let [email (dom/by-id "email")
-        password (dom/by-id "password")]
-    (if (and (validate-email (dom/value email))
-             (validate-passoword (dom/value password)))
-      true
-      (do
-        (js/alert "email和密码不能为空")
-        false))))
-
 
 (defn login-component []
   [:form#loginForm.form-signin
@@ -27,7 +17,7 @@
    [:div.form-group
     [:label "Email address"]
     [:input#email.form-control
-     {:type       "text"
+     {:type "text"
       :name "email"
       :auto-focus true
       :placeholder "Email Address"
@@ -46,11 +36,17 @@
     [:label "记住我"]]
    [:div#error]
    [:input#submit.btn.btn-lg.btn-primary.btn-block {:type "submit" :value "登录"}]
-   [:p.mt-5.mb-3.text-muted
-    "&copy @2018"]])
+   [:p.mt-5.mb-3.text-muted "&copy @2018"]])
+
+(defn simple-component []
+  [:div
+   [:p "I am a component!"]
+   [:p.someclass
+    "I have " [:strong "bold"]
+    [:span {:style {:color "red"}} " and red "] "text."]])
 
 (reagent/render
-  [login-component]
+  login-component
   (dom/by-id "content"))
 
 (defn handler [response]
@@ -70,8 +66,18 @@
      :handler handler
      :error-handler error-handler}))
 
+(defn validate-form []
+  (let [email (dom/by-id "email")
+        password (dom/by-id "password")]
+    (if (and (validate-email (dom/value email))
+             (validate-passoword (dom/value password)))
+      (login!)
+      (do
+        (js/alert "email和密码不能为空")
+        false))))
+
 (defn ^:export init []
   (if (and js/document
            (.-getElementById js/document))
-    (let [login-form (dom/by-id "submit")]
-      (ev/listen! login-form :click #(when (validate-form) login!)))))
+    (let [login-form (dom/by-id "loginForm")]
+      (set! (.-onsubmit login-form) validate-form))))

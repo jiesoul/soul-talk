@@ -17,8 +17,8 @@
                  [org.webjars/font-awesome "5.2.0"]
                  [domina "1.0.3"]
                  [reagent "0.8.1"]
-                 [cljs-ajax "0.7.4"]
-                 [re-com "2.1.0"]]
+                 [reagent-utils "0.3.1"]
+                 [cljs-ajax "0.7.4"]]
   :main ^:skip-aot soul-talk.core
   :plugins [[lein-ring "0.12.4"]
             [lein-cljsbuild "1.1.7" :excludes [[org.clojure/clojure]]]
