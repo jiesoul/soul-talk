@@ -3,6 +3,7 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [compojure.core :refer [routes GET defroutes POST]]
             [ring.middleware.defaults :refer :all]
+            [ring.middleware.webjars :refer [wrap-webjars]]
             [compojure.route :as route]
             [selmer.parser :as parser]
             [ring.util.response :refer [redirect]]
@@ -61,9 +62,9 @@
   (-> app-routes
       (wrap-nocache)
       (wrap-reload)
-      (wrap-format/wrap-restful-format)
-      (wrap-defaults (assoc-in api-defaults [:security :anti-forgery] false))
-      ))
+      (wrap-webjars)
+      (wrap-format/wrap-restful-format :formats [:json-kw])
+      (wrap-defaults (assoc-in api-defaults [:security :anti-forgery] false))))
 
 (defn -main []
   (jetty/run-jetty

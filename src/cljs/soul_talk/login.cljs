@@ -18,7 +18,8 @@
 
 (defn login! [login-data]
   (POST "/login"
-        {:headers       {"Accept" "application/transit+json"}
+        {:format        :json
+         :headers       {"Accept" "application/transit+json"}
          :params        @login-data
          :handler       handler-ok
          :error-handler handler-error}))
@@ -30,7 +31,6 @@
     (do
       (js/alert "email或密码不合法")
       false)))
-
 
 (defn login-component []
   (let [login-data (atom {})

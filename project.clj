@@ -5,6 +5,9 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.339"]
+                 [org.clojure/java.jdbc "0.7.8"]
+                 [org.postgresql/postgresql "42.2.4"]
+                 [ragtime "0.7.2"]
                  [ring "1.6.3"]
                  [compojure "1.6.1"]
                  [timbre "0.5.1-SNAPSHOT"]
@@ -54,4 +57,7 @@
                         :optimizations :advanced
                         :pretty-print false}}}}  ;; 打印格式
   :figwheel
-  {:css-dirs ["resources/public/css"]})
+  {:css-dirs ["resources/public/css"]}
+  :profiles {:dev {:source-paths ["env/dev/clj"]
+                   :dependencies [[ring/ring-devel "1.6.3"]]}}
+  )
