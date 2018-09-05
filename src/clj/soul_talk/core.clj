@@ -9,7 +9,8 @@
             [ring.util.response :refer [redirect]]
             [soul-talk.auth-validate :as auth-validate]
             [ring.util.response :as res]
-            [ring.middleware.format :as wrap-format]))
+            [ring.middleware.format :as wrap-format]
+            [soul-talk.routes.auth :refer [auth-routes]]))
 
 (parser/cache-off!)
 
@@ -59,7 +60,7 @@
         (assoc-in [:headers "Pragma"] "no-cache"))))
 
 (def app
-  (-> app-routes
+  (-> (routes auth-routes app-routes)
       (wrap-nocache)
       (wrap-reload)
       (wrap-webjars)
