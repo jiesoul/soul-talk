@@ -8,7 +8,9 @@
             [selmer.parser :as parser]
             [ring.util.response :refer [redirect]]
             [ring.middleware.format :as wrap-format]
-            [soul-talk.routes.auth :refer [auth-routes]]))
+            [soul-talk.routes.auth :refer [auth-routes]]
+            [taoensso.timbre :as log]
+            [ring.middleware.session :refer [wrap-session]]))
 
 (parser/cache-off!)
 
@@ -39,6 +41,7 @@
       (wrap-reload)
       (wrap-webjars)
       (wrap-format/wrap-restful-format :formats [:json-kw])
+      (wrap-session)
       (wrap-defaults (assoc-in api-defaults [:security :anti-forgery] false))))
 
 (defn -main []

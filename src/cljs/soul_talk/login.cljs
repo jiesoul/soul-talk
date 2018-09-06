@@ -11,11 +11,6 @@
     (dom/add-class! input "is-invalid")
     (dom/remove-class! input "is-invalid")))
 
-(defn handler-ok [response]
-  (.log js/console (str "response: " response)))
-
-(defn handler-error [{:keys [status response]}]
-  (.log js/console (get response "message")))
 
 (defn login! [login-data errors]
   (reset! errors (login-errors @login-data))
@@ -24,8 +19,10 @@
                {:format        :json
                 :headers       {"Accept" "application/transit+json"}
                 :params        @login-data
-                :handler       handler-ok
-                :error-handler handler-error})
+                :handler       #(set! (.. js/window -location -href) "/")
+                :error-handler #(let [msg (get-in % [:response "message"])]
+                                  (log/error msg)
+                                  (js/alert msg))})
     (let [error (vals @errors)]
       (log/error error)
       (js/alert error))))
@@ -62,14 +59,15 @@
                             (validate-invalid d validate/validate-passoword)))
            :value (:password @login-data)}]
          [:div.invalid-feedback "无效的密码"]]
-        [:div.form-group.form-check
-         [:input#remameber.form-check-input {:type "checkbox"}]
-         [:label "记住我"]]
         [:div#error @errors]
-        [:input#submit.btn.btn-primary
+        [:input#submit.btn.btn-primary.btn-lg.btn-block
          {:type     :submit
           :value    "登录"
           :on-click #(login! login-data errors)}]
+        [:input#submit.btn.btn-primary.btn-lg.btn-block
+         {:type     :button
+          :value    "注册"
+          :on-click #(set! (.. js/window -location -href) "/register")}]
         [:p.mt-5.mb-3.text-muted "&copy @2018"]]])))
 
 

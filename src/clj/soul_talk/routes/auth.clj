@@ -21,8 +21,7 @@
                 (dissoc :pass-confirm)
                 (update :password hashers/encrypt)))
           (-> {:result :ok}
-              (resp/ok)
-              (assoc :session (assoc session :identity (:email user))))))
+              (resp/ok))))
       (catch Exception e
         (do
           (log/error e)
@@ -30,7 +29,7 @@
             {:result :error
              :message "发生内部错误，请联系管理员"}))))))
 
-(defn login! [{:keys [session]} {:keys [email password] :as user}]
+(defn login! [{:keys [session] :as req} {:keys [email password] :as user}]
   (if (login-errors user)
     (resp/precondition-failed {:result :error})
     (try
@@ -45,7 +44,7 @@
                 (db/update-login-time))
             (-> {:result :ok}
                 (resp/ok)
-                (assoc :session (assoc session :identity (:email email)))))))
+                (assoc :session (assoc session :identity email))))))
       (catch Exception e
         (do
           (log/error e)
@@ -55,7 +54,7 @@
 
 (defn logout! [request]
   (do
-    (assoc request :session {})
+    (assoc request :session nil)
     (resp/found "/")))
 
 (def auth-routes

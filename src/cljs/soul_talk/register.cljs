@@ -21,7 +21,8 @@
                 :handler       #(do
                                   (session/put! :identity (:email @reg-date))
                                   (reset! reg-date {})
-                                  (js/alert "注册成功"))
+                                  (js/alert "注册成功")
+                                  (set! (.. js/window -location -href) "/login"))
                 :error-handler #(reset!
                                   errors
                                   {:server-error (get-in % [:response "message"])})})
