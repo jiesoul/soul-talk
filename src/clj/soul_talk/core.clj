@@ -7,8 +7,6 @@
             [compojure.route :as route]
             [selmer.parser :as parser]
             [ring.util.response :refer [redirect]]
-            [soul-talk.auth-validate :as auth-validate]
-            [ring.util.response :as res]
             [ring.middleware.format :as wrap-format]
             [soul-talk.routes.auth :refer [auth-routes]]))
 
@@ -22,33 +20,9 @@
    :headers {"Content-Type" "text/html; charset=utf-8"}
    :body (parser/render-file "error.html" error-details)})
 
-(defn login-page [request]
-  (parser/render-file "login.html" request))
-
-(defn handle-login [{:keys [params] :as request}]
-  (let [email (:email params)
-        password (:password params)]
-    (cond
-      (not (auth-validate/validate-email email)) (res/response {:status 400 :errors "Email不合法"})
-      (not (auth-validate/validate-passoword password)) (res/response {:status 400 :errors "密码不合法"})
-      (and (= email "jiesoul@gmail.com")
-           (= password "12345678"))
-      (do
-        (assoc-in request [:session :identity] email)
-        (res/response {:status :ok}))
-      :else (res/response {:status 400 :errors "用户名密码不对"}))))
-
-(defn handle-logout [request]
-  (do
-    (assoc request :session {})
-    (redirect "/")))
-
 (def app-routes
   (routes
     (GET "/" request (home-handle request))
-    (GET "/login" request (login-page request))
-    (POST "/login" req (handle-login req))
-    (GET "/logout" request (handle-logout request))
     (GET "/about" [] (str "这是关于我的页面"))
     (route/resources "/")
     (route/not-found error-page)))

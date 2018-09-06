@@ -3,6 +3,6 @@ CREATE TABLE IF NOT EXISTS users
 name VARCHAR(30),
 email VARCHAR(30) unique ,
 admin BOOLEAN,
-last_login TIME,
+last_login timestamp,
 is_active BOOLEAN,
 password VARCHAR(200) NOT NULL);

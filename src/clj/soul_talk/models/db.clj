@@ -19,3 +19,6 @@
 
 (defn select-all-users []
   (sql/query db-spec ["SELECT * from users"]))
+
+(defn update-login-time [{:keys [email last-time]}]
+  (sql/update! db-spec :users {:last_login last-time} ["email = ?" email]))
