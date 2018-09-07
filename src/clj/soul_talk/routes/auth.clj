@@ -53,9 +53,9 @@
              :message "发生内部错误，请联系管理员"}))))))
 
 (defn logout! [request]
-  (do
-    (assoc request :session nil)
-    (resp/found "/")))
+  (-> "/"
+      resp/found
+      (assoc :session nil)))
 
 (def auth-routes
   (routes

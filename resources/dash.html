@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block page-css %}
+<link rel="stylesheet" href="/css/dash.css">
+{% endblock%}
+{% block content %}
+<div class="container" id="app">
+
+</div>
+{% endblock %}
+{% block page-script %}
+<script type="text/javascript">
+    var identity = "{{ session.identity }}";
+    soul_talk.dash.init();
+</script>
+{% endblock %}

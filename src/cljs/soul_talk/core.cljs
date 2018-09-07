@@ -1,6 +1,7 @@
 (ns soul-talk.core
   (:require [soul-talk.login :as login]
             [soul-talk.register :as register]
+            [soul-talk.dash :as dash]
             [reagent.core :as r]
             [reagent.session :as session]
             [domina :as dom]

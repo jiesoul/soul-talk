@@ -1,15 +1,10 @@
 (ns soul-talk.login
   (:require [domina :as dom]
             [reagent.core :as reagent :refer [atom]]
-            [soul-talk.auth-validate :as validate]
             [ajax.core :as ajax]
             [soul-talk.auth-validate :refer [login-errors]]
-            [taoensso.timbre :as log]))
-
-(defn validate-invalid [input vali-fun]
-  (if-not (vali-fun (.-value input))
-    (dom/add-class! input "is-invalid")
-    (dom/remove-class! input "is-invalid")))
+            [taoensso.timbre :as log]
+            [soul-talk.components.common :as c]))
 
 
 (defn login! [login-data errors]
@@ -34,32 +29,8 @@
       [:div.container
        [:div#loginForm.form-signin
         [:h1.h3.mb-3.font-weight-normal.text-center "Please sign in"]
-        [:div.form-group
-         [:label "Email address"]
-         [:input#email.form-control
-          {:type        "text"
-           :name        "email"
-           :auto-focus  true
-           :placeholder "Email Address"
-           :on-change     (fn [e]
-                          (let [d (.. e -target)]
-                            (swap! login-data assoc :email (.-value d))
-                            (validate-invalid d validate/validate-email)))
-           :value (:email @login-data)}]
-         [:div.invalid-feedback "无效的 Email"]]
-        [:div.form-group
-         [:label "Password"]
-         [:input#password.form-control
-          {:type        "password"
-           :name        "password"
-           :placeholder "password"
-           :on-change     (fn [e]
-                          (let [d (.-target e)]
-                            (swap! login-data assoc :password (.-value d))
-                            (validate-invalid d validate/validate-passoword)))
-           :value (:password @login-data)}]
-         [:div.invalid-feedback "无效的密码"]]
-        [:div#error @errors]
+        [c/text-input "Email" :email "Email Address" login-data]
+        [c/password-input "密码" :password "输入密码" login-data]
         [:input#submit.btn.btn-primary.btn-lg.btn-block
          {:type     :submit
           :value    "登录"

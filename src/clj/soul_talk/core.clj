@@ -22,9 +22,13 @@
    :headers {"Content-Type" "text/html; charset=utf-8"}
    :body (parser/render-file "error.html" error-details)})
 
+(defn dash-page [req]
+  (parser/render-file "dash.html" req))
+
 (def app-routes
   (routes
     (GET "/" request (home-handle request))
+    (GET "/dash" req (dash-page req))
     (GET "/about" [] (str "这是关于我的页面"))
     (route/resources "/")
     (route/not-found error-page)))

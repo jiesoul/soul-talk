@@ -4,7 +4,9 @@
             [soul-talk.auth-validate :as validate]
             [ajax.core :as ajax]
             [reagent.session :as session]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [soul-talk.components.common :as c])
+  (:import [goog.history Html5History]))
 
 (defn validate-invalid [input vali-fun]
   (if-not (vali-fun (.-value input))
@@ -36,52 +38,23 @@
     (fn []
       [:div.container
        [:div#loginForm.form-signin
-        [:h1.h3.mb-3.font-weight-normal.text-center "注册"]
-        [:div.form-group
-         [:label "邮箱"]
-         [:input#email.form-control
-          {:type        "text"
-           :name        "email"
-           :auto-focus  true
-           :placeholder "xx@xx.xx"
-           :on-change     (fn [e]
-                          (let [d (.. e -target)]
-                            (swap! reg-data assoc :email (.-value d))
-                            (validate-invalid d validate/validate-email)))
-           :value (:email @reg-data)}]
-         [:div.invalid-feedback "无效的 Email"]]
-        [:div.form-group
-         [:label "密码"]
-         [:input#password.form-control
-          {:type        "password"
-           :name        "password"
-           :placeholder "密码"
-           :on-change     (fn [e]
-                          (let [d (.-target e)]
-                            (swap! reg-data assoc :password (.-value d))
-                            (validate-invalid d validate/validate-passoword)))
-           :value (:password @reg-data)}]
-         [:div.invalid-feedback "无效的密码"]]
-        [:div.form-group
-         [:label "重复密码"]
-         [:input#pass-confirm.form-control
-          {:type        "password"
-           :name        "pass-confirm"
-           :placeholder "重复密码"
-           :on-change     (fn [e]
-                            (let [d (.-target e)]
-                              (swap! reg-data assoc :pass-confirm (.-value d))
-                              (validate-invalid d validate/validate-passoword)))
-           :value (:pass-confirm @reg-data)}]
-         [:div.invalid-feedback "无效的密码"]]
-        (when-not [error (:client-error @error)]
-          [:div#error.alert.alert-danger error])
-        (when-not [error (:server-error @error)]
-          [:div#error.alert.alert-danger error])
-        [:input#submit.btn.btn-primary.btn-lg.btn-block
-         {:type     :submit
-          :value    "保存"
-          :on-click #(register! reg-data error)}]
+        [:h1.h3.mb-3.font-weight-normal.text-center "Soul Talk"]
+        [:div
+         [:div.well.well-sm "* 为必填"]
+         [c/text-input "Email" :email "enter a email, EX: example@xx.com" reg-data]
+         [c/password-input "密码" :password "输入密码最少8位" reg-data]
+         [c/password-input "确认密码" :pass-confirm "确认密码和上面一样" reg-data]
+         (when-let [error (:server-error @error)]
+           [:div.alert.alert-danger error])]
+        [:div
+         [:input.btn.btn-primary.btn-block
+          {:type     :submit
+           :value    "注册"
+           :on-click #(register! reg-data error)}]
+         [:input.btn.btn-primary.btn-block
+          {:type     :submit
+           :value    "登录"
+           :on-click #(set! (.. js/window -location -href) "/login")}]]
         [:p.mt-5.mb-3.text-muted "&copy @2018"]]])))
 
 
