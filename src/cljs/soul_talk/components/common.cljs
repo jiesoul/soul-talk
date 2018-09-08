@@ -26,9 +26,10 @@
 
 (defn modal [header body footer]
   [:div
-   [:div.modal-dialog
+   [:div.modal-dialog {:role "document"}
     [:div.modal-content
-     [:div.modal-header [:h3 header]]
+     [:div.modal-header
+      [:h5.my-0.mr-md-auto.font-weight-normal header]]
      [:div.modal-body body]
      [:div.modal-footer
       [:div.bootstrap-dialog-footer

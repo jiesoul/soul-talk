@@ -5,18 +5,11 @@
             [reagent.core :as r]
             [reagent.session :as session]
             [domina :as dom]
-            [taoensso.timbre :as log]
-            [cuerdas.core :as str]))
+            [taoensso.timbre :as log]))
 
 (defonce posts (r/atom []))
 (defonce navs (r/atom []))
 (defonce archives (r/atom []))
-
-(defn log-component? [name]
-  (fn []
-    [:div
-     [:span.navbar-text (str "欢迎你 " name "")]
-     [:a.btn.btn-sm.btn-outline-secondary {:href "/logout"} "退出"]]))
 
 (defn blog-header-component []
   (fn []
@@ -26,10 +19,7 @@
        [:a.text-muted {:href "#"} "订阅"]]
       [:div.col-4.text-center
        [:a.blog-header-logo.text-dark {:href "/"} "Soul Talk"]]
-      [:div.col-4.d-flex.justify-content-end.align-items-center
-       (if-not (= js/identity "")
-         [log-component? js/identity]
-         [:a.btn.btn-sm.btn-outline-secondary {:href "/login"} "登录"])]]]))
+      [:div.col-4.d-flex.justify-content-end.align-items-center]]]))
 
 (defn nav-scroller-header-component [navs]
   (fn []

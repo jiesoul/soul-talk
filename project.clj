@@ -24,6 +24,7 @@
                  [org.webjars/bootstrap "4.1.3"]
                  [org.webjars/popper.js "1.14.1"]
                  [org.webjars/font-awesome "5.2.0"]
+                 [cljsjs/chartjs "2.7.0-0"]
                  [domina "1.0.3"]
                  [reagent "0.8.1"]
                  [reagent-utils "0.3.1"]
