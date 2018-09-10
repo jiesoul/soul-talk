@@ -10,18 +10,13 @@
 
 (defn login! [login-data errors]
   (reset! errors (login-errors @login-data))
-  (if-not @errors
+  (when-not @errors
     (ajax/POST "/login"
                {:format        :json
                 :headers       {"Accept" "application/transit+json"}
                 :params        @login-data
                 :handler       #(set! (.. js/window -location -href) "/dash")
-                :error-handler #(let [msg (get-in % [:response "message"])]
-                                  (log/error msg)
-                                  (js/alert msg))})
-    (let [error (vals @errors)]
-      (log/error error)
-      (js/alert error))))
+                :error-handler #(reset! errors {:server-error (get-in % [:response "message"])})})))
 
 (defn login-component []
   (let [login-data (atom {})
@@ -31,7 +26,14 @@
        [:div "登录"]
        [:div
         [c/text-input "Email" :email "Email Address" login-data]
-        [c/password-input "密码" :password "输入密码" login-data]]
+        (when-let [error (first (:email @errors))]
+          [:div.alert.alert-danger error])
+        [c/password-input "密码" :password "输入密码" login-data]
+        (when-let [error (first (:password @errors))]
+          [:div.alert.alert-danger error])
+        (when-let [error (:server-error @errors)]
+          [:div.alert.alert-danger error])
+        ]
        [:div
         [:input#submit.btn.btn-primary
          {:type     :submit

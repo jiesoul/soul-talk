@@ -30,8 +30,8 @@
         [:div.dropdown-menu {:aria-labelledby "usermenu"}
          [:a.dropdown-item {:href "#"} "用户管理"]
          [:a.dropdown-item
-          {:href "#"
-           :on-click #(reset! main-fields [user/change-pass])}
+          {:href "#change-pass"
+           :on-click #(reset! main-fields [user/change-pass-form])}
           "密码修改"]
          [:div.dropdown-divider]
          [:a.dropdown-item {:href "/logout"} "退出"]]]])))

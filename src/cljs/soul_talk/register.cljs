@@ -8,14 +8,9 @@
             [soul-talk.components.common :as c])
   (:import [goog.history Html5History]))
 
-(defn validate-invalid [input vali-fun]
-  (if-not (vali-fun (.-value input))
-    (dom/add-class! input "is-invalid")
-    (dom/remove-class! input "is-invalid")))
-
 (defn register! [reg-date errors]
   (reset! errors (validate/reg-errors @reg-date))
-  (if-not @errors
+  (when-not @errors
     (ajax/POST "/register"
                {:format        :json
                 :headers       {"Accept" "application/transit+json"}
@@ -24,13 +19,10 @@
                                   (session/put! :identity (:email @reg-date))
                                   (reset! reg-date {})
                                   (js/alert "注册成功")
-                                  (set! (.. js/window -location -href) "/login"))
+                                  (set! (.. js/window -location -href) "/dash"))
                 :error-handler #(reset!
                                   errors
-                                  {:server-error (get-in % [:response "message"])})})
-    (let [error (vals @errors)
-          msg   (ffirst error)]
-      (js/alert msg))))
+                                  {:server-error (get-in % [:response "message"])})})))
 
 (defn register-component []
   (let [reg-data (atom {})
@@ -42,8 +34,14 @@
         [:div
          [:div.well.well-sm "* 为必填"]
          [c/text-input "Email" :email "enter a email, EX: example@xx.com" reg-data]
+         (when-let [error (first (:email @error))]
+           [:div.alert.alert-danger error])
          [c/password-input "密码" :password "输入密码最少8位" reg-data]
+         (when-let [error (first (:password @error))]
+           [:div.alert.alert-danger error])
          [c/password-input "确认密码" :pass-confirm "确认密码和上面一样" reg-data]
+         (when-let [error (first (:pass-confirm @error))]
+           [:div.alert.alert-danger error])
          (when-let [error (:server-error @error)]
            [:div.alert.alert-danger error])]
         [:div
