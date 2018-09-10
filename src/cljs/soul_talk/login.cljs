@@ -33,7 +33,6 @@
         [c/text-input "Email" :email "Email Address" login-data]
         [c/password-input "密码" :password "输入密码" login-data]]
        [:div
-        [:button.btn.btn-secondary {:data-dismiss "modal" :aria-label "Close"}]
         [:input#submit.btn.btn-primary
          {:type     :submit
           :value    "登录"

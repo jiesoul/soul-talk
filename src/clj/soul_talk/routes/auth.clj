@@ -4,7 +4,7 @@
             [buddy.hashers :as hashers]
             [taoensso.timbre :as log]
             [soul-talk.auth-validate :refer [reg-errors login-errors]]
-            [compojure.core :refer [routes POST GET]]
+            [compojure.core :refer [defroutes POST GET]]
             [selmer.parser :as parser]
             [java-time.local :as l]))
 
@@ -57,10 +57,10 @@
       resp/found
       (assoc :session nil)))
 
-(def auth-routes
-  (routes
-    (GET "/register" req (parser/render-file "register.html" req))
-    (POST "/register" req (register! req (:params req)))
-    (GET "/login" request (parser/render-file "login.html" request))
-    (POST "/login" req (login! req (:params req)))
-    (GET "/logout" request (logout! request))))
+(defroutes
+  auth-routes
+  (GET "/register" req (parser/render-file "register.html" req))
+  (POST "/register" req (register! req (:params req)))
+  (GET "/login" request (parser/render-file "login.html" request))
+  (POST "/login" req (login! req (:params req)))
+  (GET "/logout" request (logout! request)))

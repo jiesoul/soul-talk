@@ -4,22 +4,37 @@
             [soul-talk.components.common :as c]
             [soul-talk.login :as login]
             [cljsjs.chartjs]
-            [reagent.session :as session]))
+            [reagent.session :as session]
+            [soul-talk.post :as post]
+            [soul-talk.user :as user]))
 
 (defonce navs (r/atom []))
 (defonce navs- (r/atom []))
 (defonce main-fields (r/atom nil))
 (defonce table-data (r/atom []))
 
-(defn log-component []
+(defn user-menu []
   (fn []
     (if (not= js/identity "")
-      [:ul.:ul.navbar-nav.px-3
-       [:li.nav-item.text-nowrap
-        [:a.nav-link {:href "/logout"}
+      [:ul.navbar-nav.px-3.mr-auto
+       [:li.nav-item.text-nowrap.dropdown
+        [:a.nav-link.dropdown-toggle
+         {:href          "#"
+          :id            "usermenu"
+          :data-toggle   "dropdown"
+          :role          "button"
+          :aria-haspopup true
+          :aria-expanded false}
          [:i.fa.fa-user]
-         " " js/identity " | 退出"]]
-       [login/login-button]])))
+         " " js/identity]
+        [:div.dropdown-menu {:aria-labelledby "usermenu"}
+         [:a.dropdown-item {:href "#"} "用户管理"]
+         [:a.dropdown-item
+          {:href "#"
+           :on-click #(reset! main-fields [user/change-pass])}
+          "密码修改"]
+         [:div.dropdown-divider]
+         [:a.dropdown-item {:href "/logout"} "退出"]]]])))
 
 (defn nav-component []
   (fn []
@@ -30,16 +45,18 @@
       {:type        :text
        :placeholder "Search"
        :aria-label  "Search"}]
-     [log-component]]))
+     [user-menu]]))
 
 (defn nav-list-component [navs]
   [:ul.nav.flex-column
-   (for [{:keys [name href icons] :as nav} navs]
+   (for [{:keys [name href icons fun] :as nav} navs]
      ^{:key nav} [:li.nav-item
-                  [:a.nav-link {:href href :class (:current? nav)}
+                  [:a.nav-link {:href href
+                                :class (:current? nav)
+                                :on-click fun}
                    [:i {:aria-hidden true
                         :class icons}]
-                   (str " " name)
+                   " " name
                    (when (:current? nav)
                      [:span.sr-only "(current)"])]])])
 
@@ -49,7 +66,7 @@
      [:div.sidebar-sticky
       [nav-list-component @navs]
       [:h6.sidebar-heading.d-flex.justify-content-between.align-items-center.px-3.mt-4.mb-1.text-muted
-       [:span "Saved Report"]
+       [:span "blog"]
        [:a.d-flex.align-items-center.text-muted
         {:href "#"}
         [:span {:class "plus-circle"}]]]
@@ -62,10 +79,8 @@
      [:div.btn-toolbar.mb-2.mb-md-0
       [:div.btn-group.mr-2
        [:button.btn.btn-sm.btn-outline-secondary "Share"]
-       [:button.btn.btn-sm.btn-outline-secondary "Export"]]
-      [:button.btn.btn-sm.btn-outline-secondary.dropdown-toggle
-       [:span.fa.fa-calendar]
-       "This work"]]]))
+       [:button.btn.btn-sm.btn-outline-secondary "Export"]
+       ]]]))
 
 (defn show-revenue-chart
   []
@@ -111,7 +126,7 @@
 
 (defn main-component []
   (fn []
-    [:main.col-md-9.ml-sm-auto.col-lg-10.px-4 {:role "main"}
+    [:div
      [dashboard-component]
      [canvas-component]
      [table-component @table-data]]))
@@ -121,7 +136,8 @@
     [:div.container-fluid
      [:div.row
       [sidebar-component]
-      @main-fields]]))
+      [:main.col-md-9.ml-sm-auto.col-lg-10.px-4 {:role "main"}
+       @main-fields]]]))
 
 (defn dash-component []
   [:div
@@ -130,26 +146,16 @@
      [fluid-component]
      [login/login-component])])
 
-(reset! navs [{:href  "#"
+(reset! navs [{:href  "#board"
                :name  "Dashboard"
                :icons "fa fa-home fa-fw"
-               :current? "active"}
-              {:href  "#"
-               :name  "Orders"
-               :icons "fa fa-book fa-fw"}
-              {:href  "#"
-               :name  "Products"
-               :icons "fa fa-cog fa-fw"}])
-
-(reset! navs- [{:href  "#"
-                :name  "Current month"
-                :icons  "fa fa-cog fa-fw"}
-               {:href  "#"
-                :name  "Current year"
-                :icons "fa fa-cog fa-fw"}
-               {:href  "#"
-                :name  "Current day"
-                :icons "fa fa-cog fa-fw"}])
+               :current? "active"
+               :fun #(reset! main-fields [main-component])}
+              {:href  "#posts"
+               :name  "Posts"
+               :icons "fa fa-cog fa-fw"
+               :fun   #(do
+                         (reset! main-fields [post/posts-component]))}])
 
 (reset! table-data [{:title "title1"
                      :time "2018"

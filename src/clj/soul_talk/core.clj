@@ -10,7 +10,8 @@
             [ring.middleware.format :as wrap-format]
             [soul-talk.routes.auth :refer [auth-routes]]
             [taoensso.timbre :as log]
-            [ring.middleware.session :refer [wrap-session]]))
+            [ring.middleware.session :refer [wrap-session]]
+            [soul-talk.routes.post :refer [post-routes]]))
 
 (parser/cache-off!)
 
@@ -40,7 +41,10 @@
         (assoc-in [:headers "Pragma"] "no-cache"))))
 
 (def app
-  (-> (routes auth-routes app-routes)
+  (-> (routes
+        post-routes
+        auth-routes
+        app-routes)
       (wrap-nocache)
       (wrap-reload)
       (wrap-webjars)
