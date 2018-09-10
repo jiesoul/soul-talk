@@ -24,14 +24,16 @@
   (form-input :password label id placeholder fields optional?))
 
 
-(defn modal [header body footer]
-  [:div
+(defn modal [id header body footer]
+  [:div.modal.fade {:id id}
    [:div.modal-dialog {:role "document"}
     [:div.modal-content
      [:div.modal-header
-      [:h5.my-0.mr-md-auto.font-weight-normal header]]
+      [:h3.mb-3.font-weight-normal.text-center header]
+      [:button.close
+       {:data-dismiss "modal"
+        :aria-label "Close"
+        :type :button}
+       [:i.fa.fa-times {:aria-hidden "true"}]]]
      [:div.modal-body body]
-     [:div.modal-footer
-      [:div.bootstrap-dialog-footer
-       footer]]]]
-   [:div.modal-backdrop.fade.in]])
+     [:div.modal-footer footer]]]])

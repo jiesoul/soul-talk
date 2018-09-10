@@ -1,9 +1,11 @@
 (ns soul-talk.user
   (:require [soul-talk.components.common :as c]
             [reagent.core :as r]
-            [soul-talk.auth-validate :refer [change-pass-errors]]
+            [soul-talk.auth-validate :refer [change-pass-errors login-errors reg-errors]]
             [ajax.core :as ajax]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [reagent.session :as session]
+            [domina :as dom]))
 
 (defn change-password! [pass-data errors]
   (reset! errors (change-pass-errors @pass-data))

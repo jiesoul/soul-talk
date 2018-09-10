@@ -3,6 +3,7 @@
             [domina :as dom]
             [soul-talk.components.common :as c]
             [soul-talk.login :as login]
+            [soul-talk.register :as reg]
             [cljsjs.chartjs]
             [reagent.session :as session]
             [soul-talk.post :as post]
@@ -13,10 +14,10 @@
 (defonce main-fields (r/atom nil))
 (defonce table-data (r/atom []))
 
-(defn user-menu []
+(defn user-menu [main-fields]
   (fn []
     (if (not= js/identity "")
-      [:ul.navbar-nav.px-3.mr-auto
+      [:ul.nav.navbar-nav
        [:li.nav-item.text-nowrap.dropdown
         [:a.nav-link.dropdown-toggle
          {:href          "#"
@@ -34,17 +35,18 @@
            :on-click #(reset! main-fields [user/change-pass-form])}
           "密码修改"]
          [:div.dropdown-divider]
-         [:a.dropdown-item {:href "/logout"} "退出"]]]])))
+         [:a.dropdown-item {:href "/logout"} "退出"]]]]
+      [:ul.navbar-nav.flex-row.ml-md-auto.d-none.d-md-flex
+       [:li.nav-item
+        [login/login-button]]
+       [:li.nav-item
+        [reg/reg-button]]])))
 
 (defn nav-component []
   (fn []
     [:nav.navbar.navbar-dark.fixed-top.bg-dark.flex-md-nowrap.p-0.shadow
-     [:a.navbar-brand.col-sm-3.col-md-2.mr-0
+     [:a.navbar-brand.mr-0.mr-md-2
       {:href "/" :target "_blank"} "Soul Talk"]
-     [:input.form-control.form-control-dark.w-100
-      {:type        :text
-       :placeholder "Search"
-       :aria-label  "Search"}]
      [user-menu]]))
 
 (defn nav-list-component [navs]
@@ -136,7 +138,7 @@
     [:div.container-fluid
      [:div.row
       [sidebar-component]
-      [:main.col-md-9.ml-sm-auto.col-lg-10.px-4 {:role "main"}
+      [:main#main.col-md-9.ml-sm-auto.col-lg-10.px-4 {:role "main"}
        @main-fields]]]))
 
 (defn dash-component []
@@ -144,7 +146,9 @@
    [nav-component]
    (if (not= js/identity "")
      [fluid-component]
-     [login/login-component])])
+     [:div#user
+      [login/login-component]
+      [reg/register-component]])])
 
 (reset! navs [{:href  "#board"
                :name  "Dashboard"

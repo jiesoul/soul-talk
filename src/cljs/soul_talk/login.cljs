@@ -5,7 +5,8 @@
             [soul-talk.auth-validate :refer [login-errors]]
             [taoensso.timbre :as log]
             [soul-talk.components.common :as c]
-            [reagent.session :as session]))
+            [reagent.session :as session]
+            [reagent.core :as r]))
 
 
 (defn login! [login-data errors]
@@ -19,11 +20,12 @@
                 :error-handler #(reset! errors {:server-error (get-in % [:response "message"])})})))
 
 (defn login-component []
-  (let [login-data (atom {})
-        errors (atom {})]
+  (let [login-data (r/atom {})
+        errors (r/atom nil)]
     (fn []
       [c/modal
-       [:div "登录"]
+       "loginModal"
+       "登录"
        [:div
         [c/text-input "Email" :email "Email Address" login-data]
         (when-let [error (first (:email @errors))]
@@ -32,29 +34,18 @@
         (when-let [error (first (:password @errors))]
           [:div.alert.alert-danger error])
         (when-let [error (:server-error @errors)]
-          [:div.alert.alert-danger error])
-        ]
+          [:div.alert.alert-danger error])]
        [:div
-        [:input#submit.btn.btn-primary
+        [:input.btn.btn-primary
          {:type     :submit
           :value    "登录"
-          :on-click #(login! login-data errors)}]
-        [:input#submit.btn.btn-primary
-         {:type     :button
-          :value    "注册"
-          :on-click #(set! (.. js/window -location -href) "/register")}]]])))
+          :on-click #(login! login-data errors)}]]])))
 
 (defn login-button []
-  [:a.btn
-   {:on-click #(login-component)}
+  [:a.nav-link.p-2
+   {:data-toggle "modal"
+    :data-target "#loginModal"}
    "登录"])
 
-(defn load-page []
-  (reagent/render
-    [login-component]
-    (dom/by-id "app")))
 
-(defn ^:export init []
-  (if (and js/document
-           (.-getElementById js/document))
-    (load-page)))
+

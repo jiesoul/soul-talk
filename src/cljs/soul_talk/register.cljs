@@ -1,15 +1,16 @@
 (ns soul-talk.register
   (:require [domina :as dom]
             [reagent.core :as reagent :refer [atom]]
-            [soul-talk.auth-validate :as validate]
+            [soul-talk.auth-validate :refer [reg-errors]]
             [ajax.core :as ajax]
             [reagent.session :as session]
             [taoensso.timbre :as log]
             [soul-talk.components.common :as c])
-  (:import [goog.history Html5History]))
+  (:import goog.History))
+
 
 (defn register! [reg-date errors]
-  (reset! errors (validate/reg-errors @reg-date))
+  (reset! errors (reg-errors @reg-date))
   (when-not @errors
     (ajax/POST "/register"
                {:format        :json
@@ -28,40 +29,30 @@
   (let [reg-data (atom {})
         error (atom nil)]
     (fn []
-      [:div.container
-       [:div#loginForm.form-signin
-        [:h1.h3.mb-3.font-weight-normal.text-center "Soul Talk"]
-        [:div
-         [:div.well.well-sm "* 为必填"]
-         [c/text-input "Email" :email "enter a email, EX: example@xx.com" reg-data]
-         (when-let [error (first (:email @error))]
-           [:div.alert.alert-danger error])
-         [c/password-input "密码" :password "输入密码最少8位" reg-data]
-         (when-let [error (first (:password @error))]
-           [:div.alert.alert-danger error])
-         [c/password-input "确认密码" :pass-confirm "确认密码和上面一样" reg-data]
-         (when-let [error (first (:pass-confirm @error))]
-           [:div.alert.alert-danger error])
-         (when-let [error (:server-error @error)]
-           [:div.alert.alert-danger error])]
-        [:div
-         [:input.btn.btn-primary.btn-block
-          {:type     :submit
-           :value    "注册"
-           :on-click #(register! reg-data error)}]
-         [:input.btn.btn-primary.btn-block
-          {:type     :submit
-           :value    "登录"
-           :on-click #(set! (.. js/window -location -href) "/login")}]]
-        [:p.mt-5.mb-3.text-muted "&copy @2018"]]])))
+      [c/modal
+       "regModal"
+       "Soul Talk Register"
+       [:div
+        [:div.well.well-sm "* 为必填"]
+        [c/text-input "Email" :email "enter a email, EX: example@xx.com" reg-data]
+        (when-let [error (first (:email @error))]
+          [:div.alert.alert-danger error])
+        [c/password-input "密码" :password "输入密码最少8位" reg-data]
+        (when-let [error (first (:password @error))]
+          [:div.alert.alert-danger error])
+        [c/password-input "确认密码" :pass-confirm "确认密码和上面一样" reg-data]
+        (when-let [error (first (:pass-confirm @error))]
+          [:div.alert.alert-danger error])
+        (when-let [error (:server-error @error)]
+          [:div.alert.alert-danger error])]
+       [:div
+        [:input.btn.btn-primary.btn-block
+         {:type     :submit
+          :value    "注册"
+          :on-click #(register! reg-data error)}]]])))
 
-
-(defn load-page []
-  (reagent/render
-    [register-component]
-    (dom/by-id "app")))
-
-(defn ^:export init []
-  (if (and js/document
-           (.-getElementById js/document))
-    (load-page)))
+(defn reg-button []
+  [:a.nav-link.p-2
+   {:data-toggle "modal"
+    :data-target "#regModal"}
+   "注册"])
