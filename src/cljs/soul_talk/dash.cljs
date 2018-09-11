@@ -1,6 +1,7 @@
 (ns soul-talk.dash
   (:require [reagent.core :as r]
             [domina :as dom]
+            [domina.xpath :as p]
             [soul-talk.components.common :as c]
             [soul-talk.login :as login]
             [soul-talk.register :as reg]
@@ -35,8 +36,7 @@
         [:div.dropdown-menu {:aria-labelledby "usermenu"}
          [:a.dropdown-item {:href "#"} "用户管理"]
          [:a.dropdown-item
-          {:href "#/change-pass"
-           :on-click #(reset! main-fields [user/change-pass-form])}
+          {:href "#/change-pass"}
           "密码修改"]
          [:div.dropdown-divider]
          [:a.dropdown-item {:href "/logout"} "退出"]]]]
@@ -55,11 +55,11 @@
 
 (defn nav-list-component [navs]
   [:ul.nav.flex-column
-   (for [{:keys [name href icons fun] :as nav} navs]
-     ^{:key nav} [:li.nav-item
-                  [:a.nav-link {:href href
-                                :class (:current? nav)
-                                :on-click fun}
+   (for [{:keys [id name href icons] :as nav} navs]
+     ^{:key nav} [:li#sidebarNav.nav-item
+                  [:a.nav-link {:id id
+                                :href href
+                                :class (:current? nav)}
                    [:i {:aria-hidden true
                         :class icons}]
                    " " name
@@ -154,15 +154,15 @@
       [login/login-component]
       [reg/register-component]])])
 
-(reset! navs [{:href  "#/"
-               :name  "Dashboard"
-               :icons "fa fa-home fa-fw"
-               :current? "active"
-               :fun #(reset! main-fields [main-component])}
-              {:href  "#/posts"
+(reset! navs [{:id       "home"
+               :href     "#/"
+               :name     "Dashboard"
+               :icons    "fa fa-home fa-fw"
+               :current? "active"}
+              {:id    "posts"
+               :href  "#/posts"
                :name  "Posts"
-               :icons "fa fa-cog fa-fw"
-               :fun   #(reset! main-fields [post/posts-component])}])
+               :icons "fa fa-cog fa-fw"}])
 
 (reset! table-data [{:title "title1"
                      :time "2018"
@@ -173,15 +173,6 @@
         [main-component])
 
 (def dash-state (r/atom {}))
-
-(defn hook-browser-navigation! []
-  (doto
-    (Html5History.)
-    (events/listen
-      EventType/NAVIGATE
-      (fn [event]
-        (secretary/dispatch! (.-token event))))
-    (.setEnabled true)))
 
 (defn dash-routes []
   (secretary/set-config! :prefix "#")
@@ -198,22 +189,26 @@
     "/posts" []
     (swap! dash-state assoc :page :posts))
 
-  (hook-browser-navigation!))
+  (c/hook-browser-navigation!))
+
+(defn load [id component]
+  (dom/remove-class! (p/xpath "//li[@id='sidebarNav']/a")
+                   "active")
+  (dom/add-class! (dom/by-id id) "active")
+  (reset! main-fields [component])
+  [dash-component])
 
 
 (defmulti current-page #(@dash-state :page))
 
 (defmethod current-page :home []
-  (reset! main-fields [main-component])
-  [dash-component])
+  (load "home" main-component))
 (defmethod current-page :change-pass []
-  (reset! main-fields [user/change-pass-form])
-  [dash-component])
+  (load "" user/change-pass-form))
 (defmethod current-page :posts []
-  (reset! main-fields [post/posts-component])
-  [dash-component])
+  (load "posts" post/posts-component))
 (defmethod current-page :home []
-  [dash-component])
+  (load "home" main-component))
 
 (defn init []
   (dash-routes)

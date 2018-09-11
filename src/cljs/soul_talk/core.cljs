@@ -5,20 +5,10 @@
             [domina :as dom]
             [taoensso.timbre :as log]
             [secretary.core :as secretary]
-            [goog.events :as events]
-            [goog.history.EventType :as EventType])
+            [soul-talk.components.common :as c])
   (:import goog.history.Html5History))
 
 (def app-state (r/atom {}))
-
-(defn hook-browser-navigation! []
-  (doto
-    (Html5History.)
-    (events/listen
-      EventType/NAVIGATE
-      (fn [event]
-        (secretary/dispatch! (.-token event))))
-    (.setEnabled true)))
 
 (defn app-routes []
   (secretary/set-config! :prefix "#")
@@ -28,17 +18,20 @@
     (swap! app-state assoc :page :home))
 
   (secretary/defroute
-    "/dash" []
-    (swap! app-state assoc :page :dash))
+    "/about" []
+    (swap! app-state assoc :page :about))
 
-  (hook-browser-navigation!))
+  (c/hook-browser-navigation!))
 
 
 (defmulti current-page #(@app-state :page))
+
 (defmethod current-page :home []
   [home/home-component])
-(defmethod current-page :dash []
-  [dash/dash-component])
+
+(defmethod current-page :about []
+  [:div->p "这是 about 页面"])
+
 (defmethod current-page :default []
   [home/home-component])
 

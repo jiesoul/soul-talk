@@ -1,6 +1,7 @@
 (ns soul-talk.components.common
-  (:import [goog History])
+  (:import goog.history.Html5History)
   (:require [goog.history.EventType :as EventType]
+            [secretary.core :as secretary]
             [goog.events :as events]))
 
 (defn input [type id placeholder fields]
@@ -41,7 +42,14 @@
      [:div.modal-body body]
      [:div.modal-footer footer]]]])
 
-(defonce h (History.))
+(defn hook-browser-navigation! []
+  (doto
+    (Html5History.)
+    (events/listen
+      EventType/NAVIGATE
+      (fn [event]
+        (secretary/dispatch! (.-token event))))
+    (.setEnabled true)))
 
 ;(defn navigate-to! [routes nav]
 ;  (.setToken h (nav-to-url routes nav)))

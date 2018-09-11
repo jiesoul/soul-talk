@@ -10,7 +10,7 @@
     [:div.blog-header.py-3
      [:div.row.flex-nowrap.justify-content-between.align-items-center
       [:div.col-4.pt-1
-       [:a.text-muted {:href "#"} "订阅"]]
+       [:a.text-muted {:href "#/about"} "About"]]
       [:div.col-4.text-center
        [:a.blog-header-logo.text-dark {:href "/"} "Soul Talk"]]
       [:div.col-4.d-flex.justify-content-end.align-items-center]]]))
