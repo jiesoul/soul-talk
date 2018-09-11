@@ -11,7 +11,8 @@
             [soul-talk.routes.auth :refer [auth-routes]]
             [taoensso.timbre :as log]
             [ring.middleware.session :refer [wrap-session]]
-            [soul-talk.routes.post :refer [post-routes]]))
+            [soul-talk.routes.post :refer [post-routes]]
+            [soul-talk.routes.services :refer [services-routes]]))
 
 (parser/cache-off!)
 
@@ -42,6 +43,7 @@
 
 (def app
   (-> (routes
+        services-routes
         post-routes
         auth-routes
         app-routes)

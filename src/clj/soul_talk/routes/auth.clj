@@ -20,6 +20,7 @@
             (-> user
                 (dissoc :pass-confirm)
                 (update :password hashers/encrypt)))
+          (log/info "注册成功")
           (-> {:result :ok}
               (resp/ok))))
       (catch Exception e

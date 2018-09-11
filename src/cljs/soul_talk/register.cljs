@@ -35,7 +35,7 @@
        "Soul Talk Register"
        [:div
         [:div.well.well-sm "* 为必填"]
-        [c/text-input "Email" :email "enter a email, EX: example@xx.com" reg-data]
+        [c/text-input "Email" :email "enter a email" reg-data]
         (when-let [error (first (:email @error))]
           [:div.alert.alert-danger error])
         [c/password-input "密码" :password "输入密码最少8位" reg-data]
