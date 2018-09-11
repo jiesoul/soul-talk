@@ -27,6 +27,7 @@
                  [cljsjs/chartjs "2.7.0-0"]
                  [domina "1.0.3"]
                  [reagent "0.8.1"]
+                 [secretary "1.2.3"]
                  [reagent-utils "0.3.1"]
                  [cljs-ajax "0.7.4"]]
   :main ^:skip-aot soul-talk.core

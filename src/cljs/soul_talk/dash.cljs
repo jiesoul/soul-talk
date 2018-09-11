@@ -7,14 +7,18 @@
             [cljsjs.chartjs]
             [reagent.session :as session]
             [soul-talk.post :as post]
-            [soul-talk.user :as user]))
+            [soul-talk.user :as user]
+            [secretary.core :as secretary]
+            [goog.events :as events]
+            [goog.history.EventType :as EventType])
+  (:import goog.history.Html5History))
 
 (defonce navs (r/atom []))
 (defonce navs- (r/atom []))
 (defonce main-fields (r/atom nil))
 (defonce table-data (r/atom []))
 
-(defn user-menu [main-fields]
+(defn user-menu []
   (fn []
     (if (not= js/identity "")
       [:ul.nav.navbar-nav
@@ -31,7 +35,7 @@
         [:div.dropdown-menu {:aria-labelledby "usermenu"}
          [:a.dropdown-item {:href "#"} "用户管理"]
          [:a.dropdown-item
-          {:href "#change-pass"
+          {:href "#/change-pass"
            :on-click #(reset! main-fields [user/change-pass-form])}
           "密码修改"]
          [:div.dropdown-divider]
@@ -150,16 +154,15 @@
       [login/login-component]
       [reg/register-component]])])
 
-(reset! navs [{:href  "#board"
+(reset! navs [{:href  "#/"
                :name  "Dashboard"
                :icons "fa fa-home fa-fw"
                :current? "active"
                :fun #(reset! main-fields [main-component])}
-              {:href  "#posts"
+              {:href  "#/posts"
                :name  "Posts"
                :icons "fa fa-cog fa-fw"
-               :fun   #(do
-                         (reset! main-fields [post/posts-component]))}])
+               :fun   #(reset! main-fields [post/posts-component])}])
 
 (reset! table-data [{:title "title1"
                      :time "2018"
@@ -169,9 +172,50 @@
 (reset! main-fields
         [main-component])
 
-(defn ^:export init []
-  (if (and js/document
-           (.-getElementById js/document))
-    (do
-      (r/render dash-component
-                (dom/by-id "app")))))
+(def dash-state (r/atom {}))
+
+(defn hook-browser-navigation! []
+  (doto
+    (Html5History.)
+    (events/listen
+      EventType/NAVIGATE
+      (fn [event]
+        (secretary/dispatch! (.-token event))))
+    (.setEnabled true)))
+
+(defn dash-routes []
+  (secretary/set-config! :prefix "#")
+
+  (secretary/defroute
+    "/" []
+    (swap! dash-state assoc :page :home))
+
+  (secretary/defroute
+    "/change-pass" []
+    (swap! dash-state assoc :page :change-pass))
+
+  (secretary/defroute
+    "/posts" []
+    (swap! dash-state assoc :page :posts))
+
+  (hook-browser-navigation!))
+
+
+(defmulti current-page #(@dash-state :page))
+
+(defmethod current-page :home []
+  (reset! main-fields [main-component])
+  [dash-component])
+(defmethod current-page :change-pass []
+  (reset! main-fields [user/change-pass-form])
+  [dash-component])
+(defmethod current-page :posts []
+  (reset! main-fields [post/posts-component])
+  [dash-component])
+(defmethod current-page :home []
+  [dash-component])
+
+(defn init []
+  (dash-routes)
+  (r/render [current-page]
+            (dom/by-id "app")))

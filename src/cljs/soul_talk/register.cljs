@@ -23,7 +23,8 @@
                                   (set! (.. js/window -location -href) "/dash"))
                 :error-handler #(reset!
                                   errors
-                                  {:server-error (get-in % [:response "message"])})})))
+                                  {:server-error (get-in % [:response :message])})
+                :response-format :json, keyword? true})))
 
 (defn register-component []
   (let [reg-data (atom {})

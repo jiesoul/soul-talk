@@ -11,7 +11,7 @@
     [:table.table.table-striped
      [:thead
       [:tr
-       [:th "序号"]
+       [:th "#"]
        [:th "title"]
        [:th "create_time"]
        [:th "modify_time"]
@@ -33,7 +33,7 @@
 (defn posts-component []
   (fn []
     [:div.container-fluid
-     [:h3 "Post List"]
+     [:h3 "Post List  ffff"]
      [:hr]
      [posts-list @posts-data]]))
 

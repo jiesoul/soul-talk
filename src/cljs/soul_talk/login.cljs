@@ -16,8 +16,11 @@
                {:format        :json
                 :headers       {"Accept" "application/transit+json"}
                 :params        @login-data
-                :handler       #(set! (.. js/window -location -href) "/dash")
-                :error-handler #(reset! errors {:server-error (get-in % [:response "message"])})})))
+                :handler       #(do
+                                  (reset! login-data {})
+                                  (set! (.. js/window -location -href) "/dash"))
+                :error-handler #(reset! errors {:server-error (get-in % [:response :message])})
+                :response-format :json, :keywords? true})))
 
 (defn login-component []
   (let [login-data (r/atom {})

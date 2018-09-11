@@ -13,12 +13,14 @@
     (ajax/POST
       "/change-pass"
       {:format       :json
+
        :headers      {"Accept" "application/transit+json"}
        :params       @pass-data
        :handler      #(js/alert "保存成功")
        :error-handler #(do
                         (log/error %)
-                        (reset! errors {:server-error (get-in % [:response "message"])}))})))
+                        (reset! errors {:server-error (get-in % [:response :message])}))
+       :response-format :json, keyword? true})))
 
 (defn change-pass-form []
   (let [pass-data (r/atom {:email js/identity})
@@ -28,7 +30,7 @@
        [:div.form-signin
         [:h1.h3.mb-3.font-weight-normal.text-center "修改密码"]
         [:div
-         [:div.well.well-sm "* 为必填"]
+         [:div.well.well-sm "* 为必填项"]
          [c/password-input "旧密码" :pass-old "输入密码最少8位" pass-data]
          (when-let [error (first (:pass-old @errors))]
            [:div.alert.alert-danger error])
