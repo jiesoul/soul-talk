@@ -13,18 +13,19 @@
   (reset! errors (reg-errors @reg-date))
   (when-not @errors
     (ajax/POST "/register"
-               {:format        :json
-                :headers       {"Accept" "application/transit+json"}
-                :params        @reg-date
-                :handler       #(do
-                                  (session/put! :identity (:email @reg-date))
-                                  (reset! reg-date {})
-                                  (js/alert "注册成功")
-                                  (set! (.. js/window -location -href) "/dash"))
-                :error-handler #(reset!
-                                  errors
-                                  {:server-error (get-in % [:response :message])})
-                :response-format :json, keyword? true})))
+               {:format          :json
+                :headers         {"Accept" "application/transit+json"}
+                :params          @reg-date
+                :handler         #(do
+                                    (session/put! :identity (:email @reg-date))
+                                    (reset! reg-date {})
+                                    (js/alert "注册成功")
+                                    (set! (.. js/window -location -href) "/dash"))
+                :error-handler   #(do
+                                    (log/error %)
+                                    (reset!
+                                        errors
+                                        {:server-error (get-in % [:response :message])}))})))
 
 (defn register-component []
   (let [reg-data (atom {})

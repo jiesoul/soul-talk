@@ -1,7 +1,7 @@
 (ns soul-talk.user
   (:require [soul-talk.components.common :as c]
             [reagent.core :as r]
-            [soul-talk.auth-validate :refer [change-pass-errors login-errors reg-errors]]
+            [soul-talk.auth-validate :refer [change-pass-errors]]
             [ajax.core :as ajax]
             [taoensso.timbre :as log]
             [reagent.session :as session]
@@ -11,7 +11,7 @@
   (reset! errors (change-pass-errors @pass-data))
   (when-not @errors
     (ajax/POST
-      "/change-pass"
+      "/api/change-pass"
       {:format       :json
 
        :headers      {"Accept" "application/transit+json"}
@@ -19,8 +19,7 @@
        :handler      #(js/alert "保存成功")
        :error-handler #(do
                         (log/error %)
-                        (reset! errors {:server-error (get-in % [:response :message])}))
-       :response-format :json, keyword? true})))
+                        (reset! errors {:server-error (get-in % [:response :message])}))})))
 
 (defn change-pass-form []
   (let [pass-data (r/atom {:email js/identity})

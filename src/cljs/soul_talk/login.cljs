@@ -19,8 +19,17 @@
                 :handler       #(do
                                   (reset! login-data {})
                                   (set! (.. js/window -location -href) "/dash"))
-                :error-handler #(reset! errors {:server-error (get-in % [:response :message])})
-                :response-format :json, :keywords? true})))
+                :error-handler #(reset! errors {:server-error (get-in % [:response :message])})})))
+
+(defn logout! []
+  (ajax/GET
+    "/api/logout"
+    {:format        :json
+     :headers       {"Accept" "application/transit+json"}
+     :handler       #(do
+                       (log/info "log out success!!")
+                       (set! (.. js/window -location -href) "/dash"))
+     :error-handler #(log/error %)}))
 
 (defn login-component []
   (let [login-data (r/atom {})
@@ -49,6 +58,12 @@
    {:data-toggle "modal"
     :data-target "#loginModal"}
    "登录"])
+
+(defn logout-button []
+  [:a.dropdown-item.btn
+   {:on-click #(logout!)}
+   "退出"])
+
 
 
 

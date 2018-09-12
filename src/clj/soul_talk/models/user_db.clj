@@ -1,9 +1,11 @@
 (ns soul-talk.models.user-db
   (:require [clojure.java.jdbc :as sql]
-            [soul-talk.models.db :refer [db-spec]]))
+            [soul-talk.models.db :refer [db-spec]]
+            [taoensso.timbre :as log]))
 
 
 (defn save-user! [user]
+  (log/info "user-db:" user)
   (sql/insert! db-spec :users user))
 
 (defn select-user [id]

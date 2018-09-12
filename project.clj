@@ -67,5 +67,6 @@
   :figwheel
   {:css-dirs ["resources/public/css"]}
   :profiles {:dev {:source-paths ["env/dev/clj"]
-                   :dependencies [[ring/ring-devel "1.6.3"]]}}
+                   :dependencies [[ring/ring-devel "1.6.3"]
+                                  [org.clojure/test.check "0.9.0"]]}}
   )

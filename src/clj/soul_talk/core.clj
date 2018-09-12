@@ -1,31 +1,26 @@
 (ns soul-talk.core
   (:require [ring.adapter.jetty :as jetty]
-            [ring.middleware.reload :refer [wrap-reload]]
             [compojure.core :refer [routes GET defroutes POST]]
-            [ring.middleware.defaults :refer :all]
-            [ring.middleware.webjars :refer [wrap-webjars]]
             [compojure.route :as route]
             [selmer.parser :as parser]
-            [ring.util.response :refer [redirect]]
-            [ring.middleware.format :as wrap-format]
-            [soul-talk.routes.auth :refer [auth-routes]]
-            [taoensso.timbre :as log]
-            [ring.middleware.session :refer [wrap-session]]
             [soul-talk.routes.post :refer [post-routes]]
-            [soul-talk.routes.services :refer [services-routes]]))
+            [soul-talk.routes.services :refer [services-routes]]
+            [soul-talk.middleware :refer [wrap-base]]
+            [taoensso.timbre :as log]
+            [ring.util.http-response :as resp]))
 
 (parser/cache-off!)
 
 (defn home-handle [request]
   (parser/render-file "index.html" request))
 
+(defn dash-page [req]
+  (parser/render-file "dash.html" req))
+
 (defn error-page [error-details]
   {:status (:status error-details)
    :headers {"Content-Type" "text/html; charset=utf-8"}
    :body (parser/render-file "error.html" error-details)})
-
-(defn dash-page [req]
-  (parser/render-file "dash.html" req))
 
 (def app-routes
   (routes
@@ -33,26 +28,15 @@
     (GET "/dash" req (dash-page req))
     (GET "/about" [] (str "这是关于我的页面"))
     (route/resources "/")
-    (route/not-found error-page)))
-
-(defn wrap-nocache [handler]
-  (fn [request]
-    (-> request
-        handler
-        (assoc-in [:headers "Pragma"] "no-cache"))))
+    (resp/not-found {:result :error
+                     :message "page not found"})))
 
 (def app
   (-> (routes
-        services-routes
         post-routes
-        auth-routes
+        services-routes
         app-routes)
-      (wrap-nocache)
-      (wrap-reload)
-      (wrap-webjars)
-      (wrap-format/wrap-restful-format :formats [:json-kw])
-      (wrap-session)
-      (wrap-defaults (assoc-in api-defaults [:security :anti-forgery] false))))
+      (wrap-base)))
 
 (defn -main []
   (jetty/run-jetty
