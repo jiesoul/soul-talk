@@ -1,6 +1,9 @@
 (ns soul-talk.core
   (:require [soul-talk.pages.dash :as dash]
             [reagent.core :as r]
+            [soul-talk.ajax :refer [load-interceptors!]]
+            [soul-talk.routes :refer [hook-browser-navigation!]]
+            [soul-talk.views :refer [main-page]]
             [soul-talk.pages.home :as home]
             [domina :as dom]
             [taoensso.timbre :as log]
@@ -45,3 +48,12 @@
 
 (defn ^:export dash []
   (dash/init))
+
+(defn mount-component []
+  (r/render [#'main-page]
+            (dom/by-id "app")))
+
+(defn init! []
+  (load-interceptors!)
+  (hook-browser-navigation!)
+  (mount-component))

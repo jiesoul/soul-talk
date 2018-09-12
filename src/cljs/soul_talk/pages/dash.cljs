@@ -187,3 +187,6 @@
   (dash-routes)
   (r/render [current-page]
             (dom/by-id "app")))
+
+(defn dash-page []
+  [dash-component])

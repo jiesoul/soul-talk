@@ -111,3 +111,6 @@
                    :time "March 2018"}
                   {:href "#"
                    :time "May 2018"}])
+
+(defn home-page []
+  [home-component])

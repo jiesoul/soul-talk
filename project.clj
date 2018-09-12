@@ -31,6 +31,8 @@
                  [domina "1.0.3"]
                  [reagent "0.8.1"]
                  [secretary "1.2.3"]
+                 [re-frame "0.10.6"]
+                 [venantius/accountant "0.2.4"]
                  [reagent-utils "0.3.1"]
                  [cljs-ajax "0.7.4"]]
   :main ^:skip-aot soul-talk.core
