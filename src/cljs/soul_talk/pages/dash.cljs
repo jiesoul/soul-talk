@@ -1,18 +1,18 @@
-(ns soul-talk.dash
+(ns soul-talk.pages.dash
   (:require [reagent.core :as r]
             [domina :as dom]
             [domina.xpath :as p]
-            [soul-talk.components.common :as c]
-            [soul-talk.login :as login]
-            [soul-talk.register :as reg]
+            [soul-talk.pages.common :as c]
+            [soul-talk.pages.login :as login]
+            [soul-talk.pages.register :as reg]
             [cljsjs.chartjs]
             [reagent.session :as session]
-            [soul-talk.post :as post]
-            [soul-talk.user :as user]
+            [soul-talk.pages.post :as post]
+            [soul-talk.pages.user :as user]
             [secretary.core :as secretary]
             [goog.events :as events]
             [goog.history.EventType :as EventType]
-            [soul-talk.components.ajax :refer [load-interceptors!]])
+            [soul-talk.ajax :refer [load-interceptors!]])
   (:import goog.history.Html5History))
 
 (defonce navs (r/atom []))

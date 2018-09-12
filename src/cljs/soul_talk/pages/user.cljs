@@ -1,5 +1,5 @@
-(ns soul-talk.user
-  (:require [soul-talk.components.common :as c]
+(ns soul-talk.pages.user
+  (:require [soul-talk.pages.common :as c]
             [reagent.core :as r]
             [soul-talk.auth-validate :refer [change-pass-errors]]
             [ajax.core :as ajax]

@@ -1,4 +1,4 @@
-(ns soul-talk.components.ajax
+(ns soul-talk.ajax
   (:require [ajax.core :as ajax]
             [taoensso.timbre :as log]))
 

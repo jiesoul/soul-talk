@@ -1,11 +1,11 @@
-(ns soul-talk.register
+(ns soul-talk.pages.register
   (:require [domina :as dom]
             [reagent.core :as reagent :refer [atom]]
             [soul-talk.auth-validate :refer [reg-errors]]
             [ajax.core :as ajax]
             [reagent.session :as session]
             [taoensso.timbre :as log]
-            [soul-talk.components.common :as c])
+            [soul-talk.pages.common :as c])
   (:import goog.History))
 
 

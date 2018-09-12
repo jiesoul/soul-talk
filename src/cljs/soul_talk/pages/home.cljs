@@ -1,4 +1,4 @@
-(ns soul-talk.home
+(ns soul-talk.pages.home
   (:require [reagent.core :as r]))
 
 (defonce posts (r/atom []))

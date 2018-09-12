@@ -1,11 +1,11 @@
 (ns soul-talk.core
-  (:require [soul-talk.dash :as dash]
+  (:require [soul-talk.pages.dash :as dash]
             [reagent.core :as r]
-            [soul-talk.home :as home]
+            [soul-talk.pages.home :as home]
             [domina :as dom]
             [taoensso.timbre :as log]
             [secretary.core :as secretary]
-            [soul-talk.components.common :as c])
+            [soul-talk.pages.common :as c])
   (:import goog.history.Html5History))
 
 (def app-state (r/atom {}))

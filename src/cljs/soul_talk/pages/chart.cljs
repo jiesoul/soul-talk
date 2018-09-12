@@ -1,4 +1,4 @@
-(ns soul-talk.chart
+(ns soul-talk.pages.chart
   (:require [domina :as dom]
             [reagent.core :as r]))
 

@@ -1,4 +1,4 @@
-(ns soul-talk.post
+(ns soul-talk.pages.post
   (:require [reagent.core :as r]
             [ajax.core :as ajax :refer [GET POST]]
             [taoensso.timbre :as log])

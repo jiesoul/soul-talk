@@ -1,12 +1,12 @@
-(ns soul-talk.login
+(ns soul-talk.pages.login
   (:require [domina :as dom]
             [reagent.core :as reagent :refer [atom]]
             [ajax.core :as ajax]
             [soul-talk.auth-validate :refer [login-errors]]
             [taoensso.timbre :as log]
-            [soul-talk.components.common :as c]
+            [soul-talk.pages.common :as c]
             [reagent.session :as session]
-            [soul-talk.components.ajax :refer [load-interceptors!]]
+            [soul-talk.ajax :refer [load-interceptors!]]
             [reagent.core :as r]))
 
 

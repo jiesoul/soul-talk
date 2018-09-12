@@ -1,4 +1,4 @@
-(ns soul-talk.components.common
+(ns soul-talk.pages.common
   (:import goog.history.Html5History)
   (:require [goog.history.EventType :as EventType]
             [secretary.core :as secretary]
@@ -41,15 +41,6 @@
        [:i.fa.fa-times {:aria-hidden "true"}]]]
      [:div.modal-body body]
      [:div.modal-footer footer]]]])
-
-(defn hook-browser-navigation! []
-  (doto
-    (Html5History.)
-    (events/listen
-      EventType/NAVIGATE
-      (fn [event]
-        (secretary/dispatch! (.-token event))))
-    (.setEnabled true)))
 
 ;(defn navigate-to! [routes nav]
 ;  (.setToken h (nav-to-url routes nav)))
