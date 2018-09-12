@@ -9,6 +9,7 @@
 {% endblock %}
 {% block page-script %}
 <script type="text/javascript">
+    var csrfToken = "{{csrf-token}}";
     var identity = "{{ session.identity }}";
     soul_talk.core.dash();
 </script>

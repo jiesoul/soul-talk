@@ -18,4 +18,4 @@
       (wrap-webjars)
       (wrap-restful-format :formats [:json-kw])
       (wrap-session)
-      (wrap-defaults (assoc-in api-defaults [:security :anti-forgery] false))))
+      (wrap-defaults (assoc-in api-defaults [:security :anti-forgery] true))))

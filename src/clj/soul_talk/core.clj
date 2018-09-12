@@ -7,20 +7,21 @@
             [soul-talk.routes.services :refer [services-routes]]
             [soul-talk.middleware :refer [wrap-base]]
             [taoensso.timbre :as log]
-            [ring.util.http-response :as resp]))
+            [ring.util.http-response :as resp]
+            [soul-talk.layout :as layout]))
 
 (parser/cache-off!)
 
 (defn home-handle [request]
-  (parser/render-file "index.html" request))
+  (layout/render "index.html" request))
 
 (defn dash-page [req]
-  (parser/render-file "dash.html" req))
+  (layout/render "dash.html" req))
 
 (defn error-page [error-details]
   {:status (:status error-details)
    :headers {"Content-Type" "text/html; charset=utf-8"}
-   :body (parser/render-file "error.html" error-details)})
+   :body (layout/render "error.html" error-details)})
 
 (def app-routes
   (routes

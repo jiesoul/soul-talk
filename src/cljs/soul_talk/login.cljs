@@ -19,17 +19,21 @@
                 :handler       #(do
                                   (reset! login-data {})
                                   (set! (.. js/window -location -href) "/dash"))
-                :error-handler #(reset! errors {:server-error (get-in % [:response :message])})})))
+                :error-handler #(do
+                                  (log/error %)
+                                  (if-let [msg (get-in % [:response :message])]
+                                    (reset! errors {:server-error msg})
+                                    (reset! errors {:server-error (get % :response)})))}))
 
-(defn logout! []
-  (ajax/GET
-    "/api/logout"
-    {:format        :json
-     :headers       {"Accept" "application/transit+json"}
-     :handler       #(do
-                       (log/info "log out success!!")
-                       (set! (.. js/window -location -href) "/dash"))
-     :error-handler #(log/error %)}))
+  (defn logout! []
+    (ajax/GET
+      "/api/logout"
+      {:format        :json
+       :headers       {"Accept" "application/transit+json"}
+       :handler       #(do
+                         (log/info "log out success!!")
+                         (set! (.. js/window -location -href) "/dash"))
+       :error-handler #(log/error %)})))
 
 (defn login-component []
   (let [login-data (r/atom {})
