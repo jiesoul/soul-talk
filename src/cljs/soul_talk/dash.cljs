@@ -11,7 +11,8 @@
             [soul-talk.user :as user]
             [secretary.core :as secretary]
             [goog.events :as events]
-            [goog.history.EventType :as EventType])
+            [goog.history.EventType :as EventType]
+            [soul-talk.components.ajax :refer [load-interceptors!]])
   (:import goog.history.Html5History))
 
 (defonce navs (r/atom []))
@@ -182,6 +183,7 @@
   (load "home" main-component))
 
 (defn init []
+  (load-interceptors!)
   (dash-routes)
   (r/render [current-page]
             (dom/by-id "app")))

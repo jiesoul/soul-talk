@@ -16,7 +16,7 @@
                  [com.taoensso/timbre "4.10.0"]
                  [metosin/ring-http-response "0.9.0"]
                  [ring/ring-defaults "0.3.2"]
-                 [ring-middleware-format "0.7.2"]
+                 [metosin/muuntaja "0.6.0"]
                  [bouncer "1.0.1"]
                  [buddy "2.0.0"]
                  [clojure.java-time "0.3.2"]

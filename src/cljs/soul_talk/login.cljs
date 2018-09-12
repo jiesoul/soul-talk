@@ -6,6 +6,7 @@
             [taoensso.timbre :as log]
             [soul-talk.components.common :as c]
             [reagent.session :as session]
+            [soul-talk.components.ajax :refer [load-interceptors!]]
             [reagent.core :as r]))
 
 
@@ -20,20 +21,20 @@
                                   (reset! login-data {})
                                   (set! (.. js/window -location -href) "/dash"))
                 :error-handler #(do
-                                  (log/error %)
+                                  (log/error (get % :response))
                                   (if-let [msg (get-in % [:response :message])]
                                     (reset! errors {:server-error msg})
-                                    (reset! errors {:server-error (get % :response)})))}))
+                                    (reset! errors {:server-error (get % :response)})))})))
 
-  (defn logout! []
-    (ajax/GET
-      "/api/logout"
-      {:format        :json
-       :headers       {"Accept" "application/transit+json"}
-       :handler       #(do
-                         (log/info "log out success!!")
-                         (set! (.. js/window -location -href) "/dash"))
-       :error-handler #(log/error %)})))
+(defn logout! []
+  (ajax/GET
+    "/api/logout"
+    {:format        :json
+     :headers       {"Accept" "application/transit+json"}
+     :handler       #(do
+                       (log/info "log out success!!")
+                       (set! (.. js/window -location -href) "/dash"))
+     :error-handler #(log/error %)}))
 
 (defn login-component []
   (let [login-data (r/atom {})

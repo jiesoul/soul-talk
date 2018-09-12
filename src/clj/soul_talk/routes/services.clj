@@ -3,14 +3,29 @@
             [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
             [clojure.spec.alpha :as s]
-            [spec-tools.core :as spec]))
+            [spec-tools.core :as spec]
+            [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+            [buddy.auth :refer [authenticated?]]
+            [buddy.auth.accessrules :refer [restrict]]))
+
+
+(defn admin?
+  [request]
+  (:admin (:identity request)))
+
+(defn access-error [__]
+  (unauthorized {:error "unauthorized"}))
+
+(defn wrap-restricted [handler rule]
+  (restrict handler {:handler rule
+                     :on-error access-error}))
 
 (s/def ::result keyword?)
 (s/def ::message string?)
 (s/def ::Result (s/keys :req-un [::result]
                         :opt-un [::message]))
 
-(def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
+(def email-regex #"^[^@]+@[^@\\.]+[\\.].+")
 (s/def ::email-type (s/and string? #(re-matches email-regex %)))
 (s/def ::password string?)
 (s/def ::pass-confirm string?)
@@ -25,7 +40,8 @@
 
 (def services-routes
   (api
-    {:swagger
+    {:coercion :spec
+     :swagger
               {:ui   "/api-docs"
                :spec "/swagger.json"
                :data {:info     {:title       "Soul Talk API"
@@ -33,14 +49,12 @@
                       :tags     [{:name "api" :description "apis"}]}}}
 
     (POST "/register" req
-      :coercion :spec
       :return ::Result
       :body [user ::userReg]
       :summary "register a new user"
       (auth/register! req user))
 
     (POST "/login" req
-      :coercion :spec
       :return ::Result
       :body [user ::userLogin]
       :summary "User Login"
@@ -48,7 +62,8 @@
 
     (context "/api" []
       :tags ["api"]
-      :coercion :spec
+      :middleware [wrap-anti-forgery]
+      ;:header-params {:x-csrf-token string?}
 
       (GET "/logout" []
         :return ::Result
