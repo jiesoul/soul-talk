@@ -19,6 +19,7 @@
                 :params        @login-data
                 :handler       #(do
                                   (reset! login-data {})
+
                                   (set! (.. js/window -location -href) "/dash"))
                 :error-handler #(do
                                   (log/error (get % :response))

@@ -25,8 +25,8 @@
     var context = "{{servlet-context}}";
     var csrfToken = "{{csrf-token}}";
     var user = {{user|json|safe}};
+    var identity = "{{session.identity}}";
     // var ldap = {{ldap}};
-    soul_talk.core.init();
 </script>
 
 </body>

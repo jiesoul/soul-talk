@@ -1,5 +1,4 @@
 (ns soul-talk.db)
 
 (def default-db
-  {:time (js/Date.)
-   :time-color "#f88"})
+  {:user (js->clj js/user :keywordize-keys true)})

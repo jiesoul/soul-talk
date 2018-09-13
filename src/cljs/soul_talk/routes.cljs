@@ -3,39 +3,35 @@
             [goog.history.EventType :as HistoryEventType]
             [secretary.core :as secretary]
             [accountant.core :as accountant]
-            [re-frame.core :as rf])
+            [re-frame.core :refer [dispatch dispatch-sync subscribe]]
+            [taoensso.timbre :as log])
   (:import goog.history.Html5History))
 
-(defn dispatch-timer-event
-  []
-  (let [now (js/Date.)]
-    (rf/dispatch [:timer now])))  ;; <-- dispatch used
-
-;; Call the dispatching function every second.
-;; `defonce` is like `def` but it ensures only one instance is ever
-;; created in the face of figwheel hot-reloading of this file.
-(defonce do-timer (js/setInterval dispatch-timer-event 1000))
-
-
-(defn href
-  [url]
-  {:href (str js/context url)})
-
-(defn navigate!
-  [url]
-  (accountant/navigate! url))
-
+;; 加载多个事件
 (defn run-events
   [events]
   (doseq [event events]
-    (rf/dispatch event)))
+    (dispatch event)))
+
+;; home 的默认加载
+(defn home-page-events [& events]
+  (.scrollTo js/window 0 0)
+  (run-events (into
+                [[:set-active-page :home]]
+                events)))
 
 ;;------------
-;; routes
-(secretary/defroute "/" []
-  (run-events [:home]))
+;; 路由
+(secretary/defroute
+  "/" []
+  (log/info "load home")
+  (home-page-events))
 
-;; History
+(secretary/defroute
+  "/dash" []
+  (run-events [[:set-active-page :dash]]))
+
+;; 使用浏览器可以使用前进后退 历史操作
 (defn hook-browser-navigation! []
   (doto
     (Html5History.)
