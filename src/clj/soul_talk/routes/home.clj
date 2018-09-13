@@ -5,6 +5,8 @@
 (defn home-page []
   (layout/render "home.html"))
 
+(defn dash-page []
+  (layout/render "dash.html"))
 
 (defroutes
   home-routes

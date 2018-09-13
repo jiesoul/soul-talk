@@ -140,53 +140,5 @@
 (reset! main-fields
         [main-component])
 
-(def dash-state (r/atom {}))
-
-(defn dash-routes []
-  (secretary/set-config! :prefix "#")
-
-  (secretary/defroute
-    "/" []
-    (swap! dash-state assoc :page :home))
-
-  (secretary/defroute
-    "/change-pass" []
-    (swap! dash-state assoc :page :change-pass))
-
-  (secretary/defroute
-    "/posts" []
-    (swap! dash-state assoc :page :posts))
-
-  (c/hook-browser-navigation!))
-
-(defn load [id component]
-  (dom/remove-class!
-    (p/xpath "//li[@id='sidebarNav']/a")
-    "active")
-  (dom/add-class! (dom/by-id id) "active")
-  (reset! main-fields [component])
-  [dash-component])
-
-
-(defmulti current-page #(@dash-state :page))
-
-(defmethod current-page :home []
-  (load "home" main-component))
-
-(defmethod current-page :change-pass []
-  (load "" user/change-pass-form))
-
-(defmethod current-page :posts []
-  (load "posts" post/posts-component))
-
-(defmethod current-page :default []
-  (load "home" main-component))
-
-(defn init []
-  (load-interceptors!)
-  (dash-routes)
-  (r/render [current-page]
-            (dom/by-id "app")))
-
 (defn dash-page []
   [dash-component])

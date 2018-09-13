@@ -1,59 +1,23 @@
 (ns soul-talk.core
-  (:require [soul-talk.pages.dash :as dash]
-            [reagent.core :as r]
+  (:require [reagent.core :as r]
             [soul-talk.ajax :refer [load-interceptors!]]
             [soul-talk.routes :refer [hook-browser-navigation!]]
-            [soul-talk.views :refer [main-page]]
-            [soul-talk.pages.home :as home]
+            [soul-talk.views :refer [main-page ui]]
             [domina :as dom]
-            [taoensso.timbre :as log]
-            [secretary.core :as secretary]
-            [soul-talk.pages.common :as c])
+            [re-frame.core :as rf]
+    ;;初始化处理器和订阅器
+            soul-talk.effects
+            soul-talk.handlers
+            soul-talk.subs)
   (:import goog.history.Html5History))
 
-(def app-state (r/atom {}))
-
-(defn app-routes []
-  (secretary/set-config! :prefix "#")
-
-  (secretary/defroute
-    "/" []
-    (swap! app-state assoc :page :home))
-
-  (secretary/defroute
-    "/about" []
-    (swap! app-state assoc :page :about))
-
-  (c/hook-browser-navigation!))
-
-
-(defmulti current-page #(@app-state :page))
-
-(defmethod current-page :home []
-  [home/home-component])
-
-(defmethod current-page :about []
-  [:div->p "这是 about 页面"])
-
-(defmethod current-page :default []
-  [home/home-component])
-
-(defn ^:export init []
-  (if (and js/document
-           (.-getElementById js/document))
-    (do
-      (app-routes)
-      (r/render [current-page]
-                (dom/by-id "app")))))
-
-(defn ^:export dash []
-  (dash/init))
-
 (defn mount-component []
+  (rf/dispatch-sync [:initialize])
   (r/render [#'main-page]
             (dom/by-id "app")))
 
-(defn init! []
+(defn ^:export init []
+  (rf/dispatch-sync [:initialize-db])
   (load-interceptors!)
   (hook-browser-navigation!)
   (mount-component))

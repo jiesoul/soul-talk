@@ -20,13 +20,14 @@
 {% script "/assets/font-awesome/js/all.js" %}
 {% script "/assets/popper.js/umd/popper.min.js" %}
 {% script "/assets/bootstrap/js/bootstrap.min.js" %}
+<script src="/js/main.js?{{timestamp}}" type="text/javascript"></script>
 <script type="text/javascript">
     var context = "{{servlet-context}}";
     var csrfToken = "{{csrf-token}}";
     var user = {{user|json|safe}};
     // var ldap = {{ldap}};
+    soul_talk.core.init();
 </script>
 
-<script src="/js/main.js?{{timestamp}}" type="text/javascript"></script>
 </body>
 </html>
