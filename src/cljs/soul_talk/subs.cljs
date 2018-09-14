@@ -13,3 +13,11 @@
 
 ;; 当前页配置
 (reg-sub :active-page query)
+
+(reg-sub :user query)
+
+(reg-sub :loading? query)
+
+(reg-sub :login-events query)
+
+(reg-sub :error query)

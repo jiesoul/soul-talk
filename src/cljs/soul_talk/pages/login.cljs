@@ -13,7 +13,7 @@
 (defn login! [login-data errors]
   (reset! errors (login-errors @login-data))
   (when-not @errors
-    (ajax/POST "/login"
+    (ajax/POST "/api/login"
                {:format        :json
                 :headers       {"Accept" "application/transit+json"}
                 :params        @login-data
@@ -34,7 +34,7 @@
      :headers       {"Accept" "application/transit+json"}
      :handler       #(do
                        (log/info "log out success!!")
-                       (set! (.. js/window -location -href) "/dash"))
+                       (set! (.. js/window -location -href) "/admin"))
      :error-handler #(log/error %)}))
 
 (defn login-component []

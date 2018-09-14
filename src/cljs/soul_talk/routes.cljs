@@ -19,17 +19,35 @@
   (run-events (into
                 [[:set-active-page :home]]
                 events)))
+;; 判断是否登录
+(defn logged-in? []
+  @(subscribe [:user]))
+
+;;admin 默认加载 这里需要判断登录
+;(defn admin-page-events [& events]
+;  (.scrollTo js/window 0 0)
+;  (if (logged-in?)
+;    (run-events (into
+;                  [[:set-active-page :admin]]
+;                  events))
+;    (dispatch [:add-login-event events])))
 
 ;;------------
-;; 路由
+;; 首页
 (secretary/defroute
   "/" []
   (log/info "load home")
   (home-page-events))
 
+;; 后台管理
 (secretary/defroute
-  "/dash" []
-  (run-events [[:set-active-page :dash]]))
+  "/admin" []
+  (log/info "load admin")
+  (run-events [[:set-active-page :admin]]))
+
+(secretary/defroute
+  "/register" []
+  (run-events [[:set-active-page :register]]))
 
 ;; 使用浏览器可以使用前进后退 历史操作
 (defn hook-browser-navigation! []

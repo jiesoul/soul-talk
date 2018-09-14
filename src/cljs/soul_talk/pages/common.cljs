@@ -1,8 +1,6 @@
 (ns soul-talk.pages.common
   (:import goog.history.Html5History)
-  (:require [goog.history.EventType :as EventType]
-            [secretary.core :as secretary]
-            [goog.events :as events]))
+  )
 
 (defn input [type id placeholder fields]
   "标准 input， 其中的 on-change 实现了值的绑定"
@@ -29,7 +27,7 @@
 
 
 (defn modal [id header body footer]
-  [:div.modal.fade {:id id}
+  [:div {:id id}
    [:div.modal-dialog {:role "document"}
     [:div.modal-content
      [:div.modal-header
@@ -41,21 +39,3 @@
        [:i.fa.fa-times {:aria-hidden "true"}]]]
      [:div.modal-body body]
      [:div.modal-footer footer]]]])
-
-;(defn navigate-to! [routes nav]
-;  (.setToken h (nav-to-url routes nav)))
-;
-;(defn hook-browser-navigation!
-;  [routes]
-;  (doto h
-;    (events/listen
-;      EventType/NAVIGATE
-;      (fn [event]
-;        (let [path (.-token event)
-;              {:keys [page params] :as nav} (url-to-nav routes path)]
-;          (if page
-;            (reset! navigational-statie nav)
-;            (do
-;              (.warn js/console (str "No route matches token " path ", redirecting to "))
-;              (navigate-to! routes {:page :dash}))))))
-;    (.setEnabled true)))

@@ -6,6 +6,7 @@
             [domina :as dom]
             [re-frame.core :refer [dispatch-sync dispatch]]
     ;;初始化处理器和订阅器
+            soul-talk.effects
             soul-talk.handlers
             soul-talk.subs)
   (:import goog.history.Html5History))

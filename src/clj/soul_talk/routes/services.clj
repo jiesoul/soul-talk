@@ -48,22 +48,22 @@
                                  :description "public API"}
                       :tags     [{:name "api" :description "apis"}]}}}
 
-    (POST "/register" req
-      :return ::Result
-      :body [user ::userReg]
-      :summary "register a new user"
-      (auth/register! req user))
-
-    (POST "/login" req
-      :return ::Result
-      :body [user ::userLogin]
-      :summary "User Login"
-      (auth/login! req user))
-
     (context "/api" []
       :tags ["api"]
       :middleware [wrap-anti-forgery]
       ;:header-params {:x-csrf-token string?}
+
+      (POST "/register" req
+        :return ::Result
+        :body [user ::userReg]
+        :summary "register a new user"
+        (auth/register! req user))
+
+      (POST "/login" req
+        :return ::Result
+        :body [user ::userLogin]
+        :summary "User Login"
+        (auth/login! req user))
 
       (GET "/logout" []
         :return ::Result

@@ -35,18 +35,18 @@
     (when (hashers/check password (:password user))
       (dissoc user :password))))
 
-(defn login! [{:keys [session] :as req} {:keys [email password] :as user}]
+(defn login! [{:keys [session remote-addr] :as req} {:keys [email password] :as user}]
   (if-let [error (login-errors user)]
     (resp/precondition-failed
-      {:result :error
-       :message error})
+      {:result  :error
+       :message (first error)})
     (try
       (if-let [user (authenticate-local email password)]
         (do
           (-> user
               (assoc :last-time (l/local-date-time))
               (user-db/update-login-time))
-          (log/info "user:" email " successfully logged in")
+          (log/info "user:" email " successfully logged from ip " remote-addr)
           (-> {:result :ok
                :user   user}
               (resp/ok)

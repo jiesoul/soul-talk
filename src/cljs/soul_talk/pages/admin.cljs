@@ -1,17 +1,10 @@
-(ns soul-talk.pages.dash
+(ns soul-talk.pages.admin
   (:require [reagent.core :as r]
-            [domina :as dom]
-            [domina.xpath :as p]
-            [soul-talk.pages.common :as c]
             [soul-talk.pages.login :as login]
+            [soul-talk.pages.auth :as auth]
             [soul-talk.pages.register :as reg]
+            [re-frame.core :refer [subscribe dispatch]]
             [cljsjs.chartjs]
-            [reagent.session :as session]
-            [soul-talk.pages.post :as post]
-            [soul-talk.pages.user :as user]
-            [secretary.core :as secretary]
-            [goog.events :as events]
-            [goog.history.EventType :as EventType]
             [soul-talk.ajax :refer [load-interceptors!]])
   (:import goog.history.Html5History))
 
@@ -42,10 +35,7 @@
          [:div.dropdown-divider]
          [login/logout-button]]]]
       [:ul.navbar-nav.flex-row.ml-md-auto.d-none.d-md-flex
-       [:li.nav-item
-        [login/login-button]]
-       [:li.nav-item
-        [reg/reg-button]]])))
+       [:li.nav-item]])))
 
 (defn nav-component []
   (fn []
@@ -116,11 +106,8 @@
 (defn dash-component []
   [:div
    [nav-component]
-   (if (not= js/identity "")
-     [fluid-component]
-     [:div#user
-      [login/login-component]
-      [reg/register-component]])])
+   (if-let [user @(subscribe :user)]
+     [fluid-component])])
 
 (reset! navs [{:id       "home"
                :href     "#/"
@@ -140,5 +127,5 @@
 (reset! main-fields
         [main-component])
 
-(defn dash-page []
+(defn admin-page []
   [dash-component])
