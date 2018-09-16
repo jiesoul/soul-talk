@@ -10,7 +10,6 @@
 
 (def app
   (-> (routes
-        post-routes
         (wrap-routes #'home-routes middleware/wrap-csrf)
         services-routes
         (route/not-found (:body

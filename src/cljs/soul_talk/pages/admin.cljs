@@ -15,7 +15,7 @@
 
 (defn user-menu []
   (fn []
-    (if (not= js/identity "")
+    (if-let [user (subscribe [:user])]
       [:ul.nav.navbar-nav
        [:li.nav-item.text-nowrap.dropdown
         [:a.nav-link.dropdown-toggle
@@ -26,14 +26,16 @@
           :aria-haspopup true
           :aria-expanded false}
          [:i.fa.fa-user]
-         " " js/identity]
+         " " (:email user)]
         [:div.dropdown-menu {:aria-labelledby "usermenu"}
          [:a.dropdown-item {:href "#"} "用户管理"]
          [:a.dropdown-item
           {:href "#/change-pass"}
           "密码修改"]
          [:div.dropdown-divider]
-         [login/logout-button]]]]
+         [:a.dropdown-item.btn
+          {:on-click #(dispatch [:logout])}
+          "退出"]]]]
       [:ul.navbar-nav.flex-row.ml-md-auto.d-none.d-md-flex
        [:li.nav-item]])))
 
@@ -97,7 +99,7 @@
 
 (defn fluid-component []
   (fn []
-    [:div.container-fluid
+    [:div.container
      [:div.row
       [sidebar-component]
       [:main#main.col-md-9.ml-sm-auto.col-lg-10.px-4 {:role "main"}
@@ -106,8 +108,7 @@
 (defn dash-component []
   [:div
    [nav-component]
-   (if-let [user @(subscribe :user)]
-     [fluid-component])])
+   [fluid-component]])
 
 (reset! navs [{:id       "home"
                :href     "#/"

@@ -1,5 +1,6 @@
 (ns soul-talk.pages.home
-  (:require [reagent.core :as r]))
+  (:require [reagent.core :as r]
+            [re-frame.core :refer [dispatch]]))
 
 (defonce posts (r/atom []))
 (defonce navs (r/atom []))
@@ -42,8 +43,9 @@
     [:div.container.blog-footer
      [:p
       [:a {:href "#"} "Back to top"]
-      [:a {:href "#/dash"} "管理"]
-      ]]))
+      [:a.dropdown-item.btn
+       {:on-click #(dispatch [:set-active-page :admin])}
+       "登录"]]]))
 
 (defn blog-post-component [posts]
   (fn []

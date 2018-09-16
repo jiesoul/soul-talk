@@ -12,6 +12,7 @@
 (reg-event-db
   :initialize-db
   (fn [_ _]
+    (log/info "init db:" db/default-db)
     db/default-db))
 
 ;; 设置当前页

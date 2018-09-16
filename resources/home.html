@@ -25,7 +25,7 @@
     var context = "{{servlet-context}}";
     var csrfToken = "{{csrf-token}}";
     var user = {{user|json|safe}};
-    var identity = "{{session.identity}}";
+    var identity = "{{user}}";
     // var ldap = {{ldap}};
 </script>
 

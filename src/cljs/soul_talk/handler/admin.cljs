@@ -2,13 +2,14 @@
   (:require [re-frame.core :refer [reg-event-fx reg-event-db]]
             [ajax.core :refer [POST]]
             [soul-talk.auth-validate :refer [login-errors]]
+            [soul-talk.db :as db]
             [taoensso.timbre :as log]))
 
 ;; 运行 login
 (reg-event-fx
   :run-login-events
   (fn [{{events :login-events :as db} :db} _]
-    (log/info events)
+    (log/info "login-events: " events)
     {:dispatch-n events
      :db db}))
 
@@ -16,7 +17,8 @@
 (reg-event-db
   :add-login-event
   (fn [db [_ event]]
-    (update db :login-events conj event)))
+    (update db :login-events conj event)
+    (log/info "status:" db)))
 
 ;; login
 (reg-event-fx
@@ -36,10 +38,10 @@
 ;; 处理login ok
 (reg-event-fx
   :handle-login
-  (fn [{:keys [db]} [_ {:keys [user] :as resp}]]
-    {:dispatch-n (list [:run-login-events]
-                        [:set-active-page :admin])}
-    :db (assoc db :user user)))
+  (fn [{:keys [db]} [_ {:keys [user]}]]
+    {:dispatch-n (list
+                       [:set-active-page :admin])
+     :db         (assoc db :user user)}))
 
 ;; 处理 login error
 (reg-event-fx
@@ -47,3 +49,30 @@
   (fn [_ [_ {:keys [response] :as error}]]
     (log/error error)
     {:dispatch [:set-error (:message response)]}))
+
+(reg-event-fx
+  :logout
+  (fn [_ _]
+    (do
+      (log/info "user log out")
+      {:http {:method               POST
+              :url                  "/api/logout"
+              :ignore-response-body true
+              :success-event        [:handle-logout]
+              :error-event          [:handle-logout]}
+       :db db/default-db
+       :set-user! nil})))
+
+
+(reg-event-fx
+  :handle-logout
+  (fn [_ _]
+    (log/info "----------logout-------------")
+    {:dispatch [:admin]}))
+
+
+(reg-event-fx
+  :load-dashboard
+  (fn [_ _]
+    {}))
+

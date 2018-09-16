@@ -37,6 +37,10 @@
 (s/def ::userLogin (s/keys :req-un [::email ::password]))
 (s/def ::userChangePass (s/keys :req-un [::email ::pass-old ::pass-new ::pass-confirm]))
 
+(defn admin?
+  [request]
+  (:identity request))
+
 
 (def services-routes
   (api
@@ -47,6 +51,11 @@
                :data {:info     {:title       "Soul Talk API"
                                  :description "public API"}
                       :tags     [{:name "api" :description "apis"}]}}}
+
+    (context "/admin" []
+      :tags ["admin"]
+
+      )
 
     (context "/api" []
       :tags ["api"]
@@ -65,7 +74,7 @@
         :summary "User Login"
         (auth/login! req user))
 
-      (GET "/logout" []
+      (POST "/logout" []
         :return ::Result
         :summary "user logout, and remove user session"
         (auth/logout!))

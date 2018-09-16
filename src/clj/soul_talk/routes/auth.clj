@@ -47,6 +47,7 @@
               (assoc :last-time (l/local-date-time))
               (user-db/update-login-time))
           (log/info "user:" email " successfully logged from ip " remote-addr)
+          (log/info req)
           (-> {:result :ok
                :user   user}
               (resp/ok)
@@ -64,9 +65,10 @@
              :message "发生内部错误，请联系管理员"}))))))
 
 (defn logout! []
-  (-> {:result :ok}
-      (resp/ok)
-      (assoc :session nil)))
+  (do (log/info "user: " :session " log out")
+      (-> {:result :ok}
+          (resp/ok)
+          (assoc :session nil))))
 
 (defn change-pass! [{:keys [email pass-old pass-new] :as params}]
   (if-let [error (change-pass-errors params)]

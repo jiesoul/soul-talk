@@ -7,11 +7,25 @@
             [taoensso.timbre :as log])
   (:import goog.history.Html5History))
 
+;; 判断是否登录
+(defn logged-in? []
+  @(subscribe [:user]))
+
 ;; 加载多个事件
 (defn run-events
   [events]
   (doseq [event events]
     (dispatch event)))
+
+;; 后台加载判断是否登录
+(defn run-events-admin
+  [events]
+  (log/info "user login ：" (not logged-in?))
+  (doseq [event events]
+    (if-not (logged-in?)
+      (dispatch event)
+      (dispatch [:add-login-event event])))
+  (log/info @(subscribe [:login-events])))
 
 ;; home 的默认加载
 (defn home-page-events [& events]
@@ -19,31 +33,22 @@
   (run-events (into
                 [[:set-active-page :home]]
                 events)))
-;; 判断是否登录
-(defn logged-in? []
-  @(subscribe [:user]))
 
-;;admin 默认加载 这里需要判断登录
-;(defn admin-page-events [& events]
-;  (.scrollTo js/window 0 0)
-;  (if (logged-in?)
-;    (run-events (into
-;                  [[:set-active-page :admin]]
-;                  events))
-;    (dispatch [:add-login-event events])))
-
+(defn admin-page-events [& events]
+  (.scrollTo js/window 0 0)
+  (run-events-admin (into
+                      [[:set-active-page :admin]]
+                      events)))
 ;;------------
 ;; 首页
 (secretary/defroute
   "/" []
-  (log/info "load home")
   (home-page-events))
 
 ;; 后台管理
 (secretary/defroute
   "/admin" []
-  (log/info "load admin")
-  (run-events [[:set-active-page :admin]]))
+  (admin-page-events [:load-dashboard]))
 
 (secretary/defroute
   "/register" []
