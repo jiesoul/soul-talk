@@ -16,8 +16,10 @@
 
 (reg-sub :user query)
 
-(reg-sub :loading? query)
+(reg-sub :error query)
 
 (reg-sub :login-events query)
 
-(reg-sub :error query)
+(reg-sub :admin/users query)
+
+(reg-sub :loading? query)

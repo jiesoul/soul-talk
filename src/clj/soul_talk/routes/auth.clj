@@ -8,18 +8,6 @@
             [java-time.local :as l]
             [clojure.spec.alpha :as s]))
 
-(def email-regex #"^[^@]+@[^@\\.]+[\\.].+")
-(s/def ::email-type (s/and string? #(re-matches email-regex %)))
-(s/def ::password string?)
-(s/def ::pass-confirm string?)
-(s/def ::email ::email-type)
-(s/def ::pass-old string?)
-(s/def ::pass-new string?)
-
-(s/def ::userReg (s/keys :req-un [::email ::password ::pass-confirm]))
-(s/def ::userLogin (s/keys :req-un [::email ::password]))
-(s/def ::userChangePass (s/keys :req-un [::email ::pass-old ::pass-new ::pass-confirm]))
-
 
 (defn register! [{:keys [session] :as req} user]
   (if-let [error (reg-errors user)]

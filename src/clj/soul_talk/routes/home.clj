@@ -9,4 +9,7 @@
 (defroutes
   home-routes
   (GET "/" [] (home-page))
-  (GET "/admin" [] (home-page)))
+  (GET "/admin" [] (home-page))
+  (GET "/users" [] (home-page))
+  ;(GET "/admin/posts" [] (home-page))
+  )

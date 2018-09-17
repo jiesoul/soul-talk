@@ -1,5 +1,5 @@
 (ns soul-talk.effects
-  (:require [re-frame.core :as rf :refer [dispatch reg-fx reg-event-fx]]
+  (:require [re-frame.core :refer [dispatch reg-fx reg-event-fx]]
             [accountant.core :as accountant]
             [taoensso.timbre :as log]))
 

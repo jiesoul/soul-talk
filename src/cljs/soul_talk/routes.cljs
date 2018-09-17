@@ -14,14 +14,12 @@
 ;; 加载多个事件
 (defn run-events
   [events]
-  (log/info "current home events: " events)
   (doseq [event events]
-    (dispatch event)))
+    (do (log/info event)
+        (dispatch event))))
 
-;; 后台加载判断是否登录
 (defn run-events-admin
   [events]
-  (log/info "current admin events: " events)
   (doseq [event events]
     (if (logged-in?)
       (dispatch event)
@@ -34,13 +32,6 @@
                 [[:set-active-page :home]]
                 events)))
 
-;;后台管理默认加载
-(defn admin-page-events [& events]
-  (.scrollTo js/window 0 0)
-  (run-events (into
-                      [[:set-active-page :admin]]
-                      events)))
-;;------------
 ;; 首页
 (secretary/defroute
   "/" []
@@ -49,11 +40,12 @@
 ;; 后台管理
 (secretary/defroute
   "/admin" []
-  (admin-page-events))
+  (run-events [[:set-active-page :admin]]))
 
 (secretary/defroute
-  "/admin/users" []
-  (admin-page-events [:set-active-page :users]))
+  "/users" []
+  (run-events [[:admin/load-users]
+               [:set-active-page :users]]))
 
 ;(secretary/defroute
 ;  "/admin/posts" []

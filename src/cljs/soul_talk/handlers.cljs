@@ -6,6 +6,7 @@
             [soul-talk.auth-validate :refer [login-errors reg-errors]]
             soul-talk.handler.errors
             soul-talk.handler.admin
+            soul-talk.handler.users
             [taoensso.timbre :as log]))
 
 ;; 初始化
@@ -65,23 +66,6 @@
               :success-event [:handle-login]
               :error-event [:handle-login-error]}})))
 
-(reg-event-fx
-  :logout
-  (fn [_ _]
-    {:http      {:method               POST
-                 :url                  "/api/logout"
-                 :ignore-response-body true
-                 :success-event        [:handle-logout]
-                 :error-event          [:handle-logout]}
-     :db        db/default-db
-     :set-user! nil}))
-
-
-(reg-event-fx
-  :handle-logout
-  (fn [_ _]
-    {:reload-page true}))
-
 
 ;; 处理register ok
 (reg-event-fx
@@ -111,6 +95,22 @@
                                   :pass-confirm pass-confirm}}
               :success-event [:handle-register]
               :error-event [:handle-register-error]}})))
+
+(reg-event-fx
+  :handle-logout
+  (fn [_ _]
+    {:reload-page true}))
+
+(reg-event-fx
+  :logout
+  (fn [_ _]
+    {:http      {:method               POST
+                 :url                  "/api/logout"
+                 :ignore-response-body true
+                 :success-event        [:handle-logout]
+                 :error-event          [:handle-logout]}
+     :db        db/default-db
+     :set-user! nil}))
 
 
 ;; 设置加载为 true

@@ -1,15 +1,41 @@
-(ns soul-talk.pages.user
+(ns soul-talk.pages.users
   (:require [soul-talk.pages.common :as c]
             [reagent.core :as r]
             [soul-talk.auth-validate :refer [change-pass-errors]]
             [ajax.core :as ajax]
             [taoensso.timbre :as log]
             [reagent.session :as session]
+            [re-frame.core :refer [subscribe]]
             [domina :as dom]))
 
+
 (defn user-list []
-  (fn []
-    [:div "USER LIST"]))
+  (r/with-let [users (subscribe [:admin/users])]
+    (when users
+      [:div.table-responsive
+       [:table.table.table-striped.table-sm
+        [:thead
+         [:tr
+          [:th "#"]
+          [:th "email"]
+          [:th "name"]
+          [:th "last_login"]
+          [:th "Header"]]]
+        [:tbody
+         (for [{:keys [email name last_login] :as user} @users]
+           ^{:key user} [:tr
+                         [:td "#"]
+                         [:td email]
+                         [:td name]
+                         [:td last_login]
+                         [:td "action"]])]]])))
+
+
+(defn users-page []
+  (log/info "load user-page")
+  [:div
+   [:h2 "User List"]
+   [user-list]])
 
 (defn change-password! [pass-data errors]
   (reset! errors (change-pass-errors @pass-data))
