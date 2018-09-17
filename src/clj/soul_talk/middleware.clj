@@ -1,7 +1,6 @@
 (ns soul-talk.middleware
   (:require [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.webjars :refer [wrap-webjars]]
-            [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [muuntaja.middleware :refer [wrap-format]]
@@ -16,14 +15,14 @@
         (log/error t)
         (layout/error-page {:status 500
                             :title "错误发生了"
-                            :message "管理员会尽快处理"})))))
+                            :message "服务器发生错误请与管理员联系"})))))
 
 (defn wrap-csrf [handler]
   (wrap-anti-forgery
     handler
     {:error-response
      (layout/error-page {:status 403
-                         :title "无效的 anti-forgery token"})}))
+                            :title "无效的 anti-forgery token"})}))
 
 (defn on-error [request response]
   (layout/error-page {:status 403
@@ -38,7 +37,8 @@
   (-> handler
       (wrap-identity)
       (wrap-webjars)
-      (wrap-session)
       (wrap-format)
-      (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))
+      (wrap-defaults (-> site-defaults
+                         (assoc-in [:security :anti-forgery] false)
+                         (assoc :session true)))
       (wrap-internal-error)))

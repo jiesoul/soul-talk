@@ -7,6 +7,10 @@
             [reagent.session :as session]
             [domina :as dom]))
 
+(defn user-list []
+  (fn []
+    [:div "USER LIST"]))
+
 (defn change-password! [pass-data errors]
   (reset! errors (change-pass-errors @pass-data))
   (when-not @errors

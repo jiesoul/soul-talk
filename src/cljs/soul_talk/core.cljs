@@ -23,6 +23,7 @@
 ;; 初始化方法
 (defn init! []
   (dispatch-sync [:initialize-db])
+  (log/info @(subscribe [:db-state]))
   (load-interceptors!)
   (hook-browser-navigation!)
   (mount-component))

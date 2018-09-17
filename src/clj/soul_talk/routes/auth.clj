@@ -5,7 +5,21 @@
             [taoensso.timbre :as log]
             [soul-talk.auth-validate :refer [reg-errors login-errors change-pass-errors]]
             [compojure.core :refer [defroutes POST GET]]
-            [java-time.local :as l]))
+            [java-time.local :as l]
+            [clojure.spec.alpha :as s]))
+
+(def email-regex #"^[^@]+@[^@\\.]+[\\.].+")
+(s/def ::email-type (s/and string? #(re-matches email-regex %)))
+(s/def ::password string?)
+(s/def ::pass-confirm string?)
+(s/def ::email ::email-type)
+(s/def ::pass-old string?)
+(s/def ::pass-new string?)
+
+(s/def ::userReg (s/keys :req-un [::email ::password ::pass-confirm]))
+(s/def ::userLogin (s/keys :req-un [::email ::password]))
+(s/def ::userChangePass (s/keys :req-un [::email ::pass-old ::pass-new ::pass-confirm]))
+
 
 (defn register! [{:keys [session] :as req} user]
   (if-let [error (reg-errors user)]
@@ -47,7 +61,6 @@
               (assoc :last-time (l/local-date-time))
               (user-db/update-login-time))
           (log/info "user:" email " successfully logged from ip " remote-addr)
-          (log/info req)
           (-> {:result :ok
                :user   user}
               (resp/ok)

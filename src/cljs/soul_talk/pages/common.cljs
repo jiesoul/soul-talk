@@ -1,6 +1,6 @@
 (ns soul-talk.pages.common
   (:import goog.history.Html5History)
-  )
+  (:require [re-frame.core :refer [dispatch]]))
 
 (defn input [type id placeholder fields]
   "标准 input， 其中的 on-change 实现了值的绑定"

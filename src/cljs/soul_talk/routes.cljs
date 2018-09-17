@@ -14,18 +14,18 @@
 ;; 加载多个事件
 (defn run-events
   [events]
+  (log/info "current home events: " events)
   (doseq [event events]
     (dispatch event)))
 
 ;; 后台加载判断是否登录
 (defn run-events-admin
   [events]
-  (log/info "user login ：" (not logged-in?))
+  (log/info "current admin events: " events)
   (doseq [event events]
-    (if-not (logged-in?)
+    (if (logged-in?)
       (dispatch event)
-      (dispatch [:add-login-event event])))
-  (log/info @(subscribe [:login-events])))
+      (dispatch [:add-login-event event]))))
 
 ;; home 的默认加载
 (defn home-page-events [& events]
@@ -34,25 +34,30 @@
                 [[:set-active-page :home]]
                 events)))
 
+;;后台管理默认加载
 (defn admin-page-events [& events]
   (.scrollTo js/window 0 0)
-  (run-events-admin (into
+  (run-events (into
                       [[:set-active-page :admin]]
                       events)))
 ;;------------
 ;; 首页
 (secretary/defroute
   "/" []
-  (home-page-events))
+  (home-page-events []))
 
 ;; 后台管理
 (secretary/defroute
   "/admin" []
-  (admin-page-events [:load-dashboard]))
+  (admin-page-events))
 
 (secretary/defroute
-  "/register" []
-  (run-events [[:set-active-page :register]]))
+  "/admin/users" []
+  (admin-page-events [:set-active-page :users]))
+
+;(secretary/defroute
+;  "/admin/posts" []
+;  (admin-page-events [:set-active-page :posts]))
 
 ;; 使用浏览器可以使用前进后退 历史操作
 (defn hook-browser-navigation! []

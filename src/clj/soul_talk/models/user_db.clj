@@ -5,7 +5,6 @@
 
 
 (defn save-user! [user]
-  (log/info "user-db:" user)
   (sql/insert! db-spec :users user))
 
 (defn select-user [id]

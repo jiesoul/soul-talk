@@ -1,4 +1,4 @@
-(ns soul-talk.routes.post
+(ns soul-talk.routes.posts
   (:require [compojure.core :refer [GET POST context defroutes]]
             [soul-talk.models.post-db :as post-db]
             [ring.util.http-response :as resp]

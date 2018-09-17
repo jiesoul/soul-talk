@@ -3,11 +3,10 @@
             [compojure.core :refer (defroutes GET)]
             [taoensso.timbre :as log]))
 
-(defn home-page [req]
-  (log/info req)
+(defn home-page []
   (layout/render "home.html"))
 
 (defroutes
   home-routes
-  (GET "/" req (home-page req))
-  (GET "/admin" req (home-page req)))
+  (GET "/" [] (home-page))
+  (GET "/admin" [] (home-page)))

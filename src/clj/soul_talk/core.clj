@@ -3,18 +3,17 @@
             [compojure.core :refer [routes wrap-routes]]
             [compojure.route :as route]
             [soul-talk.routes.home :refer [home-routes]]
-            [soul-talk.routes.post :refer [post-routes]]
             [soul-talk.routes.services :refer [services-routes]]
             [soul-talk.middleware :as middleware]
             [soul-talk.layout :as layout]))
 
 (def app
   (-> (routes
-        (wrap-routes #'home-routes middleware/wrap-csrf)
         services-routes
+        (wrap-routes #'home-routes middleware/wrap-csrf)
         (route/not-found (:body
                            (layout/error-page {:status 404
-                                               :title "页面未找到"}))))
+                                                  :title "页面未找到"}))))
       (middleware/wrap-base)))
 
 (defn -main []
