@@ -71,9 +71,16 @@
                         :optimizations :advanced
                         :pretty-print false}}}}  ;; 打印格式
   :figwheel
-  {:css-dirs ["resources/public/css"]}
+  {:http-server-root "public"
+   :nrepl-port 7002
+   :css-dirs ["resources/public/css"]}
+
   :profiles {:dev {:source-paths ["env/dev/clj"]
                    :dependencies [[ring/ring-devel "1.6.3"]
                                   [figwheel-sidecar "0.5.16"]
-                                  [org.clojure/test.check "0.9.0"]]}}
+                                  [com.cemerick/piggieback "0.2.2"]
+                                  [cider/piggieback "0.3.9"]
+                                  [org.clojure/tools.nrepl "0.2.13"]
+                                  [org.clojure/test.check "0.9.0"]]
+                   :nrepl-middleware [com.piggieback/wrap-cljs-repl]}}
   )

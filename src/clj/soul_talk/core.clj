@@ -2,7 +2,7 @@
   (:require [ring.adapter.jetty :as jetty]
             [compojure.core :refer [routes wrap-routes]]
             [compojure.route :as route]
-            [soul-talk.routes.home :refer [home-routes]]
+            [soul-talk.routes.home :refer [home-routes auth-routes]]
             [soul-talk.routes.services :refer [services-routes]]
             [soul-talk.middleware :as middleware]
             [soul-talk.layout :as layout]
@@ -13,6 +13,7 @@
   (-> (routes
         services-routes
         (wrap-routes #'home-routes middleware/wrap-csrf)
+        (wrap-routes #'auth-routes middleware/wrap-auth)
         (route/not-found (:body
                            (layout/error-page {:status 404
                                                   :title "页面未找到"}))))

@@ -4,7 +4,9 @@
             [compojure.api.sweet :refer :all]
             [clojure.spec.alpha :as s]
             [soul-talk.routes.user :as user]
-            [buddy.auth.accessrules :refer [restrict]]))
+            [buddy.auth.accessrules :refer [restrict]]
+            [buddy.auth :refer [authenticated?]]
+            [compojure.api.meta :refer [restructure-param]]))
 
 (defn admin?
   [request]
@@ -17,6 +19,10 @@
 (defn wrap-restricted [handler rule]
   (restrict handler {:handler rule
                       :on-error access-error}))
+
+(defmethod restructure-param :auth-rules
+  [_ rule acc]
+  (update-in acc [:middleware] conj [wrap-restricted rule]))
 
 (s/def ::result keyword?)
 (s/def ::message string?)
@@ -70,9 +76,10 @@
 
 
       (context "/admin" []
+        ;:auth-rules authenticated?
         :tags ["admin"]
 
-        (GET "/users" req
+        (GET "/users" []
           :return ::Result
           :summary "load-users"
           (user/load-users!))

@@ -5,7 +5,9 @@
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [muuntaja.middleware :refer [wrap-format]]
             [taoensso.timbre :as log]
-            [soul-talk.layout :as layout :refer [*identity*]]))
+            [soul-talk.layout :as layout :refer [*identity*]]
+            [buddy.auth.backends.session :refer [session-backend]]
+            [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]))
 
 (defn wrap-internal-error [handler]
   (fn [req]
@@ -32,6 +34,14 @@
   (fn [request]
     (binding [*identity* (get-in request [:session :identity])]
       (handler request))))
+
+(defn wrap-auth [handler]
+  (let [backend (session-backend)]
+    (-> handler
+      (wrap-identity)
+      (wrap-csrf)
+      (wrap-authentication backend)
+      (wrap-authorization backend))))
 
 (defn wrap-base [handler]
   (-> handler

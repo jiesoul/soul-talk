@@ -9,9 +9,13 @@
 (defroutes
   home-routes
   (GET "/" [] (home-page))
+  ;(GET "/admin/posts" [] (home-page))
+  )
+
+
+(defroutes
+  auth-routes
   (GET "/admin" [] (home-page))
   (GET "/users" [] (home-page))
   (GET "/change-pass" [] (home-page))
-  (GET "/user-profile" [] (home-page))
-  ;(GET "/admin/posts" [] (home-page))
-  )
+  (GET "/user-profile" [] (home-page)))
