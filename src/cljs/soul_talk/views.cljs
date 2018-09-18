@@ -5,8 +5,9 @@
             [soul-talk.pages.home :refer [home-page]]
             [soul-talk.pages.admin :refer [main-component]]
             [soul-talk.pages.auth :refer [login-page register-page]]
-            [soul-talk.pages.users :refer [users-page]]
-            [taoensso.timbre :as log]))
+            [soul-talk.pages.users :refer [users-page change-pass-page user-profile-page]]
+            [taoensso.timbre :as log]
+            [clojure.string :as str]))
 
 (defn admin-user-menu [user]
   (if user
@@ -20,11 +21,11 @@
         :aria-haspopup true
         :aria-expanded false}
        [:i.fa.fa-user]
-       " " (:email user)]
+       " " (if (str/blank? (:name user)) (:email user) (:name user))]
       [:div.dropdown-menu {:aria-labelledby "usermenu"}
-       [:a.dropdown-item {:href "#"} "用户管理"]
+       [:a.dropdown-item {:href "/user-profile"} "Your Profile"]
        [:a.dropdown-item
-        {:href "#/change-pass"}
+        {:href "/change-pass"}
         "密码修改"]
        [:div.dropdown-divider]
        [:a.dropdown-item.btn
@@ -85,6 +86,12 @@
 ;;后台页面
 (defmethod pages :admin [_ _]
   (admin-page main-component))
+
+(defmethod pages :change-pass [_ _]
+  (admin-page change-pass-page))
+
+(defmethod pages :user-profile [_ _]
+  (admin-page user-profile-page))
 
 (defmethod pages :users [_ _]
   (admin-page users-page))

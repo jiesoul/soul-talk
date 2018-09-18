@@ -11,5 +11,7 @@
   (GET "/" [] (home-page))
   (GET "/admin" [] (home-page))
   (GET "/users" [] (home-page))
+  (GET "/change-pass" [] (home-page))
+  (GET "/user-profile" [] (home-page))
   ;(GET "/admin/posts" [] (home-page))
   )

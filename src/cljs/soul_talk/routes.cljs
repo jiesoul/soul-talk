@@ -43,9 +43,18 @@
   (run-events [[:set-active-page :admin]]))
 
 (secretary/defroute
+  "/change-pass" []
+  (run-events [[:set-active-page :change-pass]]))
+
+(secretary/defroute
+  "/user-profile" []
+  (run-events [[:set-active-page :user-profile]]))
+
+(secretary/defroute
   "/users" []
   (run-events [[:admin/load-users]
                [:set-active-page :users]]))
+
 
 ;(secretary/defroute
 ;  "/admin/posts" []

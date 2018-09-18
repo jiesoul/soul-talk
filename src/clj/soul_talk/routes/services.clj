@@ -30,10 +30,13 @@
 (s/def ::email ::email-type)
 (s/def ::pass-old string?)
 (s/def ::pass-new string?)
+(s/def ::name string?)
 
 (s/def ::userReg (s/keys :req-un [::email ::password ::pass-confirm]))
 (s/def ::userLogin (s/keys :req-un [::email ::password]))
 (s/def ::userChangePass (s/keys :req-un [::email ::pass-old ::pass-new ::pass-confirm]))
+(s/def ::User (s/keys :req-un [::email]
+                      :opt-un [::name]))
 
 (def services-routes
   (api
@@ -78,6 +81,11 @@
           :return ::Result
           :body [params ::userChangePass]
           :summary "User change password"
-          (auth/change-pass! params))
+          (user/change-pass! params))
 
+        (POST "/user-profile" []
+          :return ::Result
+          :body [user ::User]
+          :summary "User Profile update"
+          (user/save-user-profile! user))
         ))))

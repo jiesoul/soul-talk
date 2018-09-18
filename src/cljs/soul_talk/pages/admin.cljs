@@ -7,7 +7,7 @@
 (defonce main-fields (r/atom nil))
 (defonce table-data (r/atom []))
 
-(defn table-component []
+(defn table-component [data]
   (fn []
     [:div
      [:h2 "Section title"]
@@ -20,8 +20,23 @@
          [:th "Header"]
          [:th "Header"]
          [:th "Header"]]]
-       [:tbody]]]]))
+       [:tbody
+        (for [{:keys [title time author public] :as d} data]
+          ^{:key d} [:tr
+                     [:td title]
+                     [:td time]
+                     [:td author]
+                     [:td public]])]]]]))
 
 (defn main-component []
-  [:div
-   [table-component]])
+  (fn []
+    [:div
+     [table-component @table-data]]))
+
+(reset! table-data [{:title "title1"
+                     :time "2018"
+                     :author "soul"
+                     :public "是"}])
+
+(reset! main-fields
+        [main-component])

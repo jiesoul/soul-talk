@@ -20,3 +20,6 @@
 
 (defn change-pass! [{:keys [email pass-new]}]
   (sql/update! db-spec :users {:password pass-new} ["email = ?" email]))
+
+(defn save-user-profile! [{:keys [email name]}]
+  (sql/update! db-spec :users {:name name} ["email = ?" email]))

@@ -71,17 +71,3 @@
           (resp/ok)
           (assoc :session nil))))
 
-(defn change-pass! [{:keys [email pass-old pass-new] :as params}]
-  (if-let [error (change-pass-errors params)]
-    (resp/precondition-failed
-      {:result :error
-       :message error})
-    (let [user (user-db/select-user email)]
-      (if-not (hashers/check pass-old (:password user))
-        (resp/unauthorized {:result  :error
-                              :message "旧密码错误"})
-        (do
-          (-> params
-              (assoc :pass-new (hashers/encrypt pass-new))
-              (user-db/change-pass!))
-          (resp/ok {:result :ok}))))))
