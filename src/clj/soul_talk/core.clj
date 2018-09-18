@@ -5,7 +5,9 @@
             [soul-talk.routes.home :refer [home-routes]]
             [soul-talk.routes.services :refer [services-routes]]
             [soul-talk.middleware :as middleware]
-            [soul-talk.layout :as layout]))
+            [soul-talk.layout :as layout]
+            [mount.core :refer [defstate]])
+  (:gen-class))
 
 (def app
   (-> (routes
@@ -21,3 +23,12 @@
     app
     {:port 3000
      :join? false}))
+
+(defn start-system []
+  (-> app
+      (jetty/run-jetty
+        {:port 3000
+         :join? false})))
+
+(defstate system :start (start-system)
+          :stop (.stop system))

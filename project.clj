@@ -7,8 +7,11 @@
                  [org.clojure/clojurescript "1.10.339"]
                  [org.clojure/java.jdbc "0.7.8"]
                  [org.postgresql/postgresql "42.2.4"]
+                 [hikari-cp "2.6.0"]
                  [ragtime "0.7.2"]
                  [ring "1.6.3"]
+                 [mount "0.1.13"]
+                 [org.clojure/tools.namespace "0.2.11"]
                  [compojure "1.6.1"]
                  [metosin/compojure-api "2.0.0-alpha23"]
                  [metosin/ring-swagger "0.26.1"]
@@ -39,6 +42,7 @@
   :plugins [[lein-ring "0.12.4"]
             [lein-cljsbuild "1.1.7" :excludes [[org.clojure/clojure]]]
             [lein-figwheel "0.5.17-SNAPSHOT"]]
+
   :ring {:handler soul-talk.core/app}
   :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources"]
@@ -70,5 +74,6 @@
   {:css-dirs ["resources/public/css"]}
   :profiles {:dev {:source-paths ["env/dev/clj"]
                    :dependencies [[ring/ring-devel "1.6.3"]
+                                  [figwheel-sidecar "0.5.16"]
                                   [org.clojure/test.check "0.9.0"]]}}
   )
