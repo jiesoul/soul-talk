@@ -32,10 +32,8 @@
 
 
 (defn users-page []
-  (log/info "load user-page")
   [:div
-   [:h2 "User List"]
-   [user-list]])
+   [:h2 "User List"]])
 
 (defn change-password! [pass-data errors]
   (reset! errors (change-pass-errors @pass-data))

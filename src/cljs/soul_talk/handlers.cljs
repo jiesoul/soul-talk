@@ -1,5 +1,5 @@
 (ns soul-talk.handlers
-  (:require [re-frame.core :refer [dispatch dispatch-sync reg-event-db reg-event-fx]]
+  (:require [re-frame.core :refer [dispatch dispatch-sync reg-event-db reg-event-fx subscribe]]
             [soul-talk.db :as db]
             [clojure.string :as str]
             [ajax.core :refer [POST]]
@@ -99,6 +99,7 @@
 (reg-event-fx
   :handle-logout
   (fn [_ _]
+    (log/info @(subscribe [:db-state]))
     {:reload-page true}))
 
 (reg-event-fx

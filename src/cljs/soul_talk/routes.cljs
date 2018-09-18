@@ -66,5 +66,6 @@
        (secretary/dispatch! path))
      :path-exists?
      (fn [path]
-       (secretary/locate-route path))})
+       (secretary/locate-route path))
+     :reload-same-path? true})
   (accountant/dispatch-current!))

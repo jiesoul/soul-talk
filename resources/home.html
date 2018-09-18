@@ -22,11 +22,8 @@
 {% script "/assets/bootstrap/js/bootstrap.min.js" %}
 
 <script type="text/javascript">
-    var context = "{{servlet-context}}";
     var csrfToken = "{{csrf-token}}";
     var user = {{user|json|safe}};
-    var identity = "{{user}}";
-    // var ldap = {{ldap}};
 </script>
 <script src="/js/main.js?{{timestamp}}" type="text/javascript"></script>
 </body>
