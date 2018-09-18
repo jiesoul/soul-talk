@@ -60,7 +60,7 @@
                 user-data (r/atom user)
                error (subscribe [:error])]
     (if user
-      [:div.container-fluid
+      [:div.container
        [:div.form-group
         [:h1.h3.mb-3.font-weight-normal.text-center "User Profile"]
         [:div.form-signin

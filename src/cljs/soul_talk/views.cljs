@@ -22,7 +22,8 @@
         :aria-expanded false}
        [:i.fa.fa-user]
        " " (if (str/blank? (:name user)) (:email user) (:name user))]
-      [:div.dropdown-menu {:aria-labelledby "usermenu"}
+      [:div.dropdown-menu.dropdown-menu-right
+       {:aria-labelledby "usermenu"}
        [:a.dropdown-item {:href "/user-profile"} "Your Profile"]
        [:a.dropdown-item
         {:href "/change-pass"}
@@ -69,7 +70,7 @@
     [user (subscribe [:user])]
     (log/info @user)
     (if @user
-      [:div
+      [:div.container
        [admin-navbar @user]
        [:div.container
         [:div.row
