@@ -4,10 +4,31 @@
             [soul-talk.auth-validate :refer [change-pass-errors]]
             [taoensso.timbre :as log]
             [buddy.hashers :as hashers]
-            [soul-talk.routes.common :refer [handler]]))
+            [soul-talk.routes.common :refer [handler]]
+            [clojure.spec.alpha :as s]))
+
+(def email-regex #"^[^@]+@[^@\\.]+[\\.].+")
+(s/def ::email-type (s/and string? #(re-matches email-regex %)))
+(s/def ::password string?)
+(s/def ::pass-confirm string?)
+(s/def ::email ::email-type)
+(s/def ::pass-old string?)
+(s/def ::pass-new string?)
+(s/def ::name string?)
+
+(def RegUser
+  (s/def ::userReg (s/keys :req-un [::email ::password ::pass-confirm])))
+(def LoginUser
+  (s/def ::userLogin (s/keys :req-un [::email ::password])))
+(def ChangePassUser
+  (s/def ::userChangePass (s/keys :req-un [::email ::pass-old ::pass-new ::pass-confirm])))
+(def User
+  (s/def ::User (s/keys :req-un [::email]
+                     :opt-un [::name])))
 
 (handler load-users! []
   (let [users (user-db/select-all-users)]
+    (log/info "users was loaded.............")
     (resp/ok {:result :ok
               :users (->> users
                          (map #(assoc % :password nil)))})))

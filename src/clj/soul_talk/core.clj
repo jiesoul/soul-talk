@@ -12,11 +12,16 @@
 (def app
   (-> (routes
         services-routes
-        (wrap-routes #'home-routes middleware/wrap-csrf)
-        (wrap-routes #'auth-routes middleware/wrap-auth)
-        (route/not-found (:body
-                           (layout/error-page {:status 404
-                                                  :title "页面未找到"}))))
+        (-> #'home-routes
+          (wrap-routes middleware/wrap-csrf))
+        (-> #'auth-routes
+          (wrap-routes middleware/wrap-csrf)
+          (wrap-routes middleware/wrap-session-auth))
+        (route/not-found
+          (:body
+            (layout/error-page
+             {:status 404
+              :title  "页面未找到"}))))
       (middleware/wrap-base)))
 
 (defn -main []

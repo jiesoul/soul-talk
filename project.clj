@@ -13,8 +13,7 @@
                  [mount "0.1.13"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [compojure "1.6.1"]
-                 [metosin/compojure-api "2.0.0-alpha23"]
-                 [metosin/ring-swagger "0.26.1"]
+                 [metosin/compojure-api "2.0.0-alpha25"]
                  [metosin/spec-tools "0.7.1"]
                  [com.taoensso/timbre "4.10.0"]
                  [metosin/ring-http-response "0.9.0"]
@@ -40,12 +39,13 @@
                  [cljs-ajax "0.7.4"]]
   :main ^:skip-aot soul-talk.core
   :plugins [[lein-ring "0.12.4"]
-            [lein-cljsbuild "1.1.7" :excludes [[org.clojure/clojure]]]
-            [lein-figwheel "0.5.17-SNAPSHOT"]]
+            [lein-cljsbuild "1.1.7"]]
 
   :ring {:handler soul-talk.core/app}
   :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources"]
+  :test-paths ["test/clj"]
+  :repl-options {:init-ns user}
 
   :clean-targets                                            ;; 清理临时文件
   ^{:protect false}
@@ -72,15 +72,18 @@
                         :pretty-print false}}}}  ;; 打印格式
   :figwheel
   {:http-server-root "public"
-   :nrepl-port 7002
+   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
    :css-dirs ["resources/public/css"]}
 
   :profiles {:dev {:source-paths ["env/dev/clj"]
                    :dependencies [[ring/ring-devel "1.6.3"]
+                                  [ring/ring-mock "0.3.2"]
                                   [figwheel-sidecar "0.5.16"]
+                                  [doo "0.1.10"]
                                   [com.cemerick/piggieback "0.2.2"]
-                                  [cider/piggieback "0.3.9"]
                                   [org.clojure/tools.nrepl "0.2.13"]
                                   [org.clojure/test.check "0.9.0"]]
-                   :nrepl-middleware [com.piggieback/wrap-cljs-repl]}}
+                   :plugins [[com.jakemccrary/lein-test-refresh "0.23.0"]
+                             [lein-doo "0.1.10"]]}}
+
   )

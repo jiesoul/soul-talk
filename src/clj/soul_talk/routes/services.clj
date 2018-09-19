@@ -6,20 +6,30 @@
             [soul-talk.routes.user :as user]
             [buddy.auth.accessrules :refer [restrict]]
             [buddy.auth :refer [authenticated?]]
-            [compojure.api.meta :refer [restructure-param]]))
+            [compojure.api.meta :refer [restructure-param]]
+            [soul-talk.middleware :refer [wrap-session-auth]]))
 
 (defn admin?
   [request]
   (:identity request))
 
-(defn access-error [__]
-  (unauthorized {:result :error
-                  :message "未经授权的"}))
+(defn authenticated [req]
+  (authenticated? req))
 
+(defn admin [req]
+  (and (authenticated? req)
+       (:identity req)))
+
+;; 错误处理
+(defn access-error [_val]
+  (unauthorized val))
+
+;; 包装处理规则
 (defn wrap-restricted [handler rule]
   (restrict handler {:handler rule
                       :on-error access-error}))
 
+;; 多重方法用来注入中间件
 (defmethod restructure-param :auth-rules
   [_ rule acc]
   (update-in acc [:middleware] conj [wrap-restricted rule]))
@@ -29,21 +39,6 @@
 (s/def ::Result (s/keys :req-un [::result]
                         :opt-un [::message]))
 
-(def email-regex #"^[^@]+@[^@\\.]+[\\.].+")
-(s/def ::email-type (s/and string? #(re-matches email-regex %)))
-(s/def ::password string?)
-(s/def ::pass-confirm string?)
-(s/def ::email ::email-type)
-(s/def ::pass-old string?)
-(s/def ::pass-new string?)
-(s/def ::name string?)
-
-(s/def ::userReg (s/keys :req-un [::email ::password ::pass-confirm]))
-(s/def ::userLogin (s/keys :req-un [::email ::password]))
-(s/def ::userChangePass (s/keys :req-un [::email ::pass-old ::pass-new ::pass-confirm]))
-(s/def ::User (s/keys :req-un [::email]
-                      :opt-un [::name]))
-
 (def services-routes
   (api
     {:coercion :spec
@@ -52,20 +47,25 @@
                :spec "/swagger.json"
                :data {:info     {:title       "Soul Talk API"
                                  :description "public API"}
-                      :tags     [{:name "api" :description "apis"}]}}}
+                      :tags     [{:name "api" :description "apis"}]}}
+     :exceptionos
+     {:handlers
+      {;;
+       }}}
+    
 
     (context "/api" []
       :tags ["api"]
 
       (POST "/register" req
         :return ::Result
-        :body [user ::userReg]
+        :body [user user/RegUser]
         :summary "register a new user"
         (auth/register! req user))
 
       (POST "/login" req
         :return ::Result
-        :body [user ::userLogin]
+        :body [user user/LoginUser]
         :summary "User Login"
         (auth/login! req user))
 
@@ -76,7 +76,8 @@
 
 
       (context "/admin" []
-        ;:auth-rules authenticated?
+        :middleware [wrap-session-auth]
+        :auth-rules authenticated?
         :tags ["admin"]
 
         (GET "/users" []
@@ -86,13 +87,13 @@
 
         (POST "/change-pass" []
           :return ::Result
-          :body [params ::userChangePass]
+          :body [params user/ChangePassUser]
           :summary "User change password"
           (user/change-pass! params))
 
         (POST "/user-profile" []
           :return ::Result
-          :body [user ::User]
+          :body [user user/User]
           :summary "User Profile update"
-          (user/save-user-profile! user))
-        ))))
+          (user/save-user-profile! user)))
+      )))

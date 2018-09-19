@@ -1,14 +1,16 @@
 (ns soul-talk.middleware
   (:require [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.webjars :refer [wrap-webjars]]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+            [ring.middleware.defaults :as ring-defaults]
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+            [ring.middleware.flash :refer [wrap-flash]]
             [muuntaja.middleware :refer [wrap-format]]
             [taoensso.timbre :as log]
             [soul-talk.layout :as layout :refer [*identity*]]
             [buddy.auth.backends.session :refer [session-backend]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]))
 
+;; 内部错误
 (defn wrap-internal-error [handler]
   (fn [req]
     (try
@@ -16,9 +18,9 @@
       (catch Throwable t
         (log/error t)
         (layout/error-page {:status 500
-                            :title "错误发生了"
-                            :message "服务器发生错误请与管理员联系"})))))
-
+                            :title "错误"
+                            :message "系统可能发生了一些错误"})))))
+;; CSRF
 (defn wrap-csrf [handler]
   (wrap-anti-forgery
     handler
@@ -26,29 +28,34 @@
      (layout/error-page {:status 403
                             :title "无效的 anti-forgery token"})}))
 
-(defn on-error [request response]
-  (layout/error-page {:status 403
-                      :title (str "访问 " (:uri request) " 需要验证")}))
-
+;; session 标识
 (defn wrap-identity [handler]
   (fn [request]
     (binding [*identity* (get-in request [:session :identity])]
       (handler request))))
 
-(defn wrap-auth [handler]
+;; 验证和授权
+(defn wrap-session-auth [handler]
   (let [backend (session-backend)]
     (-> handler
-      (wrap-identity)
-      (wrap-csrf)
+      wrap-identity
       (wrap-authentication backend)
       (wrap-authorization backend))))
 
+;; 默认
+(defn wrap-defaults [handler]
+  (ring-defaults/wrap-defaults
+    handler
+    (-> ring-defaults/site-defaults
+      (assoc-in [:security :anti-forgery] false)
+      (assoc :session true))))
+
 (defn wrap-base [handler]
   (-> handler
-      (wrap-identity)
-      (wrap-webjars)
-      (wrap-format)
-      (wrap-defaults (-> site-defaults
-                         (assoc-in [:security :anti-forgery] false)
-                         (assoc :session true)))
-      (wrap-internal-error)))
+    wrap-reload
+    wrap-identity
+    wrap-webjars
+    wrap-flash
+    wrap-format
+    wrap-defaults
+    wrap-internal-error))

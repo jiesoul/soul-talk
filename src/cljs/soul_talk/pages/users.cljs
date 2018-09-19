@@ -9,35 +9,35 @@
 (def formatter (f/formatter "yyyyMMdd"))
 
 (defn user-list []
-  (r/with-let
-    [users @(subscribe [:admin/users])]
-    (if users
-      [:div.table-responsive
-       [:table.table.table-striped.table-sm
-        [:thead
-         [:tr
-          [:th "email"]
-          [:th "name"]
-          [:th "last_login"]
-          [:th "Header"]]]
-        [:tbody
-         (for [{:keys [email name last_login] :as user} users]
-           ^{:key user} [:tr
-                         [:td email]
-                         [:td name]
-                         [:td (str last_login)]
-                         [:td "action"]])]]])))
+  )
 
 (defn users-page []
   [:div
    [:h2 "User List"]
-   [user-list]])
+   (r/with-let
+     [users (subscribe [:admin/users])]
+     (if @users
+       [:div.table-responsive
+        [:table.table.table-striped.table-sm
+         [:thead
+          [:tr
+           [:th "email"]
+           [:th "name"]
+           [:th "last_login"]
+           [:th "Header"]]]
+         [:tbody
+          (for [{:keys [email name last_login] :as user} @users]
+            ^{:key user} [:tr
+                          [:td email]
+                          [:td name]
+                          [:td (str last_login)]
+                          [:td "action"]])]]]))])
 
 (defn change-pass-page []
-  (r/with-let [user @(subscribe [:user])
+  (r/with-let [user (subscribe [:user])
                 pass-data (r/atom {:email  (:email user)})
                 error (subscribe [:error])]
-    (if user
+    (if @user
       [:div.container-fluid
        [:div.form-signin
         [:h1.h3.mb-3.font-weight-normal.text-center "修改密码"]
@@ -56,10 +56,10 @@
 
 
 (defn user-profile-page []
-  (r/with-let [user @(subscribe [:user])
-                user-data (r/atom user)
+  (r/with-let [user (subscribe [:user])
+                user-data (r/atom @user)
                error (subscribe [:error])]
-    (if user
+    (if @user
       [:div.container
        [:div.form-group
         [:h1.h3.mb-3.font-weight-normal.text-center "User Profile"]
