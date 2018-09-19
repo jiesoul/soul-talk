@@ -11,7 +11,7 @@
                  [ragtime "0.7.2"]
                  [ring "1.6.3"]
                  [mount "0.1.13"]
-                 [org.clojure/tools.namespace "0.2.11"]
+                 [org.clojure/tools.namespace "0.3.0-alpha4"]
                  [compojure "1.6.1"]
                  [metosin/compojure-api "2.0.0-alpha25"]
                  [metosin/spec-tools "0.7.1"]
@@ -53,37 +53,43 @@
    [:cljsbuild :builds :dev :compiler :output-dir]
    [:cljsbuild :builds :dev :compiler :output-to]]
 
-  :cljsbuild
-  {:builds {:dev                             ;; 开发配置
-            {:source-paths ["src/cljs" "src/cljc"] ;; 源代码目录
-             ;:resource-paths ["target/cljsbuild"]
-             :figwheel     true                             ;; 开启 figwheel
-             :compiler     {:main                 soul-talk.core ;; 主命名空间
-                            :asset-path           "js/out"  ;; 加载文件的地方 和 临时目录相关
-                            :output-to            "resources/public/js/main.js" ;; 主文件地方
-                            :output-dir           "resources/public/js/out" ;; 临时文件目录
-                            :optimizations :none
-                            :source-map true      ;; 源代码
-                            :pretty-print         true}}
-            :prod
-            {:source-paths ["src/cljs"]
-             :compiler {:output-to "resources/public/js/main.js"
-                        :optimizations :advanced
-                        :pretty-print false}}}}  ;; 打印格式
+
   :figwheel
   {:http-server-root "public"
    :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
    :css-dirs ["resources/public/css"]}
 
-  :profiles {:dev {:source-paths ["env/dev/clj"]
-                   :dependencies [[ring/ring-devel "1.6.3"]
-                                  [ring/ring-mock "0.3.2"]
-                                  [figwheel-sidecar "0.5.16"]
-                                  [doo "0.1.10"]
-                                  [com.cemerick/piggieback "0.2.2"]
-                                  [org.clojure/tools.nrepl "0.2.13"]
-                                  [org.clojure/test.check "0.9.0"]]
-                   :plugins [[com.jakemccrary/lein-test-refresh "0.23.0"]
-                             [lein-doo "0.1.10"]]}}
+  :profiles
+  {:dev {:source-paths ["env/dev/clj"]
+         :dependencies [[ring/ring-devel "1.6.3"]
+                        [ring/ring-mock "0.3.2"]
+                        [pjstadig/humane-test-output "0.8.3"]
+                        [figwheel-sidecar "0.5.16"]
+                        [doo "0.1.10"]
+                        [com.cemerick/piggieback "0.2.2"]
+                        [org.clojure/tools.nrepl "0.2.13"]
+                        [org.clojure/test.check "0.9.0"]]
+         :plugins [[com.jakemccrary/lein-test-refresh "0.23.0"]
+                   [lein-doo "0.1.10"]]
+         :cljsbuild
+           {:builds
+            {:dev                             ;; 开发配置
+             {:source-paths ["src/cljs" "src/cljc"] ;; 源代码目录
+              ;:resource-paths ["target/cljsbuild"]
+              :figwheel     true                             ;; 开启 figwheel
+              :compiler     {:main          soul-talk.core;; 主命名空间
+                             :asset-path    "js/out"  ;; 加载文件的地方 和 临时目录相关
+                             :output-to     "resources/public/js/main.js" ;; 主文件地方
+                             :output-dir    "resources/public/js/out" ;; 临时文件目录
+                             :optimizations :none
+                             :source-map    true      ;; 源代码
+                             :pretty-print  true}}}}}
+   :test {:cljsbuild
+          {:builds
+           {:test
+            {:source-paths ["src/cljs" "test/cljs"]
+             :compiler {:output-to "target/test.js"
+                        :main soul-talk.runner
+                        :optimizations :none}}}}}}
 
   )

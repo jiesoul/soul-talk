@@ -35,7 +35,7 @@
 
 (defn change-pass-page []
   (r/with-let [user (subscribe [:user])
-                pass-data (r/atom {:email  (:email user)})
+                pass-data (r/atom {:email  (:email @user)})
                 error (subscribe [:error])]
     (if @user
       [:div.container-fluid

@@ -1,17 +1,18 @@
-(ns soul-talk.core-test
+(ns soul-talk.test.handler
   (:require [clojure.test :refer :all]
             [ring.mock.request :as mock]
-            [soul-talk.core :refer :all]
+            [soul-talk.handler :refer :all]
             [taoensso.timbre :as log]))
 
 (deftest test-app
-  (testing "main route"
-    (let [response ((app) (mock/request :get "/"))]
+
+  (testing "home found"
+    (let [response (app (mock/request :get "/"))]
       (is (= 200
-            {:status response}))))
+            (:status response)))))
 
   (testing "not-found route"
-    (let [response ((app) (mock/request :get "/invalid"))]
+    (let [response (app (mock/request :get "/invalid"))]
       (is (= 404 (:status response))))))
 
 (deftest a-test
