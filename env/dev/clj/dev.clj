@@ -13,7 +13,7 @@
   {:datastore  (jdbc/sql-database db-spec)
    :migrations (jdbc/load-resources "migrations")})
 
-(tn/set-refresh-dirs "src" "dev")
+;(tn/set-refresh-dirs "src" "dev")
 
 (defn start []
   (mount/start

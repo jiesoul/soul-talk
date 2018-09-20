@@ -1,7 +1,8 @@
 (ns soul-talk.models.db
   (:require [clojure.java.jdbc :as sql]
             [hikari-cp.core :refer :all]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [mount.core :refer [defstate]]))
 
 (def datasource-options {:auto-commit true
                          :read-only false
@@ -34,3 +35,5 @@
 (defn test-db []
   (sql/query db-spec "select 3*5 as result"))
 
+(defstate conn :start (create-conn)
+  :stop (close-conn))

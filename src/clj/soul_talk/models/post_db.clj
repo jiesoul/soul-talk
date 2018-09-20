@@ -13,7 +13,8 @@
   (sql/query db-spec :posts ["select * from posts"]))
 
 (defn get-post [id]
-  (sql/query db-spec :posts ["select * from posts where id = ?" id]))
+  (sql/query db-spec ["SELECT * FROM posts where id = ? " id]
+    {:result-set-fn first}))
 
 
 (defn delete-post! [id]
