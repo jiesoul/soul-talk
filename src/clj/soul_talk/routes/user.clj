@@ -28,7 +28,6 @@
 
 (handler load-users! []
   (let [users (user-db/select-all-users)]
-    (log/info "users was loaded.............")
     (resp/ok {:result :ok
               :users (->> users
                          (map #(assoc % :password nil)))})))

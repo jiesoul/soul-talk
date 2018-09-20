@@ -32,8 +32,9 @@
 
 (def db-spec {:datasource @datasource})
 
-(defn test-db []
-  (sql/query db-spec "select 3*5 as result"))
-
-(defstate conn :start (create-conn)
+(defstate ^:dynamic *db*
+  :start (create-conn)
   :stop (close-conn))
+
+(defn test-db []
+  (sql/query *db* "select 3*5 as result"))

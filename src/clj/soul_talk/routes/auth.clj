@@ -10,6 +10,7 @@
             [soul-talk.routes.common :refer [handler]]))
 
 
+
 (handler register! [{:keys [session] :as req} user]
   (if-let [error (reg-errors user)]
     (resp/precondition-failed

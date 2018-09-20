@@ -4,6 +4,9 @@
             [soul-talk.handler :refer :all]
             [taoensso.timbre :as log]))
 
+(def user {:email    "jiesoul@gmail.com"
+                  :password "12345678"})
+
 (deftest test-app
 
   (testing "home found"
@@ -13,12 +16,24 @@
 
   (testing "not-found route"
     (let [response (app (mock/request :get "/invalid"))]
-      (is (= 404 (:status response))))))
+      (is (= 404 (:status response)))))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 0))))
+  (testing "load categories"
+    (let [response (app (mock/request :get "/api/categories"))]
+      (is (= 200 (:status response)))))
 
-(deftest b-test
-  (testing "Test i success"
-    (is (= 1 1))))
+
+  (testing "login"
+    (let [response (app (-> (mock/request :post "/api/login")
+                          (mock/json-body user)))]
+      (log/info response)
+      (is (= 200 (:status response)))))
+
+  ;(testing "create category"
+  ;  (let [user (app (-> (mock/request :post "/api/login")
+  ;                    (mock/json-body @user)))
+  ;        response (app (-> (mock/request :post "/api/admin/create-category")
+  ;                        (mock/json-body {:category {:name "编程"}})))]
+  ;    (is (= 200 (:status response)))))
+
+  )

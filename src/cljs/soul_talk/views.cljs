@@ -6,6 +6,7 @@
             [soul-talk.pages.admin :refer [main-component]]
             [soul-talk.pages.auth :refer [login-page register-page]]
             [soul-talk.pages.users :refer [users-page change-pass-page user-profile-page]]
+            [soul-talk.pages.post :refer [posts-page create-post-page]]
             [taoensso.timbre :as log]
             [clojure.string :as str]))
 
@@ -96,6 +97,12 @@
 
 (defmethod pages :users [_ _]
   (admin-page users-page))
+
+(defmethod pages :posts [_ _]
+  (admin-page posts-page))
+
+(defmethod pages :create-post [_ _]
+  (admin-page create-post-page))
 
 (defmethod pages :default [_ _] [:div "default show ......"])
 

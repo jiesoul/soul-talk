@@ -1,5 +1,5 @@
 (ns dev
-  (:require [soul-talk.models.db :as db :refer [db-spec]]
+  (:require [soul-talk.models.db :as db :refer [*db* db-spec]]
             [clojure.pprint :refer [pprint]]
             [clojure.tools.namespace.repl :as tn]
             [mount.core :as mount :refer [defstate]]
@@ -7,17 +7,17 @@
             [figwheel :refer [start-fw stop-fw cljs]]
             [soul-talk.core]
             [ragtime.jdbc :as jdbc]
-            [ragtime.repl :as rig-repl :refer [migrate rollback]]))
+            [ragtime.repl :refer [migrate rollback]]))
+
+
+(defn start []
+  (mount/start
+    #'soul-talk.core/system
+    #'soul-talk.models.db/*db*))
 
 (def config
   {:datastore  (jdbc/sql-database db-spec)
    :migrations (jdbc/load-resources "migrations")})
-
-;(tn/set-refresh-dirs "src" "dev")
-
-(defn start []
-  (mount/start
-    #'soul-talk.core/system))
 
 (defn stop []
   (mount/stop))

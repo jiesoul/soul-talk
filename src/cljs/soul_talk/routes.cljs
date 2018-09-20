@@ -55,10 +55,17 @@
   (run-events [[:admin/load-users]
                [:set-active-page :users]]))
 
+(secretary/defroute
+  "/posts" []
+  (run-events [[:admin/load-posts]
+               [:set-active-page :posts]]))
 
-;(secretary/defroute
-;  "/admin/posts" []
-;  (admin-page-events [:set-active-page :posts]))
+(secretary/defroute
+  "/create-post" []
+  (run-events [[:load-categories]
+               [:load-tags]
+               [:set-active-page :create-post]]))
+
 
 ;; 使用浏览器可以使用前进后退 历史操作
 (defn hook-browser-navigation! []

@@ -18,4 +18,6 @@
   (GET "/admin" [] (home-page))
   (GET "/users" [] (home-page))
   (GET "/change-pass" [] (home-page))
-  (GET "/user-profile" [] (home-page)))
+  (GET "/user-profile" [] (home-page))
+  (GET "/posts" [] (home-page))
+  (GET "/create-post" [] (home-page)))

@@ -7,6 +7,9 @@
             soul-talk.handler.errors
             soul-talk.handler.admin
             soul-talk.handler.users
+            soul-talk.handler.posts
+            soul-talk.handler.category
+            soul-talk.handler.tag
             [taoensso.timbre :as log]))
 
 ;; 初始化

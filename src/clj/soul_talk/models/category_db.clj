@@ -1,12 +1,12 @@
 (ns soul-talk.models.category-db
-  (:require [soul-talk.models.db :refer [db-spec]]
+  (:require [soul-talk.models.db :refer [*db*]]
             [clojure.java.jdbc :as sql]))
 
 (defn save-category! [category]
-  (sql/insert! db-spec :categories category))
+  (sql/insert! *db* :categories category))
 
 (defn get-categories []
-  (sql/query db-spec ["select * from categories"]))
+  (sql/query *db* ["select * from categories"]))
 
 (defn delete-category! [id]
-  (sql/delete! db-spec :categories ["id = ?" id]))
+  (sql/delete! *db* :categories ["id = ?" id]))

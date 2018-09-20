@@ -23,3 +23,9 @@
 (reg-sub :admin/users query)
 
 (reg-sub :loading? query)
+
+(reg-sub :admin/posts query)
+
+(reg-sub :categories query)
+
+(reg-sub :tags query)

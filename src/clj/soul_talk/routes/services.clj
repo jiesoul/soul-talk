@@ -7,7 +7,10 @@
             [buddy.auth.accessrules :refer [restrict]]
             [buddy.auth :refer [authenticated?]]
             [compojure.api.meta :refer [restructure-param]]
-            [soul-talk.middleware :refer [wrap-session-auth]]))
+            [soul-talk.middleware :refer [wrap-session-auth]]
+            [soul-talk.routes.category :as category]
+            [soul-talk.routes.tag :as tag]
+            [soul-talk.routes.posts :as posts]))
 
 (defn admin?
   [request]
@@ -47,11 +50,7 @@
                :spec "/swagger.json"
                :data {:info     {:title       "Soul Talk API"
                                  :description "public API"}
-                      :tags     [{:name "api" :description "apis"}]}}
-     :exceptionos
-     {:handlers
-      {;;
-       }}}
+                      :tags     [{:name "api" :description "apis"}]}}}
     
 
     (context "/api" []
@@ -74,11 +73,22 @@
         :summary "user logout, and remove user session"
         (auth/logout!))
 
+      (GET "/categories" []
+        :return ::Result
+        :summary "load categories"
+        (category/get-all-categories))
+
+      (GET "/tags" []
+        :return ::Result
+        :summary "load tags"
+        (tag/get-all-tags))
+
 
       (context "/admin" []
         :middleware [wrap-session-auth]
         :auth-rules authenticated?
         :tags ["admin"]
+
 
         (GET "/users" []
           :return ::Result
@@ -95,5 +105,16 @@
           :return ::Result
           :body [user user/User]
           :summary "User Profile update"
-          (user/save-user-profile! user)))
-      )))
+          (user/save-user-profile! user))
+
+        (POST "/create-category" []
+          :return ::Result
+          :body [category category/Category]
+          :summary "create category"
+          (category/save-category! category))
+
+        (GET "/posts" []
+          :return ::Result
+          :summary "return all posts contains id not publish"
+          (posts/get-all-posts))
+        ))))
