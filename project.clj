@@ -62,6 +62,7 @@
 
   :profiles
   {:dev  {:source-paths ["env/dev/clj"]
+          :resource-paths ["env/dev/resources"]
           :repl-options {:init-ns user}
           :dependencies [[ring/ring-devel "1.6.3"]
                          [ring/ring-mock "0.3.2"]
@@ -73,8 +74,7 @@
                          [org.clojure/tools.nrepl "0.2.13"]
                          [org.clojure/test.check "0.9.0"]]
           :plugins      [[com.jakemccrary/lein-test-refresh "0.23.0"]
-                         [lein-doo "0.1.10"]
-                         [lein-figwheel "0.5.17-SNAPSHOT"]]
+                         [lein-doo "0.1.10"]]
           :cljsbuild
                         {:builds
                          [{:id           "dev"

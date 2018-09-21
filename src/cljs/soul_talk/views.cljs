@@ -7,6 +7,8 @@
             [soul-talk.pages.auth :refer [login-page register-page]]
             [soul-talk.pages.users :refer [users-page change-pass-page user-profile-page]]
             [soul-talk.pages.post :refer [posts-page create-post-page]]
+            [soul-talk.pages.category :as category]
+            [soul-talk.pages.tag :as tag]
             [taoensso.timbre :as log]
             [clojure.string :as str]))
 
@@ -59,7 +61,10 @@
          [:div.sidebar-sticky
           [:ul.nav.flex-column
            (admin-sidebar-link "/admin" "Dashboard" :admin)
+           (admin-sidebar-link "/categories" "Categories" :categories)
+           (admin-sidebar-link "/categories-add" "Categories Add" :categories/add)
            (admin-sidebar-link "/posts" "Posts" :posts)
+           (admin-sidebar-link "/posts-add" "Posts Add" :posts/add)
            (admin-sidebar-link "/users" "Users" :users)]]]))))
 
 
@@ -71,9 +76,9 @@
     [user (subscribe [:user])]
     (log/info @user)
     (if @user
-      [:div.container
+      [:div.container-fluid
        [admin-navbar @user]
-       [:div.container
+       [:div.container-fluid
         [:div.row
          [admin-sidebar]
          [:main#main.col-md-9.ml-sm-auto.col-lg-10.px-4 {:role "main"}
@@ -101,8 +106,14 @@
 (defmethod pages :posts [_ _]
   (admin-page posts-page))
 
-(defmethod pages :create-post [_ _]
+(defmethod pages :posts/add [_ _]
   (admin-page create-post-page))
+
+(defmethod pages :categories/add [_ _]
+  (admin-page category/add-page))
+
+(defmethod pages :tags/add [_ _]
+  (admin-page tag/add-page))
 
 (defmethod pages :default [_ _] [:div "default show ......"])
 

@@ -107,14 +107,37 @@
           :summary "User Profile update"
           (user/save-user-profile! user))
 
-        (POST "/create-category" []
-          :return ::Result
-          :body [category category/Category]
-          :summary "create category"
-          (category/save-category! category))
+        (context "/categories" []
 
-        (GET "/posts" []
-          :return ::Result
-          :summary "return all posts contains id not publish"
-          (posts/get-all-posts))
+          (POST "/add" []
+            :return ::Result
+            :body [category category/Category]
+            :summary "create category"
+            (category/save-category! category))
+          )
+
+        (context "/tags" []
+
+          (POST "/add" []
+            :return ::Result
+            :body [tag tag/Tag]
+            :summary "create category"
+            (tag/save-tag! tag)))
+
+
+        (context "/posts" []
+
+          (GET "/" []
+            :return ::Result
+            :summary "return all posts contains id not publish"
+            (posts/get-all-posts))
+
+          (POST "/add" []
+            :return ::Result
+            :body [post posts/Post]
+            :summary "add a new post"
+            (posts/save-post! post))
+          )
+
+
         ))))

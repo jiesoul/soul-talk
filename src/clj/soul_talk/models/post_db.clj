@@ -1,8 +1,10 @@
 (ns soul-talk.models.post-db
   (:require [soul-talk.models.db :refer [*db*]]
-            [clojure.java.jdbc :as sql]))
+            [clojure.java.jdbc :as sql]
+            [taoensso.timbre :as log]))
 
 (defn save-post! [post]
+  (log/info post)
   (sql/insert! *db* :posts post))
 
 (defn update-post! [{:keys [id] :as post}]
@@ -10,7 +12,7 @@
 
 
 (defn get-posts-all []
-  (sql/query *db* :posts ["select * from posts"]))
+  (sql/query *db* ["select * from posts"]))
 
 (defn get-post-by-id [id]
   (sql/query *db* ["SELECT * FROM posts where id = ? order by create_time desc " id]

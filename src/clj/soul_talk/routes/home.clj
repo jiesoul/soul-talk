@@ -8,9 +8,7 @@
 
 (defroutes
   home-routes
-  (GET "/" [] (home-page))
-  ;(GET "/admin/posts" [] (home-page))
-  )
+  (GET "/" [] (home-page)))
 
 
 (defroutes
@@ -19,5 +17,6 @@
   (GET "/users" [] (home-page))
   (GET "/change-pass" [] (home-page))
   (GET "/user-profile" [] (home-page))
+  (GET "/posts-add" [] (home-page))
   (GET "/posts" [] (home-page))
-  (GET "/create-post" [] (home-page)))
+  (GET "/categories-add" [] (home-page)))

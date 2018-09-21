@@ -5,18 +5,23 @@
             [taoensso.timbre :as log]
             [clojure.spec.alpha :as s]
             [java-time.local :as l]
-            [soul-talk.routes.common :refer [handler]]))
+            [java-time.format :as f]
+            [soul-talk.routes.common :refer [handler]]
+            [soul-talk.validate :refer [post-errors]]))
 
 (s/def ::id string?)
 (s/def ::img_url string?)
 (s/def ::title string?)
 (s/def ::content string?)
 (s/def ::publish int?)
-(s/def ::category int?)
+(s/def ::category string?)
 (s/def ::author string?)
 
-(def Post (s/def ::Post (s/keys :req-un [::title ::content ::publish ::category ::author]
+(def Post (s/def ::Post (s/keys :req-un [::title ::content ::publish ::author]
                                 :opt-un [::category])))
+
+
+(def format-id (java-time.format/formatter "yyyyMMddHHmmssSSS"))
 
 (handler get-all-posts []
   (let [posts (post-db/get-posts-all)]
@@ -29,13 +34,23 @@
               :post post})))
 
 (handler save-post! [post]
-  (let [time (l/local-date-time)]
-    (post-db/save-post! (-> post
-                          (assoc :create_time time)
-                          (assoc :modify_time time)
-                          (assoc :publish 0)))
-    (-> {:result :ok}
-      (resp/ok))))
+  (let [error (post-errors post)
+        time (l/local-date-time)
+        id (f/format format-id time)
+        category (Integer/parseInt (:category post))]
+    (log/info "category:" category)
+    (if error
+      (resp/unauthorized {:result :error
+                          :message error})
+      (do
+        (-> post
+            (assoc :id id)
+            (assoc :category category)
+            (assoc :create_time time)
+            (assoc :modify_time time))
+        (post-db/save-post! post)
+        (-> {:result :ok}
+            (resp/ok))))))
 
 (handler update-post! [post]
   (do
@@ -49,10 +64,3 @@
     (post-db/publish-post! (assoc post :modify_time (l/local-date-time)))
     (-> {:result :ok}
       (resp/ok))))
-
-(defroutes
-  post-routes
-  (context
-    "/posts" []
-    (GET "/" [] (get-all-posts))
-    (GET "/:post-id" [post-id] (get-post post-id))))

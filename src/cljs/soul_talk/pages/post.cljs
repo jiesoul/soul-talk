@@ -34,7 +34,7 @@
     [:div.container-fluid
      [:h3 "Post Action"]
      [:hr]
-     [:a.btn.btn-primary {:href "/create-post"}
+     [:a.btn.btn-primary {:href "/posts/add"}
       "Create"]
      [:h3 "Post List"]
      [:hr]
@@ -45,27 +45,32 @@
   (r/with-let [user (subscribe [:user])
                categories (subscribe [:categories])
                tags (subscribe [:tags])
-               post (r/atom {})]
+               error (subscribe [:error])
+               post (r/atom {:author (:name @user)
+                             :publish 0})]
     [:div.container-fluid
-     [:h3 "Post Create"]
+     [:h3 "Post Add"]
      [:hr]
-     [:div.form-signin
-      [:div.form-group.form-contral
+     [:div.container
+      [:div
        [:div.form-group
-        [:label {:for "title"} ]
-        [:input#title
-         {:type :text
-          :value (:title @post)
-          :on-change #(swap! post assoc :title (-> % .-target .-value))}]]
-       ;[c/text-input "Title" "title" "please title" post]
+        [c/text-input "标题" :title "请输入标题" post]]
        [:div.form-group
-        [:label {:for "category"}]
+        [:label {:for "category"} "分类"]
         [:select#category.form-control
+         {:on-change #(swap! post assoc :category (-> % .-target .-value))}
          [:option ""]
          (for [{:keys [id name]} @categories]
            ^{:key id}
            [:option {:value id} name])]]
        [:div.form-group
-        [:label {:for "content"}]
+        [:label {:for "content"} "正文"]
         [:textarea#content.form-control
-         {:row 3}]]]]]))
+         {:on-change #(swap! post assoc :content (-> % .-target .-value))
+          :row 10}]]
+       (when @error
+         [:div.alert.alert-danger @error])
+       [:div.form-group
+        [:a.btn.btn-primary
+         {:on-click #(dispatch [:posts/add @post])}
+         "save"]]]]]))

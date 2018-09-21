@@ -28,14 +28,14 @@
 ;; home 的默认加载
 (defn home-page-events [& events]
   (.scrollTo js/window 0 0)
-  (run-events (into
-                [[:set-active-page :home]]
+  (run-events-admin (into
+                [[:set-active-page :admin]]
                 events)))
 
 ;; 首页
 (secretary/defroute
   "/" []
-  (home-page-events []))
+  (run-events [[:set-active-page :home]]))
 
 ;; 后台管理
 (secretary/defroute
@@ -56,15 +56,19 @@
                [:set-active-page :users]]))
 
 (secretary/defroute
-  "/posts" []
-  (run-events [[:admin/load-posts]
-               [:set-active-page :posts]]))
+  "/posts-add" []
+  (run-events [[:load-categories]
+                [:load-tags]
+                [:set-active-page :posts/add]]))
 
 (secretary/defroute
-  "/create-post" []
-  (run-events [[:load-categories]
-               [:load-tags]
-               [:set-active-page :create-post]]))
+  "/posts" []
+  (run-events [[:admin/load-posts]
+                [:set-active-page :posts]]))
+
+(secretary/defroute
+  "/categories-add" []
+  (run-events [[:set-active-page :categories/add]]))
 
 
 ;; 使用浏览器可以使用前进后退 历史操作

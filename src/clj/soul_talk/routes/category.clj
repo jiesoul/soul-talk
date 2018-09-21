@@ -17,7 +17,7 @@
               :categories categories})))
 
 (handler save-category! [category]
-  (do
-    (category-db/save-category! category)
-    (-> {:result :ok}
+  (let [co (category-db/save-category! category)]
+    (-> {:result :ok
+         :category co}
       resp/ok)))

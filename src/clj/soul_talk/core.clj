@@ -10,7 +10,8 @@
         {:port 3000
          :join? false})))
 
-(defstate system
+(defstate ^{:on-reload :noop}
+  system
   :start (start-system)
   :stop (.stop system))
 
