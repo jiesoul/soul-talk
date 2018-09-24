@@ -2,9 +2,13 @@
   (:require [selmer.parser :as parser]
             [ring.util.http-response :refer [content-type ok]]
             [ring.util.anti-forgery :refer [anti-forgery-field]]
-            [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]))
+            [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]
+            [clojure.java.io :as io]))
 
+(parser/cache-off!)
+(parser/set-resource-path! (io/resource "templates"))
 (declare ^:dynamic *identity*)
+(declare ^:dynamic *app-context*)
 (parser/add-tag! :csrf-field (fn [_ _] (anti-forgery-field)))
 
 (def timestamp (.getTime (java.util.Date.)))
@@ -20,6 +24,7 @@
           :page template
           :user *identity*
           :timestamp timestamp
+          ;:servlet-context *app-context*
           :csrf-token *anti-forgery-token*)))
     "text/html; charset=utf-8"))
 

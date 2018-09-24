@@ -33,7 +33,7 @@
 
 (reg-fx
   :reload-page
-  (fn []
+  (fn [_]
     (accountant/dispatch-current!)))
 
 

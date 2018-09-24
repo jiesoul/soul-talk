@@ -6,14 +6,14 @@
             [soul-talk.pages.admin :refer [main-component]]
             [soul-talk.pages.auth :refer [login-page register-page]]
             [soul-talk.pages.users :refer [users-page change-pass-page user-profile-page]]
-            [soul-talk.pages.post :refer [posts-page create-post-page]]
+            [soul-talk.pages.post :refer [posts-page create-post-page post-view-page]]
             [soul-talk.pages.category :as category]
             [soul-talk.pages.tag :as tag]
             [taoensso.timbre :as log]
             [clojure.string :as str]))
 
 (defn admin-user-menu [user]
-  (if user
+  (if @user
     [:ul.nav.navbar-nav
      [:li.nav-item.text-nowrap.dropdown
       [:a.nav-link.dropdown-toggle
@@ -24,7 +24,7 @@
         :aria-haspopup true
         :aria-expanded false}
        [:i.fa.fa-user]
-       " " (if (str/blank? (:name user)) (:email user) (:name user))]
+       " " (if (str/blank? (:name @user)) (:email @user) (:name @user))]
       [:div.dropdown-menu.dropdown-menu-right
        {:aria-labelledby "usermenu"}
        [:a.dropdown-item {:href "/user-profile"} "Your Profile"]
@@ -62,9 +62,7 @@
           [:ul.nav.flex-column
            (admin-sidebar-link "/admin" "Dashboard" :admin)
            (admin-sidebar-link "/categories" "Categories" :categories)
-           (admin-sidebar-link "/categories-add" "Categories Add" :categories/add)
            (admin-sidebar-link "/posts" "Posts" :posts)
-           (admin-sidebar-link "/posts-add" "Posts Add" :posts/add)
            (admin-sidebar-link "/users" "Users" :users)]]]))))
 
 
@@ -74,10 +72,9 @@
 (defn admin-page [main]
   (r/with-let
     [user (subscribe [:user])]
-    (log/info @user)
     (if @user
       [:div.container-fluid
-       [admin-navbar @user]
+       [admin-navbar user]
        [:div.container-fluid
         [:div.row
          [admin-sidebar]
@@ -103,14 +100,36 @@
 (defmethod pages :users [_ _]
   (admin-page users-page))
 
+(defmethod pages :categories [_ _]
+  (admin-page category/categories-page))
+
+(defmethod pages :categories/add [_ _]
+  (admin-page category/add-page))
+
 (defmethod pages :posts [_ _]
   (admin-page posts-page))
 
 (defmethod pages :posts/add [_ _]
-  (admin-page create-post-page))
+  (r/with-let [user (subscribe [:user])]
+              (if @user
+                [:div.container-fluid
+                 [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
+                  [:a.navbar-brand
+                   {:href "#"} "Soul Talk"]
+                  [:div.container
+                   [:ul.navbar-nav
+                    [:li.nav-item.active
+                     [:a.nav-link
+                      {:href "#"}
+                      "写文章"]]]]]
+                 [:div.container
+                  [create-post-page]]]
+                (pages :login nil))))
 
-(defmethod pages :categories/add [_ _]
-  (admin-page category/add-page))
+
+(defmethod pages :posts/view [_ _]
+  (.scrollTo js/window 0 0)
+  [post-view-page])
 
 (defmethod pages :tags/add [_ _]
   (admin-page tag/add-page))

@@ -56,20 +56,32 @@
                [:set-active-page :users]]))
 
 (secretary/defroute
-  "/posts-add" []
+  "/categories" []
+  (run-events [[:load-categories]
+               [:set-active-page :categories]]))
+
+(secretary/defroute
+  "/categories/add" []
+  (run-events [[:set-active-page :categories/add]]))
+
+
+(secretary/defroute
+  "/posts" []
+  (run-events [[:admin/load-posts]
+               [:set-active-page :posts]]))
+
+(secretary/defroute
+  "/posts/add" []
   (run-events [[:load-categories]
                 [:load-tags]
                 [:set-active-page :posts/add]]))
 
 (secretary/defroute
-  "/posts" []
-  (run-events [[:admin/load-posts]
-                [:set-active-page :posts]]))
-
-(secretary/defroute
-  "/categories-add" []
-  (run-events [[:set-active-page :categories/add]]))
-
+  "/posts/:id" [id]
+  (run-events [[:load-categories]
+               [:load-tags]
+               [:load-post id]
+               [:set-active-page :posts/view]]))
 
 ;; 使用浏览器可以使用前进后退 历史操作
 (defn hook-browser-navigation! []

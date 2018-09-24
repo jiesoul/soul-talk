@@ -2,7 +2,8 @@
   (:require [clojure.java.jdbc :as sql]
             [hikari-cp.core :refer :all]
             [taoensso.timbre :as log]
-            [mount.core :refer [defstate]]))
+            [mount.core :refer [defstate]])
+  (:import (java.sql Date)))
 
 (def datasource-options {:auto-commit true
                          :read-only false
@@ -38,3 +39,6 @@
 
 (defn test-db []
   (sql/query *db* "select 3*5 as result"))
+
+(defn to-date [^Date sql-date]
+  (-> sql-date (.getTime) (java.util.Date.)))

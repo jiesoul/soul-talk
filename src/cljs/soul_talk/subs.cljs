@@ -29,3 +29,5 @@
 (reg-sub :categories query)
 
 (reg-sub :tags query)
+
+(reg-sub :post query)

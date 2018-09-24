@@ -11,7 +11,6 @@
             [ragtime.jdbc :as jdbc]
             [ragtime.repl :refer [migrate rollback]]))
 
-
 (defn start []
   (mount/start
     #'soul-talk.config/conf

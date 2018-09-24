@@ -37,6 +37,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [wrap-restricted rule]))
 
+(s/def ::id int?)
 (s/def ::result keyword?)
 (s/def ::message string?)
 (s/def ::Result (s/keys :req-un [::result]
@@ -84,6 +85,12 @@
         (tag/get-all-tags))
 
 
+      (GET "/posts/:id" [id]
+        :return ::Result
+        :summary "load tags"
+        (posts/get-post id))
+
+
       (context "/admin" []
         :middleware [wrap-session-auth]
         :auth-rules authenticated?
@@ -114,6 +121,12 @@
             :body [category category/Category]
             :summary "create category"
             (category/save-category! category))
+
+          (POST"/delete" []
+                :return ::Result
+                :body [category ::category/Category]
+                :summary "delete category"
+                (category/delete-category! category))
           )
 
         (context "/tags" []

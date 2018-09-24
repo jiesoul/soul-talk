@@ -12,10 +12,10 @@
 
 
 (defn get-posts-all []
-  (sql/query *db* ["select * from posts"]))
+  (sql/query *db* ["select * from posts order by create_time desc"]))
 
 (defn get-post-by-id [id]
-  (sql/query *db* ["SELECT * FROM posts where id = ? order by create_time desc " id]
+  (sql/query *db* ["SELECT * FROM posts where id = ? " id]
              {:result-set-fn first}))
 
 (defn publish-post! [{:keys [id update_time]}]

@@ -20,7 +20,6 @@
 (def Post (s/def ::Post (s/keys :req-un [::title ::content ::publish ::author]
                                 :opt-un [::category])))
 
-
 (def format-id (java-time.format/formatter "yyyyMMddHHmmssSSS"))
 
 (handler get-all-posts []
@@ -38,17 +37,15 @@
         time (l/local-date-time)
         id (f/format format-id time)
         category (Integer/parseInt (:category post))]
-    (log/info "category:" category)
     (if error
       (resp/unauthorized {:result :error
                           :message error})
       (do
-        (-> post
-            (assoc :id id)
-            (assoc :category category)
-            (assoc :create_time time)
-            (assoc :modify_time time))
-        (post-db/save-post! post)
+        (post-db/save-post! (-> post
+                                (assoc :id id)
+                                (assoc :category category)
+                                (assoc :create_time time)
+                                (assoc :modify_time time)))
         (-> {:result :ok}
             (resp/ok))))))
 

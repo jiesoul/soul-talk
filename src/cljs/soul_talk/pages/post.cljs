@@ -2,42 +2,56 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.pages.common :as c]
+            [cljs-time.format :as f]
+            [markdown.core :refer [md->html]]
+            [markdown-to-hiccup.core :as m]
             [taoensso.timbre :as log])
   (:import [goog.History]))
+
+
+(def custom-formatter (f/formatters :basic-date-time))
 
 (defn posts-list []
   (r/with-let [posts (subscribe [:admin/posts])]
     [:table.table.table-striped
      [:thead
       [:tr
-       [:th "#"]
        [:th "title"]
        [:th "create_time"]
        [:th "modify_time"]
        [:th "publish"]
        [:th "author"]
-       [:th "counter"]]]
+       [:th "counter"]
+       [:th "action"]]]
      [:tbody
-      (for [{:keys [title create_time modify_time publish author counter] :as post} @posts]
-        ^{:key post}
+      (for [{:keys [id title create_time modify_time publish author counter] :as post} @posts]
+        ^{:key id}
         [:tr
          [:td title]
-         [:td create_time]
-         [:td modify_time]
+         [:td (str create_time)]
+         [:td (str modify_time)]
          [:td publish]
          [:td author]
          [:td counter]
-         [:td counter]])]]))
+         [:td
+          [:a.btn.btn-outline-primary
+           {:target "_blank"
+            :href   (str "/posts/" id)}
+           "查看"]
+          [:a.btn.btn-outline-primary
+           {:on-click #(dispatch [:posts/delete id])}
+           "删除"]]])]]))
 
 (defn posts-page []
   (r/with-let [user (subscribe [:user])]
     [:div.container-fluid
-     [:h3 "Post Action"]
+     [:h3 "文章管理"]
      [:hr]
-     [:a.btn.btn-primary {:href "/posts/add"}
-      "Create"]
-     [:h3 "Post List"]
-     [:hr]
+     [:div.p-1
+      [:a.btn.btn-outline-primary.btn-sm
+       {:target "_blank"
+        :href   "/posts/add"}
+       "写文章"]]
      [posts-list]]))
 
 
@@ -48,29 +62,41 @@
                error (subscribe [:error])
                post (r/atom {:author (:name @user)
                              :publish 0})]
-    [:div.container-fluid
-     [:h3 "Post Add"]
-     [:hr]
-     [:div.container
-      [:div
-       [:div.form-group
-        [c/text-input "标题" :title "请输入标题" post]]
-       [:div.form-group
-        [:label {:for "category"} "分类"]
-        [:select#category.form-control
-         {:on-change #(swap! post assoc :category (-> % .-target .-value))}
-         [:option ""]
-         (for [{:keys [id name]} @categories]
-           ^{:key id}
-           [:option {:value id} name])]]
-       [:div.form-group
-        [:label {:for "content"} "正文"]
-        [:textarea#content.form-control
-         {:on-change #(swap! post assoc :content (-> % .-target .-value))
-          :row 10}]]
-       (when @error
-         [:div.alert.alert-danger @error])
-       [:div.form-group
-        [:a.btn.btn-primary
-         {:on-click #(dispatch [:posts/add @post])}
-         "save"]]]]]))
+              (if @user
+                [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4 {:role "main"}
+                 [:div
+                  [:div.form-group
+                   [c/text-input "标题" :title "请输入标题" post]]
+                  [:div.form-group
+                   [:label {:for "content"} "正文"]
+                   [:textarea#content.form-control
+                    {:on-change   #(swap! post assoc :content (-> % .-target .-value))
+                     :row         20
+                     :placeholder "请输入内容"}]]
+                  (when @error
+                    [:div.alert.alert-danger @error])
+                  [:div.form-inline
+                   [:div.form-group.mb-2
+                    [:label.p-1 {:for "category"} "分类:"]
+                    [:select#category.mb-2.form-control
+                     {:on-change   #(swap! post assoc :category (-> % .-target .-value))
+                      :placeholder "请选择一个分类"}
+                     [:option ""]
+                     (for [{:keys [id name]} @categories]
+                       ^{:key id}
+                       [:option {:value id} name])]]
+                   [:div.form-group.mb-2.mx-sm-3
+                    [:a.btn.btn-outline-primary.mb-2
+                     {:on-click #(dispatch [:posts/add @post])}
+                     "保存"]]]]])))
+
+
+(defn post-view-page []
+  (r/with-let [post (subscribe [:post])]
+              (if @post
+                [:div.container
+                 [:div.text-center
+                  [:h2.center (:title @post)]]
+                 [:hr]
+                 [:div.container
+                  [c/markdown-preview (:content @post)]]])))

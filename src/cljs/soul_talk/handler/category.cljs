@@ -17,11 +17,11 @@
             :url "/api/categories"
             :success-event [:set-categories]}}))
 
-(reg-event-db
+(reg-event-fx
   :categories-add-ok
-  (fn [db [_ {:keys [category]}]]
-    (js/alert "Add successful1")
-    (update db :categories conj category)))
+  (fn [_ [_ {:keys [category]}]]
+    (js/alert "Add successful")
+    {:navigate "/categories"}))
 
 (reg-event-fx
   :categories/add
@@ -31,5 +31,27 @@
       {:http {:method        POST
               :url           "/api/admin/categories/add"
               :ajax-map      {:params category}
-              :success-event [:categories-add-ok]}})))
+              :success-event [:categories-add-ok]
+              :error-event #(js/alert "发生错误请重试")}})))
 
+(reg-event-fx
+  :categories-delete-ok
+  (fn [_ _]
+    (js/alert "delete successful!")
+    {:reload-page true}))
+
+(reg-event-fx
+  :categories-delete-error
+  (fn [_ [_ {:keys [response]}]]
+    (js/alert (str "删除失败请重试"))
+    {:reload-page true}))
+
+(reg-event-fx
+  :categories/delete
+  (fn [_ [_ {:keys [id name] :as category}]]
+    (if (js/confirm (str "你确定要删除分类 " name " 吗？"))
+      {:http {:method POST
+              :url "/api/admin/categories/delete"
+              :ajax-map {:params category}
+              :success-event [:categories-delete-ok]
+              :error-event [:categories-delete-error]}})))

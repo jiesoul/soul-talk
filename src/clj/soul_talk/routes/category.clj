@@ -4,7 +4,7 @@
             [soul-talk.routes.common :refer [handler]]
             [ring.util.http-response :as resp]))
 
-
+(s/def ::id int?)
 (s/def ::name string?)
 
 (def Category
@@ -21,3 +21,8 @@
     (-> {:result :ok
          :category co}
       resp/ok)))
+
+(handler delete-category! [{:keys [id]}]
+         (do
+           (category-db/delete-category! id)
+           (resp/ok {:result :ok})))
