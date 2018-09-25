@@ -72,6 +72,7 @@
      :reagent-render
      (fn [] [:textarea])}))
 
+;;高亮代码 循环查找结节
 (defn highlight-code [node]
   (let [nodes (.querySelectorAll (r/dom-node node) "pre")]
     (loop [i (.-length nodes)]
@@ -80,6 +81,7 @@
           (.highlightBlock js/hljs item))
         (recur (dec i))))))
 
+;; 处理 markdown 转换
 (defn markdown-preview []
   (let [md-parser (js/showdown.Converter.)]
     (r/create-class

@@ -1,6 +1,6 @@
 (ns soul-talk.handler.category
   (:require [re-frame.core :refer [reg-event-fx reg-event-db]]
-            [ajax.core :refer [POST GET]]
+            [ajax.core :refer [POST GET DELETE]]
             [clojure.string :as str]))
 
 
@@ -18,7 +18,7 @@
             :success-event [:set-categories]}}))
 
 (reg-event-fx
-  :categories-add-ok
+  :categories/add-ok
   (fn [_ [_ {:keys [category]}]]
     (js/alert "Add successful")
     {:navigate "/categories"}))
@@ -31,27 +31,26 @@
       {:http {:method        POST
               :url           "/api/admin/categories/add"
               :ajax-map      {:params category}
-              :success-event [:categories-add-ok]
+              :success-event [:categories/add-ok]
               :error-event #(js/alert "发生错误请重试")}})))
 
 (reg-event-fx
-  :categories-delete-ok
+  :categories/delete-ok
   (fn [_ _]
     (js/alert "delete successful!")
     {:reload-page true}))
 
 (reg-event-fx
-  :categories-delete-error
+  :categories/delete-error
   (fn [_ [_ {:keys [response]}]]
     (js/alert (str "删除失败请重试"))
     {:reload-page true}))
 
 (reg-event-fx
   :categories/delete
-  (fn [_ [_ {:keys [id name] :as category}]]
+  (fn [_ [_ {:keys [id name]}]]
     (if (js/confirm (str "你确定要删除分类 " name " 吗？"))
-      {:http {:method POST
-              :url "/api/admin/categories/delete"
-              :ajax-map {:params category}
-              :success-event [:categories-delete-ok]
-              :error-event [:categories-delete-error]}})))
+      {:http {:method        DELETE
+              :url           (str "/api/admin/categories/" id)
+              :success-event [:categories/delete-ok]
+              :error-event   [:categories/delete-error]}})))

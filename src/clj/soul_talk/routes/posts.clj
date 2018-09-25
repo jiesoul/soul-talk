@@ -27,6 +27,11 @@
     (resp/ok {:result :ok
               :posts  posts})))
 
+(handler get-publish-posts []
+         (let [posts (post-db/get-posts-publish)]
+           (resp/ok {:result :ok
+                     :posts posts})))
+
 (handler get-post [post-id]
   (let [post (post-db/get-post-by-id post-id)]
     (resp/ok {:result :ok
@@ -49,15 +54,23 @@
         (-> {:result :ok}
             (resp/ok))))))
 
-(handler update-post! [post]
-  (do
-    (post-db/update-post! (-> post
+(handler update-post! [{:keys [id title category content] :as post}]
+  (let [post-old (post-db/get-post-by-id id)]
+    (post-db/update-post! (-> post-old
+                              (assoc :title title)
+                              (assoc :category category)
+                              (assoc :content content)
                               (assoc :modify_time (l/local-date-time))))
     (-> {:result :ok}
       (resp/ok))))
 
-(handler publish-post! [post]
+(handler delete-post! [id]
+         (do
+           (post-db/delete-post! id)
+           (resp/ok {:result :ok})))
+
+(handler publish-post! [id]
   (do
-    (post-db/publish-post! (assoc post :modify_time (l/local-date-time)))
+    (post-db/publish-post! id)
     (-> {:result :ok}
       (resp/ok))))

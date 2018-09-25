@@ -22,7 +22,7 @@
          :category co}
       resp/ok)))
 
-(handler delete-category! [{:keys [id]}]
+(handler delete-category! [id]
          (do
            (category-db/delete-category! id)
            (resp/ok {:result :ok})))

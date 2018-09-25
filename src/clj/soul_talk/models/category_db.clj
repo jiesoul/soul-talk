@@ -1,6 +1,7 @@
 (ns soul-talk.models.category-db
   (:require [soul-talk.models.db :refer [*db*]]
-            [clojure.java.jdbc :as sql]))
+            [clojure.java.jdbc :as sql]
+            [taoensso.timbre :as log]))
 
 (defn save-category! [category]
   (sql/insert! *db* :categories category))

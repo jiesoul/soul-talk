@@ -29,6 +29,7 @@
                  [org.webjars/bootstrap "4.1.3"]
                  [org.webjars/popper.js "1.14.1"]
                  [org.webjars/font-awesome "5.2.0"]
+                 [markdown-clj "1.0.2"]
                  [cljsjs/chartjs "2.7.0-0"]
                  [cljsjs/showdown "1.8.6-0"]
                  [cljsjs/highlight "9.12.0-2"]

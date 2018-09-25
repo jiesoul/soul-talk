@@ -1,6 +1,6 @@
 (ns soul-talk.handler.posts
   (:require [re-frame.core :refer [reg-event-fx reg-event-db subscribe]]
-            [ajax.core :refer [POST GET]]
+            [ajax.core :refer [POST GET DELETE PUT]]
             [soul-talk.validate :refer [post-errors]]
             [taoensso.timbre :as log]))
 
@@ -18,14 +18,14 @@
             :success-event [:admin/set-posts]}}))
 
 (reg-event-fx
-  :posts-add-ok
+  :posts/add-ok
   (fn [_ _]
     (js/alert "add successful!!")
     {:reload-page true}))
 
 
 (reg-event-fx
-  :posts-add-error
+  :posts/add-error
   (fn [_ [_ {:keys [response]}]]
     {:dispatch [:set-error (:message response)]}))
 
@@ -37,8 +37,8 @@
       {:http {:method        POST
               :url           "/api/admin/posts/add"
               :ajax-map      {:params post}
-              :success-event [:posts-add-ok]
-              :error-event [:posts-add-error]}})))
+              :success-event [:posts/add-ok]
+              :error-event [:posts/add-error]}})))
 
 (reg-event-db
   :set-post
@@ -51,3 +51,44 @@
     {:http {:method GET
             :url    (str "/api/posts/" id)
             :success-event [:set-post]}}))
+
+
+(reg-event-fx
+  :posts/delete-ok
+  (fn [_ _]
+    (js/alert "delete successful")
+    {:reload-page true}))
+
+(reg-event-db
+  :posts/delete-error
+  (fn [_ _]
+    (js/alert "delete fail")))
+
+
+(reg-event-fx
+  :posts/delete
+  (fn [_ [_ id]]
+    (if (js/confirm "你确定要删除这篇文章吗？")
+      {:http {:method        DELETE
+              :url           (str "/api/admin/posts/" id)
+              :success-event [:posts/delete-ok]
+              :error-event   [:posts/delete-error]}})))
+
+(reg-event-fx
+  :posts/publish-ok
+  (fn [_ _]
+    (js/alert "publish successful")
+    {:reload-page true}))
+
+(reg-event-fx
+  :posts/publish-error
+  (fn [_ _]
+    (js/alert "publish failed")))
+
+(reg-event-fx
+  :posts/publish
+  (fn [_ [_ id]]
+    {:http {:method PUT
+            :url (str "/api/admin/posts/" id "/publish")
+            :success-event [:posts/publish-ok]
+            :error-event [:posts/publish-error]}}))

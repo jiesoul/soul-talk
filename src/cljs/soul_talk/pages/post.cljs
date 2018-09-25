@@ -7,9 +7,6 @@
             [taoensso.timbre :as log])
   (:import [goog.History]))
 
-
-(def custom-formatter (f/formatters :basic-date-time))
-
 (defn posts-list []
   (r/with-let [posts (subscribe [:admin/posts])]
     [:table.table.table-striped
@@ -33,11 +30,14 @@
          [:td author]
          [:td counter]
          [:td
-          [:a.btn.btn-outline-primary.btn-sm
+          [:a.btn.btn-outline-primary.btn-sm.mr-2
            {:target "_blank"
             :href   (str "/posts/" id)}
            "查看"]
-          [:a.btn.btn-outline-primary.btn-sm
+          [:a.btn.btn-outline-primary.btn-sm.mr-2
+           {:on-click #(dispatch [:posts/publish id])}
+           "发布11"]
+          [:a.btn.btn-outline-primary.btn-sm.mr-2
            {:on-click #(dispatch [:posts/delete id])}
            "删除"]]])]]))
 
@@ -65,9 +65,13 @@
                 [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
                  [:div
                   [:div.form-group
-                   [c/text-input "" :title "请输入标题" post]]
+                   [c/text-input "" :title "请输入标题111" post]]
                   [:div.form-group
-                   [c/editor post]]
+                   [:label {:for "content"} "正文"]
+                   [:textarea#content.form-control
+                    {:on-change   #(swap! post assoc :content (-> % .-target .-value))
+                     :row         20
+                     :placeholder "请输入正文"}]]
                   (when @error
                     [:div.alert.alert-danger @error])
                   [:div.form-inline

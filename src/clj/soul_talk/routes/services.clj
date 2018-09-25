@@ -84,12 +84,19 @@
         :summary "load tags"
         (tag/get-all-tags))
 
+      (context "/posts" []
 
-      (GET "/posts/:id" [id]
-        :return ::Result
-        :summary "load tags"
-        (posts/get-post id))
+        (GET "/" []
+          :return ::Result
+          :summary "load all publish posts"
+          (posts/get-publish-posts))
 
+        (GET "/:id" [id]
+          :return ::Result
+          :summary "load tags"
+          (posts/get-post id))
+
+        )
 
       (context "/admin" []
         :middleware [wrap-session-auth]
@@ -122,11 +129,10 @@
             :summary "create category"
             (category/save-category! category))
 
-          (POST"/delete" []
+          (DELETE "/:id" [id]
                 :return ::Result
-                :body [category ::category/Category]
                 :summary "delete category"
-                (category/delete-category! category))
+                (category/delete-category! (Integer/parseInt id)))
           )
 
         (context "/tags" []
@@ -150,7 +156,15 @@
             :body [post posts/Post]
             :summary "add a new post"
             (posts/save-post! post))
+
+          (DELETE "/:id" [id]
+            :return ::Result
+            :summary "delete a post"
+            (posts/delete-post! id))
+
+          (PUT "/:id/publish" [id]
+            :return ::Result
+            :summary "publish a post"
+            (posts/publish-post! id))
           )
-
-
         ))))

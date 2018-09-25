@@ -9,7 +9,10 @@
             [soul-talk.models.db]
             [soul-talk.config]
             [ragtime.jdbc :as jdbc]
-            [ragtime.repl :refer [migrate rollback]]))
+            [ragtime.repl :refer [migrate rollback]]
+            [selmer.parser :as parser]))
+
+(parser/cache-off!)
 
 (defn start []
   (mount/start

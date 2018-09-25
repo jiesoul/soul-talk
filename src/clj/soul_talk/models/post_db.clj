@@ -4,7 +4,6 @@
             [taoensso.timbre :as log]))
 
 (defn save-post! [post]
-  (log/info post)
   (sql/insert! *db* :posts post))
 
 (defn update-post! [{:keys [id] :as post}]
@@ -18,8 +17,8 @@
   (sql/query *db* ["SELECT * FROM posts where id = ? " id]
              {:result-set-fn first}))
 
-(defn publish-post! [{:keys [id update_time]}]
-  (sql/update! *db* :posts [:publish 1 :update_time update_time] ["id = ?" id]))
+(defn publish-post! [id]
+  (sql/update! *db* :posts {:publish 1} ["id = ?" id]))
 
 (defn get-posts-publish []
   (sql/query *db*
