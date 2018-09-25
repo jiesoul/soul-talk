@@ -2,7 +2,10 @@
   (:import goog.history.Html5History)
   (:require [re-frame.core :refer [dispatch]]
             [reagent.core :as r]
-            [cljsjs.showdown]))
+            [cljsjs.showdown]
+            [cljsjs.highlight]
+            [cljsjs.simplemde]
+            [taoensso.timbre :as log]))
 
 (defn input [type id placeholder fields]
   "标准 input， 其中的 on-change 实现了值的绑定"
@@ -42,9 +45,35 @@
      [:div.modal-body body]
      [:div.modal-footer footer]]]])
 
+(defn editor [fields]
+  (r/create-class
+    {:component-did-mount
+     #(let [editor (js/SimpleMDE.
+                     (clj->js
+                       {:auto-focus true
+                        :spell-check false
+                        :placeholder "正文"
+                        :toolbar ["bold"
+                                  "italic"
+                                  "strikethrough"
+                                  "|"
+                                  "heading"
+                                  "code"
+                                  "quote"
+                                  "|"
+                                  "unordered-list"
+                                  "ordered-list"
+                                  "|"
+                                  "link"
+                                  "image"]
+                        :element (r/dom-node %)
+                        :initialValue (:content @fields)}))]
+        (-> editor .-codemirror (.on "change" (fn [] (swap! fields assoc :content (.value editor))))))
+     :reagent-render
+     (fn [] [:textarea])}))
 
 (defn highlight-code [node]
-  (let [nodes (.querySelectorAll (r/dom-node node) "pre code")]
+  (let [nodes (.querySelectorAll (r/dom-node node) "pre")]
     (loop [i (.-length nodes)]
       (when-not (neg? i)
         (when-let [item (.item nodes i)]

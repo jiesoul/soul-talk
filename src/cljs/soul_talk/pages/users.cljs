@@ -30,7 +30,7 @@
             ^{:key user} [:tr
                           [:td email]
                           [:td name]
-                          [:td (str last_login)]
+                          [:td (.toDateString (js/Date. last_login))]
                           [:td "action"]])]]]))])
 
 (defn change-pass-page []

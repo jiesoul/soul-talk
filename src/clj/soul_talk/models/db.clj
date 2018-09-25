@@ -3,7 +3,7 @@
             [hikari-cp.core :refer :all]
             [taoensso.timbre :as log]
             [mount.core :refer [defstate]])
-  (:import (java.sql Date)))
+  (:import (java.sql Date Timestamp)))
 
 (def datasource-options {:auto-commit true
                          :read-only false
@@ -42,3 +42,11 @@
 
 (defn to-date [^Date sql-date]
   (-> sql-date (.getTime) (java.util.Date.)))
+
+(extend-protocol sql/IResultSetReadColumn
+
+  Date
+  (result-set-read-column [v _ _] (to-date v))
+
+  Timestamp
+  (result-set-read-column [v _ _] (to-date v)))

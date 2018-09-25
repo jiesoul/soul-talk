@@ -9,7 +9,6 @@
             soul-talk.effects
             soul-talk.handlers
             soul-talk.subs
-            [cljsjs.highlight]
             [taoensso.timbre :as log])
   (:import goog.history.Html5History))
 
@@ -24,8 +23,5 @@
   (load-interceptors!)
   (hook-browser-navigation!)
   (mount-component))
-
-
-(.highlightBlock js/hljs (-> js/document (.querySelector "code")))
 
 ;(init!)

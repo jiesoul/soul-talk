@@ -3,8 +3,7 @@
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.pages.common :as c]
             [cljs-time.format :as f]
-            [markdown.core :refer [md->html]]
-            [markdown-to-hiccup.core :as m]
+            [cljsjs.simplemde]
             [taoensso.timbre :as log])
   (:import [goog.History]))
 
@@ -28,17 +27,17 @@
         ^{:key id}
         [:tr
          [:td title]
-         [:td (str create_time)]
-         [:td (str modify_time)]
+         [:td (.toDateString (js/Date. create_time))]
+         [:td (.toDateString (js/Date. modify_time))]
          [:td publish]
          [:td author]
          [:td counter]
          [:td
-          [:a.btn.btn-outline-primary
+          [:a.btn.btn-outline-primary.btn-sm
            {:target "_blank"
             :href   (str "/posts/" id)}
            "查看"]
-          [:a.btn.btn-outline-primary
+          [:a.btn.btn-outline-primary.btn-sm
            {:on-click #(dispatch [:posts/delete id])}
            "删除"]]])]]))
 
@@ -63,16 +62,12 @@
                post (r/atom {:author (:name @user)
                              :publish 0})]
               (if @user
-                [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4 {:role "main"}
+                [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
                  [:div
                   [:div.form-group
-                   [c/text-input "标题" :title "请输入标题" post]]
+                   [c/text-input "" :title "请输入标题" post]]
                   [:div.form-group
-                   [:label {:for "content"} "正文"]
-                   [:textarea#content.form-control
-                    {:on-change   #(swap! post assoc :content (-> % .-target .-value))
-                     :row         20
-                     :placeholder "请输入内容"}]]
+                   [c/editor post]]
                   (when @error
                     [:div.alert.alert-danger @error])
                   [:div.form-inline
