@@ -45,7 +45,7 @@
      [:div.modal-body body]
      [:div.modal-footer footer]]]])
 
-(defn editor [fields]
+(defn editor [text]
   (r/create-class
     {:component-did-mount
      #(let [editor (js/SimpleMDE.
@@ -57,18 +57,17 @@
                                   "italic"
                                   "strikethrough"
                                   "|"
-                                  "heading"
                                   "code"
                                   "quote"
                                   "|"
                                   "unordered-list"
                                   "ordered-list"
                                   "|"
-                                  "link"
-                                  "image"]
+                                  "link"]
+                        :renderingConfig {:codeSyntaxHighlighting true}
                         :element (r/dom-node %)
-                        :initialValue (:content @fields)}))]
-        (-> editor .-codemirror (.on "change" (fn [] (swap! fields assoc :content (.value editor))))))
+                        :initialValue @text}))]
+        (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
      :reagent-render
      (fn [] [:textarea])}))
 

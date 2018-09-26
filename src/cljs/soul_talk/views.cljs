@@ -6,7 +6,7 @@
             [soul-talk.pages.admin :refer [main-component]]
             [soul-talk.pages.auth :refer [login-page register-page]]
             [soul-talk.pages.users :refer [users-page change-pass-page user-profile-page]]
-            [soul-talk.pages.post :refer [posts-page create-post-page post-view-page]]
+            [soul-talk.pages.post :refer [posts-page create-post-page post-view-page edit-post-page]]
             [soul-talk.pages.category :as category]
             [soul-talk.pages.tag :as tag]
             [taoensso.timbre :as log]
@@ -38,7 +38,7 @@
 
 (defn admin-navbar [user]
   (fn []
-    [:nav.navbar.navbar-dark.fixed-top.bg-dark.flex-md-nowrap.p-0.shadow
+    [:nav.navbar.navbar-dark.fixed-top.bg-dark.flex-md-nowrap.p-0.shadow.mr-md-2
      [:a.navbar-brand.mr-0.mr-md-2
       {:href "/" :target "_blank"} "Soul Talk"]
      [admin-user-menu user]]))
@@ -124,6 +124,23 @@
                       "写文章"]]]]]
                  [:div.container
                   [create-post-page]]]
+                (pages :login nil))))
+
+(defmethod pages :posts/edit [_ _]
+  (r/with-let [user (subscribe [:user])]
+              (if @user
+                [:div.container-fluid
+                 [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
+                  [:a.navbar-brand
+                   {:href "#"} "Soul Talk"]
+                  [:div.container
+                   [:ul.navbar-nav
+                    [:li.nav-item.active
+                     [:a.nav-link
+                      {:href "#"}
+                      "写文章"]]]]]
+                 [:div.container
+                  [edit-post-page]]]
                 (pages :login nil))))
 
 

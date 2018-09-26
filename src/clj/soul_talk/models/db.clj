@@ -2,8 +2,9 @@
   (:require [clojure.java.jdbc :as sql]
             [hikari-cp.core :refer :all]
             [taoensso.timbre :as log]
-            [mount.core :refer [defstate]])
-  (:import (java.sql Date Timestamp)))
+            [mount.core :refer [defstate]]
+            [clojure.java.jdbc :as jdbc])
+  (:import (java.sql Date Timestamp PreparedStatement)))
 
 (def datasource-options {:auto-commit true
                          :read-only false
@@ -50,3 +51,8 @@
 
   Timestamp
   (result-set-read-column [v _ _] (to-date v)))
+
+(extend-type java.util.Date
+  jdbc/ISQLParameter
+  (set-parameter [v ^PreparedStatement stmt ^long idx]
+    (.setTimestamp stmt idx (Timestamp. (.getTime v)))))

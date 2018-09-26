@@ -21,7 +21,7 @@
        [:th "action"]]]
      [:tbody
       (for [{:keys [id title create_time modify_time publish author counter] :as post} @posts]
-        ^{:key id}
+        ^{:key post}
         [:tr
          [:td title]
          [:td (.toDateString (js/Date. create_time))]
@@ -36,7 +36,7 @@
            "查看"]
           [:a.btn.btn-outline-primary.btn-sm.mr-2
            {:on-click #(dispatch [:posts/publish id])}
-           "发布11"]
+           "发布"]
           [:a.btn.btn-outline-primary.btn-sm.mr-2
            {:on-click #(dispatch [:posts/delete id])}
            "删除"]]])]]))
@@ -60,42 +60,76 @@
                tags (subscribe [:tags])
                error (subscribe [:error])
                post (r/atom {:author (:name @user)
-                             :publish 0})]
+                             :publish 0})
+               content (r/cursor post [:content])]
               (if @user
                 [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
                  [:div
                   [:div.form-group
-                   [c/text-input "" :title "请输入标题111" post]]
-                  [:div.form-group
-                   [:label {:for "content"} "正文"]
-                   [:textarea#content.form-control
-                    {:on-change   #(swap! post assoc :content (-> % .-target .-value))
-                     :row         20
-                     :placeholder "请输入正文"}]]
+                   [c/text-input "" :title "请输入标题" post]]
+                  [c/editor content]
                   (when @error
                     [:div.alert.alert-danger @error])
                   [:div.form-inline
-                   [:div.form-group.mb-2
+                   [:div.form-group
                     [:label.p-1 {:for "category"} "分类:"]
-                    [:select#category.mb-2.form-control
+                    [:select#category.mr-2.form-control.form-control-sm
                      {:on-change   #(swap! post assoc :category (-> % .-target .-value))
                       :placeholder "请选择一个分类"}
                      [:option ""]
                      (for [{:keys [id name]} @categories]
                        ^{:key id}
-                       [:option {:value id} name])]]
-                   [:div.form-group.mb-2.mx-sm-3
-                    [:a.btn.btn-outline-primary.mb-2
+                       [:option {:value id} name])]
+                    [:a.btn.btn-outline-primary.btn-sm.mr-2
                      {:on-click #(dispatch [:posts/add @post])}
+                     "保存"]]]]])))
+
+(defn edit-post-page []
+  (r/with-let [user (subscribe [:user])
+                categories (subscribe [:categories])
+                tags (subscribe [:tags])
+                error (subscribe [:error])
+                post (subscribe [:post])
+               content (r/cursor post [:content])]
+              (if @user
+                [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
+                 [:div
+                  [:div.form-group
+                   [c/text-input "" :title "请输入标题" post]]
+                  [c/editor content]
+                  (when @error
+                    [:div.alert.alert-danger @error])
+                  [:div.form-inline
+                   [:div.form-group
+                    [:label.p-1 {:for "category"} "分类:"]
+                    [:select#category.mr-2.form-control.form-control-sm
+                     {:on-change   #(swap! post assoc :category (-> % .-target .-value))
+                      :placeholder "请选择一个分类"
+                      :defaultValue (:category @post)}
+                     [:option ""]
+                     (for [{:keys [id name]} @categories]
+                       ^{:key id}
+                       [:option
+                        {:value id}
+                        name])]
+                    [:a.btn.btn-outline-primary.btn-sm.mr-2
+                     {:on-click #(dispatch [:posts/edit @post])}
                      "保存"]]]]])))
 
 
 (defn post-view-page []
-  (r/with-let [post (subscribe [:post])]
+  (r/with-let [post (subscribe [:post])
+                user (subscribe [:user])]
               (if @post
                 [:div.container
                  [:div.text-center
                   [:h2.center (:title @post)]]
                  [:hr]
                  [:div.container
-                  [c/markdown-preview (:content @post)]]])))
+                  [c/markdown-preview (:content @post)]]
+                 [:hr]
+                 (if @user
+                   [:div.text-center
+                    [:a.btn.btn-outline-primary.btn-sm.mr-2
+                     {:href   (str "/posts/" (:id @post) "/edit")}
+                     "修改文章"]])])))

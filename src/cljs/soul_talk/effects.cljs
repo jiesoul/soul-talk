@@ -12,7 +12,7 @@
                error-event
                ignore-response-body
                ajax-map]
-        :or {:error-event [:ajax-error]
+        :or {error-event [:ajax-error]
              ajax-map {}}}]
     (method url (merge
                   {:handler       (fn [response]

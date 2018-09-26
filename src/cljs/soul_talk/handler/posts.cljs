@@ -17,11 +17,11 @@
             :url "/api/admin/posts"
             :success-event [:admin/set-posts]}}))
 
-(reg-event-fx
+(reg-event-db
   :posts/add-ok
-  (fn [_ _]
+  (fn [db [_ {:keys [post]}]]
     (js/alert "add successful!!")
-    {:reload-page true}))
+    (assoc db :admin/posts conj post)))
 
 
 (reg-event-fx
@@ -31,14 +31,37 @@
 
 (reg-event-fx
   :posts/add
-  (fn [_ [_ post]]
+  (fn [_ [_ {:keys [category] :as post}]]
     (if-let [error (post-errors post)]
       {:dispatch [:set-error (str (map second error))]}
       {:http {:method        POST
-              :url           "/api/admin/posts/add"
-              :ajax-map      {:params post}
+              :url           "/api/admin/posts"
+              :ajax-map      {:params (assoc post :category (js/parseInt category))}
               :success-event [:posts/add-ok]
               :error-event [:posts/add-error]}})))
+
+(reg-event-fx
+  :posts/edit-ok
+  (fn [_ _]
+    (js/alert "add successful!!")
+    {:reload-page true}))
+
+
+(reg-event-fx
+  :posts/edit-error
+  (fn [_ [_ {:keys [response]}]]
+    {:dispatch [:set-error (:message response)]}))
+
+(reg-event-fx
+  :posts/edit
+  (fn [_ [_ {:keys [id] :as post}]]
+    (if-let [error (post-errors post)]
+      {:dispatch [:set-error (str (map second error))]}
+      {:http {:method        PUT
+              :url           (str "/api/admin/posts/" id)
+              :ajax-map      {:params post}
+              :success-event [:posts/edit-ok]
+              :error-event   [:posts/edit-error]}})))
 
 (reg-event-db
   :set-post

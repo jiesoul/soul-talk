@@ -14,7 +14,7 @@
 (s/def ::title string?)
 (s/def ::content string?)
 (s/def ::publish int?)
-(s/def ::category string?)
+(s/def ::category int?)
 (s/def ::author string?)
 
 (def Post (s/def ::Post (s/keys :req-un [::title ::content ::publish ::author]
@@ -40,29 +40,24 @@
 (handler save-post! [post]
   (let [error (post-errors post)
         time (l/local-date-time)
-        id (f/format format-id time)
-        category (Integer/parseInt (:category post))]
+        id (f/format format-id time)]
     (if error
       (resp/unauthorized {:result :error
                           :message error})
       (do
         (post-db/save-post! (-> post
                                 (assoc :id id)
-                                (assoc :category category)
                                 (assoc :create_time time)
                                 (assoc :modify_time time)))
         (-> {:result :ok}
             (resp/ok))))))
 
-(handler update-post! [{:keys [id title category content] :as post}]
-  (let [post-old (post-db/get-post-by-id id)]
-    (post-db/update-post! (-> post-old
-                              (assoc :title title)
-                              (assoc :category category)
-                              (assoc :content content)
-                              (assoc :modify_time (l/local-date-time))))
-    (-> {:result :ok}
-      (resp/ok))))
+(handler update-post! [post]
+         (post-db/update-post! (-> post
+                                   (assoc :modify_time (l/local-date-time))))
+         (-> {:result :ok
+              :post   (assoc post :content nil)}
+             (resp/ok)))
 
 (handler delete-post! [id]
          (do

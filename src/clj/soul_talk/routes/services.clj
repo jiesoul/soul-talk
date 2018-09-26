@@ -123,7 +123,7 @@
 
         (context "/categories" []
 
-          (POST "/add" []
+          (POST "/" []
             :return ::Result
             :body [category category/Category]
             :summary "create category"
@@ -143,7 +143,6 @@
             :summary "create category"
             (tag/save-tag! tag)))
 
-
         (context "/posts" []
 
           (GET "/" []
@@ -151,11 +150,17 @@
             :summary "return all posts contains id not publish"
             (posts/get-all-posts))
 
-          (POST "/add" []
+          (POST "/" []
             :return ::Result
             :body [post posts/Post]
             :summary "add a new post"
             (posts/save-post! post))
+
+          (PUT "/:id" []
+            :return ::Result
+            :body [post posts/Post]
+            :summary "update a post"
+            (posts/update-post! post))
 
           (DELETE "/:id" [id]
             :return ::Result
