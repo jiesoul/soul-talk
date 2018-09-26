@@ -1,6 +1,7 @@
 (ns ^:figwheel-no-load soul-talk.app
   (:require [soul-talk.core :as core]
             [devtools.core :as devtools]
+            [reagent.core :as r]
             [figwheel.client :as figwheel :include-macros true]))
 
 (enable-console-print!)

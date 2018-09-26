@@ -12,8 +12,6 @@
             [ragtime.repl :refer [migrate rollback]]
             [selmer.parser :as parser]))
 
-(parser/cache-off!)
-
 (defn start []
   (mount/start
     #'soul-talk.config/conf

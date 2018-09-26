@@ -15,7 +15,7 @@
 ;; 挂载页面组件
 (defn mount-component []
   (r/render [#'main-page]
-            (.getElementById js/document "app")))
+            (dom/by-id "app")))
 
 ;; 初始化方法
 (defn init! []

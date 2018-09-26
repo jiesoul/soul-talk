@@ -69,7 +69,7 @@
                         :initialValue @text}))]
         (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
      :reagent-render
-     (fn [] [:textarea])}))
+     (fn [] [:textarea.border-0])}))
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]
@@ -93,3 +93,29 @@
          [:div
           {:dangerouslySetInnerHTML
            {:__html (.makeHtml md-parser (str content))}}])})))
+
+(defn page-nav []
+  (fn []
+    [:nav
+     [:ul.pagination.justify-content-center
+      [:li.page-item.disable
+       [:a.page-link
+        {:href     "#"
+         :tab-index "-1"}
+        "Previous"]]
+      [:li.page-item
+       [:a.page-link
+        {:href "#"}
+        "1"]]
+      [:li.page-item
+       [:a.page-link
+        {:href "#"}
+        "2"]]
+      [:li.page-item
+       [:a.page-link
+        {:href "#"}
+        "3"]]
+      [:li.page-item
+       [:a.page-link
+        {:href "#"}
+        "Next"]]]]))

@@ -43,7 +43,7 @@
 (reg-event-fx
   :posts/edit-ok
   (fn [_ _]
-    (js/alert "add successful!!")
+    (js/alert "edit successful!!")
     {:reload-page true}))
 
 
@@ -54,7 +54,7 @@
 
 (reg-event-fx
   :posts/edit
-  (fn [_ [_ {:keys [id] :as post}]]
+  (fn [_ [_ {:keys [id counter] :as post}]]
     (if-let [error (post-errors post)]
       {:dispatch [:set-error (str (map second error))]}
       {:http {:method        PUT
