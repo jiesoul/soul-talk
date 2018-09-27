@@ -24,6 +24,14 @@
   (sql/query *db*
              ["select * from posts where publish = 1 order by create_time desc"]))
 
-
 (defn delete-post! [id]
   (sql/delete! *db* :posts ["id = ?" id]))
+
+(defn get-posts-archives []
+  (sql/query *db*
+             ["select year,month, count(month) as counter
+                from
+                  (select date_part('year', create_time) as year,
+                    date_part('month', create_time) as month
+                    from posts where publish = 1) t
+                group by year,month"]))

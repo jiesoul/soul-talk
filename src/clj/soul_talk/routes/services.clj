@@ -91,12 +91,15 @@
           :summary "load all publish posts"
           (posts/get-publish-posts))
 
+        (GET "/archives" []
+          :return ::Result
+          :summary "load post archives"
+          (posts/get-posts-archives))
+
         (GET "/:id" [id]
           :return ::Result
-          :summary "load tags"
-          (posts/get-post id))
-
-        )
+          :summary "load post"
+          (posts/get-post id)))
 
       (context "/admin" []
         :middleware [wrap-session-auth]
@@ -132,8 +135,7 @@
           (DELETE "/:id" [id]
                 :return ::Result
                 :summary "delete category"
-                (category/delete-category! (Integer/parseInt id)))
-          )
+                (category/delete-category! (Integer/parseInt id))))
 
         (context "/tags" []
 
@@ -170,6 +172,4 @@
           (PUT "/:id/publish" [id]
             :return ::Result
             :summary "publish a post"
-            (posts/publish-post! id))
-          )
-        ))))
+            (posts/publish-post! id)))))))

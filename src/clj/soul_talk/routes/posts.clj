@@ -23,9 +23,9 @@
 (def format-id (java-time.format/formatter "yyyyMMddHHmmssSSS"))
 
 (handler get-all-posts []
-  (let [posts (post-db/get-posts-all)]
-    (resp/ok {:result :ok
-              :posts  posts})))
+         (let [posts (post-db/get-posts-all)]
+           (resp/ok {:result :ok
+                     :posts  posts})))
 
 (handler get-publish-posts []
          (let [posts (post-db/get-posts-publish)]
@@ -33,24 +33,24 @@
                      :posts posts})))
 
 (handler get-post [post-id]
-  (let [post (post-db/get-post-by-id post-id)]
-    (resp/ok {:result :ok
-              :post post})))
+         (let [post (post-db/get-post-by-id post-id)]
+           (resp/ok {:result :ok
+                     :post post})))
 
 (handler save-post! [post]
-  (let [error (post-errors post)
-        time (l/local-date-time)
-        id (f/format format-id time)]
-    (if error
-      (resp/unauthorized {:result :error
-                          :message error})
-      (do
-        (post-db/save-post! (-> post
-                                (assoc :id id)
-                                (assoc :create_time time)
-                                (assoc :modify_time time)))
-        (-> {:result :ok}
-            (resp/ok))))))
+         (let [error (post-errors post)
+               time (l/local-date-time)
+               id (f/format format-id time)]
+           (if error
+             (resp/unauthorized {:result :error
+                                 :message error})
+             (do
+               (post-db/save-post! (-> post
+                                       (assoc :id id)
+                                       (assoc :create_time time)
+                                       (assoc :modify_time time)))
+               (-> {:result :ok}
+                   (resp/ok))))))
 
 (handler update-post! [post]
          (post-db/update-post! (-> post
@@ -65,7 +65,13 @@
            (resp/ok {:result :ok})))
 
 (handler publish-post! [id]
-  (do
-    (post-db/publish-post! id)
-    (-> {:result :ok}
-      (resp/ok))))
+         (do
+           (post-db/publish-post! id)
+           (-> {:result :ok}
+               (resp/ok))))
+
+(handler get-posts-archives []
+         (let [archives (post-db/get-posts-archives)]
+           (-> {:result :ok
+                :archives archives}
+               resp/ok)))

@@ -44,14 +44,16 @@
      [admin-user-menu user]]))
 
 
-(defn admin-sidebar-link [url title page]
+(defn admin-sidebar-link [url title page & icon]
   (let [active-page (subscribe [:active-page])]
     [:li.nav-item
      [:a.nav-link
       {:href  url
        :class (when (= page @active-page)
                 "active")}
-      title]]))
+      (if icon
+        [:i {:class icon}])
+      " " title]]))
 
 (defn admin-sidebar []
   (fn []
@@ -60,10 +62,10 @@
         [:nav.col-md-2.d-none.d-md-block.bg-light.sidebar
          [:div.sidebar-sticky
           [:ul.nav.flex-column
-           (admin-sidebar-link "/admin" "Dashboard" :admin)
+           (admin-sidebar-link "/admin" "Dashboard" :admin "fas fa-tachometer-alt")
            (admin-sidebar-link "/categories" "Categories" :categories)
            (admin-sidebar-link "/posts" "Posts" :posts)
-           (admin-sidebar-link "/users" "Users" :users)]]]))))
+           (admin-sidebar-link "/users" "Users" :users "fas fa-user")]]]))))
 
 
 ;;多重方法  响应对应的页面
@@ -129,7 +131,7 @@
 (defmethod pages :tags/add [_ _]
   (admin-page tag/add-page))
 
-(defmethod pages :default [_ _] [:div "default show ......"])
+(defmethod pages :default [_ _] [:div])
 
 ;; 根据配置加载不同页面
 (defn main-page []

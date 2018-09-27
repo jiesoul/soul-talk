@@ -31,3 +31,7 @@
 (reg-sub :tags query)
 
 (reg-sub :post query)
+
+(reg-sub :posts query)
+
+(reg-sub :posts-archives query)

@@ -6,11 +6,6 @@
             [re-frame.core :refer [subscribe dispatch]]
             [cljs-time.format :as f]))
 
-(def formatter (f/formatter "yyyyMMdd"))
-
-(defn user-list []
-  )
-
 (defn users-page []
   [:div
    [:h2 "User List"]

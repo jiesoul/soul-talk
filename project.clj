@@ -6,10 +6,11 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.339"]
                  [org.clojure/java.jdbc "0.7.8"]
+                 [org.clojure/tools.logging "0.4.1"]
                  [org.postgresql/postgresql "42.2.4"]
                  [hikari-cp "2.6.0"]
                  [ragtime "0.7.2"]
-                 [ring "1.6.3"]
+                 [ring "1.7.0"]
                  [mount "0.1.13"]
                  [org.clojure/tools.namespace "0.3.0-alpha4"]
                  [compojure "1.6.1"]
@@ -103,6 +104,4 @@
                                :compiler     {:output-to     "target/test.js"
                                               :main          soul-talk.runner
                                               :optimizations :none}}}
-                          }}}
-
-  )
+                          }}})

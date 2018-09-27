@@ -5,10 +5,21 @@
             [taoensso.timbre :as log]))
 
 (reg-event-db
+  :set-posts
+  (fn [db [_ {:keys [posts]}]]
+    (assoc db :posts posts)))
+
+(reg-event-fx
+  :load-posts
+  (fn [_ _]
+    {:http {:method GET
+            :url "/api/posts"
+            :success-event [:set-posts]}}))
+
+(reg-event-db
   :admin/set-posts
   (fn [db [_ {:keys [posts]}]]
     (assoc db :admin/posts posts)))
-
 
 (reg-event-fx
   :admin/load-posts
@@ -22,7 +33,6 @@
   (fn [db [_ {:keys [post]}]]
     (js/alert "add successful!!")
     (assoc db :admin/posts conj post)))
-
 
 (reg-event-fx
   :posts/add-error
@@ -45,7 +55,6 @@
   (fn [_ _]
     (js/alert "edit successful!!")
     {:reload-page true}))
-
 
 (reg-event-fx
   :posts/edit-error
@@ -75,7 +84,6 @@
             :url    (str "/api/posts/" id)
             :success-event [:set-post]}}))
 
-
 (reg-event-fx
   :posts/delete-ok
   (fn [_ _]
@@ -86,7 +94,6 @@
   :posts/delete-error
   (fn [_ _]
     (js/alert "delete fail")))
-
 
 (reg-event-fx
   :posts/delete
@@ -115,3 +122,15 @@
             :url (str "/api/admin/posts/" id "/publish")
             :success-event [:posts/publish-ok]
             :error-event [:posts/publish-error]}}))
+
+(reg-event-db
+  :set-posts-archives
+  (fn [db [_ {:keys [archives]}]]
+    (assoc db :posts-archives archives)))
+
+(reg-event-fx
+  :load-posts-archives
+  (fn [_ _]
+    {:http {:method GET
+            :url "/api/posts/archives"
+            :success-event [:set-posts-archives]}}))

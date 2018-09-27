@@ -51,6 +51,7 @@
      #(let [editor (js/SimpleMDE.
                      (clj->js
                        {:auto-focus true
+                        :autoDownloadFontAwesome false
                         :spell-check false
                         :placeholder "正文"
                         :toolbar ["bold"
@@ -60,10 +61,7 @@
                                   "code"
                                   "quote"
                                   "|"
-                                  "unordered-list"
-                                  "ordered-list"
-                                  "|"
-                                  "link"]
+                                  "unordered-list"]
                         :renderingConfig {:codeSyntaxHighlighting true}
                         :element (r/dom-node %)
                         :initialValue @text}))]
