@@ -43,6 +43,10 @@
 (s/def ::Result (s/keys :req-un [::result]
                         :opt-un [::message]))
 
+(s/def ::page int?)
+(s/def ::pre-page int?)
+(s/def ::Pagination (s/keys :opt-un [::page ::pre-page]))
+
 (def services-routes
   (api
     {:coercion :spec
@@ -86,10 +90,10 @@
 
       (context "/posts" []
 
-        (GET "/" []
+        (GET "/" req
           :return ::Result
           :summary "load all publish posts"
-          (posts/get-publish-posts))
+          (posts/get-publish-posts req))
 
         (GET "/archives" []
           :return ::Result

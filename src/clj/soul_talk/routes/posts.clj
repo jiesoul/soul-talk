@@ -7,7 +7,8 @@
             [java-time.local :as l]
             [java-time.format :as f]
             [soul-talk.routes.common :refer [handler]]
-            [soul-talk.validate :refer [post-errors]]))
+            [soul-talk.validate :refer [post-errors]]
+            [soul-talk.pagination :as p]))
 
 (s/def ::id string?)
 (s/def ::img_url string?)
@@ -27,10 +28,13 @@
            (resp/ok {:result :ok
                      :posts  posts})))
 
-(handler get-publish-posts []
-         (let [posts (post-db/get-posts-publish)]
+(handler get-publish-posts [req]
+         (let [pagination (p/create req)
+               posts (post-db/get-posts-publish pagination)
+               total (post-db/count-posts-publish)]
            (resp/ok {:result :ok
-                     :posts posts})))
+                     :posts posts
+                     :pagination (assoc pagination :total total)})))
 
 (handler get-post [post-id]
          (let [post (post-db/get-post-by-id post-id)]

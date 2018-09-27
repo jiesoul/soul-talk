@@ -77,7 +77,6 @@
                      r/atom)
      content (r/cursor edited-post [:content])
      category (r/cursor edited-post [:category])]
-    (.log js/console @user)
     (if @user
       [:div.container-fluid
        [:nav.navbar.navbar-expand-lg.navbar-light.bg-light

@@ -4,8 +4,6 @@
             [soul-talk.pages.common :as c])
   (:import [goog.history.Html5History]))
 
-(defonce archives (r/atom []))
-
 (defn blog-header-component []
   (fn []
     [:div.blog-header.py-3
@@ -46,7 +44,13 @@
       [:a.text-muted {:href "#"} "Back to top"]]]))
 
 (defn blog-post-component []
-  (r/with-let [posts (subscribe [:posts])]
+  (r/with-let [posts (subscribe [:posts])
+               pagination (subscribe [:pagination])
+               offset (r/cursor pagination [:offset])
+               page (r/cursor pagination [:page])
+               prev-page (r/cursor pagination [:previous])
+               next-page (r/cursor pagination [:next])
+               pre-page (r/cursor pagination[:pre-page])]
               (fn []
                 [:div.col-md-8.blog-main
                  [:h3.pb-3.mb-4.font-italic.border-bottom
@@ -62,8 +66,15 @@
                                  [:hr]
                                  [:div [c/markdown-preview content]]])
                  [:nav.blog-pagination
-                  [:a.btn.btn-outline-primary {:href "#"} "Older"]
-                  [:a.btn.btn-outline-secondary.disabled {:href "#"} "Newer"]]])))
+                  [:a.btn.btn-outline-primary
+                   {:on-click #(dispatch [:load-posts {:page @next-page
+                                                       :pre-page @pre-page}])}
+                   "Older"]
+                  [:a.btn.btn-outline-secondary
+                   {:on-click #(dispatch [:load-posts {:page @prev-page
+                                                       :pre-page @pre-page}])
+                    :class (if (zero? @offset) "disabled")}
+                   "Newer"]]])))
 
 (defn where-component []
   (fn []
@@ -109,11 +120,6 @@
    [header-component]
    [main-component]
    [footer-component]])
-
-(reset! archives [{:href "#"
-                   :time "March 2018"}
-                  {:href "#"
-                   :time "May 2018"}])
 
 (defn home-page []
   [home-component])

@@ -9,8 +9,7 @@
 (defroutes
   home-routes
   (GET "/" [] (home-page))
-  (GET "/posts/:id" [id] (home-page))
-  (GET "/test/js/test" [] (home-page)))
+  (GET "/posts/:id" [id] (home-page)))
 
 
 (defroutes
@@ -22,5 +21,4 @@
   (GET "/posts/add" [] (home-page))
   (GET "/posts" [] (home-page))
   (GET "/categories" [] (home-page))
-  (GET "/categories/add" [] (home-page))
-  )
+  (GET "/categories/add" [] (home-page)))

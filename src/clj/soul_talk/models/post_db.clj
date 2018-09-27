@@ -20,9 +20,18 @@
 (defn publish-post! [id]
   (sql/update! *db* :posts {:publish 1} ["id = ?" id]))
 
-(defn get-posts-publish []
+
+(defn get-posts-publish [{:keys [offset pre-page]}]
   (sql/query *db*
-             ["select * from posts where publish = 1 order by create_time desc"]))
+             ["select * from posts where publish = 1
+              order by create_time desc offset ? limit ? "
+              offset pre-page]))
+
+(defn count-posts-publish []
+  (:count
+    (first
+     (sql/query *db*
+                ["select count(id) from posts where publish = 1"]))))
 
 (defn delete-post! [id]
   (sql/delete! *db* :posts ["id = ?" id]))

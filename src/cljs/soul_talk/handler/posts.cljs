@@ -6,15 +6,19 @@
 
 (reg-event-db
   :set-posts
-  (fn [db [_ {:keys [posts]}]]
-    (assoc db :posts posts)))
+  (fn [db [_ {:keys [posts pagination]}]]
+    (assoc db :posts posts
+              :pagination pagination)))
 
 (reg-event-fx
   :load-posts
-  (fn [_ _]
-    {:http {:method GET
-            :url "/api/posts"
-            :success-event [:set-posts]}}))
+  (fn [_ [_ req]]
+    (let [{:keys [page pre-page]} req]
+      {:http {:method        GET
+              :url           (str "/api/posts")
+              :ajax-map {:params {:page page
+                                  :pre-page pre-page}}
+              :success-event [:set-posts]}})))
 
 (reg-event-db
   :admin/set-posts

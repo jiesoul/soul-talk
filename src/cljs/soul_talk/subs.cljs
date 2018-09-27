@@ -35,3 +35,5 @@
 (reg-sub :posts query)
 
 (reg-sub :posts-archives query)
+
+(reg-sub :pagination query)

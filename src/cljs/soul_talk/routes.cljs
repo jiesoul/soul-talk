@@ -35,11 +35,13 @@
 ;; 首页
 (secretary/defroute
   "/" []
-  (run-events [[:load-categories]
-                [:load-tags]
-                [:load-posts]
-                [:load-posts-archives]
-                [:set-active-page :home]]))
+  (let [pagination {:page 1
+                    :pre-page 3}]
+    (run-events [[:load-categories]
+                 [:load-tags]
+                 [:load-posts pagination]
+                 [:load-posts-archives]
+                 [:set-active-page :home]])))
 
 ;; 后台管理
 (secretary/defroute
