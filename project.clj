@@ -61,14 +61,29 @@
    [:cljsbuild :builds :dev :compiler :output-dir]
    [:cljsbuild :builds :dev :compiler :output-to]]
 
-
   :figwheel
   {:http-server-root "public"
    :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
    :css-dirs ["resources/public/css"]}
 
   :profiles
-  {:dev {:source-paths   ["env/dev/clj"]
+  {:uberjar
+        {:omit-source true
+         :prep-tasks ["compile" ["cljsbuild" "once" "prod"]]
+         :cljsbuild
+         {:builds
+          {:prod
+           {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
+            :compiler {:output-to "resources/public/js/main.js"
+                       :optimizations :advanced
+                       :pretty-print false}}}}
+
+         :aot :all
+         :uberjar-name "soul-talk.jar"
+         :source-paths ["env/prod/clj"]
+         :resource-paths ["env/prod/resources"]}
+
+   :dev {:source-paths   ["env/dev/clj"]
          :resource-paths ["env/dev/resources"]
          :repl-options   {:init-ns user}
          :dependencies   [[ring/ring-devel "1.6.3"]
@@ -87,21 +102,20 @@
          :cljsbuild
                          {:builds
                           {:dev {
-                               :source-paths ["src/cljs" "src/cljc" "env/dev/cljs"] ;; 源代码目录
-                               ;:figwheel       true               ;; 开启 figwheel
-                               :compiler     {:main          "soul-talk.app" ;; 主命名空间
-                                              :asset-path    "/js/out" ;; 加载文件的地方 和 临时目录相关
-                                              :output-to     "resources/public/js/main.js" ;; 主文件地方
-                                              :output-dir    "resources/public/js/out" ;; 临时文件目录
-                                              :optimizations :none
-                                              :source-map    true ;; 源代码
-                                              :pretty-print  true
-                                              :preloads      [re-frisk.preload]}}
+                                 :source-paths ["src/cljs" "src/cljc" "env/dev/cljs"] ;; 源代码目录
+                                 ;:figwheel       true               ;; 开启 figwheel
+                                 :compiler     {:main          "soul-talk.app" ;; 主命名空间
+                                                :asset-path    "/js/out" ;; 加载文件的地方 和 临时目录相关
+                                                :output-to     "resources/public/js/main.js" ;; 主文件地方
+                                                :output-dir    "resources/public/js/out" ;; 临时文件目录
+                                                :optimizations :none
+                                                :source-map    true ;; 源代码
+                                                :pretty-print  true
+                                                :preloads      [re-frisk.preload]}}
                            :test
-                              {
-                               :figwheel     {:devcards true}
-                               :source-paths ["src/cljs" "src/cljc" "test/cljs"]
-                               :compiler     {:output-to     "target/test.js"
-                                              :main          soul-talk.runner
-                                              :optimizations :none}}}
-                          }}})
+                                {
+                                 :figwheel     {:devcards true}
+                                 :source-paths ["src/cljs" "src/cljc" "test/cljs"]
+                                 :compiler     {:output-to     "target/test.js"
+                                                :main          soul-talk.runner
+                                                :optimizations :none}}}}}})
