@@ -62,7 +62,7 @@
 
 (defn get-posts-archives-year-month [year month]
   (sql/query *db*
-             ["select * from posts where data_part('year', create_time) = ?
-                                      and data_part('month', create_time) = ?
+             ["select * from posts where date_part('year', create_time) = ?
+                                      and date_part('month', create_time) = ?
                                       order by create_time desc"
               year month]))

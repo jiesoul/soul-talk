@@ -70,7 +70,7 @@
                   [:a.btn.btn-outline-primary
                    {:on-click #(dispatch [:load-posts {:page @next-page
                                                         :pre-page @pre-page}])
-                    :class (if (> @next-page @total-pages) "disabled")}
+                    :class (if (>= @page @total-pages) "disabled")}
                    "Older"]
                   [:a.btn.btn-outline-secondary
                    {:on-click #(dispatch [:load-posts {:page @prev-page
@@ -103,7 +103,7 @@
        [:ol.list-unstyled.mb-0
         (for [{:keys [year month] :as archive} @posts-archives]
           ^{:key archive}
-          [:li [:a {:href ""} (str month " " year)]])]])))
+          [:li [:a {:href (str "/posts/archives/" year "/" month)} (str month " " year)]])]])))
 
 (defn main-component []
   (fn []

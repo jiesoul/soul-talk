@@ -86,7 +86,7 @@
                resp/ok)))
 
 (handler get-posts-archives-year-month [year month]
-         (let [posts (post-db/get-posts-archives-year-month)]
+         (let [posts (post-db/get-posts-archives-year-month year month)]
            (-> {:result :ok
                 :posts posts}
                resp/ok)))

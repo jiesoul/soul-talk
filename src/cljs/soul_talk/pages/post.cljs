@@ -134,7 +134,26 @@
                      {:href   (str "/posts/" (:id @post) "/edit")}
                      "修改文章"]])])))
 
-
 (defn post-archives-page []
-  (fn []
-    [:div]))
+  (r/with-let [posts (subscribe [:posts])]
+              (fn []
+                [:div.container-fluid
+                 [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
+                  [:a.navbar-brand
+                   {:href "#"} "Soul Talk"]
+                  [:div.container
+                   [:ul.navbar-nav
+                    [:li.nav-item.active
+                     [:a.nav-link
+                      {:href "#"}
+                       "文章"]]]]]
+                 [:div.container
+                  (for [{:keys [id title create_time author] :as post} @posts]
+                    ^{:key post} [:div.blog-post
+                                  [:h2.blog-post-title
+                                   [:a.text-muted
+                                    {:href   (str "/posts/" id)
+                                     :target "_blank"}
+                                    title]]
+                                  [:p.blog-post-meta (str (.toDateString (js/Date. create_time)) " by " author)]
+                                  [:hr]])]])))

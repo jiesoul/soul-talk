@@ -138,3 +138,15 @@
     {:http {:method GET
             :url "/api/posts/archives"
             :success-event [:set-posts-archives]}}))
+
+(reg-event-db
+  :set-posts-archives-year-month
+  (fn [db [_ {:keys [posts]}]]
+    (assoc db :posts posts)))
+
+(reg-event-fx
+  :load-posts-archives-year-month
+  (fn [_ [_ year month]]
+    {:http {:method        GET
+            :url           (str "/api/posts/archives/" year "/" month)
+            :success-event [:set-posts-archives-year-month]}}))
