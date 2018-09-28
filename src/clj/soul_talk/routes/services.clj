@@ -30,7 +30,7 @@
 ;; 包装处理规则
 (defn wrap-restricted [handler rule]
   (restrict handler {:handler rule
-                      :on-error access-error}))
+                     :on-error access-error}))
 
 ;; 多重方法用来注入中间件
 (defmethod restructure-param :auth-rules
@@ -51,12 +51,12 @@
   (api
     {:coercion :spec
      :swagger
-              {:ui   "/api-docs"
-               :spec "/swagger.json"
-               :data {:info     {:title       "Soul Talk API"
-                                 :description "public API"}
-                      :tags     [{:name "api" :description "apis"}]}}}
-    
+               {:ui   "/api-docs"
+                :spec "/swagger.json"
+                :data {:info     {:title       "Soul Talk API"
+                                  :description "public API"}
+                       :tags     [{:name "api" :description "apis"}]}}}
+
 
     (context "/api" []
       :tags ["api"]
@@ -137,9 +137,9 @@
             (category/save-category! category))
 
           (DELETE "/:id" [id]
-                :return ::Result
-                :summary "delete category"
-                (category/delete-category! (Integer/parseInt id))))
+            :return ::Result
+            :summary "delete category"
+            (category/delete-category! (Integer/parseInt id))))
 
         (context "/tags" []
 
@@ -151,10 +151,10 @@
 
         (context "/posts" []
 
-          (GET "/" []
+          (GET "/" request
             :return ::Result
             :summary "return all posts contains id not publish"
-            (posts/get-all-posts))
+            (posts/get-all-posts request))
 
           (POST "/" []
             :return ::Result

@@ -37,3 +37,5 @@
 (reg-sub :posts-archives query)
 
 (reg-sub :pagination query)
+
+(reg-sub :admin/pagination query)

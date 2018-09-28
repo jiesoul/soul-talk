@@ -55,7 +55,7 @@
         :href   "/posts/add"}
        "写文章"]]
      [posts-list]
-     [c/page-nav]]))
+     [c/page-nav :admin/load-posts]]))
 
 (defn edit-post-page []
   (r/with-let

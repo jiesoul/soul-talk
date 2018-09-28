@@ -23,14 +23,18 @@
 
 (def format-id (java-time.format/formatter "yyyyMMddHHmmssSSS"))
 
-(handler get-all-posts []
-         (let [posts (post-db/get-posts-all)]
+(handler get-all-posts [request]
+         (let [pagination (p/create request)
+               posts (post-db/get-posts-page pagination)
+               total (post-db/count-posts-all)
+               pagination (p/create-total pagination total)]
            (resp/ok {:result :ok
-                     :posts  posts})))
+                     :posts  posts
+                     :pagination pagination})))
 
 (handler get-publish-posts [req]
          (let [pagination (p/create req)
-               posts (post-db/get-posts-publish pagination)
+               posts (post-db/get-posts-publish-page pagination)
                total (post-db/count-posts-publish)]
            (resp/ok {:result :ok
                      :posts posts

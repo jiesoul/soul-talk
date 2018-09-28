@@ -50,7 +50,8 @@
                page (r/cursor pagination [:page])
                prev-page (r/cursor pagination [:previous])
                next-page (r/cursor pagination [:next])
-               pre-page (r/cursor pagination[:pre-page])]
+               pre-page (r/cursor pagination[:pre-page])
+               total-pages (r/cursor pagination [:total-pages])]
               (fn []
                 [:div.col-md-8.blog-main
                  [:h3.pb-3.mb-4.font-italic.border-bottom
@@ -68,7 +69,8 @@
                  [:nav.blog-pagination
                   [:a.btn.btn-outline-primary
                    {:on-click #(dispatch [:load-posts {:page @next-page
-                                                       :pre-page @pre-page}])}
+                                                       :pre-page @pre-page}])
+                    :class (if (> @page @total-pages) "disabled")}
                    "Older"]
                   [:a.btn.btn-outline-secondary
                    {:on-click #(dispatch [:load-posts {:page @prev-page

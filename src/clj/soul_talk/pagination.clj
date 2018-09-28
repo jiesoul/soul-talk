@@ -4,7 +4,7 @@
 
 
 (def default-page 1)
-(def default-pre-page 20)
+(def default-pre-page 2)
 (def min-page 1)
 (def min-pre-page 1)
 (def offset-key :offset)
@@ -12,6 +12,8 @@
 (def pre-page-key :pre-page)
 (def prev-key :previous)
 (def next-key :next)
+(def total-key :total)
+(def total-pages-key :total-pages)
 
 (def default-pagination-params
   {page-key default-page pre-page-key default-pre-page})
@@ -60,3 +62,16 @@
         next-page (next-page request)
         prev-page (prev-page request)]
     {page-key page pre-page-key pre-page offset-key offset next-key next-page prev-key prev-page}))
+
+(defn total-pages [total pre-page]
+  (let [total-pages (quot total pre-page)
+        rem (rem total pre-page)]
+    (if (zero? rem)
+      total-pages
+      (inc total-pages))))
+
+(defn create-total [pagination total]
+  (let [total-pages (total-pages total (:pre-page pagination))]
+    (-> pagination
+        (assoc total-key total)
+        (assoc total-pages-key total-pages))))

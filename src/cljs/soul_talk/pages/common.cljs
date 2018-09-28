@@ -1,11 +1,12 @@
 (ns soul-talk.pages.common
-  (:import goog.history.Html5History)
-  (:require [re-frame.core :refer [dispatch]]
+  (:require-macros)
+  (:require [re-frame.core :refer [dispatch subscribe]]
             [reagent.core :as r]
             [cljsjs.showdown]
             [cljsjs.highlight]
             [cljsjs.simplemde]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log])
+  (:import goog.history.Html5History))
 
 (defn input [type id placeholder fields]
   "标准 input， 其中的 on-change 实现了值的绑定"
@@ -92,28 +93,37 @@
           {:dangerouslySetInnerHTML
            {:__html (.makeHtml md-parser (str content))}}])})))
 
-(defn page-nav []
-  (fn []
-    [:nav
-     [:ul.pagination.justify-content-center
-      [:li.page-item.disable
-       [:a.page-link
-        {:href     "#"
-         :tab-index "-1"}
-        "Previous"]]
-      [:li.page-item
-       [:a.page-link
-        {:href "#"}
-        "1"]]
-      [:li.page-item
-       [:a.page-link
-        {:href "#"}
-        "2"]]
-      [:li.page-item
-       [:a.page-link
-        {:href "#"}
-        "3"]]
-      [:li.page-item
-       [:a.page-link
-        {:href "#"}
-        "Next"]]]]))
+(defn page-nav [handler]
+  (r/with-let
+    [pagination (subscribe [:admin/pagination])
+     prev-page (r/cursor pagination [:previous])
+     next-page (r/cursor pagination [:next])
+     page (r/cursor pagination [:page])
+     pre-page (r/cursor pagination [:pre-page])
+     total-pages (r/cursor pagination [:total-pages])
+     total (r/cursor pagination [:total])
+     paginate-params @pagination]
+    (fn []
+      (let [start (max 1 (- @page 5))
+            end (inc (min @total-pages (+ @page 5)))]
+        [:nav
+         [:ul.pagination.justify-content-center.pagination-sm
+          [:li.page-item
+           {:class (if (= @page 1) "disabled")}
+           [:a.page-link
+            {:on-click  #(dispatch [handler (assoc paginate-params :page @prev-page)])
+             :tab-index "-1"}
+            "Previous"]]
+          (for [p (range start end)]
+            ^{:key p}
+            [:li.page-item
+             {:class (if (= p @page) "active")}
+             [:a.page-link
+              {:on-click #(dispatch [handler (assoc paginate-params :page p)])}
+              p]]
+            )
+          [:li.page-item
+           {:class (if (> @next-page @total-pages) "disabled")}
+           [:a.page-link
+            {:on-click #(dispatch [handler (assoc paginate-params :page @next-page)])}
+            "Next"]]]]))))
