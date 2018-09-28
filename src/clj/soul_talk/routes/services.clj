@@ -100,6 +100,12 @@
           :summary "load post archives"
           (posts/get-posts-archives))
 
+        (GET "/archives/:year/:month" [year month]
+          :return ::Result
+          :path-params [year :- int? month :- int?]
+          :summary "load post archives"
+          (posts/get-posts-archives-year-month year month))
+
         (GET "/:id" [id]
           :return ::Result
           :summary "load post"

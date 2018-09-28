@@ -133,3 +133,8 @@
                     [:a.btn.btn-outline-primary.btn-sm.mr-2
                      {:href   (str "/posts/" (:id @post) "/edit")}
                      "修改文章"]])])))
+
+
+(defn post-archives-page []
+  (fn []
+    [:div]))

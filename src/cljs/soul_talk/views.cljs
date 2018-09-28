@@ -6,7 +6,7 @@
             [soul-talk.pages.admin :refer [main-component]]
             [soul-talk.pages.auth :refer [login-page register-page]]
             [soul-talk.pages.users :refer [users-page change-pass-page user-profile-page]]
-            [soul-talk.pages.post :refer [posts-page post-view-page edit-post-page]]
+            [soul-talk.pages.post :refer [posts-page post-view-page edit-post-page post-archives-page]]
             [soul-talk.pages.category :as category]
             [soul-talk.pages.tag :as tag]
             [taoensso.timbre :as log]
@@ -110,6 +110,9 @@
 
 (defmethod pages :posts [_ _]
   (admin-page posts-page))
+
+(defmethod pages :posts/archives [_ _]
+  [post-archives-page])
 
 (defmethod pages :posts/add [_ _]
   (r/with-let [user (subscribe [:user])]

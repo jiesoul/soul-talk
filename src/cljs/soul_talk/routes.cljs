@@ -77,6 +77,13 @@
                [:set-active-page :posts]]))
 
 (secretary/defroute
+  "/posts/archives/:year/:month" [year month]
+  (run-events [[:load-categories]
+                [:load-tags]
+                [:load-posts-archives-year-month year month]
+                :set-active-page :posts/archives]))
+
+(secretary/defroute
   "/posts/add" []
   (run-events [[:load-categories]
                 [:load-tags]

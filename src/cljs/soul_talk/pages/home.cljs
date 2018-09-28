@@ -69,8 +69,8 @@
                  [:nav.blog-pagination
                   [:a.btn.btn-outline-primary
                    {:on-click #(dispatch [:load-posts {:page @next-page
-                                                       :pre-page @pre-page}])
-                    :class (if (> @page @total-pages) "disabled")}
+                                                        :pre-page @pre-page}])
+                    :class (if (> @next-page @total-pages) "disabled")}
                    "Older"]
                   [:a.btn.btn-outline-secondary
                    {:on-click #(dispatch [:load-posts {:page @prev-page

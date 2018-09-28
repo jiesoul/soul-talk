@@ -35,10 +35,11 @@
 (handler get-publish-posts [req]
          (let [pagination (p/create req)
                posts (post-db/get-posts-publish-page pagination)
-               total (post-db/count-posts-publish)]
+               total (post-db/count-posts-publish)
+               pagination (p/create-total pagination total)]
            (resp/ok {:result :ok
                      :posts posts
-                     :pagination (assoc pagination :total total)})))
+                     :pagination pagination})))
 
 (handler get-post [post-id]
          (let [post (post-db/get-post-by-id post-id)]
@@ -82,4 +83,10 @@
          (let [archives (post-db/get-posts-archives)]
            (-> {:result :ok
                 :archives archives}
+               resp/ok)))
+
+(handler get-posts-archives-year-month [year month]
+         (let [posts (post-db/get-posts-archives-year-month)]
+           (-> {:result :ok
+                :posts posts}
                resp/ok)))
