@@ -1,8 +1,12 @@
 (ns soul-talk.config
-  (:require [mount.core :refer [defstate]]
+  (:require [mount.core :refer [args defstate]]
             [cprop.core :refer [load-config]]
             [cprop.source :as source]))
 
-(defstate conf
-  :start (load-config))
+(defstate env
+  :start (load-config
+           :merge
+           [(args)
+            (source/from-system-props)
+            (source/from-env)]))
 

@@ -5,7 +5,6 @@
             [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]
             [clojure.java.io :as io]))
 
-(parser/cache-off!)
 (parser/set-resource-path! (io/resource "templates"))
 (declare ^:dynamic *identity*)
 (declare ^:dynamic *app-context*)

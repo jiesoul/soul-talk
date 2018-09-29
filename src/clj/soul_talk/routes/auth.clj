@@ -16,16 +16,20 @@
     (resp/precondition-failed
       {:result  :error
        :message error})
-    (if-let [temp-user (user-db/select-user (:email user))]
-      (resp/unauthorized {:result  :error
-                          :message (str (:email temp-user) " 已被注册")})
-      (do
-        (user-db/save-user!
-          (-> user
-            (dissoc :pass-confirm)
-            (update :password hashers/encrypt)))
-        (-> {:result :ok}
-          (resp/ok))))))
+    (let [count (user-db/count-users)]
+      (if (pos? count)
+        (resp/bad-request {:result :error
+                              :message "系统不允许注册！！"})
+        (if-let [temp-user (user-db/select-user (:email user))]
+          (resp/unauthorized {:result  :error
+                                :message (str (:email temp-user) " 已被注册")})
+          (do
+            (user-db/save-user!
+              (-> user
+                (dissoc :pass-confirm)
+                (update :password hashers/encrypt)))
+            (-> {:result :ok}
+              (resp/ok))))))))
 
 (defn authenticate-local [email password]
   (when-let [user (user-db/select-user email)]

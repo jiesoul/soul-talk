@@ -1,12 +1,10 @@
 (defproject soul-talk "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :description "self site"
+  :url "http://github.com/jiesoul/soul-talk"
+
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.339"]
                  [org.clojure/java.jdbc "0.7.8"]
-                 [org.clojure/tools.logging "0.4.1"]
                  [org.postgresql/postgresql "42.2.4"]
                  [hikari-cp "2.6.0"]
                  [ragtime "0.7.2"]
@@ -16,10 +14,11 @@
                  [compojure "1.6.1"]
                  [metosin/compojure-api "2.0.0-alpha25"]
                  [metosin/spec-tools "0.7.1"]
-                 [com.taoensso/timbre "4.10.0"]
                  [metosin/ring-http-response "0.9.0"]
-                 [ring/ring-defaults "0.3.2"]
                  [metosin/muuntaja "0.6.0"]
+                 [com.taoensso/timbre "4.10.0"]
+                 [com.fzakaria/slf4j-timbre "0.3.12"]
+                 [ring/ring-defaults "0.3.2"]
                  [bouncer "1.0.1"]
                  [buddy "2.0.0"]
                  [clojure.java-time "0.3.2"]
@@ -32,7 +31,6 @@
                  [org.webjars/font-awesome "5.2.0"]
                  [org.webjars.npm/highlight.js "9.12.0"]
                  [org.webjars.bower/simplemde-markdown-editor "1.11.2"]
-                 [markdown-clj "1.0.2"]
                  [cljsjs/chartjs "2.7.0-0"]
                  [cljsjs/showdown "1.8.6-0"]
                  [cljsjs/highlight "9.12.0-2"]
@@ -45,11 +43,15 @@
                  [reagent-utils "0.3.1"]
                  [cljs-ajax "0.7.4"]
                  [cprop "0.1.13"]]
+
   :main ^:skip-aot soul-talk.core
+
   :plugins [[lein-ring "0.12.4"]
             [lein-cljsbuild "1.1.7"]]
 
-  :ring {:handler soul-talk.core/app}
+  :ring {:handler soul-talk.handler/app
+         :uberwar-name "soul-talk.war"}
+
   :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources"]
   :test-paths ["test/clj" "test/cljs"]
@@ -80,6 +82,7 @@
 
          :aot :all
          :uberjar-name "soul-talk.jar"
+         :uberwar-name "soul-talk.war"
          :source-paths ["env/prod/clj"]
          :resource-paths ["env/prod/resources"]}
 
@@ -103,7 +106,6 @@
                          {:builds
                           {:dev {
                                  :source-paths ["src/cljs" "src/cljc" "env/dev/cljs"] ;; 源代码目录
-                                 ;:figwheel       true               ;; 开启 figwheel
                                  :compiler     {:main          "soul-talk.app" ;; 主命名空间
                                                 :asset-path    "/js/out" ;; 加载文件的地方 和 临时目录相关
                                                 :output-to     "resources/public/js/main.js" ;; 主文件地方

@@ -1,7 +1,6 @@
 (ns soul-talk.models.db
   (:require [clojure.java.jdbc :as sql]
             [hikari-cp.core :refer :all]
-            [taoensso.timbre :as log]
             [mount.core :refer [defstate]]
             [clojure.java.jdbc :as jdbc])
   (:import (java.sql Date Timestamp PreparedStatement)))

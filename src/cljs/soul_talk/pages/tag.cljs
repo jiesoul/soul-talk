@@ -7,14 +7,15 @@
   (r/with-let
     [tag (r/atom {})
      error (subscribe [:error])]
-    [c/modal
-     [:div "Add Category"]
-     [:div.form-group
-      [c/text-input "Name" :name "please enter name" tag]
-      (when @error
-        [:div.alert.alert-danger @error])]
-     [:div
-      [:a.btn.btn-primary
-       {:value "Add"
-        :on-click #(dispatch [:add-category @tag])}
-       "Add"]]]))
+    (fn []
+      [c/modal
+       [:div "Add Category"]
+       [:div.form-group
+        [c/text-input "Name" :name "please enter name" tag]
+        (when @error
+          [:div.alert.alert-danger @error])]
+       [:div
+        [:a.btn.btn-primary
+         {:value    "Add"
+          :on-click #(dispatch [:add-category @tag])}
+         "Add"]]])))

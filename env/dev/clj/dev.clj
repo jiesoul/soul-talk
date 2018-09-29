@@ -1,5 +1,5 @@
 (ns dev
-  (:require [soul-talk.models.db :refer [*db* db-spec]]
+  (:require [soul-talk.models.db :refer [*db*]]
             [clojure.pprint :refer [pprint]]
             [clojure.tools.namespace.repl :as tn]
             [mount.core :as mount :refer [defstate]]
@@ -10,13 +10,13 @@
             [soul-talk.config]
             [ragtime.jdbc :as jdbc]
             [ragtime.repl :refer [migrate rollback]]
-            [selmer.parser :as parser]))
+            [selmer.parser :as parser]
+            [taoensso.timbre :as log]))
+
+(parser/cache-off!)
 
 (defn start []
-  (mount/start
-    #'soul-talk.config/conf
-    #'soul-talk.models.db/*db*
-    #'soul-talk.core/system))
+  (mount/start))
 
 (def config
   {:datastore  (jdbc/sql-database *db*)

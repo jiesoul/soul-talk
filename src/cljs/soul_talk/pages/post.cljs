@@ -2,7 +2,6 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.pages.common :as c]
-            [soul-talk.datetime :as dt]
             [cljsjs.simplemde]
             [taoensso.timbre :as log])
   (:import [goog.History]))
@@ -65,19 +64,80 @@
      error (subscribe [:error])
      original-post (subscribe [:post])
      edited-post (-> @original-post
-                     (update :title #(or % ""))
-                     (update :content #(or % ""))
-                     (update :img_url #(or % ""))
-                     (update :category #(or % ""))
-                     (update :create_time #(or % nil))
-                     (update :modify_time #(or % nil))
-                     (update :publish #(or % 0))
-                     (update :author #(or % (:name @user)))
-                     (update :counter #(or % nil))
-                     r/atom)
+                   (update :title #(or % ""))
+                   (update :content #(or % ""))
+                   (update :img_url #(or % ""))
+                   (update :category #(or % ""))
+                   (update :create_time #(or % nil))
+                   (update :modify_time #(or % nil))
+                   (update :publish #(or % 0))
+                   (update :author #(or % (:name @user)))
+                   (update :counter #(or % nil))
+                   r/atom)
      content (r/cursor edited-post [:content])
      category (r/cursor edited-post [:category])]
-    (if @user
+    (fn []
+      (if @user
+        [:div.container-fluid
+         [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
+          [:a.navbar-brand
+           {:href "#"} "Soul Talk"]
+          [:div.container
+           [:ul.navbar-nav
+            [:li.nav-item.active
+             [:a.nav-link
+              {:href "#"}
+              (if @original-post "修改文章" "写文章")]]]]]
+         [:div.container
+          [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
+           [:div
+            [:div.form-group
+             [c/text-input "" :title "请输入标题" edited-post]]
+            [c/editor content]
+            (when @error
+              [:div.alert.alert-danger @error])
+            [:div.form-inline
+             [:div.form-group
+              [:label.p-1 {:for "category"} "分类:"]
+              [:select#category.mr-2.form-control.form-control-sm
+               {:on-change    #(reset! category (-> % .-target .-value))
+                :placeholder  "请选择一个分类"
+                :defaultValue @category}
+               [:option ""]
+               (for [{:keys [id name]} @categories]
+                 ^{:key id}
+                 [:option
+                  {:value id}
+                  name])]
+              [:a.btn.btn-outline-primary.btn-sm.mr-2
+               {:on-click
+                (if @original-post
+                  #(dispatch [:posts/edit @edited-post])
+                  #(dispatch [:posts/add @edited-post]))}
+               "保存"]]]]]]]))))
+
+
+(defn post-view-page []
+  (r/with-let [post (subscribe [:post])
+               user (subscribe [:user])]
+    (fn []
+      (if @post
+        [:div.container
+         [:div.text-center
+          [:h2.center (:title @post)]]
+         [:hr]
+         [:div.container
+          [c/markdown-preview (:content @post)]]
+         [:hr]
+         (if @user
+           [:div.text-center
+            [:a.btn.btn-outline-primary.btn-sm.mr-2
+             {:href (str "/posts/" (:id @post) "/edit")}
+             "修改文章"]])]))))
+
+(defn post-archives-page []
+  (r/with-let [posts (subscribe [:posts])]
+    (fn []
       [:div.container-fluid
        [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
         [:a.navbar-brand
@@ -87,73 +147,14 @@
           [:li.nav-item.active
            [:a.nav-link
             {:href "#"}
-            (if @original-post "修改文章" "写文章")]]]]]
+            "文章"]]]]]
        [:div.container
-        [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
-         [:div
-          [:div.form-group
-           [c/text-input "" :title "请输入标题" edited-post]]
-          [c/editor content]
-          (when @error
-            [:div.alert.alert-danger @error])
-          [:div.form-inline
-           [:div.form-group
-            [:label.p-1 {:for "category"} "分类:"]
-            [:select#category.mr-2.form-control.form-control-sm
-             {:on-change    #(reset! category (-> % .-target .-value))
-              :placeholder  "请选择一个分类"
-              :defaultValue @category}
-             [:option ""]
-             (for [{:keys [id name]} @categories]
-               ^{:key id}
-               [:option
-                {:value id}
-                name])]
-            [:a.btn.btn-outline-primary.btn-sm.mr-2
-             {:on-click
-              (if @original-post
-                #(dispatch [:posts/edit @edited-post])
-                #(dispatch [:posts/add @edited-post]))}
-             "保存"]]]]]]])))
-
-
-(defn post-view-page []
-  (r/with-let [post (subscribe [:post])
-               user (subscribe [:user])]
-              (if @post
-                [:div.container
-                 [:div.text-center
-                  [:h2.center (:title @post)]]
-                 [:hr]
-                 [:div.container
-                  [c/markdown-preview (:content @post)]]
-                 [:hr]
-                 (if @user
-                   [:div.text-center
-                    [:a.btn.btn-outline-primary.btn-sm.mr-2
-                     {:href   (str "/posts/" (:id @post) "/edit")}
-                     "修改文章"]])])))
-
-(defn post-archives-page []
-  (r/with-let [posts (subscribe [:posts])]
-              (fn []
-                [:div.container-fluid
-                 [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
-                  [:a.navbar-brand
-                   {:href "#"} "Soul Talk"]
-                  [:div.container
-                   [:ul.navbar-nav
-                    [:li.nav-item.active
-                     [:a.nav-link
-                      {:href "#"}
-                       "文章"]]]]]
-                 [:div.container
-                  (for [{:keys [id title create_time author] :as post} @posts]
-                    ^{:key post} [:div.blog-post
-                                  [:h2.blog-post-title
-                                   [:a.text-muted
-                                    {:href   (str "/posts/" id)
-                                     :target "_blank"}
-                                    title]]
-                                  [:p.blog-post-meta (str (.toDateString (js/Date. create_time)) " by " author)]
-                                  [:hr]])]])))
+        (for [{:keys [id title create_time author] :as post} @posts]
+          ^{:key post} [:div.blog-post
+                        [:h2.blog-post-title
+                         [:a.text-muted
+                          {:href   (str "/posts/" id)
+                           :target "_blank"}
+                          title]]
+                        [:p.blog-post-meta (str (.toDateString (js/Date. create_time)) " by " author)]
+                        [:hr]])]])))

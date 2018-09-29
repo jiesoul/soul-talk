@@ -17,12 +17,12 @@
 
 (defn nav-scroller-header-component []
   (r/with-let [navs (subscribe [:categories])]
-              (fn []
-                [:div.nav-scroller.py-1.mb-2
-                 [:nav.nav.d-flex.justify-content-between
-                  (for [{:keys [id name] :as nav} @navs]
-                    ^{:key nav}
-                    [:a.p-2.text-muted {:href (str id)} name])]])))
+    (fn []
+      [:div.nav-scroller.py-1.mb-2
+       [:nav.nav.d-flex.justify-content-between
+        (for [{:keys [id name] :as nav} @navs]
+          ^{:key nav}
+          [:a.p-2.text-muted {:href (str id)} name])]])))
 
 (defn jumbotron-header-component []
   (fn []
@@ -52,31 +52,32 @@
                next-page (r/cursor pagination [:next])
                pre-page (r/cursor pagination[:pre-page])
                total-pages (r/cursor pagination [:total-pages])]
-              (fn []
-                [:div.col-md-8.blog-main
-                 [:h3.pb-3.mb-4.font-italic.border-bottom
-                  "文章"]
-                 (for [{:keys [id title create_time author content] :as post} @posts]
-                   ^{:key post} [:div.blog-post
-                                 [:h2.blog-post-title
-                                  [:a.text-muted
-                                   {:href (str "/posts/" id)
-                                    :target "_blank"}
-                                   title]]
-                                 [:p.blog-post-meta (str (.toDateString (js/Date. create_time)) " by " author)]
-                                 [:hr]
-                                 [:div [c/markdown-preview content]]])
-                 [:nav.blog-pagination
-                  [:a.btn.btn-outline-primary
-                   {:on-click #(dispatch [:load-posts {:page @next-page
-                                                        :pre-page @pre-page}])
-                    :class (if (>= @page @total-pages) "disabled")}
-                   "Older"]
-                  [:a.btn.btn-outline-secondary
-                   {:on-click #(dispatch [:load-posts {:page @prev-page
-                                                       :pre-page @pre-page}])
-                    :class (if (zero? @offset) "disabled")}
-                   "Newer"]]])))
+
+    (fn []
+      [:div.col-md-8.blog-main
+       [:h3.pb-3.mb-4.font-italic.border-bottom
+        "文章"]
+       (for [{:keys [id title create_time author content] :as post} @posts]
+         ^{:key post} [:div.blog-post
+                       [:h2.blog-post-title
+                        [:a.text-muted
+                         {:href (str "/posts/" id)
+                          :target "_blank"}
+                         title]]
+                       [:p.blog-post-meta (str (.toDateString (js/Date. create_time)) " by " author)]
+                       [:hr]
+                       [:div [c/markdown-preview content]]])
+       [:nav.blog-pagination
+        [:a.btn.btn-outline-primary
+         {:on-click #(dispatch [:load-posts {:page @next-page
+                                             :pre-page @pre-page}])
+          :class (if (>= @page @total-pages) "disabled")}
+         "Older"]
+        [:a.btn.btn-outline-secondary
+         {:on-click #(dispatch [:load-posts {:page @prev-page
+                                             :pre-page @pre-page}])
+          :class (if (zero? @offset) "disabled")}
+         "Newer"]]])))
 
 (defn where-component []
   (fn []
@@ -118,10 +119,12 @@
        [archives-component]]]]))
 
 (defn home-component []
-  [:div
-   [header-component]
-   [main-component]
-   [footer-component]])
+  (fn []
+    [:div
+     [header-component]
+     [main-component]
+     [footer-component]]))
 
 (defn home-page []
-  [home-component])
+  (fn []
+    [home-component]))

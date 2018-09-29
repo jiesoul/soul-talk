@@ -23,3 +23,9 @@
 
 (defn save-user-profile! [{:keys [email name]}]
   (sql/update! *db* :users {:name name} ["email = ?" email]))
+
+(defn count-users []
+  (:count
+    (first
+      (sql/query *db*
+        ["SELECT count(email) as count from users"]))))
