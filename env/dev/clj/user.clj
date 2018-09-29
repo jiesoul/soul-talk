@@ -1,5 +1,4 @@
-(ns user
-  (:require [soul-talk.models.db :as db :refer [*db*]]))
+(ns user)
 
 (defn dev []
   (require 'dev)

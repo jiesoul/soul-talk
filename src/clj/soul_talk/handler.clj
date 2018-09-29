@@ -5,15 +5,9 @@
             [compojure.route :as route]
             [compojure.core :refer [routes wrap-routes]]
             [soul-talk.routes.home :refer [home-routes auth-routes]]
-            [soul-talk.routes.services :refer [services-routes]]
-            [mount.core :as mount]))
+            [soul-talk.routes.services :refer [services-routes]]))
 
-(mount/defstate init-app
-  :start (or (:init defaults) identity)
-  :stop (or (:init defaults) identity))
-
-(mount/defstate app
-  :start
+(def app
   (-> (routes
         services-routes
         (-> #'home-routes

@@ -1,5 +1,6 @@
 (ns soul-talk.core
   (:require [ring.adapter.jetty :as jetty]
+            [soul-talk.config :refer [env]]
             [soul-talk.handler :refer [app]]
             [mount.core :refer [defstate]]
             [mount.core :as mount]

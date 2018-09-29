@@ -10,13 +10,16 @@
             [soul-talk.config]
             [ragtime.jdbc :as jdbc]
             [ragtime.repl :refer [migrate rollback]]
-            [selmer.parser :as parser]
-            [taoensso.timbre :as log]))
+            [mount.core :as mount]
+            [selmer.parser :as parser]))
 
 (parser/cache-off!)
 
 (defn start []
-  (mount/start))
+  (mount/start
+    #'soul-talk.config/env
+    #'soul-talk.models.db/*db*
+    #'soul-talk.core/system))
 
 (def config
   {:datastore  (jdbc/sql-database *db*)

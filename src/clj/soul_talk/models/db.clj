@@ -31,8 +31,6 @@
 (defn close-conn []
   (close-datasource @datasource))
 
-(def db-spec {:datasource @datasource})
-
 (defstate ^:dynamic *db*
   :start (create-conn)
   :stop (close-conn))
