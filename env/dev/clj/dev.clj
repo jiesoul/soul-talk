@@ -2,18 +2,19 @@
   (:require [soul-talk.models.db :refer [*db*]]
             [clojure.pprint :refer [pprint]]
             [clojure.tools.namespace.repl :as tn]
-            [mount.core :as mount :refer [defstate]]
             [mount.tools.graph :refer [states-with-deps]]
             [figwheel :refer [start-fw stop-fw cljs]]
             [soul-talk.core]
-            [soul-talk.models.db]
             [soul-talk.config]
             [ragtime.jdbc :as jdbc]
             [ragtime.repl :refer [migrate rollback]]
             [mount.core :as mount]
-            [selmer.parser :as parser]))
+            [selmer.parser :as parser]
+            [cprop.core :refer [load-config]]
+            [mount-up.core :as mu]))
 
 (parser/cache-off!)
+(mu/on-upndown :info mu/log :before)
 
 (defn start []
   (mount/start

@@ -12,7 +12,9 @@
   :once
   (fn [f]
     (mount/start
-      #'soul-talk.models.db/*db*)))
+      #'soul-talk.config/env
+      #'soul-talk.models.db/*db*)
+    (f)))
 
 (def user {:email "test@gmail.com"
            :password (hashers/encrypt "12345678")})

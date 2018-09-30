@@ -1,4 +1,4 @@
-(defproject soul-talk "0.1.0-SNAPSHOT"
+(defproject soul-talk "0.1.0"
   :description "self site"
   :url "http://github.com/jiesoul/soul-talk"
 
@@ -10,6 +10,7 @@
                  [ragtime "0.7.2"]
                  [ring "1.7.0"]
                  [mount "0.1.13"]
+                 [tolitius/mount-up "0.1.1"]
                  [org.clojure/tools.namespace "0.3.0-alpha4"]
                  [compojure "1.6.1"]
                  [metosin/compojure-api "2.0.0-alpha25"]
@@ -17,7 +18,6 @@
                  [metosin/ring-http-response "0.9.0"]
                  [metosin/muuntaja "0.6.0"]
                  [com.taoensso/timbre "4.10.0"]
-                 [com.fzakaria/slf4j-timbre "0.3.12"]
                  [ring/ring-defaults "0.3.2"]
                  [bouncer "1.0.1"]
                  [buddy "2.0.0"]
