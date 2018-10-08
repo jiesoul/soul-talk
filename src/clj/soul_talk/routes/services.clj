@@ -24,7 +24,7 @@
        (:identity req)))
 
 ;; 错误处理
-(defn access-error [_val]
+(defn access-error [_ val]
   (unauthorized val))
 
 ;; 包装处理规则

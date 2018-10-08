@@ -53,21 +53,20 @@
     {:component-did-mount
      #(let [editor (js/SimpleMDE.
                      (clj->js
-                       {:auto-focus true
+                       {:auto-focus              true
                         :autoDownloadFontAwesome false
-                        :spell-check false
-                        :placeholder "正文"
-                        :toolbar ["bold"
-                                  "italic"
-                                  "strikethrough"
-                                  "|"
-                                  "code"
-                                  "quote"
-                                  "|"
-                                  "unordered-list"]
-                        :renderingConfig {:codeSyntaxHighlighting true}
-                        :element (r/dom-node %)
-                        :initialValue @text}))]
+                        :spell-check             false
+                        :placeholder             "正文"
+                        :toolbar                 ["bold"
+                                                  "italic"
+                                                  "|"
+                                                  "code"
+                                                  "quote"
+                                                  "|"
+                                                  "unordered-list"]
+                        :renderingConfig         {:codeSyntaxHighlighting true}
+                        :element                 (r/dom-node %)
+                        :initialValue            @text}))]
         (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
      :reagent-render
      (fn [] [:textarea.border-0])}))

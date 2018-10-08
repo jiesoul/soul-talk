@@ -1,0 +1,12 @@
+version: '1'
+
+services:
+  db:
+    image: postgres:10
+    volumes:
+      - db_data:/var/lib/postgres
+    restart: always
+    environment:
+      POSTGRES_USER： jiesoul
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: soul_talk
