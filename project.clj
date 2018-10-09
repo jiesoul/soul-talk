@@ -6,6 +6,7 @@
                  [org.clojure/clojurescript "1.10.339"]
                  [org.clojure/java.jdbc "0.7.8"]
                  [org.postgresql/postgresql "42.2.4"]
+                 [org.clojure/tools.cli "0.3.1"]
                  [hikari-cp "2.6.0"]
                  [ragtime "0.7.2"]
                  [ring "1.7.0"]

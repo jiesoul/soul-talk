@@ -2,16 +2,28 @@
   (:require [ring.adapter.jetty :as jetty]
             [soul-talk.config :refer [env]]
             [soul-talk.handler :refer [app]]
-            [mount.core :refer [defstate]]
-            [mount.core :as mount]
+            [mount.core :as mount :refer [defstate]]
+            [soul-talk.env :refer [defaults]]
+            [clojure.tools.cli :refer [parse-opts]]
             [taoensso.timbre :as log])
   (:gen-class))
+
+(def cli-options
+  [["-p" "--port PORT" "Port number"
+    :default 3000
+    :parse-fn #(Integer/parseInt %)
+    :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]])
+
+(defstate init-app
+  :start ((or (:init defaults) identity))
+  :stop  ((or (:stop defaults) identity)))
 
 (defn start-system []
   (-> #'app
       (jetty/run-jetty
-        {:port 3000
-         :join? false})))
+        (-> env
+          (update :port #(or (-> env :options :port) %))
+          (assoc :join? false)))))
 
 (defstate ^{:on-reload :noop}
   system
@@ -25,6 +37,7 @@
 
 (defn start-app [args]
   (doseq [component (-> args
+                        (parse-opts cli-options)
                         mount/start-with-args
                         :started)]
     (log/info component "started"))

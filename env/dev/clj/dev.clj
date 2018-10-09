@@ -9,15 +9,14 @@
             [ragtime.jdbc :as jdbc]
             [ragtime.repl :refer [migrate rollback]]
             [mount.core :as mount]
-            [selmer.parser :as parser]
             [cprop.core :refer [load-config]]
             [mount-up.core :as mu]))
 
-(parser/cache-off!)
 (mu/on-upndown :info mu/log :before)
 
 (defn start []
   (mount/start
+    #'soul-talk.core/init-app
     #'soul-talk.config/env
     #'soul-talk.models.db/*db*
     #'soul-talk.core/system))

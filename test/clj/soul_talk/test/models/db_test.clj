@@ -4,6 +4,7 @@
             [soul-talk.models.user-db :refer :all]
             [soul-talk.models.db :as db :refer [*db*]]
             [clojure.java.jdbc :as sql]
+            [soul-talk.config]
             [java-time.local :as l]
             [mount.core :as mount]
             [buddy.hashers :as hashers]))
