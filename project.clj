@@ -47,10 +47,10 @@
   :main ^:skip-aot soul-talk.core
 
   :plugins [[lein-ring "0.12.4"]
-            [lein-cljsbuild "1.1.7"]]
+            [lein-cljsbuild "1.1.7"]
+            [io.sarnowski/lein-docker "1.1.0"]]
 
-  :ring {:handler soul-talk.handler/app
-         :uberwar-name "soul-talk.war"}
+  :ring {:handler soul-talk.handler/app}
 
   :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources"]
@@ -68,6 +68,8 @@
    :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
    :css-dirs ["resources/public/css"]}
 
+  :docker {:image-name "jiesoul/soul-talk"}
+
   :profiles
   {:uberjar
         {:omit-source true
@@ -82,7 +84,6 @@
 
          :aot :all
          :uberjar-name "soul-talk.jar"
-         :uberwar-name "soul-talk.war"
          :source-paths ["env/prod/clj"]
          :resource-paths ["env/prod/resources"]}
 
