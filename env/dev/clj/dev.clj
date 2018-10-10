@@ -6,24 +6,24 @@
             [figwheel :refer [start-fw stop-fw cljs]]
             [soul-talk.core]
             [soul-talk.config]
-            [ragtime.jdbc :as jdbc]
+            [soul-talk.config :refer [env]]
+            [ragtime.jdbc :as ragtime]
             [ragtime.repl :refer [migrate rollback]]
             [mount.core :as mount]
-            [cprop.core :refer [load-config]]
             [mount-up.core :as mu]))
 
 (mu/on-upndown :info mu/log :before)
 
 (defn start []
   (mount/start
-    #'soul-talk.core/init-app
     #'soul-talk.config/env
+    #'soul-talk.core/init-app
     #'soul-talk.models.db/*db*
     #'soul-talk.core/system))
 
 (def config
-  {:datastore  (jdbc/sql-database *db*)
-   :migrations (jdbc/load-resources "migrations")})
+  {:datastore  (ragtime/sql-database (:database-url env))
+   :migrations (ragtime/load-resources "migrations")})
 
 (defn stop []
   (mount/stop))

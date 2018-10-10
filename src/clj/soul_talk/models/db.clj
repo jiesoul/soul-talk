@@ -2,7 +2,9 @@
   (:require [clojure.java.jdbc :as sql]
             [hikari-cp.core :refer :all]
             [mount.core :refer [defstate]]
-            [clojure.java.jdbc :as jdbc])
+            [clojure.java.jdbc :as jdbc]
+            [soul-talk.config :refer [env]]
+            [taoensso.timbre :as log])
   (:import (java.sql Date Timestamp PreparedStatement)))
 
 (def datasource-options {:auto-commit true
@@ -14,18 +16,13 @@
                          :minimum-idle 10
                          :maximum-pool-size 10
                          :pool-name "db-pool"
-                         :adapter "postgresql"
-                         :username "jiesoul"
-                         :password "12345678"
-                         :database-name "soul_talk"
-                         :server-name "localhost"
-                         :port-number 5432
                          :register-mbeans false})
 
 (defonce datasource
-         (delay (make-datasource datasource-options)))
+         (delay (make-datasource (merge datasource-options (:db-conf env)))))
 
 (defn create-conn []
+  (log/info @datasource)
   {:datasource @datasource})
 
 (defn close-conn []

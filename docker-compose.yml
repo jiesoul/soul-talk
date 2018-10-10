@@ -8,7 +8,7 @@ services:
       - db-data:/var/lib/postgresql/data
     restart: always
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: jiesoul
       POSTGRES_PASSWORD: 12345678
@@ -22,6 +22,8 @@ services:
     ports:
       - "3000:3000"
     restart: always
+    environment:
+      DATABASE_URL: jdbc:postgresql://localhost:5432/soul_talk?user=jiesoul&password=12345678
 
 volumes:
   db-data:
