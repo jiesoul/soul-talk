@@ -1,2 +1,8 @@
 {:production true
- :port 3000}
+ :port 3000
+ :db-conf {:adapter "postgresql"
+           :username "jiesoul"
+           :password "12345678"
+           :database-name "soul_talk"
+           :server-name "localhost"
+           :port-number 5432}}
