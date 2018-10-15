@@ -21,10 +21,6 @@
     #'soul-talk.models.db/*db*
     #'soul-talk.core/system))
 
-(def config
-  {:datastore  (ragtime/sql-database (:database-url env))
-   :migrations (ragtime/load-resources "migrations")})
-
 (defn stop []
   (mount/stop))
 

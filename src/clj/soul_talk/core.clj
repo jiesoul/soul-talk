@@ -5,6 +5,7 @@
             [mount.core :as mount :refer [defstate]]
             [soul-talk.env :refer [defaults]]
             [clojure.tools.cli :refer [parse-opts]]
+            [soul-talk.my-migrations :as migrations]
             [taoensso.timbre :as log])
   (:gen-class))
 
@@ -44,4 +45,11 @@
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]
-  (start-app args))
+  (cond
+    (some #{"migrate" "rollback"} args)
+    (do
+      (mount/start #'soul-talk.config/env)
+      (migrations/migrate args)
+      (System/exit 0))
+    :else
+    (start-app args)))
