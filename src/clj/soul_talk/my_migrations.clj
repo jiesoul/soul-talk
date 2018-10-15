@@ -1,7 +1,8 @@
 (ns soul-talk.my-migrations
   (:require [ragtime.jdbc :as ragtime]
             [ragtime.repl :as repl]
-            [clojure.string :refer [join]]))
+            [clojure.string :refer [join]]
+            [soul-talk.config :refer [env]]))
 
 (def config
   {:datastore  (ragtime/sql-database (:database-url env))
@@ -25,7 +26,7 @@
    (fn [config args]
      (repl/rollback config))})
 
-(def migrations? [[args]]
+(defn migrations? [[args]]
   (contains? (set (keys migrations)) args))
 
 (defn migrate
