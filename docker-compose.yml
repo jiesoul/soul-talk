@@ -19,10 +19,8 @@ services:
     image: jiesoul/soul-talk:0.1.0
     ports:
       - "3000:3000"
-
-
-networks:
-  backnet:
+    environment:
+      DATABASE-URL: jdbc:postgresql://db/soul_talk?user=jiesoul&password=12345678
 
 volumes:
   db-data:

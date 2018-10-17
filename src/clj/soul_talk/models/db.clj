@@ -16,13 +16,13 @@
                          :minimum-idle 10
                          :maximum-pool-size 10
                          :pool-name "db-pool"
-                         :register-mbeans false})
+                         :register-mbeans false
+                         :jdbc-url (:database-url env)})
 
 (defonce datasource
-         (delay (make-datasource (merge datasource-options (:db-conf env)))))
+         (delay (make-datasource {:jdbc-url (:database-url env)})))
 
 (defn create-conn []
-  (log/info @datasource)
   {:datasource @datasource})
 
 (defn close-conn []

@@ -8,7 +8,8 @@
             [taoensso.timbre :as log]
             [soul-talk.layout :as layout :refer [*identity* *app-context*]]
             [buddy.auth.backends.session :refer [session-backend]]
-            [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]])
+            [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
+            [soul-talk.env :refer [defaults]])
   (:import (javax.servlet ServletContext)))
 
 (defn wrap-context [handler]
@@ -61,8 +62,7 @@
       (assoc :session true))))
 
 (defn wrap-base [handler]
-  (-> handler
-    wrap-reload
+  (-> ((:middleware defaults) handler)
     wrap-identity
     wrap-webjars
     wrap-flash

@@ -1,16 +1,16 @@
 (ns dev
-  (:require [soul-talk.models.db :refer [*db*]]
-            [clojure.pprint :refer [pprint]]
+  (:require [clojure.pprint :refer [pprint]]
             [clojure.tools.namespace.repl :as tn]
-            [mount.tools.graph :refer [states-with-deps]]
             [figwheel :refer [start-fw stop-fw cljs]]
-            [soul-talk.core]
-            [soul-talk.config]
             [soul-talk.config :refer [env]]
-            [ragtime.jdbc :as ragtime]
-            [ragtime.repl :refer [migrate rollback]]
+            [soul-talk.models.db :refer [*db*]]
+            [soul-talk.core]
             [mount.core :as mount]
-            [mount-up.core :as mu]))
+            [mount-up.core :as mu]
+            [soul-talk.my-migrations :as my-migrations]))
+
+(defn migrate [args]
+  (my-migrations/migrate args (select-keys env [:database-url :migrations])))
 
 (mu/on-upndown :info mu/log :before)
 
@@ -23,14 +23,6 @@
 
 (defn stop []
   (mount/stop))
-
-(defn refresh []
-  (stop)
-  (tn/refresh))
-
-(defn refresh-all []
-  (stop)
-  (tn/refresh-all))
 
 (defn go
   "starts all states defined by defstate"

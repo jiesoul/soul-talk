@@ -1,4 +1,4 @@
-(defproject soul-talk "0.1.0"
+(defproject soul-talk "0.1.1"
   :description "self site"
   :url "http://github.com/jiesoul/soul-talk"
 
@@ -12,7 +12,7 @@
                  [ring "1.7.0"]
                  [mount "0.1.13"]
                  [tolitius/mount-up "0.1.1"]
-                 [org.clojure/tools.namespace "0.3.0-alpha4"]
+                 [org.clojure/tools.namespace "0.2.11"]
                  [compojure "1.6.1"]
                  [metosin/compojure-api "2.0.0-alpha25"]
                  [metosin/spec-tools "0.7.1"]

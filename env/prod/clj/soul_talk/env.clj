@@ -8,4 +8,5 @@
      (log/info "====[soul-talk started successfully]===="))
    :stop
    (fn []
-     (log/info "====[soul-talk has shut down successfully]====="))})
+     (log/info "====[soul-talk has shut down successfully]====="))
+   :middleware identity})

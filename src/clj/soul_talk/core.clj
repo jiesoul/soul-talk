@@ -20,6 +20,7 @@
   :stop  ((or (:stop defaults) identity)))
 
 (defn start-system []
+  (log/info "total config: " env)
   (-> #'app
       (jetty/run-jetty
         (-> env
@@ -49,7 +50,7 @@
     (some #{"migrate" "rollback"} args)
     (do
       (mount/start #'soul-talk.config/env)
-      (migrations/migrate args)
+      (migrations/migrate args (select-keys env [:database-url :migrations]))
       (System/exit 0))
     :else
     (start-app args)))

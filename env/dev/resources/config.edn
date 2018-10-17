@@ -1,9 +1,4 @@
 {:dev true
- :port 3000
+ :port 3001
  :database-url "jdbc:postgresql://localhost:5432/soul_talk?user=jiesoul&password=12345678"
- :db-conf {:adapter "postgresql"
-      :username "jiesoul"
-      :password "12345678"
-      :database-name "soul_talk"
-      :server-name "localhost"
-      :port-number 5432}}
+ :migrations "migrations"}
