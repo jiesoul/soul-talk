@@ -24,11 +24,11 @@ services:
     # 应用依赖上面的数据库服务
     depends_on:
       - db
-    image: jiesoul/soul-talk:0.1.2
+    image: jiesoul/soul-talk:0.1.3
     ports:
       - "3000:3000"
     environment:
       DATABASE_URL: jdbc:postgresql://db/soul_talk?user=jiesoul&password=12345678
-
+#存储
 volumes:
   db-data:

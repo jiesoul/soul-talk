@@ -1,4 +1,4 @@
-(defproject soul-talk "0.1.2"
+(defproject soul-talk "0.1.3"
   :description "self site"
   :url "http://github.com/jiesoul/soul-talk"
 

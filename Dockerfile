@@ -12,6 +12,7 @@ RUN chmod +x /app/entrypoint.sh
 EXPOSE 3000
 
 # 运行命令
-CMD ["java", "-jar", "/app/soul-talk.jar"]
-#ENTRYPOINT [ "/app/entrypoint.sh" ]
-#CMD [ "soul-talk" ]
+#CMD ["java", "-jar", "/app/soul-talk.jar", "migrate"]
+#CMD ["java", "-jar", "/app/soul-talk.jar"]
+ENTRYPOINT [ "/app/entrypoint.sh" ]
+CMD [ "soul-talk" ]

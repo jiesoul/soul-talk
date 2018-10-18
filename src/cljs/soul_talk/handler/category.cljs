@@ -29,7 +29,7 @@
     (if (str/blank? name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        POST
-              :url           "/api/admin/categories/add"
+              :url           "/api/admin/categories/"
               :ajax-map      {:params category}
               :success-event [:categories/add-ok]
               :error-event #(js/alert "发生错误请重试")}})))
