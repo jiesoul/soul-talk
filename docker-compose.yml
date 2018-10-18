@@ -10,8 +10,6 @@ services:
     # 存储 引用下面的
     volumes:
       - db-data:/var/lib/postgresql/data
-    # 重启模式
-    restart: always
     # 端口 前面的表示暴露出的端口，可以在主机访问，后面是容器内的端口
     ports:
       - "5432:5432"
@@ -22,11 +20,11 @@ services:
       POSTGRES_DB: soul_talk
 
   # 应用
-  soul-talk:
+  web:
     # 应用依赖上面的数据库服务
     depends_on:
       - db
-    image: jiesoul/soul-talk:0.1.1
+    image: jiesoul/soul-talk:0.1.2
     ports:
       - "3000:3000"
     environment:
