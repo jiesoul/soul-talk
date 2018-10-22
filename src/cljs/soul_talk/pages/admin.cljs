@@ -1,7 +1,6 @@
 (ns soul-talk.pages.admin
   (:require [reagent.core :as r]
-            [re-frame.core :refer [subscribe dispatch]]
-            [cljsjs.chartjs])
+            [re-frame.core :refer [subscribe dispatch]])
   (:import goog.history.Html5History))
 
 (defonce main-fields (r/atom nil))

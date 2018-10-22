@@ -2,11 +2,7 @@
   (:require-macros)
   (:require [re-frame.core :refer [dispatch subscribe]]
             [reagent.core :as r]
-            [cljsjs.showdown]
-            [cljsjs.highlight]
-            [cljsjs.simplemde]
-            [taoensso.timbre :as log])
-  (:import goog.history.Html5History))
+            [cljsjs.showdown]))
 
 (defn input [type id placeholder fields]
   (fn []
@@ -54,22 +50,28 @@
      #(let [editor (js/SimpleMDE.
                      (clj->js
                        {:auto-focus              true
-                        :autoDownloadFontAwesome false
                         :spell-check             false
+                        :status false
                         :placeholder             "正文"
-                        :toolbar                 ["bold"
-                                                  "italic"
-                                                  "|"
-                                                  "code"
-                                                  "quote"
-                                                  "|"
-                                                  "unordered-list"]
+                        :toolbar      ["bold"
+                                       "italic"
+                                       "strikethrough"
+                                       "|"
+                                       "heading"
+                                       "code"
+                                       "quote"
+                                       "|"
+                                       "unordered-list"
+                                       "ordered-list"
+                                       "|"
+                                       "link"
+                                       "image"]
                         :renderingConfig         {:codeSyntaxHighlighting true}
                         :element                 (r/dom-node %)
                         :initialValue            @text}))]
         (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
      :reagent-render
-     (fn [] [:textarea.border-0])}))
+     (fn [] [:textarea])}))
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]

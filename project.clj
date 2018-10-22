@@ -1,4 +1,4 @@
-(defproject soul-talk "0.1.3"
+(defproject soul-talk "0.1.4"
   :description "self site"
   :url "http://github.com/jiesoul/soul-talk"
 
@@ -29,13 +29,9 @@
                  [org.webjars/jquery "3.3.1-1"]
                  [org.webjars/bootstrap "4.1.3"]
                  [org.webjars/popper.js "1.14.1"]
-                 [org.webjars/font-awesome "5.2.0"]
-                 [org.webjars.npm/highlight.js "9.12.0"]
-                 [org.webjars.bower/simplemde-markdown-editor "1.11.2"]
-                 [cljsjs/chartjs "2.7.0-0"]
+                 [org.webjars/font-awesome "4.7.0"]
+                 [com.andrewmcveigh/cljs-time "0.5.2"]
                  [cljsjs/showdown "1.8.6-0"]
-                 [cljsjs/highlight "9.12.0-2"]
-                 [cljsjs/simplemde "1.11.2-0"]
                  [domina "1.0.3"]
                  [reagent "0.8.1"]
                  [secretary "1.2.3"]
@@ -80,6 +76,10 @@
           {:prod
            {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
             :compiler {:output-to "resources/public/js/main.js"
+                       :externs ["react/externs/react.js"
+                                 "public/jslib/simplemde.min.js"
+                                 "public/jslib/highlight.js"
+                                 "public/jslib/codemirror.js"]
                        :optimizations :advanced
                        :pretty-print false}}}}
 

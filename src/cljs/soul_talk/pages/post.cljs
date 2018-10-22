@@ -2,7 +2,6 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.pages.common :as c]
-            [cljsjs.simplemde]
             [taoensso.timbre :as log])
   (:import [goog.History]))
 
