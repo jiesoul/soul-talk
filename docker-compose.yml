@@ -6,7 +6,7 @@ services:
   # 数据
   db:
     # 镜像
-    image: postgres:latest
+    image: postgres:10
     # 存储 引用下面的
     volumes:
       - db-data:/var/lib/postgresql/data

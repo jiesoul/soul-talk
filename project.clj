@@ -80,6 +80,8 @@
                                  "public/jslib/simplemde.min.js"
                                  "public/jslib/highlight.js"
                                  "public/jslib/codemirror.js"]
+                       :closure-warnings {:externs-validation :off
+                                          :non-standard-jsdoc :off}
                        :optimizations :advanced
                        :pretty-print false}}}}
 
