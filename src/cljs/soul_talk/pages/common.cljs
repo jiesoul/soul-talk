@@ -75,7 +75,7 @@
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]
-  (let [nodes (.querySelectorAll (r/dom-node node) "pre")]
+  (let [nodes (.querySelectorAll (r/dom-node node) "pre code")]
     (loop [i (.-length nodes)]
       (when-not (neg? i)
         (when-let [item (.item nodes i)]
