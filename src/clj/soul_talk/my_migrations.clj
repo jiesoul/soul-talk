@@ -23,11 +23,11 @@
     :database-url database url
     :migration-dir migration file directory"
   [args opts]
-  (if-not (migrations? args)
+  (when-not (migrations? args)
     (throw
       (IllegalArgumentException.
         (str "不能识别参数:" (first args)
-          ", 有效的参数是:" (join "," (keys migrations)))))
-    (let [config {:datastore (ragtime/sql-database {:connection-uri (:database-url opts)})
-                  :migrations (ragtime/load-resources (:migrations opts))}]
-      ((get migrations (first args)) config args))))
+          ", 有效的参数是:" (join "," (keys migrations))))))
+  (let [config {:datastore  (ragtime/sql-database {:connection-uri (:database-url opts)})
+                :migrations (ragtime/load-resources (:migrations opts))}]
+    ((get migrations (first args)) config args)))

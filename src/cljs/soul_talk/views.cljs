@@ -23,7 +23,7 @@
         :role          "button"
         :aria-haspopup true
         :aria-expanded false}
-       [:i.fa.fa-user]
+       [:i.fa.fa-user-circle]
        " " (if (str/blank? (:name @user)) (:email @user) (:name @user))]
       [:div.dropdown-menu.dropdown-menu-right
        {:aria-labelledby "usermenu"}
@@ -62,10 +62,10 @@
         [:nav.col-md-2.d-none.d-md-block.bg-light.sidebar
          [:div.sidebar-sticky
           [:ul.nav.flex-column
-           (admin-sidebar-link "/admin" "Dashboard" :admin "fas fa-tachometer-alt")
-           (admin-sidebar-link "/categories" "Categories" :categories)
-           (admin-sidebar-link "/posts" "Posts" :posts)
-           (admin-sidebar-link "/users" "Users" :users "fas fa-user")]]]))))
+           (admin-sidebar-link "/admin" "Dashboard" :admin "fa fa-home")
+           (admin-sidebar-link "/categories" "Categories" :categories "fa fa-chart")
+           (admin-sidebar-link "/posts" "Posts" :posts "fa fa-archive")
+           (admin-sidebar-link "/users" "Users" :users "fa fa-users")]]]))))
 
 
 ;;多重方法  响应对应的页面

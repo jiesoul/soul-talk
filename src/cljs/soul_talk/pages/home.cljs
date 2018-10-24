@@ -86,14 +86,14 @@
      [:ol.list-unsty
       [:li [:a {:href "https://github.com/jiesoul"
                 :target "_blank"}
-            [:i.fab.fa-github]
+            [:i.fa.fa-github]
             " GitHub"]]
       [:li [:a {:href "https://weibo.com/jiesoul"
                 :target "_blank"}
-            [:i.fab.fa-weibo] " Weibo"]]
+            [:i.fa.fa-weibo] " Weibo"]]
       [:li [:a {:href "https://twitter.com/jiesoul1982"
                 :target "_blank"}
-            [:i.fab.fa-twitter]
+            [:i.fa.fa-twitter]
             " Twitter"]]]]))
 
 (defn archives-component []
