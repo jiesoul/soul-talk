@@ -1,4 +1,4 @@
-(defproject soul-talk "0.1.4"
+(defproject soul-talk "0.1.1"
   :description "self site"
   :url "http://github.com/jiesoul/soul-talk"
 
@@ -76,7 +76,9 @@
           {:prod
            {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
             :compiler {:output-to "resources/public/js/main.js"
-                       :externs ["react/externs/react.js"
+                       ;:preamble ["react/react.min.js"]
+                       :externs [
+                                 ;"react/externs/react.js"
                                  "public/jslib/simplemde.min.js"
                                  "public/jslib/highlight.js"
                                  "public/jslib/codemirror.js"]

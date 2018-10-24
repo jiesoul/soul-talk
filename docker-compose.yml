@@ -24,7 +24,7 @@ services:
     # 应用依赖上面的数据库服务
     depends_on:
       - db
-    image: jiesoul/soul-talk:0.1.4
+    image: jiesoul/soul-talk:0.1.1
     ports:
       - "3000:3000"
     environment:

@@ -50,7 +50,7 @@
     (some #{"migrate" "rollback"} args)
     (do
       (mount/start #'soul-talk.config/env)
-      (log/info env)
+      (log/info "total config: " env)
       (migrations/migrate args (select-keys env [:database-url :migrations]))
       (System/exit 0))
     :else
