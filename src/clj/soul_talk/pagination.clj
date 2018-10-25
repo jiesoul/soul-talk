@@ -4,7 +4,7 @@
 
 ;;定义一些默认值和 key
 (def default-page 1)
-(def default-pre-page 2)
+(def default-pre-page 20)
 (def min-page 1)
 (def min-pre-page 1)
 (def offset-key :offset)

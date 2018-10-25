@@ -79,7 +79,8 @@
                        :externs ["react/externs/react.js"
                                  "public/jslib/simplemde.min.js"
                                  "public/jslib/highlight.js"
-                                 "public/jslib/codemirror.js"]
+                                 "public/jslib/codemirror.js"
+                                 "cljsjs/showdown/common/showdown.min.inc.js"]
                        :closure-warnings {:externs-validation :off
                                           :non-standard-jsdoc :off}
                        :optimizations :advanced
