@@ -44,31 +44,65 @@
        [:div.modal-body body]
        [:div.modal-footer footer]]]]))
 
+(defn upload-md-modal []
+  (fn []
+    [:div.modal.fade
+     {:id "uploadMdModal"
+      :tab-index -1
+      :role "dialog"
+      :aria-labelledby "uploadMdModalLabel"
+      :aria-hidden true}
+     [:div.modal-dialog
+      {:role "document"}
+      [:div.modal-content
+       [:div.modal-header.text-center
+        [:h5#uploadMdModalLabel.modal-title "导入"]
+        [:button.close
+         {:aria-label "Close"
+          :data-dismiss "modal"}
+         [:i.fa.fa-times]]]
+       [:div.modal-content
+        [:div.card
+         [:div.card-body
+          [:div.custom-file
+           [:input#customFile.custom-file-input
+            {:type :file
+             :on-change [:upload-md-file (-> % .-target .-files)]}]
+           [:label.custom-file-label
+            {:for "customFile"}
+            "选择文件"]]]]]
+       [:div.modal-footer]]]]))
+
 (defn editor [text]
   (r/create-class
     {:component-did-mount
      #(let [editor (js/SimpleMDE.
                      (clj->js
-                       {:auto-focus              true
-                        :spell-check             false
-                        :status false
-                        :placeholder             "正文"
-                        :toolbar      ["bold"
-                                       "italic"
-                                       "strikethrough"
-                                       "|"
-                                       "heading"
-                                       "code"
-                                       "quote"
-                                       "|"
-                                       "unordered-list"
-                                       "ordered-list"
-                                       "|"
-                                       "link"
-                                       "image"]
-                        :renderingConfig         {:codeSyntaxHighlighting true}
-                        :element                 (r/dom-node %)
-                        :initialValue            @text}))]
+                       {:auto-focus      true
+                        :spell-check     false
+                        :status          false
+                        :placeholder     "正文"
+                        :toolbar         ["bold"
+                                          "italic"
+                                          "strikethrough"
+                                          "|"
+                                          "heading"
+                                          "code"
+                                          "quote"
+                                          "|"
+                                          "unordered-list"
+                                          "ordered-list"
+                                          "|"
+                                          "link"
+                                          "image"
+                                          "|"
+                                          "side-by-side"
+                                          "preview"
+                                          "fullscreen"
+                                          "guide"]
+                        :renderingConfig {:codeSyntaxHighlighting true}
+                        :element         (r/dom-node %)
+                        :initialValue    @text}))]
         (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
      :reagent-render
      (fn [] [:textarea])}))

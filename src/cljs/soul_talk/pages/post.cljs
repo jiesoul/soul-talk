@@ -92,22 +92,29 @@
            [:div
             [:div.form-group
              [c/text-input "" :title "请输入标题" edited-post]]
-            [c/editor content]
-            (when @error
-              [:div.alert.alert-danger @error])
             [:div.form-inline
-             [:div.form-group
-              [:label.p-1 {:for "category"} "分类:"]
+             [:div.form-row.col-auto.my-1
+              ;[:label.p-1 {:for "category"} "分类:"]
               [:select#category.mr-2.form-control.form-control-sm
                {:on-change    #(reset! category (-> % .-target .-value))
-                :placeholder  "请选择一个分类"
                 :defaultValue @category}
-               [:option ""]
+               [:option "请选择一个分类"]
                (for [{:keys [id name]} @categories]
                  ^{:key id}
                  [:option
                   {:value id}
                   name])]
+              [:button.btn.btn-link
+               {:data-toggle "modal"
+                :data-target "#uploadMdModal"}
+               "导入文档"]
+              [c/upload-md-modal]]]
+            [:div.form-group
+             [c/editor content]]
+            (when @error
+              [:div.alert.alert-danger @error])
+            [:div.form-inline
+             [:div.form-group
               [:a.btn.btn-outline-primary.btn-sm.mr-2
                {:on-click
                 (if @original-post

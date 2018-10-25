@@ -10,6 +10,7 @@
             soul-talk.handler.posts
             soul-talk.handler.category
             soul-talk.handler.tag
+            soul-talk.handler.files
             [taoensso.timbre :as log]))
 
 ;; 初始化

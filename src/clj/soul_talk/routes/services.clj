@@ -10,7 +10,8 @@
             [soul-talk.middleware :refer [wrap-session-auth]]
             [soul-talk.routes.category :as category]
             [soul-talk.routes.tag :as tag]
-            [soul-talk.routes.posts :as posts]))
+            [soul-talk.routes.posts :as posts]
+            [soul-talk.routes.files :as files]))
 
 (defn admin?
   [request]
@@ -182,4 +183,11 @@
           (PUT "/:id/publish" [id]
             :return ::Result
             :summary "publish a post"
-            (posts/publish-post! id)))))))
+            (posts/publish-post! id)))
+
+        (context "/files" []
+
+          (POST "/md" req
+            :return ::Result
+            :summary "upload md file to str"
+            (files/upload-md! req)))))))
