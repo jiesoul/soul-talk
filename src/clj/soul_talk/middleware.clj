@@ -67,7 +67,7 @@
     wrap-identity
     wrap-webjars
     wrap-flash
-    ;wrap-multipart-params
     wrap-format
+    wrap-multipart-params
     wrap-defaults
     wrap-internal-error))

@@ -16,11 +16,13 @@
 (reg-event-fx
   :upload-md-file
   (fn [_ [_ files]]
-    (do
-      (log/info files)
+    (let [data (doto
+                 (js/FormData.)
+                 (.append "file" files))]
+      (log/info (:name files))
       {:http
        {:method   POST
         :url               (str "/api/admin/files/md")
-        :ajax-map          {:miltipart-params files}
+        :ajax-map          {:params data}
         :success-event [:upload-md-file-ok]
         :error-event [:upload-md-file-error]}})))

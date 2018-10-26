@@ -1,11 +1,13 @@
 (ns soul-talk.routes.files
   (:require [soul-talk.routes.common :refer [handler]]
             [taoensso.timbre :as log]
-            [ring.util.http-response :as resp]))
+            [ring.util.http-response :as resp]
+            [clojure.java.io :as io]))
 
-(handler upload-md! [req]
-  (log/info req)
-  (let [md-str req]
+(handler upload-md! [{:keys [params] :as req}]
+  (log/info (:params req))
+  (let [file (:file params)]
+    (log/info file)
     (-> {:result :ok
-         :md-str md-str}
+         :md file}
       resp/ok)))
