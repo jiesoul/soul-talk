@@ -66,8 +66,8 @@
          [:div.card-body
           [:div.custom-file
            [:input#customFile.custom-file-input
-            {:type :file
-             :on-change [:upload-md-file (-> % .-target .-files)]}]
+            {:type      :file
+             :on-change #(dispatch [:upload-md-file (-> % .-target .-files (aget 0))])}]
            [:label.custom-file-label
             {:for "customFile"}
             "选择文件"]]]]]

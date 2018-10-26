@@ -9,6 +9,7 @@
             [soul-talk.layout :as layout :refer [*identity* *app-context*]]
             [buddy.auth.backends.session :refer [session-backend]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
+            [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [soul-talk.env :refer [defaults]])
   (:import (javax.servlet ServletContext)))
 
@@ -66,6 +67,7 @@
     wrap-identity
     wrap-webjars
     wrap-flash
+    ;wrap-multipart-params
     wrap-format
     wrap-defaults
     wrap-internal-error))
