@@ -108,7 +108,7 @@
                {:data-toggle "modal"
                 :data-target "#uploadMdModal"}
                "导入文档"]
-              [c/upload-md-modal]]]
+              [c/upload-md-modal content]]]
             [:div.form-group
              [c/editor content]]
             (when @error

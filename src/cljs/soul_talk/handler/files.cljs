@@ -5,13 +5,13 @@
 
 (reg-event-db
   :upload-md-file-ok
-  (fn [_ [_ resp]]
-    (js/alert resp)))
+  (fn [_ [_ {:keys [md]}]]
+    (.log js/console md)))
 
 (reg-event-db
   :upload-md-file-error
-  (fn [_ [_ md]]
-    (js/alert md)))
+  (fn [_ [_ {:keys [message]}]]
+    (js/alert message)))
 
 (reg-event-fx
   :upload-md-file
@@ -19,10 +19,9 @@
     (let [data (doto
                  (js/FormData.)
                  (.append "file" files))]
-      (log/info (:name files))
       {:http
        {:method   POST
         :url               (str "/api/admin/files/md")
-        :ajax-map          {:params data}
+        :ajax-map          {:body data}
         :success-event [:upload-md-file-ok]
         :error-event [:upload-md-file-error]}})))

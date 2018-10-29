@@ -4,10 +4,10 @@
             [ring.util.http-response :as resp]
             [clojure.java.io :as io]))
 
-(handler upload-md! [{:keys [params] :as req}]
+(handler upload-md! [{:keys [body params] :as req}]
   (log/info (:params req))
-  (let [file (:file params)]
-    (log/info file)
+  (let [file (:file params)
+        s (slurp (:tempfile file))]
     (-> {:result :ok
-         :md file}
+         :md s}
       resp/ok)))

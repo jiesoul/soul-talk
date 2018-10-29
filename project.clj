@@ -80,7 +80,7 @@
                                  "public/jslib/simplemde.min.js"
                                  "public/jslib/highlight.js"
                                  "public/jslib/codemirror.js"
-                                 "cljsjs/showdown/common/showdown.min.inc.js"]
+                                 "cljsjs/showdown/production/showdown.min.inc.js"]
                        :closure-warnings {:externs-validation :off
                                           :non-standard-jsdoc :off}
                        :optimizations :advanced

@@ -2,6 +2,7 @@
   (:require-macros)
   (:require [re-frame.core :refer [dispatch subscribe]]
             [reagent.core :as r]
+            [domina :as dom]
             [cljsjs.showdown]))
 
 (defn input [type id placeholder fields]
@@ -44,7 +45,7 @@
        [:div.modal-body body]
        [:div.modal-footer footer]]]]))
 
-(defn upload-md-modal []
+(defn upload-md-modal [text]
   (fn []
     [:div.modal.fade
      {:id "uploadMdModal"
@@ -67,7 +68,9 @@
           [:div.custom-file
            [:input#customFile.custom-file-input
             {:type      :file
-             :on-change #(dispatch [:upload-md-file (-> % .-target .-files (aget 0))])}]
+             :on-change #(do
+                           (dispatch [:upload-md-file (-> % .-target .-files (aget 0))])
+                           (reset! text "sss"))}]
            [:label.custom-file-label
             {:for "customFile"}
             "选择文件"]]]]]
