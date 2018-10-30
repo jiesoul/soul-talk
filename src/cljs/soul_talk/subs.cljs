@@ -39,3 +39,5 @@
 (reg-sub :pagination query)
 
 (reg-sub :admin/pagination query)
+
+(reg-sub :upload/md query)

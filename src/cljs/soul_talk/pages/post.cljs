@@ -62,6 +62,7 @@
      tags (subscribe [:tags])
      error (subscribe [:error])
      original-post (subscribe [:post])
+     md (subscribe [:upload/md])
      edited-post (-> @original-post
                    (update :title #(or % ""))
                    (update :content #(or % ""))
@@ -94,7 +95,14 @@
              [c/text-input "" :title "请输入标题" edited-post]]
             [:div.form-inline
              [:div.form-row.col-auto.my-1
-              ;[:label.p-1 {:for "category"} "分类:"]
+              [c/upload-md-modal]]]
+            [:div.form-group
+             (when @md (reset! content @md))
+             [c/editor content]]
+            (when @error
+              [:div.alert.alert-danger @error])
+            [:div.form-inline
+             [:div.form-group
               [:select#category.mr-2.form-control.form-control-sm
                {:on-change    #(reset! category (-> % .-target .-value))
                 :defaultValue @category}
@@ -104,17 +112,6 @@
                  [:option
                   {:value id}
                   name])]
-              [:button.btn.btn-link
-               {:data-toggle "modal"
-                :data-target "#uploadMdModal"}
-               "导入文档"]
-              [c/upload-md-modal content]]]
-            [:div.form-group
-             [c/editor content]]
-            (when @error
-              [:div.alert.alert-danger @error])
-            [:div.form-inline
-             [:div.form-group
               [:a.btn.btn-outline-primary.btn-sm.mr-2
                {:on-click
                 (if @original-post

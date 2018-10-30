@@ -33,6 +33,7 @@
                  [com.andrewmcveigh/cljs-time "0.5.2"]
                  [cljsjs/showdown "1.8.6-0"]
                  [domina "1.0.3"]
+                 [jayq "2.5.5"]
                  [reagent "0.8.1"]
                  [secretary "1.2.3"]
                  [re-frame "0.10.6"]

@@ -2,7 +2,7 @@
   (:require-macros)
   (:require [re-frame.core :refer [dispatch subscribe]]
             [reagent.core :as r]
-            [domina :as dom]
+            [jayq.core :refer [$ css html]]
             [cljsjs.showdown]))
 
 (defn input [type id placeholder fields]
@@ -45,7 +45,7 @@
        [:div.modal-body body]
        [:div.modal-footer footer]]]]))
 
-(defn upload-md-modal [text]
+(defn upload-md-modal []
   (fn []
     [:div.modal.fade
      {:id "uploadMdModal"
@@ -68,9 +68,9 @@
           [:div.custom-file
            [:input#customFile.custom-file-input
             {:type      :file
-             :on-change #(do
-                           (dispatch [:upload-md-file (-> % .-target .-files (aget 0))])
-                           (reset! text "sss"))}]
+             :on-change #(let [file (-> % .-target .-files (aget 0))]
+                           (dispatch [:upload-md-file file])
+                           (.modal ($ :#uploadMdModal) "hide"))}]
            [:label.custom-file-label
             {:for "customFile"}
             "选择文件"]]]]]
@@ -102,13 +102,18 @@
                                           "side-by-side"
                                           "preview"
                                           "fullscreen"
-                                          "guide"]
+                                          "guide"
+                                          "|"
+                                          {:name      "upload"
+                                           :action    (fn [] (.modal ($ :#uploadMdModal) "show"))
+                                           :className "fa fa-file"
+                                           :title     "upload md file"}]
                         :renderingConfig {:codeSyntaxHighlighting true}
                         :element         (r/dom-node %)
                         :initialValue    @text}))]
         (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
      :reagent-render
-     (fn [] [:textarea])}))
+     (fn [] [:textarea#editingMd])}))
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]

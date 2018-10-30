@@ -5,8 +5,8 @@
 
 (reg-event-db
   :upload-md-file-ok
-  (fn [_ [_ {:keys [md]}]]
-    (.log js/console md)))
+  (fn [db [_ {:keys [md]}]]
+    (assoc db :upload/md md)))
 
 (reg-event-db
   :upload-md-file-error
