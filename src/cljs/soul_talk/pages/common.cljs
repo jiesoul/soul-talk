@@ -105,7 +105,7 @@
                                           "guide"
                                           "|"
                                           {:name      "upload"
-                                           :action    (fn [] (.modal ($ :#uploadMdModal) "show"))
+                                           :action    (fn [] (.modal (js/$ :#uploadMdModal) "show"))
                                            :className "fa fa-file"
                                            :title     "upload md file"}]
                         :renderingConfig {:codeSyntaxHighlighting true}
@@ -113,7 +113,7 @@
                         :initialValue    @text}))]
         (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
      :reagent-render
-     (fn [] [:textarea#editingMd])}))
+     (fn [] [:textarea#editingMdTextarea])}))
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]

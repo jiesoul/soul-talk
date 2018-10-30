@@ -62,7 +62,6 @@
      tags (subscribe [:tags])
      error (subscribe [:error])
      original-post (subscribe [:post])
-     md (subscribe [:upload/md])
      edited-post (-> @original-post
                    (update :title #(or % ""))
                    (update :content #(or % ""))
@@ -77,7 +76,7 @@
      content (r/cursor edited-post [:content])
      category (r/cursor edited-post [:category])]
     (fn []
-      (if @user
+      (when @user
         [:div.container-fluid
          [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
           [:a.navbar-brand
@@ -97,7 +96,6 @@
              [:div.form-row.col-auto.my-1
               [c/upload-md-modal]]]
             [:div.form-group
-             (when @md (reset! content @md))
              [c/editor content]]
             (when @error
               [:div.alert.alert-danger @error])
