@@ -6,7 +6,7 @@
 (reg-event-db
   :upload-md-file-ok
   (fn [db [_ {:keys [md]}]]
-    (assoc db :upload/md md)))
+    (assoc-in db [:edit-post :content] md)))
 
 (reg-event-db
   :upload-md-file-error

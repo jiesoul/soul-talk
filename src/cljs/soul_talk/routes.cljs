@@ -84,15 +84,15 @@
 (secretary/defroute
   "/posts/add" []
   (run-events [[:load-categories]
-                [:load-tags]
-                [:set-active-page :posts/add]]))
+               [:load-tags]
+               [:set-active-page :posts/add]]))
 
 (secretary/defroute
   "/posts/:id/edit" [id]
   (run-events [[:load-categories]
-                [:load-tags]
-                [:load-post id]
-                [:set-active-page :posts/edit]]))
+               [:load-tags]
+               [:load-post id]
+               [:set-active-page :posts/edit]]))
 
 (secretary/defroute
   "/posts/:id" [id]
