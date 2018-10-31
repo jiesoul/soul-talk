@@ -2,7 +2,6 @@
   (:require-macros)
   (:require [re-frame.core :refer [dispatch subscribe]]
             [reagent.core :as r]
-            [jayq.core :refer [$ css html]]
             [cljsjs.showdown]))
 
 (defn input [type id placeholder fields]
@@ -70,7 +69,7 @@
             {:type      :file
              :on-change #(let [file (-> % .-target .-files (aget 0))]
                            (dispatch [:upload-md-file file])
-                           (.modal ($ :#uploadMdModal) "hide"))}]
+                           (.modal (js/jQuery "#uploadMdModal") "hide"))}]
            [:label.custom-file-label
             {:for "customFile"}
             "选择文件"]]]]]
@@ -105,7 +104,7 @@
                                           "guide"
                                           "|"
                                           {:name      "upload"
-                                           :action    (fn [] (.modal (js/$ :#uploadMdModal) "show"))
+                                           :action    (fn [] (.modal (js/$ "#uploadMdModal") "show"))
                                            :className "fa fa-file"
                                            :title     "upload md file"}]
                         :renderingConfig {:codeSyntaxHighlighting true}
