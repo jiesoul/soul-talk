@@ -112,7 +112,7 @@
                         :initialValue    @text}))]
         (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
      :reagent-render
-     (fn [] [:textarea#editMdTextarea "asfasfasfasdf"])}))
+     (fn [] [:textarea#editMdTextarea])}))
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]

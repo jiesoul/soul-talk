@@ -6,7 +6,8 @@
 (reg-event-db
   :upload-md-file-ok
   (fn [db [_ {:keys [md]}]]
-    (assoc-in db [:edit-post :content] md)))
+    (.-value (js/$ "#editMdTextarea") md)
+    (assoc-in db [:post :content] md)))
 
 (reg-event-db
   :upload-md-file-error
