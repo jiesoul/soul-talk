@@ -62,10 +62,20 @@
      tags (subscribe [:tags])
      error (subscribe [:error])
      original-post (subscribe [:post])
+     edited-post (-> @original-post
+                   (update :title #(or % ""))
+                   (update :content #(or % ""))
+                   (update :img_url #(or % ""))
+                   (update :category #(or % ""))
+                   (update :create_time #(or % nil))
+                   (update :modify_time #(or % nil))
+                   (update :publish #(or % 0))
+                   (update :author #(or % (:name @user)))
+                   (update :counter #(or % nil))
+                   r/atom)
      post-id (r/cursor original-post [:id])
-     title (r/cursor original-post [:title])
-     content (r/cursor original-post [:content])
-     category (r/cursor original-post [:category])]
+     content (r/cursor edited-post [:content])
+     category (r/cursor edited-post [:category])]
     (fn []
       (when @user
         [:div.container-fluid
@@ -82,7 +92,7 @@
           [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
            [:div
             [:div.form-group
-             [c/text-input "" :title "请输入标题" original-post]]
+             [c/text-input "" :title "请输入标题" edited-post]]
             [:div.form-inline
              [:div.form-row.col-auto.my-1
               [c/upload-md-modal]]]
@@ -103,9 +113,9 @@
                   name])]
               [:a.btn.btn-outline-primary.btn-sm.mr-2
                {:on-click
-                (if @original-post
-                  #(dispatch [:posts/edit @original-post])
-                  #(dispatch [:posts/add @original-post]))}
+                (if @post-id
+                  #(dispatch [:posts/edit @edited-post])
+                  #(dispatch [:posts/add @edited-post]))}
                "保存"]]]]]]]))))
 
 
