@@ -6,8 +6,7 @@
 (reg-event-db
   :upload-md-file-ok
   (fn [db [_ {:keys [md]}]]
-    (js/alert (js/$ "#editMdTextarea"))
-    (assoc-in db [:post :content] md)))
+    (js/alert (.value js/soul_talk.pages.common.editor))))
 
 (reg-event-db
   :upload-md-file-error

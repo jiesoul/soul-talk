@@ -69,7 +69,7 @@
             {:type      :file
              :on-change #(let [file (-> % .-target .-files (aget 0))]
                            (dispatch [:upload-md-file file])
-                           (.modal (js/jQuery "#uploadMdModal") "hide"))}]
+                           (.modal (js/$ "#uploadMdModal") "hide"))}]
            [:label.custom-file-label
             {:for "customFile"}
             "选择文件"]]]]]
@@ -109,7 +109,8 @@
                                            :title     "upload md file"}]
                         :renderingConfig {:codeSyntaxHighlighting true}
                         :element         (r/dom-node %)
-                        :initialValue    @text}))]
+                        :initialValue    @text
+                        :value @text}))]
         (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
      :reagent-render
      (fn [] [:textarea#editMdTextarea])}))
