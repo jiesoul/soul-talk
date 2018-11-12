@@ -75,8 +75,10 @@
                    r/atom)
      post-id (r/cursor original-post [:id])
      content (r/cursor edited-post [:content])
-     category (r/cursor edited-post [:category])]
+     category (r/cursor edited-post [:category])
+     md (subscribe [:upload/md])]
     (fn []
+      (reset! content @md)
       (when @user
         [:div.container-fluid
          [:nav.navbar.navbar-expand-lg.navbar-light.bg-light

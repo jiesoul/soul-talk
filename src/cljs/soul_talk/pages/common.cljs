@@ -76,44 +76,49 @@
        [:div.modal-footer]]]]))
 
 (defn editor [text]
-  (r/create-class
-    {:component-did-mount
-     #(let [editor (js/SimpleMDE.
-                     (clj->js
-                       {:auto-focus      true
-                        :spell-check     false
-                        :status          false
-                        :placeholder     "正文"
-                        :toolbar         ["bold"
-                                          "italic"
-                                          "strikethrough"
-                                          "|"
-                                          "heading"
-                                          "code"
-                                          "quote"
-                                          "|"
-                                          "unordered-list"
-                                          "ordered-list"
-                                          "|"
-                                          "link"
-                                          "image"
-                                          "|"
-                                          "side-by-side"
-                                          "preview"
-                                          "fullscreen"
-                                          "guide"
-                                          "|"
-                                          {:name      "upload"
-                                           :action    (fn [] (.modal (js/$ "#uploadMdModal") "show"))
-                                           :className "fa fa-file"
-                                           :title     "upload md file"}]
-                        :renderingConfig {:codeSyntaxHighlighting true}
-                        :element         (r/dom-node %)
-                        :initialValue    @text
-                        :value @text}))]
-        (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
-     :reagent-render
-     (fn [] [:textarea#editMdTextarea])}))
+  (r/with-let [md (subscribe [:upload/md])]
+    (r/create-class
+      {:component-did-mount
+       #(let [editor (js/SimpleMDE.
+                       (clj->js
+                         {:display-name "md-editor"
+                          :auto-focus      true
+                          :spell-check     false
+                          :status          true
+                          :placeholder     "正文"
+                          :toolbar         ["bold"
+                                            "italic"
+                                            "strikethrough"
+                                            "|"
+                                            "heading"
+                                            "code"
+                                            "quote"
+                                            "|"
+                                            "unordered-list"
+                                            "ordered-list"
+                                            "|"
+                                            "link"
+                                            "image"
+                                            "|"
+                                            "side-by-side"
+                                            "preview"
+                                            "fullscreen"
+                                            "guide"
+                                            "|"
+                                            {:name      "upload"
+                                             :action    (fn [] (.modal (js/$ "#uploadMdModal") "show"))
+                                             :className "fa fa-file"
+                                             :title     "upload md file"}]
+                          :renderingConfig {:codeSyntaxHighlighting true}
+                          :element         (r/dom-node %)
+                          :initialValue    @text}))]
+          (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
+       :component-did-update
+       (fn [this old-argv]
+         (let [new-argv (rest (r/argv this))]
+           (.log js/console this)))
+       :reagent-render
+       (fn [] [:textarea#editMdTextarea @md])})))
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]
