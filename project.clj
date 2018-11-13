@@ -34,7 +34,8 @@
                  [cljsjs/showdown "1.8.6-0"]
                  [domina "1.0.3"]
                  [jayq "2.5.5"]
-                 [reagent "0.8.1"]
+                 [reagent "0.8.2-SNAPSHOT"]
+                 [org.clojars.frozenlock/reagent-modals "0.2.8"]
                  [secretary "1.2.3"]
                  [re-frame "0.10.6"]
                  [venantius/accountant "0.2.4"]
@@ -105,7 +106,8 @@
                           [doo "0.1.10"]
                           [com.cemerick/piggieback "0.2.2"]
                           [org.clojure/tools.nrepl "0.2.13"]
-                          [org.clojure/test.check "0.9.0"]]
+                          [org.clojure/test.check "0.9.0"]
+                          [day8.re-frame/re-frame-10x "0.3.3-react16"]]
          :plugins        [[com.jakemccrary/lein-test-refresh "0.23.0"]
                           [lein-doo "0.1.10"]]
          :cljsbuild
@@ -119,7 +121,8 @@
                                                 :optimizations :none
                                                 :source-map    true ;; 源代码
                                                 :pretty-print  true
-                                                :preloads      [re-frisk.preload]}}
+                                                :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}
+                                                :preloads      [day8.re-frame-10x.preload]}}
                            :test
                                 {
                                  :figwheel     {:devcards true}

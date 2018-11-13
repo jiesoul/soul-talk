@@ -6,9 +6,9 @@
   (:import [goog.History]))
 
 (defn posts-list []
-  (fn []
-    (r/with-let
-      [posts (subscribe [:admin/posts])]
+  (r/with-let
+    [posts (subscribe [:admin/posts])]
+    (fn []
       [:table.table.table-striped.text-center.table-hover.table-sm
        [:thead
         [:tr
@@ -78,7 +78,6 @@
      category (r/cursor edited-post [:category])
      md (subscribe [:upload/md])]
     (fn []
-      (reset! content @md)
       (when @user
         [:div.container-fluid
          [:nav.navbar.navbar-expand-lg.navbar-light.bg-light

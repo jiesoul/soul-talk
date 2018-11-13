@@ -116,9 +116,10 @@
        :component-did-update
        (fn [this old-argv]
          (let [new-argv (rest (r/argv this))]
-           (.log js/console this)))
+           (js/console.log this)
+           (js/console.log new-argv)))
        :reagent-render
-       (fn [] [:textarea#editMdTextarea @md])})))
+       (fn [] [:textarea#editMdTextarea])})))
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]
