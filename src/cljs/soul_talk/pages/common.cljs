@@ -81,7 +81,7 @@
       {:component-did-mount
        #(let [editor (js/SimpleMDE.
                        (clj->js
-                         {:display-name "md-editor"
+                         {:display-name    "md-editor"
                           :auto-focus      true
                           :spell-check     false
                           :status          true
@@ -111,15 +111,24 @@
                                              :title     "upload md file"}]
                           :renderingConfig {:codeSyntaxHighlighting true}
                           :element         (r/dom-node %)
-                          :initialValue    @text}))]
-          (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
+                          :force-sync      true
+                          :initialValue    @text
+                          :value           @text}))
+              cm     (-> editor .-codemirror)]
+          (-> cm (.on "change" (fn [] (reset! text (.value editor)))))
+          (-> cm
+            (js/console.log))
+          (when @md (.value cm @md)))
        :component-did-update
        (fn [this old-argv]
          (let [new-argv (rest (r/argv this))]
-           (js/console.log this)
-           (js/console.log new-argv)))
+           (js/console.log old-argv)
+           (js/console.log new-argv)
+           (js/console.log this)))
        :reagent-render
-       (fn [] [:textarea#editMdTextarea])})))
+       (fn [] [:textarea#editMdTextarea
+               (when @md
+                 {:value @md})])})))
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]

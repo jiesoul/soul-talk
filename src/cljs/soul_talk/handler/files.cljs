@@ -7,7 +7,6 @@
   :upload-md-file-ok
   (fn [db [_ {:keys [md]}]]
     (.val (js/$ "#editMdTextarea") md)
-    (js/console.log (.val (js/$ "#editMdTextarea")))
     (assoc db :upload/md md)))
 
 (reg-event-db

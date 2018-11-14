@@ -121,8 +121,7 @@
                                                 :optimizations :none
                                                 :source-map    true ;; 源代码
                                                 :pretty-print  true
-                                                :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}
-                                                :preloads      [day8.re-frame-10x.preload]}}
+                                                :preloads      [re-frisk.preload]}}
                            :test
                                 {
                                  :figwheel     {:devcards true}
