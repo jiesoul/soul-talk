@@ -39,6 +39,10 @@
                {:on-click #(dispatch [:posts/publish id])}
                "发布"])
             [:a.btn.btn-outline-primary.btn-sm.mr-2
+             {:target "_blank"
+              :href (str "/posts/" id "/edit")}
+             "修改"]
+            [:a.btn.btn-outline-primary.btn-sm.mr-2
              {:on-click #(dispatch [:posts/delete id])}
              "删除"]]])]])))
 
@@ -63,6 +67,7 @@
      error (subscribe [:error])
      original-post (subscribe [:post])
      edited-post (-> @original-post
+                   (update :id #(or % nil))
                    (update :title #(or % ""))
                    (update :content #(or % ""))
                    (update :img_url #(or % ""))
@@ -73,11 +78,14 @@
                    (update :author #(or % (:name @user)))
                    (update :counter #(or % nil))
                    r/atom)
-     post-id (r/cursor original-post [:id])
+     post-id (r/cursor edited-post [:id])
+     title (r/cursor edited-post [:title])
      content (r/cursor edited-post [:content])
-     category (r/cursor edited-post [:category])
-     md (subscribe [:upload/md])]
+     category (r/cursor edited-post [:category])]
     (fn []
+      (js/console.log @categories)
+      (js/console.log @original-post)
+      (js/console.log @edited-post)
       (when @user
         [:div.container-fluid
          [:nav.navbar.navbar-expand-lg.navbar-light.bg-light

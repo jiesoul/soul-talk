@@ -183,7 +183,13 @@
           (PUT "/:id/publish" [id]
             :return ::Result
             :summary "publish a post"
-            (posts/publish-post! id)))
+            (posts/publish-post! id))
+
+          (POST "/upload" req
+            :return ::Result
+            :summary "upload md file as post"
+            (posts/upload-post! req))
+          )
 
         (context "/files" []
 

@@ -61,6 +61,18 @@
                (-> {:result :ok}
                    (resp/ok))))))
 
+(handler upload-post! [{:keys [body params] :as req}]
+  (let [file (:file params)
+        md (slurp (:tempfile file))
+        time (l/local-date-time)
+        id (f/format format-id time)
+        post {:id id :content md :create_time time :modify_time time :title "" :author "" :publish 0}]
+    (do
+      (post-db/save-post! post)
+      (-> {:result :ok
+           :id id}
+          resp/ok))))
+
 (handler update-post! [post]
          (post-db/update-post! (-> post
                                    (assoc :modify_time (l/local-date-time))))

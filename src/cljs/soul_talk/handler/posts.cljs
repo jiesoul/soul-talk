@@ -55,6 +55,30 @@
               :error-event [:posts/add-error]}})))
 
 (reg-event-fx
+  :posts/upload-ok
+  (fn [_ [_ {:keys [id]}]]
+    (let [url (str "/posts/" id "/edit")]
+      {:navigate url})))
+
+(reg-event-db
+  :posts/upload-error
+  (fn [_ [_ {:keys [message]}]]
+    (js/alert message)))
+
+(reg-event-fx
+  :posts/upload
+  (fn [_ [_ files]]
+    (let [data (doto
+                 (js/FormData.)
+                 (.append "file" files))]
+      {:http
+       {:method   POST
+        :url               (str "/api/admin/posts/upload")
+        :ajax-map          {:body data}
+        :success-event [:posts/upload-ok]
+        :error-event [:posts/upload-error]}})))
+
+(reg-event-fx
   :posts/edit-ok
   (fn [_ _]
     (js/alert "edit successful!!")

@@ -20,6 +20,7 @@
   (GET "/change-pass" [] (home-page))
   (GET "/user-profile" [] (home-page))
   (GET "/posts/add" [] (home-page))
+  (GET "/posts/:id/edit" [id] (home-page))
   (GET "/posts" [] (home-page))
   (GET "/categories" [] (home-page))
   (GET "/categories/add" [] (home-page)))
