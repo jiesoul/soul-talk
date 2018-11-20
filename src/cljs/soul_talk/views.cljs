@@ -6,7 +6,7 @@
             [soul-talk.pages.admin :refer [main-component]]
             [soul-talk.pages.auth :refer [login-page register-page]]
             [soul-talk.pages.users :refer [users-page change-pass-page user-profile-page]]
-            [soul-talk.pages.post :refer [posts-page post-view-page edit-post-page post-archives-page]]
+            [soul-talk.pages.post :refer [posts-page post-view-page edit-post-page post-archives-page add-post-page]]
             [soul-talk.pages.category :as category]
             [soul-talk.pages.tag :as tag]
             [taoensso.timbre :as log]
@@ -84,11 +84,6 @@
           [main]]]]]
       (pages :login nil))))
 
-;;页面
-(defmethod pages :home [_ _] [home-page])
-(defmethod pages :login [_ _] [login-page])
-(defmethod pages :register [_ _] [register-page])
-
 ;;后台页面
 (defmethod pages :admin [_ _]
   (admin-page main-component))
@@ -117,7 +112,7 @@
 (defmethod pages :posts/add [_ _]
   (r/with-let [user (subscribe [:user])]
               (if @user
-                [edit-post-page]
+                [add-post-page]
                 (pages :login nil))))
 
 (defmethod pages :posts/edit [_ _]
@@ -133,6 +128,11 @@
 
 (defmethod pages :tags/add [_ _]
   (admin-page tag/add-page))
+
+;;页面
+(defmethod pages :home [_ _] [home-page])
+(defmethod pages :login [_ _] [login-page])
+(defmethod pages :register [_ _] [register-page])
 
 (defmethod pages :default [_ _] [:div])
 

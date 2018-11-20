@@ -23,5 +23,3 @@
   (load-interceptors!)
   (hook-browser-navigation!)
   (mount-component))
-
-;(init!)

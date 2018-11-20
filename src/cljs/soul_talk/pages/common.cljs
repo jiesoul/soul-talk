@@ -111,8 +111,7 @@
                         :renderingConfig {:codeSyntaxHighlighting true}
                         :element         (r/dom-node %)
                         :force-sync      true
-                        :initialValue    @text
-                        :value           @text}))]
+                        :initialValue    @text}))]
         (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
      :reagent-render
      (fn [] [:textarea#editMdTextarea])}))

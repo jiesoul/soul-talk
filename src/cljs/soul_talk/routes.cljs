@@ -90,14 +90,12 @@
 (secretary/defroute
   "/posts/:id/edit" [id]
   (run-events [[:load-categories]
-               [:load-tags]
                [:load-post id]
                [:set-active-page :posts/edit]]))
 
 (secretary/defroute
   "/posts/:id" [id]
   (run-events [[:load-categories]
-               [:load-tags]
                [:load-post id]
                [:set-active-page :posts/view]]))
 

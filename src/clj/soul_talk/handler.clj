@@ -9,12 +9,12 @@
 
 (def app
   (-> (routes
-        services-routes
         (-> #'home-routes
           (wrap-routes middleware/wrap-csrf))
         (-> #'auth-routes
           (wrap-routes middleware/wrap-csrf)
           (wrap-routes middleware/wrap-session-auth))
+        services-routes
         (route/not-found
           (:body
             (layout/error-page

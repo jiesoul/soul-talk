@@ -7,18 +7,6 @@
             [taoensso.timbre :as log])
   (:import (java.sql Date Timestamp PreparedStatement)))
 
-(def datasource-options {:auto-commit true
-                         :read-only false
-                         :connection-timeout 30000
-                         :validation-timeout 5000
-                         :idle-timeout 600000
-                         :max-lifetime 1800000
-                         :minimum-idle 10
-                         :maximum-pool-size 10
-                         :pool-name "db-pool"
-                         :register-mbeans false
-                         :jdbc-url (:database-url env)})
-
 (defonce datasource
          (delay (make-datasource {:jdbc-url (:database-url env)})))
 

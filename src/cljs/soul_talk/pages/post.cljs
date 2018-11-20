@@ -59,73 +59,119 @@
      [posts-list]
      [c/page-nav :admin/load-posts]]))
 
-(defn edit-post-page []
+(defn add-post-page []
   (r/with-let
     [user (subscribe [:user])
      categories (subscribe [:categories])
-     tags (subscribe [:tags])
      error (subscribe [:error])
-     original-post (subscribe [:post])
-     edited-post (-> @original-post
-                   (update :id #(or % nil))
-                   (update :title #(or % ""))
-                   (update :content #(or % ""))
-                   (update :img_url #(or % ""))
-                   (update :category #(or % ""))
-                   (update :create_time #(or % nil))
-                   (update :modify_time #(or % nil))
-                   (update :publish #(or % 0))
-                   (update :author #(or % (:name @user)))
-                   (update :counter #(or % nil))
+     edited-post (-> {:author (:name @user)
+                      :publish 0}
                    r/atom)
-     post-id (r/cursor edited-post [:id])
      title (r/cursor edited-post [:title])
      content (r/cursor edited-post [:content])
      category (r/cursor edited-post [:category])]
-    (fn []
-      (js/console.log @categories)
-      (js/console.log @original-post)
-      (js/console.log @edited-post)
-      (when @user
-        [:div.container-fluid
-         [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
-          [:a.navbar-brand
-           {:href "#"} "Soul Talk"]
-          [:div.container
-           [:ul.navbar-nav
-            [:li.nav-item.active
-             [:a.nav-link
-              {:href "#"}
-              (if @post-id "修改文章" "写文章")]]]]]
-         [:div.container
-          [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
-           [:div
-            [:div.form-group
-             [c/text-input "" :title "请输入标题" edited-post]]
-            [:div.form-inline
-             [:div.form-row.col-auto.my-1
-              [c/upload-md-modal]]]
-            [:div.form-group
-             [c/editor content]]
-            (when @error
-              [:div.alert.alert-danger @error])
-            [:div.form-inline
-             [:div.form-group
-              [:select#category.mr-2.form-control.form-control-sm
-               {:on-change    #(reset! category (-> % .-target .-value))
-                :defaultValue @category}
-               [:option "请选择一个分类"]
-               (for [{:keys [id name]} @categories]
-                 ^{:key id}
-                 [:option
-                  {:value id}
-                  name])]
-              [:a.btn.btn-outline-primary.btn-sm.mr-2
-               {:on-click
-                (if @post-id
-                  #(dispatch [:posts/edit @edited-post])
-                  #(dispatch [:posts/add @edited-post]))}
-               "保存"]]]]]]]))))
+    (js/console.log @edited-post)
+    [:div.container-fluid
+     [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
+      [:a.navbar-brand
+       {:href "#"} "Soul Talk"]
+      [:div.container
+       [:ul.navbar-nav
+        [:li.nav-item.active
+         [:h6.title
+          (if @edited-post "修改文章" "写文章")]]]]]
+     [:div.container
+      [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
+       [:div
+        [:div.form-group
+         [:input.form-control.input-lg
+          {:type        :text
+           :placeholder "请输入标题"
+           :value       @title
+           :on-change   #(reset! title (-> % .-target .-value))}]]
+        [:div.form-inline
+         [:div.form-row.col-auto.my-1
+          [c/upload-md-modal]]]
+        [:div.form-group
+         [c/editor content]]
+        (when @error
+          [:div.alert.alert-danger @error])
+        [:div.form-inline
+         [:div.form-group
+          [:select#category.mr-2.form-control.form-control-sm
+           {:on-change    #(reset! category (-> % .-target .-value))
+            :defaultValue @category}
+           [:option "请选择一个分类"]
+           (for [{:keys [id name]} @categories]
+             ^{:key id}
+             [:option
+              {:value id}
+              name])]
+          [:a.btn.btn-outline-primary.btn-sm.mr-2
+           {:on-click
+            #(dispatch [:posts/add @edited-post])}
+           "保存"]]]]]]]))
+
+(defn edit-post-page []
+  (r/with-let
+    [user (subscribe [:user])
+     original-post (subscribe [:post])
+     categories (subscribe [:categories])
+     error (subscribe [:error])
+     edited-post (-> @original-post
+                    (update :title #(or % ""))
+                    (update :content #(or % ""))
+                    (update :category #(or % ""))
+                    (update :author #(or % (:name @user)))
+                    (update :publish #(or % 0))
+                    r/atom)
+     title (r/cursor original-post [:title])
+     content (r/cursor original-post [:content])
+     category (r/cursor original-post [:category])]
+    (js/console.log @content)
+    (js/console.log @edited-post)
+    [:div.container-fluid
+     [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
+      [:a.navbar-brand
+       {:href "#"} "Soul Talk"]
+      [:div.container
+       [:ul.navbar-nav
+        [:li.nav-item.active
+         [:h6.title
+          (if @original-post "修改文章" "写文章")]]]]]
+     [:div.container
+      [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
+       [:div
+        [:div.form-group
+         [:input.form-control.input-lg
+          {:type        :text
+           :placeholder "请输入标题"
+           :value       @title
+           :on-change   #(reset! title (-> % .-target .-value))}]]
+        [:div.form-inline
+         [:div.form-row.col-auto.my-1
+          [c/upload-md-modal]]]
+        [:div.form-group
+         [c/editor content]]
+        (when @error
+          [:div.alert.alert-danger @error])
+        [:div.form-inline
+         [:div.form-group
+          [:select#category.mr-2.form-control.form-control-sm
+           {:on-change    #(reset! category (-> % .-target .-value))
+            :defaultValue @category}
+           [:option "请选择一个分类"]
+           (for [{:keys [id name]} @categories]
+             ^{:key id}
+             [:option
+              {:value id}
+              name])]
+          [:a.btn.btn-outline-primary.btn-sm.mr-2
+           {:on-click
+            (if @original-post
+              #(dispatch [:posts/edit @edited-post])
+              #(dispatch [:posts/add @edited-post]))}
+           "保存"]]]]]]]))
 
 
 (defn post-view-page []
