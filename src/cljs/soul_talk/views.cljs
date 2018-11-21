@@ -112,7 +112,7 @@
 (defmethod pages :posts/add [_ _]
   (r/with-let [user (subscribe [:user])]
               (if @user
-                [add-post-page]
+                [edit-post-page]
                 (pages :login nil))))
 
 (defmethod pages :posts/edit [_ _]

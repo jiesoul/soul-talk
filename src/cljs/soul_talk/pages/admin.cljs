@@ -1,7 +1,6 @@
 (ns soul-talk.pages.admin
   (:require [reagent.core :as r]
-            [re-frame.core :refer [subscribe dispatch]])
-  (:import goog.history.Html5History))
+            [re-frame.core :refer [subscribe dispatch]]))
 
 (defonce main-fields (r/atom nil))
 (defonce table-data (r/atom []))
