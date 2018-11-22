@@ -113,8 +113,12 @@
                         :force-sync      true
                         :initialValue    @text}))]
         (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
+     :component-did-update (fn [data]
+                             (let [d (r/props data)]
+                               (js/console.log d)))
      :reagent-render
-     (fn [] [:textarea#editMdTextarea])}))
+     (fn [] [:textarea#editMdTextarea
+             {:default-value @text}])}))
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]
@@ -160,14 +164,15 @@
             {:on-click  #(dispatch [handler (assoc paginate-params :page @prev-page)])
              :tab-index "-1"}
             "Previous"]]
-          (for [p (range start end)]
-            ^{:key p}
-            [:li.page-item
-             {:class (if (= p @page) "active")}
-             [:a.page-link
-              {:on-click #(dispatch [handler (assoc paginate-params :page p)])}
-              p]]
-            )
+          (doall
+            (for [p (range start end)]
+              ^{:key p}
+              [:li.page-item
+               {:class (if (= p @page) "active")}
+               [:a.page-link
+                {:on-click #(dispatch [handler (assoc paginate-params :page p)])}
+                p]]
+              ))
           [:li.page-item
            {:class (if (> @next-page @total-pages) "disabled")}
            [:a.page-link

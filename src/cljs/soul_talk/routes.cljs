@@ -5,7 +5,7 @@
             [accountant.core :as accountant]
             [re-frame.core :refer [dispatch dispatch-sync subscribe]]
             [taoensso.timbre :as log])
-  (:import goog.history.Html5History))
+  (:import goog.History))
 
 ;; 判断是否登录
 (defn logged-in? []
@@ -37,6 +37,7 @@
   "/" []
   (let [pagination {:page 1
                     :pre-page 3}]
+    (js/console.log "load home index page")
     (run-events [[:load-categories]
                  [:load-tags]
                  [:load-posts pagination]
@@ -102,7 +103,7 @@
 ;; 使用浏览器可以使用前进后退 历史操作
 (defn hook-browser-navigation! []
   (doto
-    (Html5History.)
+    (History.)
     (events/listen
       HistoryEventType/NAVIGATE
       (fn [event]
