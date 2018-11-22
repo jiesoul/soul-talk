@@ -89,6 +89,45 @@
 (defn inside-foobazquux-cursor []
   [:div (str "Inside foobazquux-cursor: " @foobazquux-cursor)])
 
+(defn clock
+  []
+  [:div.example-clock
+   {:style {:color @(subscribe [:time-color])}}
+   (-> @(subscribe [:time])
+     .toTimeString
+     (clojure.string/split " ")
+     first)])
+
+(defn color-input
+  []
+  [:div.color-input
+   "Time color: "
+   [:input {:type "text"
+            :value @(subscribe [:time-color])        ;; subscribe
+            :on-change #(dispatch [:time-color-change (-> % .-target .-value)])}]])
+
+(defn message
+  []
+  [:div.example-clock
+   @(subscribe [:error])])
+
+(defn message-input
+  []
+  [:div.color-input
+   "message : "
+   [:input {:type "text"
+            ;:value     ""    ;; subscribe
+            :on-change #(dispatch [:set-error (-> % .-target .-value)])}]])
+
+(defn ui
+  []
+  [:div
+   [:h1 "Hello world, it is now"]
+   [clock]
+   [color-input]
+   [message]
+   [message-input]])
+
 (defn main-component []
   (fn []
     [:div

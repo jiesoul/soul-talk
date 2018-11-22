@@ -7,33 +7,39 @@
   (r/with-let [categories (subscribe [:categories])
                user (subscribe [:user])]
     (fn []
-      [:table.table.table-striped
-       [:thead
-        [:tr
-         [:th "name"]
-         [:th "action"]]]
-       [:tbody
-        (for [{:keys [id name] :as category} @categories]
-          ^{:key id}
+      (when @user
+        [:table.table.table-striped
+         [:thead
           [:tr
-           [:td name]
-           [:td
-            (if @user
-              [:a.btn.btn-outline-primary.btn-sm
-               {:on-click #(dispatch [:categories/delete category])}
-               "删除"])]])]])))
+           [:th "name"]
+           [:th "action"]]]
+         [:tbody
+          (doall
+            (for [{:keys [id name] :as category} @categories]
+              ^{:key id}
+              [:tr
+               [:td name]
+               [:td
+                [:a.btn.btn-outline-primary.btn-sm
+                 {:on-click #(dispatch [:categories/modify category])}
+                 "修改"]
+                [:a.btn.btn-outline-primary.btn-sm
+                 {:on-click #(dispatch [:categories/delete category])}
+                 "删除"]]]))]]))))
 
 (defn categories-page []
   (r/with-let [user (subscribe [:user])]
     (fn []
-      [:div.container-fluid
-       [:h4 "分类管理"]
-       [:hr]
-       [:div.p-1
-        [:a.btn.btn-outline-primary.btn-sm
-         {:href "/categories/add"}
-         "添加"]]
-       [categories-list]])))
+      (when @user
+        [:div.container-fluid
+         [:nav {:aria-label "breadcrumb"}
+          [:ol.breadcrumb
+           [:li.breadcrumb-item.active {:aria-current "page"} "分类管理"]]]
+         [:div.p-1
+          [:a.btn.btn-outline-primary.btn-sm
+           {:href "/categories/add"}
+           "添加"]]
+         [categories-list]]))))
 
 
 (defn add-page []
@@ -41,7 +47,7 @@
     [category (r/atom {})
      error (subscribe [:error])]
     (fn []
-      [c/modal
+      [:div
        [:div "分类添加"]
        [:div.form-group
         [c/text-input "Name" :name "please enter name" category]

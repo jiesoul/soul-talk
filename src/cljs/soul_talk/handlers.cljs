@@ -48,14 +48,8 @@
   :handle-login
   (fn [{:keys [db]} [_ {:keys [user]}]]
     {:dispatch-n (list
-                   [:set-active-page :admin])
+                   [:navigate-to "/admin"])
      :db         (assoc db :user user)}))
-
-;; 处理 login error
-(reg-event-fx
-  :handle-login-error
-  (fn [_ [_ {:keys [response]}]]
-    {:dispatch [:ajax-error (:message response)]}))
 
 ;; login
 (reg-event-fx
@@ -67,8 +61,7 @@
               :url "/api/login"
               :ajax-map {:params {:email email
                                   :password password}}
-              :success-event [:handle-login]
-              :error-event [:ajax-error]}})))
+              :success-event [:handle-login]}})))
 
 
 ;; 处理register ok
@@ -79,12 +72,6 @@
     {:dispatch-n (list
                    [:set-active-page :admin])
      :db         (assoc db :user user)}))
-
-;; 处理 register error
-(reg-event-fx
-  :handle-register-error
-  (fn [_ [_ {:keys [response]}]]
-    {:dispatch [:ajax-error (:message response)]}))
 
 ;; register
 (reg-event-fx
@@ -97,14 +84,12 @@
               :ajax-map {:params {:email email
                                   :password password
                                   :pass-confirm pass-confirm}}
-              :success-event [:handle-register]
-              :error-event [:handle-register-error]}})))
+              :success-event [:handle-register]}})))
 
 (reg-event-fx
   :handle-logout
   (fn [_ _]
-    (log/info @(subscribe [:db-state]))
-    {:reload-page true}))
+    {:navigate-to "/login"}))
 
 (reg-event-fx
   :logout

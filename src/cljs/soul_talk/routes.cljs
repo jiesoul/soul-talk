@@ -11,6 +11,12 @@
 (defn logged-in? []
   @(subscribe [:user]))
 
+(defn href [url]
+  {:href (str url)})
+
+(defn navigate! [url]
+  (accountant/navigate! url))
+
 ;; 加载多个事件
 (defn run-events
   [events]
@@ -43,6 +49,14 @@
                  [:load-posts pagination]
                  [:load-posts-archives]
                  [:set-active-page :home]])))
+
+(secretary/defroute
+  "/login" []
+  (run-events [[:set-active-page :login]]))
+
+(secretary/defroute
+  "/register" []
+  (run-events [[:set-active-page :register]]))
 
 ;; 后台管理
 (secretary/defroute

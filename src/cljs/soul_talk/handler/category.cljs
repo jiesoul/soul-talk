@@ -43,8 +43,7 @@
 (reg-event-fx
   :categories/delete-error
   (fn [_ [_ {:keys [response]}]]
-    (js/alert (str "删除失败请重试"))
-    {:reload-page true}))
+    (js/alert (:message response))))
 
 (reg-event-fx
   :categories/delete

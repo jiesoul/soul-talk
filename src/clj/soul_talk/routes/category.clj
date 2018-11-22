@@ -2,7 +2,8 @@
   (:require [clojure.spec.alpha :as s]
             [soul-talk.models.category-db :as category-db]
             [soul-talk.routes.common :refer [handler]]
-            [ring.util.http-response :as resp]))
+            [ring.util.http-response :as resp]
+            [soul-talk.models.post-db :as post-db]))
 
 (s/def ::id int?)
 (s/def ::name string?)
@@ -23,6 +24,11 @@
       resp/ok)))
 
 (handler delete-category! [id]
-         (do
-           (category-db/delete-category! id)
-           (resp/ok {:result :ok})))
+  (let [post-count (post-db/get-post-by-category id)]
+    (if (pos? post-count)
+      (-> {:result :error
+           :message "有文章属于这个分类，不能删除！"}
+        (resp/bad-request))
+      (do
+        (category-db/delete-category! id)
+        (resp/ok {:result :ok})))))

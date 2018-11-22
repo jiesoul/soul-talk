@@ -19,7 +19,7 @@
     (let [count (user-db/count-users)]
       (if (pos? count)
         (resp/bad-request {:result :error
-                              :message "系统不允许注册！！"})
+                           :message "系统不允许注册！！"})
         (if-let [temp-user (user-db/select-user (:email user))]
           (resp/unauthorized {:result  :error
                                 :message (str (:email temp-user) " 已被注册")})

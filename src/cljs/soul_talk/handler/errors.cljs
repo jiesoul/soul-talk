@@ -4,6 +4,7 @@
 (reg-event-fx
   :ajax-error
   (fn [_ [_ {:keys [response status] :as resp}]]
+    (js/console.log resp)
     {:dispatch [:set-error (:message response)]}))
 
 

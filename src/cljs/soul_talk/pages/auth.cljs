@@ -3,50 +3,75 @@
             [soul-talk.pages.common :as c]
             [soul-talk.auth-validate :refer [login-errors]]
             [taoensso.timbre :as log]
-            [re-frame.core :refer [dispatch subscribe]]))
+            [re-frame.core :refer [dispatch subscribe]])
+  (:import goog.History))
 
 (defn login-page []
-  (r/with-let
-    [login-data (r/atom nil)
-     error     (subscribe [:error])]
-    (fn []
-      (let [r (subscribe [:error])]
-        [c/modal
-         "login-modal"
-         "Login"
-         [:div
-          [c/text-input "Email" :email "Email Address" login-data]
-          [c/password-input "密码" :password "输入密码" login-data]
-          [:div
-           (when @error
-             [:div.alert.alert-danger @error])]]
-         [:div
-          [:a.btn.btn-secondary.m-2
-           {:on-click #(dispatch [:set-active-page :register])}
-           "Register"]
-          [:a.btn.btn-primary
-           {:value    "Login"
-            :on-click #(dispatch [:login @login-data])}
-           "Login"]]]))))
-
+  (let  [login-data (r/atom {:email ""
+                             :password ""})
+         error     (subscribe [:error])
+         email (r/cursor login-data [:email])
+         password (r/cursor login-data [:password])]
+    [:div.text-center.container
+     [:div.form-signin
+      [:h1.h3.mb-3.font-weight-normal.text-center "Login"]
+      [:label.sr-only
+       {:for "email"}]
+      [:input#email.form-control
+       {:type :text
+        :placeholder "请输入Email"
+        :required true
+        :auto-focus true
+        :on-change #(reset! email (-> % .-target .-value))}]
+      [:label.sr-only
+       {:for "password"}]
+      [:input#password.form-control
+       {:type :password
+        :placeholder "请输入密码"
+        :required true
+        :on-change #(reset! password (-> % .-target .-value))}]
+      (when @error
+        [:div.alert.alert-danger @error])
+      [:button.btn.btn-lg.btn-primary.btn-block
+       {:type    "submit"
+        :on-click #(dispatch [:login @login-data])}
+       "Login"]]]))
 
 (defn register-page []
   (r/with-let
     [reg-data (r/atom nil)
-     error (subscribe [:error])]
-    (fn []
-      [c/modal
-       "regModal"
-       "Soul Talk Register"
-       [:div.form-group
-        [:div.well.well-sm "* 为必填"]
-        [c/text-input "Email" :email "enter a email" reg-data]
-        [c/password-input "密码" :password "输入密码最少8位" reg-data]
-        [c/password-input "确认密码" :pass-confirm "确认密码和上面一样" reg-data]
-        (when @error
-          [:div.alert.alert-message @error])]
-       [:div
-        [:input.btn.btn-primary.btn-block
-         {:type     :submit
-          :value    "Register"
-          :on-click #(dispatch [:register @reg-data])}]]])))
+     error (subscribe [:error])
+     email (r/cursor reg-data [:email])
+     password (r/cursor reg-data [:password])
+     pass-confirm (r/cursor reg-data [:pass-confirm])]
+    [:div.text-center.container
+     [:div.form-signin
+      [:h1.h3.mb-3.font-weight-normal.text-center "Register"]
+      [:label.sr-only
+       {:for "email"}]
+      [:input#email.form-control
+       {:type :text
+        :placeholder "请输入Email"
+        :required true
+        :auto-focus true
+        :on-change #(reset! email (-> % .-target .-value))}]
+      [:label.sr-only
+       {:for "password"}]
+      [:input#password.form-control
+       {:type :password
+        :placeholder "请输入密码"
+        :required true
+        :on-change #(reset! password (-> % .-target .-value))}]
+      [:label.sr-only
+       {:for "pass-confirm"}]
+      [:input#pass-confirm.form-control
+       {:type :password
+        :placeholder "请再次输入密码"
+        :required true
+        :on-change #(reset! pass-confirm (-> % .-target .-value))}]
+      (when @error
+        [:div.alert.alert-danger @error])
+      [:button.btn.btn-lg.btn-primary.btn-block
+       {:type    "submit"
+        :on-click #(dispatch [:register @reg-data])}
+       "Register"]]]))

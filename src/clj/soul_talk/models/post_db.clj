@@ -66,3 +66,7 @@
                                       and date_part('month', create_time) = ?
                                       order by create_time desc"
               year month]))
+
+(defn get-post-by-category [category]
+  (first
+    (sql/query *db* ["select count(id) as c from where category = ?" category])))

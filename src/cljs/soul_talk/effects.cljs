@@ -14,6 +14,7 @@
                ajax-map]
         :or {error-event [:ajax-error]
              ajax-map {}}}]
+    (dispatch [:set-loading])
     (method url (merge
                   {:handler       (fn [response]
                                     (when success-event
@@ -21,8 +22,8 @@
                                                   success-event
                                                   (conj success-event response)))))
                    :error-handler (fn [error]
-                                    (log/error "请求错误：" error)
-                                    (dispatch (conj error-event error)))}
+                                    (dispatch (conj error-event error))
+                                    (dispatch [:unset-loading]))}
                   ajax-map))))
 
 
@@ -35,7 +36,6 @@
   :reload-page
   (fn [_]
     (accountant/dispatch-current!)))
-
 
 (reg-fx
   :set-user!

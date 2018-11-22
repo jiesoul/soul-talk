@@ -9,6 +9,8 @@
 (defroutes
   home-routes
   (GET "/" [] (home-page))
+  (GET "/login" [] (home-page))
+  (GET "/register" [] (home-page))
   (GET "/posts/archives/:year/:month" [year month] (home-page))
   (GET "/posts/:id" [id] (home-page)))
 

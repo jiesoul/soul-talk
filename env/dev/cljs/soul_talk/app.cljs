@@ -13,5 +13,4 @@
 (devtools.core/set-pref! :dont-detect-custom-formatters true)
 (devtools/install!)
 
-
 (core/init!)

@@ -63,7 +63,7 @@
          [:div.sidebar-sticky
           [:ul.nav.flex-column
            (admin-sidebar-link "/admin" "Dashboard" :admin "fa fa-home")
-           (admin-sidebar-link "/categories" "Categories" :categories "fa fa-chart")
+           (admin-sidebar-link "/categories" "Categories" :categories "fa fa-reorder")
            (admin-sidebar-link "/posts" "Posts" :posts "fa fa-archive")
            (admin-sidebar-link "/users" "Users" :users "fa fa-users")]]]))))
 
