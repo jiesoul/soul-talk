@@ -93,16 +93,6 @@
 (defn main-component []
   (fn []
     [:div
-     [inside-foobazquux-cursor]
-     [inside-foobaz-cursor]
-     [inside-foobar-cursor]
-     [inside-foo-cursor]
-     [inside-app-state]
-     [foo]
-     [foo1]
-     [foo-mistak]
-     [foo-mistak2]
-     [foo-inner-let]
      [table-component @table-data]]))
 
 (reset! table-data [{:title "title1"

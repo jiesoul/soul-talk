@@ -89,8 +89,8 @@
 
 (secretary/defroute
   "/posts/:id/edit" [id]
-  (run-events [[:load-categories]
-               [:load-post id]
+  (run-events [[:load-post id]
+               [:load-categories]
                [:set-active-page :posts/edit]]))
 
 (secretary/defroute

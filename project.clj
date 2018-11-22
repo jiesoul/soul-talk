@@ -34,7 +34,7 @@
                  [cljsjs/showdown "1.8.6-0"]
                  [domina "1.0.3"]
                  [jayq "2.5.5"]
-                 [reagent "0.8.2-SNAPSHOT"]
+                 [reagent "0.8.1"]
                  [org.clojars.frozenlock/reagent-modals "0.2.8"]
                  [secretary "1.2.3"]
                  [re-frame "0.10.6"]

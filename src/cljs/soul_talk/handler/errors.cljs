@@ -3,9 +3,8 @@
 
 (reg-event-fx
   :ajax-error
-  (fn [_ [_ {status :status
-             {error :message} :response}]]
-    {:dispatch [:set-error error]}))
+  (fn [_ [_ {:keys [response status] :as resp}]]
+    {:dispatch [:set-error (:message response)]}))
 
 
 (reg-event-db

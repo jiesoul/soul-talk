@@ -55,7 +55,7 @@
 (reg-event-fx
   :handle-login-error
   (fn [_ [_ {:keys [response]}]]
-    {:dispatch [:set-error (:message response)]}))
+    {:dispatch [:ajax-error (:message response)]}))
 
 ;; login
 (reg-event-fx
@@ -68,7 +68,7 @@
               :ajax-map {:params {:email email
                                   :password password}}
               :success-event [:handle-login]
-              :error-event [:handle-login-error]}})))
+              :error-event [:ajax-error]}})))
 
 
 ;; 处理register ok
@@ -84,7 +84,7 @@
 (reg-event-fx
   :handle-register-error
   (fn [_ [_ {:keys [response]}]]
-    {:dispatch [:set-error (:message response)]}))
+    {:dispatch [:ajax-error (:message response)]}))
 
 ;; register
 (reg-event-fx

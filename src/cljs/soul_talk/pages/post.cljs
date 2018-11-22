@@ -130,48 +130,49 @@
      category (r/cursor original-post [:category])]
     (js/console.log @content)
     (js/console.log @edited-post)
-    [:div.container-fluid
-     [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
-      [:a.navbar-brand
-       {:href "#"} "Soul Talk"]
-      [:div.container
-       [:ul.navbar-nav
-        [:li.nav-item.active
-         [:h6.title
-          (if @original-post "修改文章" "写文章")]]]]]
-     [:div.container
-      [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
-       [:div
-        [:div.form-group
-         [:input.form-control.input-lg
-          {:type        :text
-           :placeholder "请输入标题"
-           :value       @title
-           :on-change   #(reset! title (-> % .-target .-value))}]]
-        [:div.form-inline
-         [:div.form-row.col-auto.my-1
-          [c/upload-md-modal]]]
-        [:div.form-group
-         [c/editor content]]
-        (when @error
-          [:div.alert.alert-danger @error])
-        [:div.form-inline
-         [:div.form-group
-          [:select#category.mr-2.form-control.form-control-sm
-           {:on-change    #(reset! category (-> % .-target .-value))
-            :defaultValue @category}
-           [:option "请选择一个分类"]
-           (for [{:keys [id name]} @categories]
-             ^{:key id}
-             [:option
-              {:value id}
-              name])]
-          [:a.btn.btn-outline-primary.btn-sm.mr-2
-           {:on-click
-            (if @original-post
-              #(dispatch [:posts/edit @edited-post])
-              #(dispatch [:posts/add @edited-post]))}
-           "保存"]]]]]]]))
+    (fn []
+      [:div.container-fluid
+       [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
+        [:a.navbar-brand
+         {:href "#"} "Soul Talk"]
+        [:div.container
+         [:ul.navbar-nav
+          [:li.nav-item.active
+           [:h6.title
+            (if @original-post "修改文章" "写文章")]]]]]
+       [:div.container
+        [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
+         [:div
+          [:div.form-group
+           [:input.form-control.input-lg
+            {:type        :text
+             :placeholder "请输入标题"
+             :value       @title
+             :on-change   #(reset! title (-> % .-target .-value))}]]
+          [:div.form-inline
+           [:div.form-row.col-auto.my-1
+            [c/upload-md-modal]]]
+          [:div.form-group
+           [c/editor content]]
+          (when @error
+            [:div.alert.alert-danger @error])
+          [:div.form-inline
+           [:div.form-group
+            [:select#category.mr-2.form-control.form-control-sm
+             {:on-change    #(reset! category (-> % .-target .-value))
+              :defaultValue @category}
+             [:option "请选择一个分类"]
+             (for [{:keys [id name]} @categories]
+               ^{:key id}
+               [:option
+                {:value id}
+                name])]
+            [:a.btn.btn-outline-primary.btn-sm.mr-2
+             {:on-click
+              (if @original-post
+                #(dispatch [:posts/edit @edited-post])
+                #(dispatch [:posts/add @edited-post]))}
+             "保存"]]]]]]])))
 
 
 (defn post-view-page []
