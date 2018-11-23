@@ -1,7 +1,8 @@
 (ns soul-talk.views
   (:require [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
-            [soul-talk.routes :refer [logged-in?]]
+            [soul-talk.routes :refer [logged-in? navigate!]]
+            [soul-talk.pages.common :refer [loading-throber error-modal]]
             [soul-talk.pages.home :refer [home-page]]
             [soul-talk.pages.admin :refer [main-component]]
             [soul-talk.pages.auth :refer [login-page register-page]]
@@ -9,7 +10,6 @@
             [soul-talk.pages.post :refer [posts-page post-view-page edit-post-page post-archives-page add-post-page]]
             [soul-talk.pages.category :as category]
             [soul-talk.pages.tag :as tag]
-            [taoensso.timbre :as log]
             [clojure.string :as str]))
 
 (defn admin-user-menu [user]
@@ -62,19 +62,27 @@
         [:nav.col-md-2.d-none.d-md-block.bg-light.sidebar
          [:div.sidebar-sticky
           [:ul.nav.flex-column
-           (admin-sidebar-link "/admin" "Dashboard" :admin "fa fa-home")
-           (admin-sidebar-link "/categories" "Categories" :categories "fa fa-reorder")
-           (admin-sidebar-link "/posts" "Posts" :posts "fa fa-archive")
-           (admin-sidebar-link "/users" "Users" :users "fa fa-users")]]]))))
+           (admin-sidebar-link "/admin" "面板" :admin "fa fa-home")
+           (admin-sidebar-link "/categories" "分类" :categories "fa fa-reorder")
+           (admin-sidebar-link "/posts" "文章" :posts "fa fa-archive")
+           (admin-sidebar-link "/users" "用户" :users "fa fa-users")]]]))))
+
+
 
 
 ;;多重方法  响应对应的页面
 (defmulti pages (fn [page _] page))
 
+;;页面
+(defmethod pages :home [_ _] [home-page])
+(defmethod pages :login [_ _] [login-page])
+(defmethod pages :register [_ _] [register-page])
+(defmethod pages :posts/archives [_ _] [post-archives-page])
+(defmethod pages :posts/view [_ _] [post-view-page])
+
+
 (defn admin-page [main]
-  (r/with-let
-    [user (subscribe [:user])]
-    (js/console.log @user)
+  (r/with-let [user (subscribe [:user])]
     (if @user
       [:div.container-fluid
        [admin-navbar user]
@@ -110,9 +118,6 @@
 (defmethod pages :posts [_ _]
   (admin-page posts-page))
 
-(defmethod pages :posts/archives [_ _]
-  [post-archives-page])
-
 (defmethod pages :posts/add [_ _]
   (r/with-let [user (subscribe [:user])]
               (if @user
@@ -125,23 +130,15 @@
                 [edit-post-page]
                 (pages :login nil))))
 
-
-(defmethod pages :posts/view [_ _]
-  (.scrollTo js/window 0 0)
-  [post-view-page])
-
 (defmethod pages :tags/add [_ _]
   (admin-page tag/add-page))
-
-;;页面
-(defmethod pages :home [_ _] [home-page])
-(defmethod pages :login [_ _] [login-page])
-(defmethod pages :register [_ _] [register-page])
 
 (defmethod pages :default [_ _] [:div])
 
 ;; 根据配置加载不同页面
 (defn main-page []
-  (r/with-let
-    [active-page (subscribe [:active-page])]
-     (pages @active-page)))
+  (r/with-let [active-page (subscribe [:active-page])
+               user (subscribe [:user])]
+    [:div
+     [error-modal]
+     (pages @active-page @user)]))

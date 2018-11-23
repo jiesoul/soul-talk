@@ -7,7 +7,7 @@
   (sql/insert! *db* :categories category))
 
 (defn update-category! [{:keys [name id]}]
-  (sql/update! *db* :categories [:name name] ["id = ?" id]))
+  (sql/update! *db* :categories {:name name} ["id = ?" id]))
 
 (defn get-categories []
   (sql/query *db* ["select * from categories"]))

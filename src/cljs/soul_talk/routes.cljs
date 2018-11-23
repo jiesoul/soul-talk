@@ -43,7 +43,6 @@
   "/" []
   (let [pagination {:page 1
                     :pre-page 3}]
-    (js/console.log "load home index page")
     (run-events [[:load-categories]
                  [:load-tags]
                  [:load-posts pagination]

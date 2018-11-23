@@ -2,7 +2,17 @@
   (:require-macros)
   (:require [re-frame.core :refer [dispatch subscribe]]
             [reagent.core :as r]
+            [reagent-modals.modals :as rm]
             [cljsjs.showdown]))
+
+(defn loading-throber []
+  (let [loading? (subscribe [:loading?])]
+    (when @loading?
+      )))
+
+(defn error-modal []
+  (when-let [error @(subscribe [:error])]
+    (rm/modal-window)))
 
 (defn input [type id placeholder fields]
   (fn []

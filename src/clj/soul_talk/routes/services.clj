@@ -84,7 +84,8 @@
         :summary "load categories"
         (category/get-all-categories))
 
-      (GET "/categories/:id" [id]
+      (GET "/categories/:id" []
+        :path-params [id :- ::category/id]
         :return ::Result
         :summary "Load category by id"
         (category/get-category-by-id id))
@@ -151,6 +152,7 @@
           (PUT "/" []
             :return ::Result
             :body [category category/Category]
+            :summary "update category"
             (category/update-category! category))
 
           (DELETE "/:id" [id]
@@ -198,8 +200,7 @@
           (POST "/upload" req
             :return ::Result
             :summary "upload md file as post"
-            (posts/upload-post! req))
-          )
+            (posts/upload-post! req)))
 
         (context "/files" []
 

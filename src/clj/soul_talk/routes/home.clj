@@ -24,7 +24,6 @@
   (GET "/posts" [] (home-page))
   (GET "/posts/add" [] (home-page))
   (GET "/posts/:id/edit" [id] (home-page))
-  (GET "/posts-edit" [] (home-page))
   (GET "/categories" [] (home-page))
   (GET "/categories/add" [] (home-page))
   (GET "/categories/:id/edit" [id] (home-page)))

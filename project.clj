@@ -1,4 +1,4 @@
-(defproject soul-talk "0.1.2"
+(defproject soul-talk "0.1.3"
   :description "self site"
   :url "http://github.com/jiesoul/soul-talk"
 
@@ -38,6 +38,7 @@
                  [org.clojars.frozenlock/reagent-modals "0.2.8"]
                  [secretary "1.2.3"]
                  [re-frame "0.10.6"]
+                 [re-com "2.2.0"]
                  [venantius/accountant "0.2.4"]
                  [reagent-utils "0.3.1"]
                  [cljs-ajax "0.7.4"]

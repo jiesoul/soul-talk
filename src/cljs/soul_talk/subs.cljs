@@ -20,11 +20,7 @@
 
 (reg-sub :login-events query)
 
-(reg-sub :admin/users query)
-
 (reg-sub :loading? query)
-
-(reg-sub :admin/posts query)
 
 (reg-sub :categories query)
 
@@ -39,5 +35,13 @@
 (reg-sub :posts-archives query)
 
 (reg-sub :pagination query)
+
+(reg-sub :admin/users query)
+
+(reg-sub :admin/categories query)
+
+(reg-sub :admin/category query)
+
+(reg-sub :admin/posts query)
 
 (reg-sub :admin/pagination query)

@@ -1,7 +1,6 @@
 (ns soul-talk.handlers
   (:require [re-frame.core :refer [dispatch dispatch-sync reg-event-db reg-event-fx subscribe]]
             [soul-talk.db :as db]
-            [clojure.string :as str]
             [ajax.core :refer [POST]]
             [soul-talk.auth-validate :refer [login-errors reg-errors]]
             soul-talk.handler.errors
@@ -10,8 +9,7 @@
             soul-talk.handler.posts
             soul-talk.handler.category
             soul-talk.handler.tag
-            soul-talk.handler.files
-            [taoensso.timbre :as log]))
+            soul-talk.handler.files))
 
 ;; 初始化
 (reg-event-db
@@ -89,7 +87,7 @@
 (reg-event-fx
   :handle-logout
   (fn [_ _]
-    {:navigate-to "/login"}))
+    {:reload-page true}))
 
 (reg-event-fx
   :logout
@@ -102,6 +100,12 @@
      :db        db/default-db
      :set-user! nil}))
 
+
+;; 取消加载
+(reg-event-db
+  :unset-loading
+  (fn [db _]
+    (dissoc db :loading? :error :should-be-loading?)))
 
 ;; 设置加载为 true
 (reg-event-db
@@ -119,9 +123,3 @@
      :db (-> db
              (assoc :should-be-loading? true)
              (dissoc :error))}))
-
-;; 取消加载
-(reg-event-db
-  :unset-loading
-  (fn [db _]
-    (dissoc db :loading? :error :should-be-loading?)))
