@@ -6,8 +6,15 @@
 (defn save-category! [category]
   (sql/insert! *db* :categories category))
 
+(defn update-category! [{:keys [name id]}]
+  (sql/update! *db* :categories [:name name] ["id = ?" id]))
+
 (defn get-categories []
   (sql/query *db* ["select * from categories"]))
+
+(defn get-category-by-id [id]
+  (first
+    (sql/query *db* ["select * from categories where id = ?" id])))
 
 (defn delete-category! [id]
   (sql/delete! *db* :categories ["id = ?" id]))

@@ -68,5 +68,6 @@
               year month]))
 
 (defn get-post-by-category [category]
-  (first
-    (sql/query *db* ["select count(id) as c from where category = ?" category])))
+  (:counter
+    (first
+     (sql/query *db* ["select count(id) as counter from posts where category = ?" category]))))

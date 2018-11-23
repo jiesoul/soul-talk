@@ -74,6 +74,7 @@
 (defn admin-page [main]
   (r/with-let
     [user (subscribe [:user])]
+    (js/console.log @user)
     (if @user
       [:div.container-fluid
        [admin-navbar user]
@@ -101,6 +102,9 @@
   (admin-page category/categories-page))
 
 (defmethod pages :categories/add [_ _]
+  (admin-page category/add-page))
+
+(defmethod pages :categories/edit [_ _]
   (admin-page category/add-page))
 
 (defmethod pages :posts [_ _]

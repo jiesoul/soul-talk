@@ -1,8 +1,7 @@
 (ns soul-talk.handler.category
   (:require [re-frame.core :refer [reg-event-fx reg-event-db]]
-            [ajax.core :refer [POST GET DELETE]]
+            [ajax.core :refer [POST GET DELETE PUT]]
             [clojure.string :as str]))
-
 
 (reg-event-db
   :set-categories
@@ -21,7 +20,7 @@
   :categories/add-ok
   (fn [_ [_ {:keys [category]}]]
     (js/alert "Add successful")
-    {:navigate "/categories"}))
+    {:reload-page true}))
 
 (reg-event-fx
   :categories/add
@@ -33,6 +32,34 @@
               :ajax-map      {:params category}
               :success-event [:categories/add-ok]
               :error-event #(js/alert "发生错误请重试")}})))
+
+(reg-event-db
+  :set-category
+  (fn [db [_ {:keys [category]}]]
+    (js/console.log category)
+    (assoc db :category category)))
+
+(reg-event-db
+  :load-category
+  (fn [_ [_ id]]
+    {:http {:method (str "/api/categories/" id)
+            :success-event [:set-category]}}))
+
+(reg-event-db
+  :categories/edit-ok
+  (fn [db [_ {:keys [category]}]]
+    (let [categories (:categories db)]
+      (js/alert "update successful"))))
+
+(reg-event-fx
+  :categories/edit
+  (fn [_ [_ {:keys [name] :as category}]]
+    (if (str/blank? name)
+      {:dispatch [:set-error "名称不能为空"]}
+      {:http {:method PUT
+              :url "/api/admin/categories/"
+              :ajax-map {:params category}
+              :success-event [:categories/update-ok]}})))
 
 (reg-event-fx
   :categories/delete-ok

@@ -12,7 +12,7 @@
   (GET "/login" [] (home-page))
   (GET "/register" [] (home-page))
   (GET "/posts/archives/:year/:month" [year month] (home-page))
-  (GET "/posts/:id" [id] (home-page)))
+  (GET "/posts/:id" [] (home-page)))
 
 
 (defroutes
@@ -26,4 +26,5 @@
   (GET "/posts/:id/edit" [id] (home-page))
   (GET "/posts-edit" [] (home-page))
   (GET "/categories" [] (home-page))
-  (GET "/categories/add" [] (home-page)))
+  (GET "/categories/add" [] (home-page))
+  (GET "/categories/:id/edit" [id] (home-page)))

@@ -3,7 +3,8 @@
             [soul-talk.models.category-db :as category-db]
             [soul-talk.routes.common :refer [handler]]
             [ring.util.http-response :as resp]
-            [soul-talk.models.post-db :as post-db]))
+            [soul-talk.models.post-db :as post-db]
+            [taoensso.timbre :as log]))
 
 (s/def ::id int?)
 (s/def ::name string?)
@@ -17,11 +18,23 @@
     (resp/ok {:result :ok
               :categories categories})))
 
+(handler get-category-by-id [id]
+  (let [category (category-db/get-category-by-id id)]
+    (-> {:result :ok
+         :category category}
+        resp/ok)))
+
 (handler save-category! [category]
   (let [co (category-db/save-category! category)]
     (-> {:result :ok
          :category co}
       resp/ok)))
+
+(handler update-category! [category]
+  (let [result (category-db/update-category! category)]
+    (-> {:result   :ok
+         :category category}
+        resp/ok)))
 
 (handler delete-category! [id]
   (let [post-count (post-db/get-post-by-category id)]

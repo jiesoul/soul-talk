@@ -28,6 +28,8 @@
 
 (reg-sub :categories query)
 
+(reg-sub :category query)
+
 (reg-sub :tags query)
 
 (reg-sub :post query)

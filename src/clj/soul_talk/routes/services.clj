@@ -84,6 +84,11 @@
         :summary "load categories"
         (category/get-all-categories))
 
+      (GET "/categories/:id" [id]
+        :return ::Result
+        :summary "Load category by id"
+        (category/get-category-by-id id))
+
       (GET "/tags" []
         :return ::Result
         :summary "load tags"
@@ -142,6 +147,11 @@
             :body [category category/Category]
             :summary "create category"
             (category/save-category! category))
+
+          (PUT "/" []
+            :return ::Result
+            :body [category category/Category]
+            (category/update-category! category))
 
           (DELETE "/:id" [id]
             :return ::Result

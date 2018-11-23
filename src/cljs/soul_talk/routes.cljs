@@ -85,6 +85,11 @@
   "/categories/add" []
   (run-events [[:set-active-page :categories/add]]))
 
+(secretary/defroute
+  "/categories/:id/edit" [id]
+  (run-events [[:load-category id]
+               [:set-active-page :categories/edit]]))
+
 
 (secretary/defroute
   "/posts" []

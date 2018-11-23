@@ -20,8 +20,8 @@
               [:tr
                [:td name]
                [:td
-                [:a.btn.btn-outline-primary.btn-sm
-                 {:on-click #(dispatch [:categories/modify category])}
+                [:a.btn.btn-outline-primary.btn-sm.mr-2
+                 {:href   (str "/categories/" id "/edit")}
                  "修改"]
                 [:a.btn.btn-outline-primary.btn-sm
                  {:on-click #(dispatch [:categories/delete category])}
@@ -44,13 +44,22 @@
 
 (defn add-page []
   (r/with-let
-    [category (r/atom {})
-     error (subscribe [:error])]
+    [ori-category (subscribe [:category])
+     category (-> @ori-category
+                (update :name #(or % ""))
+                r/atom)
+     error (subscribe [:error])
+     name (r/cursor category [:name])]
     (fn []
       [:div
-       [:div "分类添加"]
+       [:div (if @ori-category "分类修改" "分类添加")]
        [:div.form-group
-        [c/text-input "Name" :name "please enter name" category]
+        [:input.form-control
+         {:type :text
+          :placeholder "please enter name"
+          :name "name"
+          :value @name
+          :on-change #(reset! name (-> % .-target .-value))}]
         (when @error
           [:div.alert.alert-danger.smaller @error])]
        [:div
@@ -58,6 +67,7 @@
          {:href "/categories"}
          "返回"]
         [:a.btn.btn-outline-primary.btn-sm
-         {:value    "Add"
-          :on-click #(dispatch [:categories/add @category])}
+         {:on-click #(if @ori-category
+                       (dispatch [:category/update @category])
+                       (dispatch [:categories/add @category]))}
          "保存"]]])))
