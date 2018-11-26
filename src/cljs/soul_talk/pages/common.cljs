@@ -121,14 +121,63 @@
                         :renderingConfig {:codeSyntaxHighlighting true}
                         :element         (r/dom-node %)
                         :force-sync      true
-                        :initialValue    @text}))]
+                        :initialValue    @text
+                        :value @text}))]
         (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor))))))
-     :component-did-update (fn [data]
-                             (let [d (r/props data)]
-                               (js/console.log d)))
      :reagent-render
      (fn [] [:textarea#editMdTextarea
              {:default-value @text}])}))
+
+(defn md-editor [text]
+  (let [dom-node (r/atom nil)]
+    (r/create-class
+      {:component-did-update
+       (fn [this old-argv]
+         (let [editor (js/SimpleMDE.
+                        (clj->js
+                          {:auto-focus true
+                           :spell-check true
+                           :placeholder "正文"
+                           :force-sync true
+                           :element @dom-node
+                           :initialValue @text
+                           :value @text
+                           :toolbar ["bold"
+                                     "italic"
+                                     "strikethrough"
+                                     "|"
+                                     "heading"
+                                     "code"
+                                     "quote"
+                                     "|"
+                                     "unordered-list"
+                                     "ordered-list"
+                                     "|"
+                                     "link"
+                                     "image"
+                                     "|"
+                                     "side-by-side"
+                                     "preview"
+                                     "fullscreen"
+                                     "guide"
+                                     "|"
+                                     {:name      "upload"
+                                      :action    (fn [] (.modal (js/$ "#uploadMdModal") "show"))
+                                      :className "fa fa-file"
+                                      :title     "upload md file"}]
+                           :renderingConfig {:codeSyntaxHighlighting true}}))]
+           (-> editor
+             .-codemirror
+             (.on "change" (fn [] (reset! text (.value editor)))))))
+       :component-did-mount
+        (fn [this]
+          (let [node (r/dom-node this)]
+            (reset! dom-node node)))
+       :display-name "md-editor"
+       :reagent-render
+        (fn []
+          @dom-node
+          [:textarea {:defaultValue @text}])})))
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]

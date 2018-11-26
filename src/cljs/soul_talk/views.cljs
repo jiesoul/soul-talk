@@ -110,10 +110,10 @@
   (admin-page category/categories-page))
 
 (defmethod pages :categories/add [_ _]
-  (admin-page category/add-page))
+  (admin-page category/edit-page))
 
 (defmethod pages :categories/edit [_ _]
-  (admin-page category/add-page))
+  (admin-page category/edit-page))
 
 (defmethod pages :posts [_ _]
   (admin-page posts-page))

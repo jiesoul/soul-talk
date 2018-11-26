@@ -1,4 +1,4 @@
-(defproject soul-talk "0.1.3"
+(defproject soul-talk "0.1.4"
   :description "self site"
   :url "http://github.com/jiesoul/soul-talk"
 
@@ -32,8 +32,6 @@
                  [org.webjars/font-awesome "4.7.0"]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
                  [cljsjs/showdown "1.8.6-0"]
-                 [domina "1.0.3"]
-                 [jayq "2.5.5"]
                  [reagent "0.8.1"]
                  [org.clojars.frozenlock/reagent-modals "0.2.8"]
                  [secretary "1.2.3"]

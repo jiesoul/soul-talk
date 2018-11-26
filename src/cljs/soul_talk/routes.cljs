@@ -88,9 +88,8 @@
 
 (secretary/defroute
   "/categories/:id/edit" [id]
-  (dispatch [:close-category])
-  (dispatch [:load-category id])
-  (run-events [[:set-active-page :categories/edit]]))
+  (run-events [[:load-category id]
+               [:set-active-page :categories/edit]]))
 
 (secretary/defroute
   "/categories/:id" [id]

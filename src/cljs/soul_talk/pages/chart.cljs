@@ -1,10 +1,9 @@
 (ns soul-talk.pages.chart
-  (:require [domina :as dom]
-            [reagent.core :as r]))
+  (:require [reagent.core :as r]))
 
 (defn show-revenue-chart
   []
-  (let [context (.getContext (dom/by-id "rev-chartjs") "2d")
+  (let [context (.getContext (.getElementById js/document "rev-chartjs") "2d")
         chart-data {:type "bar"
                     :data {:labels ["2012" "2013" "2014" "2015" "2016"]
                            :datasets [{:data [5 10 15 20 25]
