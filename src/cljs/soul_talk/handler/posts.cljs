@@ -19,6 +19,11 @@
             :success-event [:set-posts]}}))
 
 (reg-event-db
+  :close-posts
+  (fn [db _]
+    (dissoc db :posts)))
+
+(reg-event-db
   :admin/set-posts
   (fn [db [_ {:keys [posts pagination]}]]
     (assoc db :admin/posts posts
@@ -31,6 +36,11 @@
             :url           "/api/admin/posts"
             :ajax-map      {:params pagination}
             :success-event [:admin/set-posts]}}))
+
+(reg-event-db
+  :admin/close-posts
+  (fn [db _]
+    (dissoc db :admin/posts)))
 
 (reg-event-db
   :posts/add-ok
@@ -111,6 +121,11 @@
     {:http {:method GET
             :url    (str "/api/posts/" id)
             :success-event [:set-post]}}))
+
+(reg-event-db
+  :close-post
+  (fn [db _]
+    (dissoc db :post)))
 
 (reg-event-fx
   :posts/delete-ok

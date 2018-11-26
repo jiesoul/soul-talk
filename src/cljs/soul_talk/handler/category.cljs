@@ -15,6 +15,11 @@
             :url           "/api/categories"
             :success-event [:set-categories]}}))
 
+(reg-event-db
+  :close-category
+  (fn [db _]
+    (dissoc db :category)))
+
 (reg-event-fx
   :categories/add-ok
   (fn [_ [_ {:keys [category]}]]

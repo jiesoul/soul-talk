@@ -82,12 +82,21 @@
 
 (secretary/defroute
   "/categories/add" []
-  (run-events [[:set-active-page :categories/add]]))
+  (dispatch [:close-category])
+  (run-events
+    [[:set-active-page :categories/add]]))
 
 (secretary/defroute
   "/categories/:id/edit" [id]
+  (dispatch [:close-category])
+  (dispatch [:load-category id])
+  (run-events [[:set-active-page :categories/edit]]))
+
+(secretary/defroute
+  "/categories/:id" [id]
+  (dispatch [:close-category])
   (run-events [[:load-category id]
-               [:set-active-page :categories/edit]]))
+               [:set-active-page :categories/view]]))
 
 
 (secretary/defroute
@@ -114,6 +123,7 @@
 
 (secretary/defroute
   "/posts/:id" [id]
+  (dispatch [:close-post])
   (run-events [[:load-categories]
                [:load-post id]
                [:set-active-page :posts/view]]))
