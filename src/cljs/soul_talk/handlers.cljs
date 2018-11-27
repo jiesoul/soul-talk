@@ -3,10 +3,10 @@
             [soul-talk.db :as db]
             [ajax.core :refer [POST]]
             [soul-talk.auth-validate :refer [login-errors reg-errors]]
+            soul-talk.handler.posts
             soul-talk.handler.errors
             soul-talk.handler.admin
             soul-talk.handler.users
-            soul-talk.handler.posts
             soul-talk.handler.category
             soul-talk.handler.tag
             soul-talk.handler.files))
@@ -33,7 +33,7 @@
   :run-login-events
   (fn [{{events :login-events :as db} :db} _]
     {:dispatch-n events
-     :db db}))
+     :db         db}))
 
 ;; 添加login
 (reg-event-db
@@ -46,7 +46,8 @@
   :handle-login
   (fn [{:keys [db]} [_ {:keys [user]}]]
     {:dispatch-n (list
-                   [:navigate-to "/admin"])
+                   [:run-login-events]
+                   [:set-active-page :admin])
      :db         (assoc db :user user)}))
 
 ;; login
@@ -55,10 +56,10 @@
   (fn [_ [_ {:keys [email password] :as user}]]
     (if-let [error (login-errors user)]
       {:dispatch [:set-error (first error)]}
-      {:http {:method POST
-              :url "/api/login"
-              :ajax-map {:params {:email email
-                                  :password password}}
+      {:http {:method        POST
+              :url           "/api/login"
+              :ajax-map      {:params {:email    email
+                                       :password password}}
               :success-event [:handle-login]}})))
 
 
@@ -77,11 +78,11 @@
   (fn [_ [_ {:keys [email password pass-confirm] :as user}]]
     (if-let [error (reg-errors user)]
       {:dispatch [:set-error (first error)]}
-      {:http {:method POST
-              :url "/api/register"
-              :ajax-map {:params {:email email
-                                  :password password
-                                  :pass-confirm pass-confirm}}
+      {:http {:method        POST
+              :url           "/api/register"
+              :ajax-map      {:params {:email        email
+                                       :password     password
+                                       :pass-confirm pass-confirm}}
               :success-event [:handle-register]}})))
 
 (reg-event-fx
@@ -120,6 +121,6 @@
   :set-loading
   (fn [{db :db} _]
     {:dispatch-later [{:ms 100 :dispatch [:set-loading-for-real-this-time]}]
-     :db (-> db
-             (assoc :should-be-loading? true)
-             (dissoc :error))}))
+     :db             (-> db
+                       (assoc :should-be-loading? true)
+                       (dissoc :error))}))

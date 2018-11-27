@@ -81,7 +81,7 @@
 (defmethod pages :posts/view [_ _] [post-view-page])
 
 
-(defn admin-page [main]
+(defn admin-page [page]
   (r/with-let [user (subscribe [:user])]
     (if @user
       [:div.container-fluid
@@ -90,7 +90,7 @@
         [:div.row
          [admin-sidebar]
          [:main#main.col-md-9.ml-sm-auto.col-lg-10.px-4 {:role "main"}
-          [main]]]]]
+          [page]]]]]
       (pages :login nil))))
 
 ;;后台页面
@@ -126,6 +126,7 @@
 
 (defmethod pages :posts/edit [_ _]
   (r/with-let [user (subscribe [:user])]
+    (js/console.log "posts edit")
               (if @user
                 [edit-post-page]
                 (pages :login nil))))

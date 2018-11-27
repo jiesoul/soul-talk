@@ -3,8 +3,7 @@
             [goog.history.EventType :as HistoryEventType]
             [secretary.core :as secretary]
             [accountant.core :as accountant]
-            [re-frame.core :refer [dispatch dispatch-sync subscribe]]
-            [taoensso.timbre :as log])
+            [re-frame.core :refer [dispatch dispatch-sync subscribe]])
   (:import goog.History))
 
 ;; 判断是否登录
@@ -21,111 +20,103 @@
 (defn run-events
   [events]
   (doseq [event events]
-    (do (log/info event)
-        (dispatch event))))
+    (dispatch event)))
 
 (defn run-events-admin
   [events]
+  (js/console.log events)
   (doseq [event events]
     (if (logged-in?)
       (dispatch event)
       (dispatch [:add-login-event event]))))
 
-;; home 的默认加载
+
 (defn home-page-events [& events]
   (.scrollTo js/window 0 0)
-  (run-events-admin (into
-                [[:set-active-page :admin]]
+  (run-events (into
+                [[:load-categories]
+                 [:load-tags]
+                 [:set-active-page :home]]
                 events)))
 
 ;; 首页
-(secretary/defroute
-  "/" []
-  (let [pagination {:page 1
+(secretary/defroute "/" []
+  (let [pagination {:page     1
                     :pre-page 3}]
-    (run-events [[:load-categories]
-                 [:load-tags]
-                 [:load-posts pagination]
-                 [:load-posts-archives]
-                 [:set-active-page :home]])))
+    (home-page-events
+      [:load-posts pagination]
+      [:load-posts-archives])))
 
-(secretary/defroute
-  "/login" []
+(secretary/defroute "/login" []
   (run-events [[:set-active-page :login]]))
 
-(secretary/defroute
-  "/register" []
+(secretary/defroute "/register" []
   (run-events [[:set-active-page :register]]))
 
+;; 无登录下把事件加入登录事件
+(defn admin-page-events [& events]
+  (.scrollTo js/window 0 0)
+  (run-events-admin (into
+                      [[:set-active-page :admin]]
+                      events)))
+
 ;; 后台管理
-(secretary/defroute
-  "/admin" []
+(secretary/defroute "/admin" []
   (run-events [[:set-active-page :admin]]))
 
-(secretary/defroute
-  "/change-pass" []
+(secretary/defroute "/change-pass" []
   (run-events [[:set-active-page :change-pass]]))
 
-(secretary/defroute
-  "/user-profile" []
+(secretary/defroute "/user-profile" []
   (run-events [[:set-active-page :user-profile]]))
 
-(secretary/defroute
-  "/users" []
+(secretary/defroute "/users" []
   (run-events [[:admin/load-users]
-               [:set-active-page :users]]))
+                     [:set-active-page :users]]))
 
-(secretary/defroute
-  "/categories" []
+(secretary/defroute "/categories" []
   (run-events [[:load-categories]
-               [:set-active-page :categories]]))
+                     [:set-active-page :categories]]))
 
-(secretary/defroute
-  "/categories/add" []
+(secretary/defroute "/categories/add" []
   (dispatch [:close-category])
   (run-events
     [[:set-active-page :categories/add]]))
 
-(secretary/defroute
-  "/categories/:id/edit" [id]
+(secretary/defroute "/categories/:id/edit" [id]
   (run-events [[:load-category id]
-               [:set-active-page :categories/edit]]))
+                     [:set-active-page :categories/edit]]))
 
-(secretary/defroute
-  "/categories/:id" [id]
-  (dispatch [:close-category])
+(secretary/defroute "/categories/:id" [id]
   (run-events [[:load-category id]
-               [:set-active-page :categories/view]]))
+                     [:set-active-page :categories/view]]))
 
 
-(secretary/defroute
-  "/posts" []
+(secretary/defroute "/posts" []
   (run-events [[:admin/load-posts]
-               [:set-active-page :posts]]))
+                     [:set-active-page :posts]]))
 
-(secretary/defroute
-  "/posts/archives/:year/:month" [year month]
+(secretary/defroute "/posts/archives/:year/:month" [year month]
   (run-events [[:load-posts-archives-year-month year month]
-               [:set-active-page :posts/archives]]))
+                     [:set-active-page :posts/archives]]))
 
-(secretary/defroute
-  "/posts/add" []
+(secretary/defroute "/posts/add" []
   (run-events [[:load-categories]
-               [:load-tags]
-               [:set-active-page :posts/add]]))
+                     [:load-tags]
+                     [:set-active-page :posts/add]]))
 
-(secretary/defroute
-  "/posts/:id/edit" [id]
-  (run-events [[:load-post id]
-               [:load-categories]
-               [:set-active-page :posts/edit]]))
+(secretary/defroute "/posts/:id/edit" [id]
+  (if-not (or (logged-in?)
+            (nil? @(subscribe [:post])))
+    (navigate! "/login")
+    (run-events [[:load-post id]
+                       [:load-categories]
+                       [:set-active-page :posts/edit]])))
 
-(secretary/defroute
-  "/posts/:id" [id]
-  (dispatch [:close-post])
+(secretary/defroute "/posts/:id" [id]
   (run-events [[:load-categories]
-               [:load-post id]
-               [:set-active-page :posts/view]]))
+                     [:load-post id]
+                     [:set-active-page :posts/view]]))
 
 ;; 使用浏览器可以使用前进后退 历史操作
 (defn hook-browser-navigation! []
@@ -138,10 +129,10 @@
     (.setEnabled true))
   (accountant/configure-navigation!
     {:nav-handler
-     (fn [path]
-       (secretary/dispatch! path))
+                        (fn [path]
+                          (secretary/dispatch! path))
      :path-exists?
-     (fn [path]
-       (secretary/locate-route path))
+                        (fn [path]
+                          (secretary/locate-route path))
      :reload-same-path? true})
   (accountant/dispatch-current!))

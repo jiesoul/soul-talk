@@ -2,7 +2,7 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.pages.common :as c]
-            [taoensso.timbre :as log])
+            [re-com.core :refer [input-text single-dropdown]])
   (:import [goog.History]))
 
 (defn posts-list []
@@ -65,12 +65,12 @@
     [user (subscribe [:user])
      categories (subscribe [:categories])
      error (subscribe [:error])]
-    (let [edited-post (-> {:author (:name @user)
+    (let [edited-post (-> {:author  (:name @user)
                            :publish 0}
                         r/atom)
-          title (r/cursor edited-post [:title])
-          content (r/cursor edited-post [:content])
-          category (r/cursor edited-post [:category])]
+          title       (r/cursor edited-post [:title])
+          content     (r/cursor edited-post [:content])
+          category    (r/cursor edited-post [:category])]
       [:div.container-fluid
        [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
         [:a.navbar-brand
@@ -113,65 +113,74 @@
              "保存"]]]]]]])))
 
 (defn edit-post-page []
-  (r/with-let
-    [user (subscribe [:user])
-     original-post (subscribe [:post])
-     error (subscribe [:error])]
-    (fn []
-      (let [categories  (subscribe [:categories])
-            edited-post (-> @original-post
-                          (update :title #(or % ""))
-                          (update :content #(or % ""))
-                          (update :category #(or % ""))
-                          (update :author #(or % (:name @user)))
-                          (update :publish #(or % 0))
-                          r/atom)
-            title       (r/cursor edited-post [:title])
-            content     (r/cursor edited-post [:content])
-            category    (r/cursor edited-post [:category])]
-        [:div.container-fluid
-         [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
-          [:a.navbar-brand
-           {:href "#"} "Soul Talk"]
-          [:div.container
-           [:ul.navbar-nav
-            [:li.nav-item.active
-             [:h6.title
-              (if @original-post "修改文章" "写文章")]]]]]
-         [:div.container
-          [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
-           [:div
-            [:div.form-group
-             [:input.form-control.input-lg
-              {:type        :text
-               :placeholder "请输入标题"
-               :value       @title
-               :on-change   #(reset! title (-> % .-target .-value))}]]
-            [:div.form-inline
-             [:div.form-row.col-auto.my-1
-              [c/upload-md-modal]]]
-            [:div.form-group
-             [c/editor content]]
-            (when @error
-              [:div.alert.alert-danger @error])
-            [:div.form-inline
-             [:div.form-group
-              [:select#category.mr-2.form-control.form-control-sm
-               {:on-change    #(reset! category (-> % .-target .-value))
-                :defaultValue @category}
-               [:option "请选择一个分类"]
-               (doall
-                 (for [{:keys [id name]} @categories]
-                   ^{:key id}
-                   [:option
-                    {:value id}
-                    name]))]
-              [:a.btn.btn-outline-primary.btn-sm.mr-2
-               {:on-click
-                (if @original-post
-                  #(dispatch [:posts/edit @edited-post])
-                  #(dispatch [:posts/add @edited-post]))}
-               "保存"]]]]]]]))))
+  (let [user          (subscribe [:user])
+        original-post (subscribe [:post])
+        error         (subscribe [:error])
+        categories    (subscribe [:categories])
+        edited-post   (-> @original-post
+                        (update :title #(or % ""))
+                        (update :content #(or % ""))
+                        (update :category #(or % ""))
+                        (update :author #(or % (:name @user)))
+                        (update :publish #(or % 0))
+                        r/atom)
+        title         (r/cursor edited-post [:title])
+        content       (r/cursor edited-post [:content])
+        category      (r/cursor edited-post [:category])
+        c-list #(mapv (fn [{:keys [id name]}] {:id id :label name})
+                  @categories)]
+    (js/console.log @categories)
+    (js/console.log c-list)
+    [:div.container-fluid
+     [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
+      [:a.navbar-brand
+       {:href "#"} "Soul Talk"]
+      [:div.container
+       [:ul.navbar-nav
+        [:li.nav-item.active
+         [:h6.title
+          (if @original-post "修改文章" "写文章")]]]]]
+     [:div.container
+      [:main#main.col-md-12.ml-sm-auto.col-lg-12.px-4
+       [:div
+        [:div.form-group
+         [input-text
+          :model title
+          :on-change #(reset! title %)
+          :placeholder "标题"
+          :width "100%"
+          :class "form-control input-lg"]]
+        [:div.form-inline
+         [:div.form-row.col-auto.my-1
+          [c/upload-md-modal]]]
+        [:div.form-group
+         [c/editor content]]
+        (when @error
+          [:div.alert.alert-danger @error])
+        [:div.form-inline
+         [:div.form-group
+          [single-dropdown
+           :model category
+           :choices (c-list)
+           :placeholder "分类"
+           :on-change #(reset! category %)
+           :class "mr-2 form-control form-control-sm"]
+          [:select#category.mr-2.form-control.form-control-sm
+           {:on-change #(reset! category (-> % .-target .-value))
+            :value     @category}
+           [:option "请选择一个分类"]
+           (doall
+             (for [{:keys [id name]} @categories]
+               ^{:key id}
+               [:option
+                {:value id}
+                name]))]
+          [:a.btn.btn-outline-primary.btn-sm.mr-2
+           {:on-click
+            (if @original-post
+              #(dispatch [:posts/edit @edited-post])
+              #(dispatch [:posts/add @edited-post]))}
+           "保存"]]]]]]]))
 
 
 (defn post-view-page []

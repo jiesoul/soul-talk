@@ -1,6 +1,5 @@
 (ns soul-talk.ajax
-  (:require [ajax.core :as ajax]
-            [taoensso.timbre :as log]))
+  (:require [ajax.core :as ajax]))
 
 (defn default-headers [request]
   (-> request
