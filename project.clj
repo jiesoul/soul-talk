@@ -14,7 +14,7 @@
                  [tolitius/mount-up "0.1.1"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [compojure "1.6.1"]
-                 [metosin/compojure-api "2.0.0-alpha25"]
+                 [metosin/compojure-api "2.0.0-alpha28"]
                  [metosin/spec-tools "0.7.1"]
                  [metosin/ring-http-response "0.9.0"]
                  [metosin/muuntaja "0.6.0"]
@@ -38,7 +38,6 @@
                  [re-frame "0.10.6"]
                  [re-com "2.2.0"]
                  [venantius/accountant "0.2.4"]
-                 [reagent-utils "0.3.1"]
                  [cljs-ajax "0.7.4"]
                  [cprop "0.1.13"]]
 
