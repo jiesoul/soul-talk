@@ -87,7 +87,8 @@
 
 (defn editor [text]
   (r/create-class
-    {:component-did-mount
+    {:display-name "md-editor"
+     :component-did-mount
      #(let [editor (js/SimpleMDE.
                      (clj->js
                        {:display-name    "md-editor"

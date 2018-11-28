@@ -149,9 +149,9 @@
                              :value           @text}))
             hints-shown (atom false)]
         (do
-          (inject-editor-implementation editor)
-          (editor-set-shortcut (-> editor .codemirror))
-          (add-watch hints :watch-hints (show-hint (-> editor .-codemirror)))
+          ;(inject-editor-implementation editor)
+          ;(editor-set-shortcut (-> editor .codemirror))
+          ;(add-watch hints :watch-hints (show-hint (-> editor .-codemirror)))
           (-> editor .-codemirror (.on "change" (fn [] (reset! text (.value editor)))))
           (-> editor .-codemirror (.on "change" (fn [] (when @hints-shown (sent-hint-request (-> editor .-codemirror))))))
           (-> editor .-codemirror (.on "startCompletion" (fn [] (reset! hints-shown true))))

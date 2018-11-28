@@ -2,6 +2,7 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.pages.common :as c]
+            [soul-talk.widgets.md-editor :refer [editor]]
             [re-com.core :refer [input-text single-dropdown]]))
 
 (defn posts-list []
@@ -113,22 +114,23 @@
 (defn edit-post-page []
   (r/with-let [user (subscribe [:user])
                original-post (subscribe [:post])
-               error (subscribe [:error])]
+               error (subscribe [:error])
+               categories  (subscribe [:categories])
+               edited-post (-> @original-post
+                             (update :title #(or % ""))
+                             (update :content #(or % ""))
+                             (update :category #(or % ""))
+                             (update :author #(or % (:name @user)))
+                             (update :publish #(or % 0))
+                             r/atom)
+               title       (r/cursor edited-post [:title])
+               content     (r/cursor edited-post [:content])
+               category    (r/cursor edited-post [:category])
+               c-list      #(mapv
+                              (fn [{:keys [id name]}] {:id id :label name})
+                              @categories)]
     (fn []
-      (let [edited-post (-> @original-post
-                          (update :title #(or % ""))
-                          (update :content #(or % ""))
-                          (update :category #(or % ""))
-                          (update :author #(or % (:name @user)))
-                          (update :publish #(or % 0))
-                          r/atom)
-            title       (r/cursor edited-post [:title])
-            content     (r/cursor edited-post [:content])
-            category    (r/cursor edited-post [:category])
-            categories  (subscribe [:categories])
-            c-list      #(mapv
-                           (fn [{:keys [id name]}] {:id id :label name})
-                           @categories)]
+      (let []
         (js/console.log @categories)
         (js/console.log @original-post)
         (js/console.log @edited-post)
@@ -155,7 +157,7 @@
              [:div.form-row.col-auto.my-1
               [c/upload-md-modal]]]
             [:div.form-group
-             [c/editor content]]
+             [editor content title]]
             (when @error
               [:div.alert.alert-danger @error])
             [:div.form-inline

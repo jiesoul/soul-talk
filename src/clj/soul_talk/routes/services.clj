@@ -11,7 +11,12 @@
             [soul-talk.routes.category :as category]
             [soul-talk.routes.tag :as tag]
             [soul-talk.routes.posts :as posts]
-            [soul-talk.routes.files :as files]))
+            [soul-talk.routes.files :as files]
+            [expound.alpha :as expound]))
+
+(def printer
+  (expound/custom-printer
+    {:theme :figwheel-theme :print-spec? false}))
 
 (defn admin?
   [request]
