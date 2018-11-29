@@ -2,13 +2,19 @@
   (:require-macros)
   (:require [re-frame.core :refer [dispatch subscribe]]
             [reagent.core :as r]
+            [baking-soda.core :as bs]
             [reagent-modals.modals :as rm]
             [cljsjs.showdown]))
 
 (defn loading-throber []
   (let [loading? (subscribe [:loading?])]
-    (when @loading?
-      )))
+    (fn []
+      (when @loading?
+        [:div
+         [:div "sfasfasdf"]
+         [bs/Modal {:is-open true}
+          [bs/ModalBody
+           "正在加载中....."]]]))))
 
 (defn error-modal []
   (when-let [error @(subscribe [:error])]

@@ -19,7 +19,8 @@
                                     (when success-event
                                       (dispatch (if ignore-response-body
                                                   success-event
-                                                  (conj success-event response)))))
+                                                  (conj success-event response))))
+                                    (dispatch [:unset-loading]))
                    :error-handler (fn [error]
                                     (dispatch (conj error-event error))
                                     (dispatch [:unset-loading]))}

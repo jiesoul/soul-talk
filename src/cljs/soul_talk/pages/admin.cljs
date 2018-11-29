@@ -1,5 +1,6 @@
 (ns soul-talk.pages.admin
   (:require [reagent.core :as r]
+            [baking-soda.core :as bs]
             [re-frame.core :refer [subscribe dispatch]]))
 
 (defonce main-fields (r/atom nil))
@@ -128,9 +129,56 @@
    [message]
    [message-input]])
 
+(defn greet-number [num]
+  [:div (str "Hello #" num)])
+
+(defn more-button [counter]
+  [:div {:class "button-class"
+         :on-click #(swap! counter inc)}]
+  "more")
+
+(defn parent []
+  (let [counter (r/atom 1)]
+    (fn parent-render []
+      [:div
+       [more-button counter]
+       [greet-number @counter]])))
+
+(defonce app-state (r/atom {:show-modal? false}))
+
+(defn toggle! [ratom]
+  (swap! ratom update :show-modal? not))
+
+(defn modal-example [ratom opts]
+  (let [{:keys [button-label class]} opts
+        show-modals? (get @ratom :show-modal? false)]
+    [:div
+     [bs/Button {:color "dangger"
+                 :on-click #(toggle! ratom)}
+      button-label]
+
+     [bs/Modal {:is-open show-modals?
+                :toggle #(toggle! ratom)
+                :class class}
+      [bs/ModalHeader
+       "Modal title"]
+
+      [bs/ModalBody
+       "Lorem ipsum dolor sit"]
+
+      [bs/ModalFooter
+       [bs/Button {:color "primary"
+                   :on-click #(toggle! ratom)}
+        "Do Someting"]
+       [bs/Button {:color "secondary"
+                   :on-click #(toggle! ratom)}
+        "Cancel"]]]]))
+
 (defn main-component []
   (fn []
     [:div
+     [modal-example app-state {:button-label "Click Me"
+                               :class "mymodal"}]
      [table-component @table-data]]))
 
 (reset! table-data [{:title "title1"

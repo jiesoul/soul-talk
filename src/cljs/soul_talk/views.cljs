@@ -141,5 +141,6 @@
   (r/with-let [active-page (subscribe [:active-page])
                user (subscribe [:user])]
     [:div
+     [loading-throber]
      [error-modal]
      (pages @active-page @user)]))
