@@ -42,11 +42,12 @@
   (fn [db _]
     (dissoc db :admin/posts)))
 
-(reg-event-db
+(reg-event-fx
   :posts/add-ok
-  (fn [db [_ {:keys [post]}]]
+  (fn [{:keys [db]} [_ {:keys [post]}]]
     (js/alert "add successful!!")
-    (assoc db :admin/posts conj post)))
+    {:db (assoc db :admin/posts conj post)
+     :reload-page true}))
 
 (reg-event-fx
   :posts/add-error
@@ -141,11 +142,10 @@
 (reg-event-fx
   :posts/delete
   (fn [_ [_ id]]
-    (if (js/confirm "你确定要删除这篇文章吗？")
-      {:http {:method        DELETE
-              :url           (str "/api/admin/posts/" id)
-              :success-event [:posts/delete-ok]
-              :error-event   [:posts/delete-error]}})))
+    {:http {:method        DELETE
+            :url           (str "/api/admin/posts/" id)
+            :success-event [:posts/delete-ok]
+            :error-event   [:posts/delete-error]}}))
 
 (reg-event-fx
   :posts/publish-ok

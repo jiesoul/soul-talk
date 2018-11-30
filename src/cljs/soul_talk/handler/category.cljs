@@ -20,11 +20,10 @@
   (fn [db _]
     (dissoc db :category)))
 
-(reg-event-fx
+(reg-event-db
   :categories/add-ok
-  (fn [_ [_ {:keys [category]}]]
-    (js/alert "Add successful")
-    {:reload-page true}))
+  (fn [db [_ {:keys [category]}]]
+    (assoc db :success (str "Add " (:name category) " successful!"))))
 
 (reg-event-fx
   :categories/add
@@ -68,9 +67,9 @@
 
 (reg-event-fx
   :categories/delete-ok
-  (fn [_ _]
-    (js/alert "delete successful!")
-    {:reload-page true}))
+  (fn [{db :db} _]
+    {:db (assoc db :success "delete successful!")
+     :reload-page true}))
 
 (reg-event-fx
   :categories/delete-error
@@ -79,9 +78,8 @@
 
 (reg-event-fx
   :categories/delete
-  (fn [_ [_ {:keys [id name]}]]
-    (if (js/confirm (str "你确定要删除分类 " name " 吗？"))
-      {:http {:method        DELETE
-              :url           (str "/api/admin/categories/" id)
-              :success-event [:categories/delete-ok]
-              :error-event   [:categories/delete-error]}})))
+  (fn [_ [_ {:keys [id]}]]
+    {:http {:method        DELETE
+            :url           (str "/api/admin/categories/" id)
+            :success-event [:categories/delete-ok]
+            :error-event   [:categories/delete-error]}}))

@@ -2,7 +2,7 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.routes :refer [logged-in? navigate!]]
-            [soul-talk.pages.common :refer [loading-throber error-modal]]
+            [soul-talk.pages.common :refer [loading-throber error-modal success-modal]]
             [soul-talk.pages.home :refer [home-page]]
             [soul-talk.pages.admin :refer [main-component]]
             [soul-talk.pages.auth :refer [login-page register-page]]
@@ -142,5 +142,6 @@
                user (subscribe [:user])]
     [:div
      [loading-throber]
-     [error-modal]
+     [success-modal]
+     ;[error-modal]
      (pages @active-page @user)]))

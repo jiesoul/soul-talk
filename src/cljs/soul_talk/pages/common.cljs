@@ -8,17 +8,63 @@
 
 (defn loading-throber []
   (let [loading? (subscribe [:loading?])]
-    (fn []
-      (when @loading?
-        [:div
-         [:div "sfasfasdf"]
-         [bs/Modal {:is-open true}
-          [bs/ModalBody
-           "正在加载中....."]]]))))
+    (when @loading?
+      [bs/Modal {:is-open true}
+       [bs/ModalBody
+        [:div.spinner
+         [:div.bounce1]
+         [:div.bounce2]
+         [:div.bounce3]]]])))
+
+(defn success-modal []
+  (when-let [success @(subscribe [:success])]
+    [bs/Modal {:is-open (boolean success)}
+     [bs/ModalBody
+      [:p success]]
+     [bs/ModalFooter
+      [bs/Button {:color "primary"
+                  :on-click #(dispatch [:set-success nil])}
+       "Ok"]]]))
 
 (defn error-modal []
   (when-let [error @(subscribe [:error])]
-    (rm/modal-window)))
+    [bs/Modal {:is-open (boolean error)}
+     [bs/ModalHeader "An error has occured"]
+     [bs/ModalBody
+      [:p error]]
+     [bs/ModalFooter
+      [bs/Button {:color    "primary"
+                  :on-click #(dispatch [:set-error nil])}
+       "Ok"]]]))
+
+(defn validation-modal [title errors]
+  [bs/Modal {:is-open (boolean @errors)}
+   [bs/ModalHeader title]
+   [bs/ModalBody
+    [:ul
+     (doall
+       (for [[_ error] @errors]
+         ^{:key error}
+         [:li error]))]]
+   [bs/ModalFooter
+    [:button.btn.btn-sm.btn-danger
+     {:on-click #(reset! errors nil)}
+     "Close"]]])
+
+(defn confirm-modal
+  [title confirm-open? action action-label]
+  [bs/Modal {:is-open @confirm-open?}
+   [bs/ModalHeader title]
+   [bs/ModalFooter
+    [:div.btn-toolbar
+     [:button.btn.btn-sm.btn-danger
+      {:on-click #(reset! confirm-open? false)}
+      "Cancel"]
+     [:button.btn.btn-sm.btn-success
+      {:on-click #(do
+                    (reset! confirm-open? false)
+                    (action))}
+      action-label]]]])
 
 (defn input [type id placeholder fields]
   (fn []

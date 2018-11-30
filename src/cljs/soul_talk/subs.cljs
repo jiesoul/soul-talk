@@ -18,6 +18,8 @@
 
 (reg-sub :error query)
 
+(reg-sub :success query)
+
 (reg-sub :login-events query)
 
 (reg-sub :loading? query)

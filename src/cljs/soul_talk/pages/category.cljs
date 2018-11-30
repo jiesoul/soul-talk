@@ -6,27 +6,32 @@
 
 (defn categories-list []
   (r/with-let [categories (subscribe [:categories])
-               user (subscribe [:user])]
-    (fn []
-      (when @user
-        [:table.table.table-striped
-         [:thead
-          [:tr
-           [:th "name"]
-           [:th "action"]]]
-         [:tbody
-          (doall
-            (for [{:keys [id name] :as category} @categories]
-              ^{:key id}
-              [:tr
-               [:td name]
-               [:td
-                [:a.btn.btn-outline-primary.btn-sm.mr-2
-                 {:href   (str "/categories/" id "/edit")}
-                 "修改"]
-                [:a.btn.btn-outline-primary.btn-sm
-                 {:on-click #(dispatch [:categories/delete category])}
-                 "删除"]]]))]]))))
+               user (subscribe [:user])
+               confirm-open? (r/atom false)]
+    (when @user
+      [:table.table.table-striped
+       [:thead
+        [:tr
+         [:th "name"]
+         [:th "action"]]]
+       [:tbody
+        (doall
+          (for [{:keys [id name] :as category} @categories]
+            ^{:key id}
+            [:tr
+             [:td name]
+             [:td
+              [:a.btn.btn-outline-primary.btn-sm.mr-2
+               {:href (str "/categories/" id "/edit")}
+               "修改"]
+              [:a.btn.btn-outline-primary.btn-sm
+               {:on-click #(reset! confirm-open? true)}
+               "Delete"
+               [c/confirm-modal
+                "Are you sure wish to delete the category?"
+                confirm-open?
+                #(dispatch [:categories/delete category])
+                "Delete"]]]]))]])))
 
 (defn categories-page []
   (r/with-let [user (subscribe [:user])]

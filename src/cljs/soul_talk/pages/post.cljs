@@ -3,10 +3,12 @@
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.pages.common :as c]
             [soul-talk.widgets.md-editor :refer [editor]]
-            [re-com.core :refer [input-text single-dropdown]]))
+            [re-com.core :refer [input-text single-dropdown]]
+            [baking-soda.core :as bs]))
 
 (defn posts-list []
-  (r/with-let [posts (subscribe [:admin/posts])]
+  (r/with-let [posts (subscribe [:admin/posts])
+               confirm-open? (r/atom false)]
     (fn []
       [:table.table.table-striped.text-center.table-hover.table-sm
        [:thead
@@ -43,8 +45,13 @@
                 :href   (str "/posts/" id "/edit")}
                "修改"]
               [:a.btn.btn-outline-primary.btn-sm.mr-2
-               {:on-click #(dispatch [:posts/delete id])}
-               "删除"]]]))]])))
+               {:on-click #(reset! confirm-open? true)}
+               "删除"
+               [c/confirm-modal
+                "Are you sure wish to delete the post?"
+                confirm-open?
+                #(dispatch [:posts/delete id])
+                "Delete"]]]]))]])))
 
 (defn posts-page []
   (fn []
@@ -162,12 +169,6 @@
               [:div.alert.alert-danger @error])
             [:div.form-inline
              [:div.form-group
-              [single-dropdown
-               :model category
-               :choices (c-list)
-               :placeholder "分类"
-               :on-change #(reset! category %)
-               :class "mr-2 form-control form-control-sm"]
               [:select#category.mr-2.form-control.form-control-sm
                {:on-change #(reset! category (-> % .-target .-value))
                 :value     @category}
