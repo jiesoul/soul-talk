@@ -3,5 +3,5 @@
 
 (reg-cofx
   :now
-  (fn [coffects _]
-    (assoc coffects :now (js/Date.))))
+  (fn [cofx _]
+    (assoc cofx :now (js/Date.))))
