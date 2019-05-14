@@ -1,2 +1,46 @@
 {:deps
- {org.clojure/clojurescript {:mvn/version "1.10.339"}}}
+ {org.clojure/clojure {:mvn/version "1.10.0"}
+  org.clojure/core.async {:mvn/version "0.4.474"}
+  org.clojure/clojurescript {:mvn/version "1.10.520"}
+  org.clojure/java.jdbc {:mvn/version "0.7.8"}
+  org.clojure/tools.cli {:mvn/version "0.3.5"}
+  org.clojure/tools.namespace {:mvn/version "0.2.11"}
+  ring {:mvn/version "1.7.1"}
+  ring/ring-defaults {:mvn/version "0.3.2"}
+  metosin/ring-http-response {:mvn/version "0.9.1"}
+  metosin/muuntaja {:mvn/version "0.6.4"}
+  com.taoensso/timbre {:mvn/version "4.10.0"}
+  compojure {:mvn/version "1.6.1"}
+  metosin/compojure-api {:mvn/version "2.0.0-SNAPSHOT"}
+  expound {:mvn/version "0.7.2"}
+  hikari-cp {:mvn/version "2.7.1"}
+  ragtime {:mvn/version "0.8.0"}
+  mount {:mvn/version "0.1.16"}
+  tolitius/mount-up {:mvn/version "0.1.2"}
+  bouncer {:mvn/version "1.0.1"}
+  buddy {:mvn/version "2.0.0"}
+  clojure.java-time {:mvn/version "0.3.2"}
+  cheshire {:mvn/version "5.8.1"}
+  selmer {:mvn/version "1.12.12"}
+  org.postgresql/postgresql {:mvn/version "42.2.5"}
+  baking-soda {:mvn/version "0.2.0"}
+  reagent {:mvn/version "0.9.0-SNAPSHOT"}
+  org.clojars.frozenlock/reagent-modals {:mvn/version "0.2.8"}
+  cljsjs/react {:mvn/version "16.8.3-0"}
+  cljsjs/react-dom {:mvn/version "16.8.3-0"}
+  cljsjs/react-transition-group {:mvn/version "2.4.0-0"}
+  cljsjs/react-popper {:mvn/version "1.0.2-0"}
+  cljsjs/showdown {:mvn/version "1.8.6-0"}
+  cljsjs/reactstrap {:mvn/version "7.0.0-0"}
+  cljsjs/moment {:mvn/version "2.24.0-0"}
+  cljsjs/antd {:mvn/version "3.16.4-0"}
+  secretary {:mvn/version "2.0.0.1-260a59"}
+  re-frame {:mvn/version "0.10.6"}
+  venantius/accountant {:mvn/version "0.2.4"}
+  cljs-ajax {:mvn/version "0.8.0"}
+  cprop {:mvn/version "0.1.13"}
+  com.bhauman/figwheel-main {:mvn/version "0.2.0"}
+  com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}
+
+ :aliases {:fig {:main-opts ["-m" "figwheel.main"]}}
+ :paths ["src" "src-cljs" "src-cljc" "resources" "target"]}

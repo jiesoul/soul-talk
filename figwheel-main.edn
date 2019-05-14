@@ -1,0 +1,2 @@
+{:watch-dirs ["src-cljs"]
+ :css-dirs ["resources/public/css"]}

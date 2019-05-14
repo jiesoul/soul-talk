@@ -2,8 +2,8 @@
   :description "self site"
   :url "http://github.com/jiesoul/soul-talk"
 
-  :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.339"]
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [org.clojure/clojurescript "1.10.520"]
                  [org.clojure/java.jdbc "0.7.8"]
                  [org.postgresql/postgresql "42.2.4"]
                  [org.clojure/tools.cli "0.3.1"]
@@ -61,9 +61,9 @@
 
   :ring {:handler soul-talk.handler/app}
 
-  :source-paths ["src/clj" "src/cljc"]
+  :source-paths ["src" "src-cljc"]
   :resource-paths ["resources"]
-  :test-paths ["test/clj" "test/cljs"]
+  :test-paths ["test-clj" "test-cljs"]
 
 
   :clean-targets                                            ;; 清理临时文件
@@ -86,7 +86,7 @@
          :cljsbuild
          {:builds
           {:prod
-           {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
+           {:source-paths ["src-cljs" "src-cljc" "env-prod-cljs"]
             :compiler {:output-to "resources/public/js/main.js"
                        :externs ["react/externs/react.js"
                                  "public/jslib/simplemde.min.js"
@@ -100,14 +100,13 @@
 
          :aot :all
          :uberjar-name "soul-talk.jar"
-         :source-paths ["env/prod/clj"]
-         :resource-paths ["env/prod/resources"]}
+         :source-paths ["env-prod-clj"]
+         :resource-paths ["env-prod-resources"]}
 
-   :dev {:source-paths   ["env/dev/clj"]
-         :resource-paths ["env/dev/resources"]
+   :dev {:source-paths   ["env-dev-clj"]
+         :resource-paths ["env-dev-resources"]
          :repl-options   {:init-ns user}
-         :dependencies   [[ring/ring-devel "1.6.3"]
-                          [ring/ring-mock "0.3.2"]
+         :dependencies   [[ring/ring-mock "0.4.0"]
                           [pjstadig/humane-test-output "0.8.3"]
                           [figwheel-sidecar "0.5.16"]
                           [binaryage/devtools "0.9.10"]
@@ -123,7 +122,7 @@
          :cljsbuild
                          {:builds
                           {:dev {
-                                 :source-paths ["src/cljs" "src/cljc" "env/dev/cljs"] ;; 源代码目录
+                                 :source-paths ["src-cljs" "src-cljc" "env-dev-cljs"] ;; 源代码目录
                                  :compiler     {:main          "soul-talk.app" ;; 主命名空间
                                                 :asset-path    "/js/out" ;; 加载文件的地方 和 临时目录相关
                                                 :output-to     "resources/public/js/main.js" ;; 主文件地方
@@ -135,7 +134,7 @@
                            :test
                                 {
                                  :figwheel     {:devcards true}
-                                 :source-paths ["src/cljs" "src/cljc" "test/cljs"]
+                                 :source-paths ["src-cljs" "src-cljc" "test-cljs"]
                                  :compiler     {:output-to     "target/test.js"
                                                 :main          soul-talk.runner
                                                 :optimizations :none}}}}}})

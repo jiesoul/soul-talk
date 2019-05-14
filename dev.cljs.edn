@@ -1,0 +1,2 @@
+^{:watch-dirs ["src-cljs"]}
+{:main soul-talk.core}
