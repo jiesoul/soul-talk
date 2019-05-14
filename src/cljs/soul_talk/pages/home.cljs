@@ -1,7 +1,9 @@
 (ns soul-talk.pages.home
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe]]
-            [soul-talk.pages.common :as c])
+            [soul-talk.pages.common :as c]
+            [ant-man.core :as ant-man]
+            [antd :as antd])
   (:import [goog.history.Html5History]))
 
 (defn blog-header-component []
@@ -83,6 +85,10 @@
   (fn []
     [:div.p-3
      [:h4.font-italic "联系我"]
+     [:> antd/Input
+      {:value ""
+       :id "idddd"
+       :placeholder "test you"}]
      [:ol.list-unsty
       [:li [:a {:href "https://github.com/jiesoul"
                 :target "_blank"}

@@ -4,7 +4,7 @@
 
 (def undos (r/atom ()))
 
-(defn undo-interceptor
+(def undo-interceptor
   (rf/->interceptor
     :id :undo
     :before (fn [context]
