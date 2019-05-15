@@ -11,7 +11,7 @@
   metosin/muuntaja {:mvn/version "0.6.4"}
   com.taoensso/timbre {:mvn/version "4.10.0"}
   compojure {:mvn/version "1.6.1"}
-  metosin/compojure-api {:mvn/version "2.0.0-SNAPSHOT"}
+  metosin/compojure-api {:mvn/version "2.0.0-alpha30"}
   expound {:mvn/version "0.7.2"}
   hikari-cp {:mvn/version "2.7.1"}
   ragtime {:mvn/version "0.8.0"}
@@ -41,11 +41,12 @@
   cljs-ajax {:mvn/version "0.8.0"}
   cprop {:mvn/version "0.1.13"}
   com.bhauman/figwheel-main {:mvn/version "0.2.0"}
-  com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}
+  com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
+  ring-webjars {:mvn/version "0.2.0"}}
 
  :aliases {:fig {:main-opts ["-m" "figwheel.main"]}
 
-           :test {:extra-paths ["test"]}}
+           :test {:extra-paths ["test/clj" "test/cljs"]}}
  :paths ["src/clj" "src/cljs" "src/cljc" "resources" "target"
          "env/dev/clj" "env/dev/cljs" "env/dev/resources"
          "env/prod/clj" "env/prod/cljs" "env/prod/resources"]}

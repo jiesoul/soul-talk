@@ -78,6 +78,10 @@
    :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
    :css-dirs         ["resources/public/css"]}
 
+  ;:aliases
+  ;{"fig" ["trampoline" "run" "-m" "figwheel.main"]
+  ; "build" ["trampoline" "run" "-m" "figwheel.main" "-b" "boodle"]}
+
   :docker {:image-name "jiesoul/soul-talk"}
 
 :profiles
@@ -98,7 +102,6 @@
                                                             :non-standard-jsdoc :off}
                                          :optimizations    :advanced
                                          :pretty-print     false}}}}
-
        :aot            :all
        :uberjar-name   "soul-talk.jar"
        :source-paths   ["env/prod/clj"]
@@ -111,6 +114,8 @@
                         [ring/ring-mock "0.3.2"]
                         [pjstadig/humane-test-output "0.8.3"]
                         [figwheel-sidecar "0.5.16"]
+                        ;[com.bhauman/figwheel-main "0.2.0"]
+                        ;[com.bhauman/rebel-readline-cljs "0.1.4"]
                         [binaryage/devtools "0.9.10"]
                         [re-frisk "0.5.4"]
                         [devcards "0.2.5"]

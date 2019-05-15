@@ -1,2 +1,2 @@
-^{:watch-dirs ["src/cljs" "env/dev/cljs"]}
+^{:watch-dirs ["src/cljs" "env/dev/cljs" "test/cljs"]}
 {:main soul-talk.app}
