@@ -57,13 +57,14 @@
 
   :plugins [[lein-ring "0.12.4"]
             [lein-cljsbuild "1.1.7"]
+            [lein-figwheel "0.5.8"]
             [io.sarnowski/lein-docker "1.1.0"]]
 
   :ring {:handler soul-talk.handler/app}
 
-  :source-paths ["src" "src-cljc"]
+  :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources"]
-  :test-paths ["test-clj" "test-cljs"]
+  :test-paths ["test/clj" "test/cljs"]
 
 
   :clean-targets                                            ;; 清理临时文件
@@ -75,66 +76,67 @@
   :figwheel
   {:http-server-root "public"
    :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
-   :css-dirs ["resources/public/css"]}
+   :css-dirs         ["resources/public/css"]}
 
   :docker {:image-name "jiesoul/soul-talk"}
 
-  :profiles
-  {:uberjar
-        {:omit-source true
-         :prep-tasks ["compile" ["cljsbuild" "once" "prod"]]
-         :cljsbuild
-         {:builds
-          {:prod
-           {:source-paths ["src-cljs" "src-cljc" "env-prod-cljs"]
-            :compiler {:output-to "resources/public/js/main.js"
-                       :externs ["react/externs/react.js"
-                                 "public/jslib/simplemde.min.js"
-                                 "public/jslib/highlight.js"
-                                 "public/jslib/codemirror.js"
-                                 "cljsjs/showdown/production/showdown.min.inc.js"]
-                       :closure-warnings {:externs-validation :off
-                                          :non-standard-jsdoc :off}
-                       :optimizations :advanced
-                       :pretty-print false}}}}
+:profiles
+{:uberjar
+      {:omit-source    true
+       :prep-tasks     ["compile" ["cljsbuild" "once" "prod"]]
+       :cljsbuild
+                       {:builds
+                        {:prod
+                         {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
+                          :compiler     {:output-to        "resources/public/js/main.js"
+                                         :externs          ["react/externs/react.js"
+                                                            "public/jslib/simplemde.min.js"
+                                                            "public/jslib/highlight.js"
+                                                            "public/jslib/codemirror.js"
+                                                            "" cljsjs / showdown / production/showdown.min.inc.js]
+                                         :closure-warnings {:externs-validation :off
+                                                            :non-standard-jsdoc :off}
+                                         :optimizations    :advanced
+                                         :pretty-print     false}}}}
 
-         :aot :all
-         :uberjar-name "soul-talk.jar"
-         :source-paths ["env-prod-clj"]
-         :resource-paths ["env-prod-resources"]}
+       :aot            :all
+       :uberjar-name   "soul-talk.jar"
+       :source-paths   ["env/prod/clj"]
+       :resource-paths ["env/prod/resources"]}
 
-   :dev {:source-paths   ["env-dev-clj"]
-         :resource-paths ["env-dev-resources"]
-         :repl-options   {:init-ns user}
-         :dependencies   [[ring/ring-mock "0.4.0"]
-                          [pjstadig/humane-test-output "0.8.3"]
-                          [figwheel-sidecar "0.5.16"]
-                          [binaryage/devtools "0.9.10"]
-                          [re-frisk "0.5.4"]
-                          [devcards "0.2.5"]
-                          [doo "0.1.10"]
-                          [com.cemerick/piggieback "0.2.2"]
-                          [org.clojure/tools.nrepl "0.2.13"]
-                          [org.clojure/test.check "0.9.0"]
-                          [day8.re-frame/re-frame-10x "0.3.3-react16"]]
-         :plugins        [[com.jakemccrary/lein-test-refresh "0.23.0"]
-                          [lein-doo "0.1.10"]]
-         :cljsbuild
-                         {:builds
-                          {:dev {
-                                 :source-paths ["src-cljs" "src-cljc" "env-dev-cljs"] ;; 源代码目录
-                                 :compiler     {:main          "soul-talk.app" ;; 主命名空间
-                                                :asset-path    "/js/out" ;; 加载文件的地方 和 临时目录相关
-                                                :output-to     "resources/public/js/main.js" ;; 主文件地方
-                                                :output-dir    "resources/public/js/out" ;; 临时文件目录
-                                                :optimizations :none
-                                                :source-map    true ;; 源代码
-                                                :pretty-print  true
-                                                :preloads      [re-frisk.preload]}}
-                           :test
-                                {
-                                 :figwheel     {:devcards true}
-                                 :source-paths ["src-cljs" "src-cljc" "test-cljs"]
-                                 :compiler     {:output-to     "target/test.js"
-                                                :main          soul-talk.runner
-                                                :optimizations :none}}}}}})
+ :dev {:source-paths   ["env/dev/clj"]
+       :resource-paths ["env/dev/resources"]
+       :repl-options   {:init-ns user}
+       :dependencies   [[ring/ring-devel "1.6.3"]
+                        [ring/ring-mock "0.3.2"]
+                        [pjstadig/humane-test-output "0.8.3"]
+                        [figwheel-sidecar "0.5.16"]
+                        [binaryage/devtools "0.9.10"]
+                        [re-frisk "0.5.4"]
+                        [devcards "0.2.5"]
+                        [doo "0.1.10"]
+                        [com.cemerick/piggieback "0.2.2"]
+                        [org.clojure/tools.nrepl "0.2.13"]
+                        [org.clojure/test.check "0.9.0"]
+                        [day8.re-frame/re-frame-10x "0.3.3-react16"]]
+       :plugins        [[com.jakemccrary/lein-test-refresh "0.23.0"]
+                        [lein-doo "0.1.10"]]
+       :cljsbuild
+                       {:builds
+                        {:dev {
+                               :source-paths ["src/cljs" "src/cljc" "env/dev/cljs"] ;; 源代码目录
+                               :compiler     {:main          "soul-talk.app" ;; 主命名空间
+                                              :asset-path    "/js/out" ;; 加载文件的地方 和 临时目录相关
+                                              :output-to     "resources/public/js/main.js" ;; 主文件地方
+                                              :output-dir    "resources/public/js/out" ;; 临时文件目录
+                                              :optimizations :none
+                                              :source-map    true ;; 源代码
+                                              :pretty-print  true
+                                              :preloads      [re-frisk.preload]}}
+                         :test
+                              {
+                               :figwheel     {:devcards true}
+                               :source-paths ["src/cljs" "src/cljc" "test/cljs"]
+                               :compiler     {:output-to     "target/test.js"
+                                              :main          soul-talk.runner
+                                              :optimizations :none}}}}}})

@@ -36,11 +36,16 @@
   cljsjs/antd {:mvn/version "3.16.4-0"}
   secretary {:mvn/version "2.0.0.1-260a59"}
   re-frame {:mvn/version "0.10.6"}
+  re-com {:mvn/version "2.5.0"}
   venantius/accountant {:mvn/version "0.2.4"}
   cljs-ajax {:mvn/version "0.8.0"}
   cprop {:mvn/version "0.1.13"}
   com.bhauman/figwheel-main {:mvn/version "0.2.0"}
   com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}
 
- :aliases {:fig {:main-opts ["-m" "figwheel.main"]}}
- :paths ["src" "src-cljs" "src-cljc" "resources" "target"]}
+ :aliases {:fig {:main-opts ["-m" "figwheel.main"]}
+
+           :test {:extra-paths ["test"]}}
+ :paths ["src/clj" "src/cljs" "src/cljc" "resources" "target"
+         "env/dev/clj" "env/dev/cljs" "env/dev/resources"
+         "env/prod/clj" "env/prod/cljs" "env/prod/resources"]}

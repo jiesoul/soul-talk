@@ -44,8 +44,8 @@
   (let [pagination {:page     1
                     :pre-page 3}]
     (home-page-events
-      [:load-posts pagination]
-      [:load-posts-archives])))
+      [[:load-posts pagination]
+       [:load-posts-archives]])))
 
 (secretary/defroute "/login" []
   (run-events [[:set-active-page :login]]))
