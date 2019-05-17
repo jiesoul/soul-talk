@@ -1,4 +1,4 @@
-(ns soul-talk.prod
+(ns soul-talk.app
   (:require [soul-talk.core :as core]))
 
 (set! *print-fn* (fn [& _]))

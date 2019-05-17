@@ -21,6 +21,8 @@
                  [metosin/muuntaja "0.6.0"]
                  [com.taoensso/timbre "4.10.0"]
                  [ring/ring-defaults "0.3.2"]
+                 [ring-cors "0.1.13"]
+                 [toucan "1.12.0"]
                  [bouncer "1.0.1"]
                  [buddy "2.0.0"]
                  [clojure.java-time "0.3.2"]
