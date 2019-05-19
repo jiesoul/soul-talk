@@ -10,6 +10,7 @@
             [buddy.auth.backends.session :refer [session-backend]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
+            [ring.middleware.cors :refer [wrap-cors]]
             [soul-talk.env :refer [defaults]])
   (:import (javax.servlet ServletContext)))
 
@@ -64,6 +65,8 @@
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
+    (wrap-cors :access-control-allow-origin [#".*"]
+                :access-control-allow-methods [:get :post :put :delete])
     wrap-identity
     wrap-webjars
     wrap-flash
