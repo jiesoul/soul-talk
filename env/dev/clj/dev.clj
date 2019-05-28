@@ -1,7 +1,6 @@
 (ns dev
   (:require [clojure.pprint :refer [pprint]]
             [clojure.tools.namespace.repl :as tn]
-            [figwheel :refer [start-fw stop-fw cljs]]
             [soul-talk.config :refer [env]]
             [soul-talk.models.db :refer [*db*]]
             [soul-talk.core]

@@ -4,15 +4,16 @@
             [compojure.api.sweet :refer :all]
             [clojure.spec.alpha :as s]
             [soul-talk.routes.user :as user]
+            [soul-talk.models.auth-model :refer [authenticate-user]]
             [buddy.auth.accessrules :refer [restrict]]
-            [buddy.auth :refer [authenticated?]]
             [compojure.api.meta :refer [restructure-param]]
-            [soul-talk.middleware :refer [wrap-session-auth]]
+            [soul-talk.middleware :refer [wrap-token-auth]]
             [soul-talk.routes.category :as category]
             [soul-talk.routes.tag :as tag]
             [soul-talk.routes.posts :as posts]
             [soul-talk.routes.files :as files]
-            [expound.alpha :as expound]))
+            [expound.alpha :as expound]
+            [taoensso.timbre :as log]))
 
 (def printer
   (expound/custom-printer
@@ -22,12 +23,9 @@
   [request]
   (:identity request))
 
-(defn authenticated [req]
-  (authenticated? req))
-
 (defn admin [req]
-  (and (authenticated? req)
-       (:identity req)))
+  (log/debug "admin request: " (:Authorization (:headers req)))
+  (authenticate-user req))
 
 ;; 错误处理
 (defn access-error [_ val]
@@ -124,8 +122,8 @@
           (posts/get-post id)))
 
       (context "/admin" []
-        :middleware [wrap-session-auth]
-        :auth-rules authenticated?
+        :middleware [wrap-token-auth]
+        :auth-rules admin
         :tags ["admin"]
 
 

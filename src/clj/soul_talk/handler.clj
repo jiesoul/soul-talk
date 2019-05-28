@@ -1,6 +1,5 @@
 (ns soul-talk.handler
   (:require [soul-talk.middleware :as middleware]
-            [soul-talk.layout :as layout]
             [soul-talk.env :refer [defaults]]
             [compojure.route :as route]
             [compojure.core :refer [routes wrap-routes]]
@@ -9,15 +8,8 @@
 
 (def app
   (-> (routes
-        (-> #'home-routes
-          (wrap-routes middleware/wrap-csrf))
-        (-> #'auth-routes
-          (wrap-routes middleware/wrap-csrf)
-          (wrap-routes middleware/wrap-session-auth))
         services-routes
         (route/not-found
-          (:body
-            (layout/error-page
-              {:status 404
-               :title  "页面未找到"}))))
+          {:status 404
+           :title  "页面未找到"}))
     (middleware/wrap-base)))

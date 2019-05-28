@@ -1,10 +1,9 @@
 (ns soul-talk.routes.home
-  (:require [soul-talk.layout :as layout]
-            [compojure.core :refer (defroutes GET)]
+  (:require [compojure.core :refer (defroutes GET)]
             [taoensso.timbre :as log]))
 
 (defn home-page []
-  (layout/render "home.html"))
+  )
 
 (defroutes
   home-routes

@@ -7,7 +7,8 @@
             [compojure.core :refer [defroutes POST GET]]
             [java-time.local :as l]
             [clojure.spec.alpha :as s]
-            [soul-talk.routes.common :refer [handler]]))
+            [soul-talk.routes.common :refer [handler]]
+            [soul-talk.models.auth-model :refer [make-token!]]))
 
 (handler register! [{:keys [session] :as req} user]
   (if-let [error (reg-errors user)]
@@ -44,11 +45,13 @@
         (-> user
           (assoc :last-time (l/local-date-time))
           (user-db/update-login-time))
-        (log/info "user:" email " successfully logged from ip " remote-addr)
-        (-> {:result :ok
-             :user   user}
-          (resp/ok)
-          (assoc :session (assoc session :identity user))))
+        (let [token (first (make-token! (:id user)))]
+          (log/info "user:" email " successfully logged from ip " remote-addr)
+          (-> {:result :ok
+               :user   user
+               :token token}
+            (resp/ok)
+            (assoc :session (assoc session :identity user)))))
       (do
         (log/info "login failed for " email)
         (resp/unauthorized

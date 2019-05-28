@@ -1,9 +1,7 @@
 (ns soul-talk.dev-middleware
-  (:require [ring.middleware.reload :refer [wrap-reload]]
-            [selmer.middleware :refer [wrap-error-page]]))
+  (:require [ring.middleware.reload :refer [wrap-reload]]))
 
 
 (defn wrap-dev [handler]
   (-> handler
-    wrap-reload
-    wrap-error-page))
+    wrap-reload))
