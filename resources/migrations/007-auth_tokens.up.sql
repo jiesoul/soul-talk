@@ -6,4 +6,4 @@ CREATE TABLE auth_tokens (
 CREATE INDEX ON auth_tokens (id, create_at DESC );
 
 
-insert into auth_tokens (id, user_id) values ('ttuy8JElV95vu8DbRF6d6GiUsiLseC3NAMQG1nvqtr8=', 1);
+-- insert into auth_tokens (id, user_id) values ('ttuy8JElV95vu8DbRF6d6GiUsiLseC3NAMQG1nvqtr8=', 1);

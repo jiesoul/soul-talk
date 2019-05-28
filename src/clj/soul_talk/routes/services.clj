@@ -4,42 +4,24 @@
             [compojure.api.sweet :refer :all]
             [clojure.spec.alpha :as s]
             [soul-talk.routes.user :as user]
-            [soul-talk.models.auth-model :refer [authenticate-user]]
-            [buddy.auth.accessrules :refer [restrict]]
             [compojure.api.meta :refer [restructure-param]]
-            [soul-talk.middleware :refer [wrap-token-auth]]
             [soul-talk.routes.category :as category]
             [soul-talk.routes.tag :as tag]
             [soul-talk.routes.posts :as posts]
             [soul-talk.routes.files :as files]
             [expound.alpha :as expound]
+            [soul-talk.middleware :refer [wrap-rule]]
+            [soul-talk.models.auth-model :refer [authenticated]]
             [taoensso.timbre :as log]))
 
 (def printer
   (expound/custom-printer
     {:theme :figwheel-theme :print-spec? false}))
 
-(defn admin?
-  [request]
-  (:identity request))
-
-(defn admin [req]
-  (log/debug "admin request: " (:Authorization (:headers req)))
-  (authenticate-user req))
-
-;; 错误处理
-(defn access-error [_ val]
-  (unauthorized val))
-
-;; 包装处理规则
-(defn wrap-restricted [handler rule]
-  (restrict handler {:handler rule
-                     :on-error access-error}))
-
 ;; 多重方法用来注入中间件
 (defmethod restructure-param :auth-rules
   [_ rule acc]
-  (update-in acc [:middleware] conj [wrap-restricted rule]))
+  (update-in acc [:middleware] conj [wrap-rule rule]))
 
 (s/def ::id int?)
 (s/def ::result keyword?)
@@ -122,8 +104,7 @@
           (posts/get-post id)))
 
       (context "/admin" []
-        :middleware [wrap-token-auth]
-        :auth-rules admin
+        :auth-rules authenticated
         :tags ["admin"]
 
 

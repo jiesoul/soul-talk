@@ -49,9 +49,8 @@
           (log/info "user:" email " successfully logged from ip " remote-addr)
           (-> {:result :ok
                :user   user
-               :token token}
-            (resp/ok)
-            (assoc :session (assoc session :identity user)))))
+               :token  (:id token)}
+            (resp/ok))))
       (do
         (log/info "login failed for " email)
         (resp/unauthorized

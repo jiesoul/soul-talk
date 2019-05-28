@@ -15,18 +15,19 @@
 (defn make-token!
   [user-id]
   (let [token (gen-session-id)]
-    (log/debug "token: " token " user-id: " user-id)
     (sql/insert! *db* :auth_tokens {:id token
                                     :user_id user-id})))
 
 (defn authenticate-token
   [req token]
-  (let [sql-str (str "SELECT user_id FROM auth_tokens "
-                      " WHERE id = ?")]
-    (some-> (sql/query *db* [sql-str token])
+  (let [sql-str (str "SELECT * FROM auth_tokens "
+                      " WHERE id = ?")
+        tokens (sql/query *db* [sql-str token])]
+    (log/debug "Token: " token)
+    (some-> tokens
       first
       :user_id
-      users/select-user)))
+      users/find-by-id)))
 
 (defn unauthorized-handler [req msg]
   {:status 401
@@ -37,9 +38,8 @@
 (def auth-backend (token-backend {:authfn authenticate-token
                                   :unauthorized unauthorized-handler}))
 
-(defn authenticate-user [req]
-  (if (authenticated? req)
-    true
-    (error "User must be authenticated")))
+(defn authenticated [req]
+  (authenticated? req))
 
-(def rules [])
+(defn admin [req]
+  (authenticated? req))
