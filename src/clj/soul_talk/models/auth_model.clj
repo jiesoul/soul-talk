@@ -31,7 +31,7 @@
 
 (defn unauthorized-handler [req msg]
   {:status 401
-   :body {:status :error
+   :body {:result :error
           :message (or msg "User not authorized")}})
 
 
