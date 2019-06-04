@@ -52,7 +52,7 @@
                                  :handler rule}]
                         :on-error error-401})))
 
-;; 默认
+;;
 (defn wrap-defaults [handler]
   (ring-defaults/wrap-defaults
     handler
