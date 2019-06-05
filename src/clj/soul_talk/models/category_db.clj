@@ -16,5 +16,9 @@
   (first
     (sql/query *db* ["select * from categories where id = ?" id])))
 
+(defn get-category-by-name [name]
+  (first
+    (sql/query *db* ["select * from categories where name = ?" name])))
+
 (defn delete-category! [id]
   (sql/delete! *db* :categories ["id = ?" id]))

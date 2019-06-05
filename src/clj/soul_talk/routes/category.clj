@@ -25,10 +25,14 @@
         resp/ok)))
 
 (handler save-category! [category]
-  (let [co (category-db/save-category! category)]
-    (-> {:result :ok
-         :category co}
-      resp/ok)))
+  (if-let [old-cotegory (category-db/get-category-by-name (:name category))]
+    (-> {:result :error
+         :message (str (:name category) "已经存在")}
+      resp/bad-request)
+    (let [co (category-db/save-category! category)]
+      (-> {:result   :ok
+           :category co}
+        resp/ok))))
 
 (handler update-category! [category]
   (let [result (category-db/update-category! category)]

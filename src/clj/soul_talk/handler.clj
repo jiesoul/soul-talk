@@ -4,7 +4,7 @@
             [compojure.route :as route]
             [compojure.core :refer [routes wrap-routes]]
             [soul-talk.routes.home :refer [home-routes auth-routes]]
-            [soul-talk.routes.services :refer [services-routes]]))
+            [soul-talk.services :refer [services-routes]]))
 
 (def app
   (-> (routes

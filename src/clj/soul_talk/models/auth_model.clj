@@ -8,42 +8,38 @@
             [clojure.java.jdbc :as sql]
             [taoensso.timbre :as log]))
 
-;;生成Token
 (defn gen-session-id
   []
   (base64 32))
 
-;; 插入到数据库
 (defn make-token!
   [user-id]
   (let [token (gen-session-id)]
-    (sql/insert! *db* :auth_tokens {:id      token
+    (sql/insert! *db* :auth_tokens {:id token
                                     :user_id user-id})))
-;; 验证函数
+
 (defn authenticate-token
   [req token]
+  (log/debug "auth request: " req)
   (let [sql-str (str "SELECT * FROM auth_tokens "
-                  " WHERE id = ?")
-        tokens  (sql/query *db* [sql-str token])]
-    (log/debug "Token: " token)
+                      " WHERE id = ? and create_at + interval '10 h' > now()")
+        tokens (sql/query *db* [sql-str token])]
     (some-> tokens
       first
       :user_id
       users/find-by-id)))
 
-;; 未通过验证的函数
 (defn unauthorized-handler [req msg]
   {:status 401
-   :body   {:status  :error
-            :message (or msg "User not authorized")}})
+   :body {:result :error
+          :message (or msg "User not authorized")}})
 
-;; 验证配置
-(def auth-backend (token-backend {:authfn       authenticate-token
+
+(def auth-backend (token-backend {:authfn authenticate-token
                                   :unauthorized unauthorized-handler}))
-;; 验证方法
+
 (defn authenticated [req]
   (authenticated? req))
 
-;; api 验证方法
 (defn admin [req]
   (authenticated? req))

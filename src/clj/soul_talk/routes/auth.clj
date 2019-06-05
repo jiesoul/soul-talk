@@ -4,11 +4,12 @@
             [buddy.hashers :as hashers]
             [taoensso.timbre :as log]
             [soul-talk.auth-validate :refer [reg-errors login-errors change-pass-errors]]
-            [compojure.core :refer [defroutes POST GET]]
+            [compojure.core :refer [defroutes POST GET routes]]
             [java-time.local :as l]
-            [clojure.spec.alpha :as s]
             [soul-talk.routes.common :refer [handler]]
-            [soul-talk.models.auth-model :refer [make-token!]]))
+            [soul-talk.models.auth-model :refer [make-token!]]
+            [soul-talk.routes.user :refer [RegUser LoginUser]]))
+
 
 (handler register! [{:keys [session] :as req} user]
   (if-let [error (reg-errors user)]
