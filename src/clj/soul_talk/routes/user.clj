@@ -18,10 +18,13 @@
 
 (def RegUser
   (s/def ::userReg (s/keys :req-un [::email ::password ::pass-confirm])))
+
 (def LoginUser
   (s/def ::userLogin (s/keys :req-un [::email ::password])))
+
 (def ChangePassUser
   (s/def ::userChangePass (s/keys :req-un [::email ::pass-old ::pass-new ::pass-confirm])))
+
 (def User
   (s/def ::User (s/keys :req-un [::email]
                      :opt-un [::name])))

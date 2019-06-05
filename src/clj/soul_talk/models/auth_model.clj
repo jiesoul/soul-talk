@@ -20,10 +20,10 @@
 
 (defn authenticate-token
   [req token]
+  (log/debug "auth request: " req)
   (let [sql-str (str "SELECT * FROM auth_tokens "
-                      " WHERE id = ?")
+                      " WHERE id = ? and create_at + interval '10 h' > now()")
         tokens (sql/query *db* [sql-str token])]
-    (log/debug "Token: " token)
     (some-> tokens
       first
       :user_id

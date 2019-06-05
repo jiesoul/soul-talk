@@ -1,4 +1,4 @@
-(ns soul-talk.routes.services
+(ns soul-talk.services
   (:require [soul-talk.routes.auth :as auth]
             [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
@@ -12,11 +12,19 @@
             [expound.alpha :as expound]
             [soul-talk.middleware :refer [wrap-rule]]
             [soul-talk.models.auth-model :refer [authenticated]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [ring.util.http-response :as response]
+            [compojure.api.exception :as ex]
+            [soul-talk.routes.user :refer [RegUser LoginUser]]))
 
 (def printer
   (expound/custom-printer
     {:theme :figwheel-theme :print-spec? false}))
+
+;; 错误处理
+(defn exception-handler [f type]
+  (fn [^Exception e data request]
+    (f {:message (.getMessage e), :type type})))
 
 ;; 多重方法用来注入中间件
 (defmethod restructure-param :auth-rules
@@ -33,29 +41,39 @@
 (s/def ::pre-page int?)
 (s/def ::Pagination (s/keys :opt-un [::page ::pre-page]))
 
+(def exceptions-config
+  {:handlers {::calm                  (exception-handler response/enhance-your-calm :calm)
+              java.sql.SQLException   (exception-handler response/internal-server-error :sql)
+              ::ex/request-validation (ex/with-logging ex/request-parsing-handler :info)
+              ::ex/default (exception-handler response/internal-server-error :unknown)}})
+
+(def swagger-config
+  {:ui   "/api-docs"
+   :spec "/swagger.json"
+   :data {:info {:title       "Soul Talk API"
+                 :description "public API"}
+          :tags [{:name "api" :description "apis"}]}})
+
+(def api-config
+  {:exceptions exceptions-config
+   :coercion   :spec
+   :swagger swagger-config })
+
 (def services-routes
   (api
-    {:coercion :spec
-     :swagger
-               {:ui   "/api-docs"
-                :spec "/swagger.json"
-                :data {:info     {:title       "Soul Talk API"
-                                  :description "public API"}
-                       :tags     [{:name "api" :description "apis"}]}}}
-
-
+    api-config
     (context "/api" []
       :tags ["api"]
 
       (POST "/register" req
         :return ::Result
-        :body [user user/RegUser]
+        :body [user RegUser]
         :summary "register a new user"
         (auth/register! req user))
 
       (POST "/login" req
         :return ::Result
-        :body [user user/LoginUser]
+        :body [user LoginUser]
         :summary "User Login"
         (auth/login! req user))
 
