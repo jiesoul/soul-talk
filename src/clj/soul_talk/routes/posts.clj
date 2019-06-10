@@ -7,7 +7,7 @@
             [java-time.local :as l]
             [java-time.format :as f]
             [soul-talk.routes.common :refer [handler]]
-            [soul-talk.validate :refer [post-errors]]
+            [soul-talk.post-validate :refer [post-errors]]
             [soul-talk.pagination :as p]))
 
 (s/def ::id string?)

@@ -1,7 +1,7 @@
 (ns soul-talk.routes.user
   (:require [soul-talk.models.user-db :as user-db]
             [ring.util.http-response :as resp]
-            [soul-talk.auth-validate :refer [change-pass-errors]]
+            [soul-talk.user-validate :refer [change-pass-errors]]
             [taoensso.timbre :as log]
             [buddy.hashers :as hashers]
             [soul-talk.routes.common :refer [handler]]
