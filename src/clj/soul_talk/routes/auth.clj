@@ -3,7 +3,7 @@
             [ring.util.http-response :as resp]
             [buddy.hashers :as hashers]
             [taoensso.timbre :as log]
-            [soul-talk.auth-validate :refer [reg-errors login-errors change-pass-errors]]
+            [soul-talk.auth-validate :refer [reg-errors login-errors]]
             [compojure.core :refer [defroutes POST GET routes]]
             [java-time.local :as l]
             [soul-talk.routes.common :refer [handler]]
