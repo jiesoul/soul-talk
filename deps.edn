@@ -26,4 +26,5 @@
 
  :aliases {:dev {:extra-paths ["env/dev/clj" "env/dev/resources"]}
            :test {:extra-paths ["test"]}
-           :prod {:extra-paths ["env/prod/clj" "env/prod/resources"]}}}
+           :prod {:extra-paths ["env/prod/clj" "env/prod/resources"]}
+           :uberjar {:extra-deps {uberdeps {:mvn/version "0.1.1"}}}}}
