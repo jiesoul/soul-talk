@@ -1,5 +1,5 @@
 # 基础依赖
-FROM java:8-alpine
+FROM clojure
 # 个人信息
 MAINTAINER jiesoul <jiesoul@gmail.com>
 
