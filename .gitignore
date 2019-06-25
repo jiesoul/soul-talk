@@ -10,4 +10,6 @@ pom.xml.asc
 .hgignore
 .hg/
 /.idea
+.cpcache/
 soul-talk.iml
+.nrepl-port
