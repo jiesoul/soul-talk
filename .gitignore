@@ -13,3 +13,5 @@ pom.xml.asc
 .cpcache/
 soul-talk.iml
 .nrepl-port
+out/
+log/
