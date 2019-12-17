@@ -28,7 +28,7 @@
   {:status  401
    :headers {}
    :body    {:result  :error
-             :message "Unauthorized"}})
+             :message "未认证或认证过期，请重新登录或者联系管理员."}})
 
 ;; 内部错误
 (defn wrap-internal-error [handler]
