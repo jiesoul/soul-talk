@@ -11,3 +11,7 @@ pom.xml.asc
 .hg/
 /.idea
 soul-talk.iml
+log/
+
+
+

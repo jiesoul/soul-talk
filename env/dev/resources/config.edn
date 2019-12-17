@@ -1,4 +1,4 @@
 {:dev true
  :port 3001
- :database-url "jdbc:postgresql://localhost:5432/soul_talk?user=postgres&password=12345678"
+ :database-url "jdbc:postgresql://localhost:5433/soul_talk?user=jiesoul&password=12345678"
  :migrations "migrations"}
