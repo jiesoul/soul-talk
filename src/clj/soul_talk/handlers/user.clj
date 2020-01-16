@@ -1,22 +1,25 @@
 (ns soul-talk.handlers.user
   (:require [soul-talk.models.user-db :as user-db]
+            [clojure.spec.alpha :as s]
             [ring.util.http-response :as resp]
             [soul-talk.user-validate :refer [change-pass-errors]]
-            [taoensso.timbre :as log]
             [buddy.hashers :as hashers]
             [soul-talk.handlers.common :refer [handler]]
-            [clojure.spec.alpha :as s]
-            [soul-talk.string-utils :as su]))
+            [soul-talk.string-utils :as su]
+            ))
 
-(s/def ::email-type #(su/email? %))
-(s/def ::password (s/and string? #(su/min-length? 8 %)))
+(def email-regex #"^[^@]+@[^@\\.]+[\\.].+")
+(s/def ::email-type (s/and string? #(re-matches email-regex %)))
+(s/def ::password string?)
+(s/def ::pass-confirm string?)
+(s/def ::email string?)
+(s/def ::pass-old string?)
+(s/def ::pass-new string?)
 (s/def ::name string?)
 
 (def User
   (s/def ::User (s/keys :req-un [::email]
                   :opt-un [::name])))
-
-(s/def :pass-confirm ::password)
 
 (def RegUser
   (s/def ::userReg (s/keys :req-un [::email ::password ::pass-confirm])))
