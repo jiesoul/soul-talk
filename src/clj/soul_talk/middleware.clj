@@ -9,7 +9,7 @@
             [buddy.auth.accessrules :refer [wrap-access-rules]]
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
-            [soul-talk.models.auth-model :refer [auth-backend]]
+            [soul-talk.handlers.auth :refer [auth-backend]]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.cors :refer [wrap-cors]]
             [soul-talk.env :refer [defaults]]))

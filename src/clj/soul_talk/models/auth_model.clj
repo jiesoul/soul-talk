@@ -1,8 +1,5 @@
 (ns soul-talk.models.auth-model
-  (:require [buddy.auth.backends.token :refer [token-backend]]
-            [buddy.auth.accessrules :refer [success error]]
-            [buddy.auth :refer [authenticated?]]
-            [crypto.random :refer [base64]]
+  (:require [crypto.random :refer [base64]]
             [soul-talk.models.user-db :as users]
             [soul-talk.models.db :refer [*db*]]
             [clojure.java.jdbc :as sql]
@@ -18,7 +15,7 @@
     (sql/insert! *db* :auth_tokens {:id token
                                     :user_id user-id})))
 
-(defn authenticate-token
+(defn authenticate-token?
   [req token]
   (log/debug "auth request: " req)
   (let [sql-str (str "SELECT * FROM auth_tokens "
@@ -29,17 +26,3 @@
       :user_id
       users/find-by-id)))
 
-(defn unauthorized-handler [req msg]
-  {:status 401
-   :body {:result :error
-          :message (or msg "User not authorized")}})
-
-
-(def auth-backend (token-backend {:authfn authenticate-token
-                                  :unauthorized unauthorized-handler}))
-
-(defn authenticated [req]
-  (authenticated? req))
-
-(defn admin [req]
-  (authenticated? req))
