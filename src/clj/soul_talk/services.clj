@@ -1,26 +1,18 @@
 (ns soul-talk.services
-  (:require [compojure.api.meta :refer [restructure-param]]
-            [soul-talk.middleware :refer [wrap-rule]]
-            [ring.util.http-response :refer :all]
+  (:require [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
             [compojure.api.exception :as ex]
-            [clojure.spec.alpha :as s]
-            [soul-talk.services.auth :as auth]
-            [soul-talk.services.user :as user]
-            [soul-talk.services.category :as category]
-            [soul-talk.services.tag :as tag]
-            [soul-talk.services.post :as post]
-            [soul-talk.services.files :as files]))
+            [soul-talk.services.auth :refer [auth-routes]]
+            [soul-talk.services.user :refer [user-routes]]
+            [soul-talk.services.category :refer [category-routes]]
+            [soul-talk.services.tag :refer [tag-routes]]
+            [soul-talk.services.post :refer [post-routes]]
+            [soul-talk.services.files :refer [file-routes]]))
 
 ;; 错误处理
 (defn exception-handler [f type]
   (fn [^Exception e data request]
     (f {:message (.getMessage e), :type type})))
-
-;; 多重方法用来注入中间件
-(defmethod restructure-param :auth-rules
-  [_ rule acc]
-  (update-in acc [:middleware] conj [wrap-rule rule]))
 
 
 
@@ -33,9 +25,14 @@
 (def swagger-config
   {:ui   "/api-docs"
    :spec "/swagger.json"
-   :data {:info {:title       "Soul Talk API"
-                 :description "public API"}
-          :tags [{:name "api" :description "apis"}]}})
+   :options {:ui {:validatorUrl nil}}
+   :data {:info {:version "1.0.0"
+                 :title       "Soul Talk API"
+                 :description "public API"
+                 :contact {:name "jiesoul"
+                           :email "jiesoul@gmail.com"
+                           :url "http://www.jiesoul.com"}}
+          :tags [{:name "user" :description "user info"}]}})
 
 (def api-config
   {:exceptions exceptions-config
@@ -45,13 +42,11 @@
 (def services-routes
   (api
     api-config
-    (context "/api" []
-      :tags ["api"]
-      
-      auth/routes
-      user/routes
-      category/routes
-      tag/routes
-      post/routes
-      files/routes
-      )))
+    (context "/api/v1" []
+      :tags ["api version 1"]
+      auth-routes
+      user-routes
+      category-routes
+      tag-routes
+      post-routes
+      file-routes)))

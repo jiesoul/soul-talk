@@ -5,14 +5,11 @@
             [soul-talk.user-validate :refer [change-pass-errors]]
             [buddy.hashers :as hashers]
             [soul-talk.handlers.common :refer [handler]]
-            [soul-talk.string-utils :as su]
-            ))
+            [soul-talk.string-utils :as su]))
 
-(def email-regex #"^[^@]+@[^@\\.]+[\\.].+")
-(s/def ::email-type (s/and string? #(re-matches email-regex %)))
+(s/def ::email #(su/email? %))
 (s/def ::password string?)
 (s/def ::pass-confirm string?)
-(s/def ::email string?)
 (s/def ::pass-old string?)
 (s/def ::pass-new string?)
 (s/def ::name string?)

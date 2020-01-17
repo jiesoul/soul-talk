@@ -2,7 +2,7 @@
   (:require [soul-talk.models.user-db :as user-db]
             [ring.util.http-response :as resp]
             [buddy.hashers :as hashers]
-            [buddy.auth.accessrules :refer [success error]]
+            [buddy.auth.accessrules :refer [success error restrict]]
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.backends.token :refer [token-backend]]
             [taoensso.timbre :as log]
@@ -10,17 +10,15 @@
             [compojure.core :refer [defroutes POST GET routes]]
             [java-time.local :as l]
             [soul-talk.handlers.common :refer [handler]]
-            [soul-talk.models.auth-model :refer [make-token! authenticate-token?]]
+            [soul-talk.models.auth-model :refer [make-token authenticate-token]]
             [clojure.spec.alpha :as s]))
-
-
 
 (defn unauthorized-handler [req msg]
   {:status 401
    :body {:result :error
           :message (or msg "User not authorized")}})
 
-(def auth-backend (token-backend {:authfn authenticate-token?
+(def auth-backend (token-backend {:authfn authenticate-token
                                   :unauthorized unauthorized-handler}))
 
 (defn authenticated [req]
@@ -28,7 +26,6 @@
 
 (defn admin [req]
   (authenticated? req))
-
 
 (handler register! [{:keys [session] :as req} user]
   (if-let [error (reg-errors user)]
@@ -65,7 +62,7 @@
         (-> user
           (assoc :last-time (l/local-date-time))
           (user-db/update-login-time))
-        (let [token (first (make-token! (:id user)))]
+        (let [token (first (make-token (:id user)))]
           (log/info "user:" email " successfully logged from ip " remote-addr)
           (-> {:result :ok
                :user   user

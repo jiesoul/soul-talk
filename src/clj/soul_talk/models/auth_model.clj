@@ -9,13 +9,13 @@
   []
   (base64 32))
 
-(defn make-token!
+(defn make-token
   [user-id]
   (let [token (gen-session-id)]
     (sql/insert! *db* :auth_tokens {:id token
                                     :user_id user-id})))
 
-(defn authenticate-token?
+(defn authenticate-token
   [req token]
   (log/debug "auth request: " req)
   (let [sql-str (str "SELECT * FROM auth_tokens "

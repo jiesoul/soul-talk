@@ -1,25 +1,25 @@
 (ns soul-talk.services.user
   (:require [soul-talk.handlers.user :as user]
             [soul-talk.handlers.auth :refer [authenticated]]
-            [compojure.api.sweet :refer [context POST GET]]))
+            [soul-talk.handlers.common :as common]
+            [compojure.api.sweet :refer [context POST GET PATCH DELETE]]))
 
-(def routes
-  (context "user"
-
+(def user-routes
+  (context "/users" []
+    :auth-rules authenticated
     (GET "/" []
-      :return ::services/Result
+      :return ::common/Result
       :summary "load-users"
       (user/load-users!))
 
     (POST "/change-password" []
-      :auth-rules authenticated
-      :return ::services/Result
+      :return ::common/Result
       :body [params user/ChangePassUser]
       :summary "User change password"
       (user/change-pass! params))
 
     (POST "/user-profile" []
-      :return ::services/Result
+      :return ::common/Result
       :body [user user/User]
       :summary "User Profile update"
       (user/save-user-profile! user))))

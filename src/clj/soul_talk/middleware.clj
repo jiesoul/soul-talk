@@ -4,7 +4,6 @@
             [ring.middleware.flash :refer [wrap-flash]]
             [muuntaja.middleware :refer [wrap-format]]
             [taoensso.timbre :as log]
-            [buddy.auth.backends :as backends]
             [buddy.auth.backends.session :refer [session-backend]]
             [buddy.auth.accessrules :refer [wrap-access-rules]]
             [buddy.auth :refer [authenticated?]]
@@ -12,6 +11,7 @@
             [soul-talk.handlers.auth :refer [auth-backend]]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.cors :refer [wrap-cors]]
+            [compojure.api.meta :refer [restructure-param]]
             [soul-talk.env :refer [defaults]]))
 
 (defn error-500 []
@@ -51,6 +51,11 @@
     (wrap-access-rules {:rules [{:pattern #".*"
                                  :handler rule}]
                         :on-error error-401})))
+
+;; 多重方法用来注入中间件
+(defmethod restructure-param :auth-rules
+  [_ rule acc]
+  (update-in acc [:middleware] conj [wrap-rule rule]))
 
 ;;
 (defn wrap-defaults [handler]
