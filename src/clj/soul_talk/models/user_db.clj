@@ -4,23 +4,22 @@
             [taoensso.timbre :as log]))
 
 
-(defn save-user! [user]
+(defn save! [user]
   (sql/insert! *db* :users user))
 
 (defn find-by-id [id]
   (sql/query *db* ["SELECT * FROM users WHERE id = ? " id]))
 
-(defn select-user [id]
-  (log/debug "id: " id)
-  (sql/query *db* ["SELECT * FROM users where email = ? " id]
+(defn find-by-email [email]
+  (log/debug "id: " email)
+  (sql/query *db* ["SELECT * FROM users where email = ? " email]
              {:result-set-fn first}))
 
-(defn select-all-users []
+(defn find-all []
   (sql/query *db* ["SELECT * from users"]))
 
-(defn update-login-time [{:keys [email last-time]}]
+(defn update-login-time! [{:keys [email last-time]}]
   (sql/update! *db* :users {:last_login last-time} ["email = ?" email]))
-
 
 (defn change-pass! [{:keys [email pass-new]}]
   (sql/update! *db* :users {:password pass-new} ["email = ?" email]))

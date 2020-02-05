@@ -36,11 +36,11 @@
       (if (pos? count)
         (resp/bad-request {:result :error
                            :message "系统不允许注册！！"})
-        (if-let [temp-user (user-db/select-user (:email user))]
+        (if-let [temp-user (user-db/find-by-email (:email user))]
           (resp/unauthorized {:result  :error
                                 :message (str (:email temp-user) " 已被注册")})
           (do
-            (user-db/save-user!
+            (user-db/save!
               (-> user
                 (dissoc :pass-confirm)
                 (update :password hashers/encrypt)))
@@ -48,7 +48,7 @@
               (resp/ok))))))))
 
 (defn authenticate-local [email password]
-  (when-let [user (user-db/select-user email)]
+  (when-let [user (user-db/find-by-email email)]
     (when (hashers/check password (:password user))
       (dissoc user :password))))
 
@@ -61,7 +61,7 @@
       (do
         (-> user
           (assoc :last-time (l/local-date-time))
-          (user-db/update-login-time))
+          (user-db/update-login-time!))
         (let [token (first (make-token (:id user)))]
           (log/info "user:" email " successfully logged from ip " remote-addr)
           (-> {:result :ok

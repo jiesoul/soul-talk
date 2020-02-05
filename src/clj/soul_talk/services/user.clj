@@ -7,18 +7,24 @@
 (def user-routes
   (context "/users" []
     :auth-rules authenticated
+
     (GET "/" []
       :return ::common/Result
       :summary "load-users"
       (user/load-users!))
 
-    (POST "/change-password" []
+    (GET "/:id" [id]
+      :return ::user/User
+      :summary "load user by id"
+      (user/load-user id))
+
+    (POST "/:id/change-password" []
       :return ::common/Result
       :body [params user/ChangePassUser]
       :summary "User change password"
       (user/change-pass! params))
 
-    (POST "/user-profile" []
+    (PUT "/:id/profile" []
       :return ::common/Result
       :body [user user/User]
       :summary "User Profile update"

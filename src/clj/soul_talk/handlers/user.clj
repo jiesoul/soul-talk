@@ -7,7 +7,7 @@
             [soul-talk.handlers.common :refer [handler]]
             [soul-talk.string-utils :as su]))
 
-(s/def ::email #(su/email? %))
+(s/def ::email (s/and string? #(su/email? %)))
 (s/def ::password string?)
 (s/def ::pass-confirm string?)
 (s/def ::pass-old string?)
@@ -28,17 +28,22 @@
   (s/def ::userChangePass (s/keys :req-un [::email ::pass-old ::pass-new ::pass-confirm])))
 
 (handler load-users! []
-  (let [users (user-db/select-all-users)]
+  (let [users (user-db/find-all)]
     (resp/ok {:result :ok
               :users (->> users
                          (map #(assoc % :password nil)))})))
+
+(handler load-user [id]
+  (let [user (user-db/find-by-id id)]
+    (resp/ok {:result :ok
+              :user (->> user (assoc % :password nil))})))
 
 (handler change-pass! [{:keys [email pass-old pass-new] :as params}]
   (if-let [error (change-pass-errors params)]
     (resp/precondition-failed
       {:result :error
        :message error})
-    (let [user (user-db/select-user email)]
+    (let [user (user-db/find-by-email email)]
       (if-not (hashers/check pass-old (:password user))
         (resp/unauthorized {:result  :error
                               :message "旧密码错误"})
@@ -49,7 +54,7 @@
           (resp/ok {:result :ok}))))))
 
 (handler save-user-profile! [{:keys [email name] :as params}]
-  (let [user (user-db/select-user email)]
+  (let [user (user-db/find-by-email email)]
     (do
       (-> user
         (assoc :name name)
