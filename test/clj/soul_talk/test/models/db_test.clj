@@ -1,6 +1,6 @@
 (ns soul-talk.test.models.db-test
   (:require [clojure.test :refer :all]
-            [soul-talk.models.post-db :refer :all]
+            [soul-talk.models.article-db :refer :all]
             [soul-talk.models.user-db :refer :all]
             [soul-talk.models.db :as db :refer [*db*]]
             [clojure.java.jdbc :as sql]
@@ -49,9 +49,9 @@
       (is (= "201809201450333" (:id (get-post-by-id "201809201450333"))))
       (is (= 1 (update-post! (assoc post :img_url "url"))))
       (is (= "url" (:img_url (get-post-by-id "201809201450333"))))
-      (is (= 0 (count (get-posts-publish))))
+      (is (= 0 (count (get-article-publish))))
       (is (= 1 (update-post! (assoc post :publish 1))))
-      (is (= 1 (count (get-posts-publish))))
+      (is (= 1 (count (get-article-publish))))
       (is (= 1 (delete-post! "201809201450333"))))))
 
 

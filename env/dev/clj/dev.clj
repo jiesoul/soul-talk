@@ -2,11 +2,11 @@
   (:require [clojure.pprint :refer [pprint]]
             [clojure.tools.namespace.repl :as tn]
             [soul-talk.config :refer [env]]
-            [soul-talk.models.db :refer [*db*]]
+            [soul-talk.database.db :refer [*db*]]
             [soul-talk.core]
             [mount.core :as mount]
             [mount-up.core :as mu]
-            [soul-talk.my-migrations :as my-migrations]))
+            [soul-talk.database.my-migrations :as my-migrations]))
 
 (defn migrate [args]
   (my-migrations/migrate args (select-keys env [:database-url :migrations])))
@@ -17,7 +17,7 @@
   (mount/start
     #'soul-talk.config/env
     #'soul-talk.core/init-app
-    #'soul-talk.models.db/*db*
+    #'soul-talk.database.db/*db*
     #'soul-talk.core/system))
 
 (defn stop []

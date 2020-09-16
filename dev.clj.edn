@@ -1,2 +1,0 @@
-^{:watch-dirs ["src/cljs" "env/prod/cljs"]}
-{:main soul-talk.app}

@@ -1,13 +1,13 @@
 (ns soul-talk.handler
-  (:require [soul-talk.middleware :as middleware]
-            [compojure.route :as route]
+  (:require [compojure.route :as route]
             [compojure.core :refer [routes]]
-            [soul-talk.services :refer [services-routes]]))
+            [soul-talk.rest-api.api :refer [api-routes]]
+            [soul-talk.rest-api.middleware :as m]))
 
 (def app
   (-> (routes
-        services-routes
+        api-routes
         (route/not-found
           {:status 404
            :title  "无效的资源"}))
-    (middleware/wrap-base)))
+    (m/wrap-base)))

@@ -5,7 +5,7 @@
             [mount.core :as mount :refer [defstate]]
             [soul-talk.env :refer [defaults]]
             [clojure.tools.cli :refer [parse-opts]]
-            [soul-talk.my-migrations :as migrations]
+            [soul-talk.database.my-migrations :as migrations]
             [taoensso.timbre :as log])
   (:gen-class))
 
