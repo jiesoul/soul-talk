@@ -2,8 +2,7 @@
   (:require [hikari-cp.core :refer :all]
             [mount.core :refer [defstate]]
             [clojure.java.jdbc :as jdbc]
-            [soul-talk.config :refer [env]]
-            [taoensso.timbre :as log])
+            [soul-talk.config :refer [env]])
   (:import (java.sql Date Timestamp PreparedStatement)))
 
 (defonce datasource
@@ -20,12 +19,12 @@
   :stop (close-conn))
 
 (defn test-db []
-  (sql/query *db* "select 3*5 as result"))
+  (jdbc/query *db* "select 3*5 as result"))
 
 (defn to-date [^Date sql-date]
   (-> sql-date (.getTime) (java.util.Date.)))
 
-(extend-protocol sql/IResultSetReadColumn
+(extend-protocol jdbc/IResultSetReadColumn
 
   Date
   (result-set-read-column [v _ _] (to-date v))

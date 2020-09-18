@@ -1,6 +1,5 @@
 (ns soul-talk.rest-api.handler
   (:require [compojure.api.sweet :refer :all]
-            [buddy.auth :refer [authenticated?]]
             [soul-talk.article.interface :as article]
             [soul-talk.comment.interface :as comment]
             [soul-talk.spec.core :as spec]
@@ -8,88 +7,116 @@
             [soul-talk.user.interface :as user]
             [clojure.spec.alpha :as s]))
 
-(def auth-routes
+(def public-routes
   (routes
-    (POST "/login" req
-      :return ::spec/Result
-      :body [user user/login]
-      :summary "用户登陆，登陆成功返回 Token"
-      (user/login! req user))
+    :tags ["public api"]
+    (context "" []
+      :tags ["users"]
+     (POST "/login" req
+       :return ::spec/Result
+       :body [user user/login]
+       :summary "用户登陆，登陆成功返回 Token"
+       (user/login! req user))
 
-    (POST "/logout" []
-      :return ::spec/Result
-      :summary "用户登出"
-      (user/logout!))
+      (POST "/logout" []
+        :return ::spec/Result
+        :summary "用户登出"
+        (user/logout!))
 
-    (POST "/register" req
-      :return ::spec/Result
-      :body [user user/register]
-      :summary "注册新用户"
-      (user/register! req user))))
+      (POST "/register" req
+        :return ::spec/Result
+        :body [user user/register]
+        :summary "注册新用户"
+        (user/register! req user)))
 
-(def user-routes
-  (context "/users" []
-    ;:auth-rules authenticated?
-    (GET "/" []
-      :return ::spec/Result
-      :summary "返回所有用户"
-      (user/load-users))
+    (context "/users" []
+      :tags ["users"]
+      (GET "/:id/profile" [id]
+        :return ::spec/Result
+        :path-params [id :- int?]
+        :summary "查看个人信息"
+        (user/get-user-profile id)))
 
-    (PUT "/:id/password" []
-      :return ::spec/Result
-      :body [params user/update-password]
-      :summary "更改用户密码"
-      (user/update-password! params))
+    (context "/articles" []
+      :tags ["articles"]
+      (GET "/public" req
+        :return ::spec/Result
+        :summary "查看所有发布的文章"
+        (article/get-publish-article req))
+      (GET "/archives" []
+        :return ::spec/Result
+        :summary "查看发布文章的存档"
+        (article/get-article-archives))
 
-    (PUT "/:id/profile" []
-      :return ::spec/Result
-      :body [user user/profile-user]
-      :summary "用户信息"
-      (user/save-user-profile! user))))
+      (GET "/archives/:year/:month" []
+        :return ::spec/Result
+        :path-params [year :- int? month :- int?]
+        :summary "按年月查看发布存档"
+        (article/get-article-archives-year-month year month))
 
-(def article-routes
-  (context "/articles" []
+      (GET "/:id" [id]
+        :return ::spec/Result
+        :summary "查看文章"
+        (article/get-article id)))
 
-    (GET "/" req
-      :return ::spec/Result
-      :summary "返回所有公开的文章"
-      (article/get-publish-article req))
+    (context "/tags" []
+      :tags ["tags"]
+      (POST "/add" [tag]
+        :return ::spec/Result
+        ;:body [tag]
+        :summary "标签"
+        (tag/insert-tag! tag)))
 
-    (GET "/archives" []
-      :return ::spec/Result
-      :summary "文章的存档"
-      (article/get-article-archives))
+    (context "/comments" []
+      :tags ["comments"]
+      (GET "/:articleId/" [articleId]
+        :return ::spec/Result))))
 
-    (GET "/archives/:year/:month" []
-      :return ::spec/Result
-      :path-params [year :- int? month :- int?]
-      :summary "按年月存档"
-      (article/get-article-archives-year-month year month))
+(def private-routes
+  (routes
+    :tags ["private api"]
+    :auth-rules user/authenticated
+    (context "/users" []
+      :tags ["users"]
+      ;; auth
+      (GET "/" []
+        :return ::spec/Result
+        :summary "查看所有用户"
+        (user/load-users))
 
-    (GET "/:id" [id]
-      :return ::spec/Result
-      :summary "返回文章"
-      (article/get-article id))
+      (PUT "/:id/password" []
+        :return ::spec/Result
+        :path-params [id :- int?]
+        :body [update-password user/update-password]
+        :summary "更改用户密码"
+        (user/update-password! id update-password))
 
-    ;;auth
-    (routes
-      ;:auth-rules authenticated?
+      (PUT "/:id/profile" []
+        :return ::spec/Result
+        :path-params [id :- int?]
+        :body [user-profile user/profile-user]
+        :summary "修改用户信息"
+        (user/save-user-profile! id user-profile)))
+
+    (context "/articles" []
+      :tags ["articles"]
+      ;; auth
       (GET "/" request
         :return ::spec/Result
-        :summary "返回所有文章"
+        :summary "查看所有文章"
         (article/get-all-articles request))
 
       (POST "/" []
         :return ::spec/Result
-        :body [post article/create-article]
-        :summary "添加新的文章"
-        (article/insert-article! post))
+        :body [article article/create-article]
+        :summary "添加文章"
+        (article/insert-article! article))
 
       (PUT "/:id" []
         :return ::spec/Result
-        :body [post article/update-article]
+        :body [article article/update-article]
         :summary "更新文章"
-        (article/update-article! post))
+        (article/update-article! article))
 
       (DELETE "/:id" [id]
         :return ::spec/Result
@@ -104,12 +131,21 @@
       (POST "/upload" req
         :return ::spec/Result
         :summary "上传文章"
-        (article/upload-article! req)))))
+        (article/upload-article! req)))
 
-(def tag-routes
-  (context "/tags" []
-    (POST "/add" [tag]
-      :return ::spec/Result
-      ;:body [tag]
-      :summary "create category"
-      (tag/insert-tag! tag))))
+    (context "/tags" []
+      :tags ["tags"]
+      (POST "/" [tag]
+        :return ::spec/Result
+        ;:body [tag]
+        :summary "标签"
+        (tag/insert-tag! tag)))
+
+    (context "/comments" []
+      :tags ["comments"]
+      (POST "/" []
+        :return ::spec/Result ))))
+
+
+
+

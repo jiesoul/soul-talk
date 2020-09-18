@@ -5,8 +5,8 @@
 (def defaults
   {:init
    (fn []
-     (log/info "====[soul_talk started successfully using the development profile]===="))
+     (log/info "====[System started successfully using the development profile]===="))
    :stop
    (fn []
-     (log/info "====[soul_talk has shut down]====="))
+     (log/info "====[System has shut down]====="))
    :middleware wrap-dev})

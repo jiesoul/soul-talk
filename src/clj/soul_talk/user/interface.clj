@@ -22,8 +22,14 @@
 (defn load-users []
   (handler/load-users))
 
-(defn update-password! [user]
-  (handler/update-password! user))
+(defn update-password! [id update-password]
+  (handler/update-password! id update-password))
 
-(defn save-user-profile! [user]
-  (handler/save-user-profile! user))
+(defn save-user-profile! [id user-profile]
+  (handler/save-user-profile! id user-profile))
+
+(defn authenticated [req]
+  (handler/authenticated req))
+
+(defn get-user-profile [id]
+  (handler/get-user-profile id))

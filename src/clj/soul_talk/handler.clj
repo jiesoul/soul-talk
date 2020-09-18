@@ -6,8 +6,8 @@
 
 (def app
   (-> (routes
-        api-routes
+        (m/wrap-base api-routes)
+        (route/resources "/")
         (route/not-found
           {:status 404
-           :title  "无效的资源"}))
-    (m/wrap-base)))
+           :title  "无效的资源"}))))

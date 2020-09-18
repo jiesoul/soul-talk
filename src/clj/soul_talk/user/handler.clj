@@ -1,6 +1,5 @@
 (ns soul-talk.user.handler
   (:require [soul-talk.user.db :as user-db]
-            [clojure.spec.alpha :as s]
             [ring.util.http-response :as resp]
             [buddy.hashers :as hashers]
             [buddy.auth.accessrules :refer [success error restrict]]
@@ -8,47 +7,6 @@
             [buddy.auth.backends.token :refer [token-backend]]
             [taoensso.timbre :as log]
             [java-time.local :as l]))
-
-(defn load-users []
-  (let [users (user-db/select-all-users)]
-    (resp/ok {:result :ok
-              :users (->> users
-                         (map #(assoc % :password nil)))})))
-
-(defn update-password! [{:keys [id oldPassword newPassword] :as params}]
-  (let [user (user-db/find-by-id id)]
-    (if-not (hashers/check oldPassword (:password user))
-      (resp/unauthorized {:result  :error
-                          :message "旧密码错误"})
-      (do
-        (-> params
-          (assoc :pass-new (hashers/encrypt newPassword))
-          (user-db/change-pass!))
-        (resp/ok {:result :ok})))))
-
-(defn save-user-profile! [{:keys [id name image bio] :as params}]
-  (let [user (user-db/find-by-id id)]
-    (do
-      (-> user
-        (assoc :name name)
-        (user-db/save-user-profile!))
-      (-> {:result :ok
-           :user   (assoc user :password nil)}
-        (resp/ok)))))
-
-(defn unauthorized-handler [req msg]
-  {:status 401
-   :body {:result :error
-          :message (or msg "User not authorized")}})
-
-(def auth-backend (token-backend {:authfn user-db/authenticate-token
-                                  :unauthorized unauthorized-handler}))
-
-(defn authenticated [req]
-  (authenticated? req))
-
-(defn admin [req]
-  (authenticated? req))
 
 (defn register! [{:keys [session] :as req} user]
   (let [count (user-db/count-users)]
@@ -95,3 +53,61 @@
       (-> {:result :ok}
         (resp/ok)
         (assoc :session nil))))
+
+
+;; 用户操作
+(defn load-users []
+  (let [users (user-db/select-all-users)]
+    (resp/ok {:result :ok
+              :users (->> users
+                         (map #(assoc % :password nil)))})))
+
+(defn update-password! [id {:keys [oldPassword newPassword] :as params}]
+  (let [user (user-db/find-by-id (long id))]
+    (if-not (hashers/check oldPassword (:password user))
+      (resp/unauthorized {:result  :error
+                          :message "旧密码错误"})
+      (do
+        (-> user
+          (assoc :password (hashers/encrypt newPassword))
+          (user-db/update-pass!))
+        (resp/ok {:result :ok
+                  :message "密码修改成功"})))))
+
+(defn get-user-profile [id]
+  (if-let [user (user-db/find-by-id id)]
+    (-> {:result :ok
+         :user   (assoc user :password nil)}
+      (resp/ok))
+    (resp/ok {:result :error
+              :message "未找到用户"})))
+
+(defn save-user-profile! [id {:keys [username image bio] :as params}]
+  (if-let [user (user-db/find-by-id (long id))]
+    (let [user-profile (user-db/save-user-profile! (assoc user :name username))]
+      (resp/ok {:result :ok
+                :message "保存成功"}))
+    (resp/bad-request {:result "error"
+                       :message "未找到用户信息"})))
+
+;; token 验证
+(defn unauthorized-handler [req msg]
+  {:status 401
+   :body {:result :error
+          :message (or msg "用户未验证")}})
+
+(def auth-backend (token-backend {:authfn user-db/authenticate-token
+                                  :unauthorized unauthorized-handler}))
+
+(defn authenticated [req]
+  (authenticated? req))
+
+(defn admin [req]
+  (authenticated? req))
+
+
+
+
+
+
+

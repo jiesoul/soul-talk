@@ -2,7 +2,7 @@
   :description "self site"
   :url "http://github.com/jiesoul/soul-talk"
 
-  :dependencies [[org.clojure/clojure "1.10.0"]
+  :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/java.jdbc "0.7.8"]
                  [seancorfield/next.jdbc "1.1.588"]
                  [org.postgresql/postgresql "42.2.4"]

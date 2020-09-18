@@ -4,15 +4,12 @@
             [ring.middleware.flash :refer [wrap-flash]]
             [muuntaja.middleware :refer [wrap-format]]
             [soul-talk.user.handler :refer [auth-backend]]
-            [environ.core :refer [env]]
-            [buddy.auth.backends.session :refer [session-backend]]
             [buddy.auth.accessrules :refer [wrap-access-rules]]
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
             [ring.middleware.defaults :as ring-defaults]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.cors :refer [wrap-cors]]
-            [compojure.api.meta :refer [restructure-param]]
             [taoensso.timbre :as log]
             [soul-talk.env :refer [defaults]]))
 
@@ -38,10 +35,8 @@
     (try
       (handler req)
       (catch Throwable t
-        (log/error t)
+        (log/error "发生内部错误：" t)
         (error-500)))))
-
-(defn wrap-auth-user [handler])
 
 ;; 验证和授权 token
 (defn wrap-token-auth
@@ -55,11 +50,6 @@
     (wrap-access-rules {:rules [{:pattern #".*"
                                  :handler rule}]
                         :on-error error-401})))
-
-;; 多重方法用来注入中间件
-(defmethod restructure-param :auth-rules
-  [_ rule acc]
-  (update-in acc [:middleware] conj [wrap-rule rule]))
 
 ;;
 (defn wrap-defaults [handler]

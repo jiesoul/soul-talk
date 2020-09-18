@@ -22,7 +22,7 @@
 
 (defn get-all-articles
   [req]
-  (handler/get-all-articles [req]))
+  (handler/get-all-articles req))
 
 (defn insert-article!
   [article]

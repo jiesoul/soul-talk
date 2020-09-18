@@ -1,13 +1,13 @@
 (ns soul-talk.tag.db
   (:require [soul-talk.database.db :refer [*db*]]
-            [clojure.java.jdbc :as sql]
+            [clojure.java.jdbc :as jdbc]
             [taoensso.timbre :as log]))
 
 (defn save-tag! [tag]
-  (sql/insert! *db* :tags tag))
+  (jdbc/insert! *db* :tags tag))
 
 (defn delete-tag! [id]
-  (sql/delete! *db* :tags ["id = ?" id]))
+  (jdbc/delete! *db* :tags ["id = ?" id]))
 
 (defn get-tags []
-  (sql/query *db* ["select * from tags"]))
+  (jdbc/query *db* ["select * from tags"]))

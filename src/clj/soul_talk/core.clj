@@ -20,7 +20,7 @@
   :stop  ((or (:stop defaults) identity)))
 
 (defn start-system []
-  (log/info "total config: " env)
+  ;(log/info "total config: " env)
   (-> #'app
       (jetty/run-jetty
         (-> env

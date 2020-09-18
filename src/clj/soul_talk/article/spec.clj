@@ -23,7 +23,6 @@
                    :body             spec/non-empty-string?
                    :updateAt         string?
                    :createAt         string?
-                   ;:author profile/profile
                    (ds/opt :tagList) [spec/non-empty-string?]}}))
 (def visible-article
   (ds/spec {:name :core/visible-article

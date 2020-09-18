@@ -30,8 +30,7 @@
 
 (def update-password
   (ds/spec {:name :core/update-password
-            :spec {:id id
-                   :oldPassword spec/password?
+            :spec {:oldPassword spec/password?
                    :newPassword spec/password?
                    :confirmPassword spec/password?}}))
 
@@ -45,10 +44,9 @@
 
 (def profile-user
   (ds/spec {:name :core/profile-user
-            :spec {:id id
-                   :username spec/username?
-                   :image (ds/maybe spec/uri-string?)
-                   :bio (ds/maybe spec/non-empty-string?)}}))
+            :spec {:username (ds/maybe spec/username?)
+                   :image    (ds/maybe spec/uri-string?)
+                   :bio      (ds/maybe spec/non-empty-string?)}}))
 
 (def visible-user
   (ds/spec {:name :core/visible-user
