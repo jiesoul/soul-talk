@@ -9,12 +9,12 @@
 
 (defn get-all-articles [request]
   (let [pagination (p/create request)
-        article (article-db/get-article-page pagination)
+        articles (article-db/get-article-page pagination)
         total (article-db/count-article-all)
         pagination (p/create-total pagination total)]
     (resp/ok {:result :ok
-              :article  article
-              :pagination pagination})))
+              :pagination pagination
+              :articles  articles})))
 
 (defn get-publish-article [req]
   (let [pagination (p/create req)
@@ -33,12 +33,14 @@
 (defn insert-article! [article]
   (let [time (l/local-date-time)
         id (f/format format-id time)]
-    (do
-      (article-db/save-article! (-> article
-                                    (assoc :id id)
-                                    (assoc :createAt time)
-                                    (assoc :modifyAt time)))
-      (-> {:result :ok}
+    (let [article (article-db/save-article!
+                    (-> article
+                      (assoc :id id)
+                      (assoc :createAt time)
+                      (assoc :modifyAt time)))]
+      (-> {:result :ok
+           :message "保存成功"
+           :article article}
         (resp/ok)))))
 
 (defn upload-article! [{:keys [body params] :as req}]
@@ -46,7 +48,7 @@
         md (slurp (:tempfile file))
         time (l/local-date-time)
         id (f/format format-id time)
-        article {:id id :content md :create_time time :modify_time time :title "" :author "" :publish 0}]
+        article {:id id :content md :createAt time :modifyAt time :title "" :author "" :publish 0}]
     (do
       (article-db/insert-article! article)
       (-> {:result :ok
@@ -55,20 +57,22 @@
 
 (defn update-article! [article]
   (article-db/update-article! (-> article
-                                (assoc :modify_time (l/local-date-time))))
+                                (assoc :modifyAt (l/local-date-time))))
   (-> {:result :ok
-       :article   (assoc article :content nil)}
+       :article   (assoc article :body nil)}
     (resp/ok)))
 
 (defn delete-article! [id]
   (do
     (article-db/delete-article! id)
-    (resp/ok {:result :ok})))
+    (resp/ok {:result :ok
+              :message "删除成功"})))
 
 (defn publish-article! [id]
   (do
     (article-db/publish-article! id)
-    (-> {:result :ok}
+    (-> {:result :ok
+         :message "发布成功"}
       (resp/ok))))
 
 (defn get-article-archives []

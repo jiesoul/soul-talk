@@ -1,16 +1,8 @@
 (ns soul-talk.article.db
   (:require [clojure.java.jdbc :as jdbc]
-            [soul-talk.database.db :refer [*db*]]))
-
-(defn tags-with-names [tag-names]
-  (jdbc/query *db*
-    ["select * from tag where in ? " tag-names]))
-
-(defn add-tags-to-article [article-id tag-names]
-  (when-not (empty? tag-names)
-    (let [tags (tags-with-names tag-names)
-          inputs (mapv #(hash-map :articleId article-id :tagId (:id %)) tags)]
-      (jdbc/insert-multi! *db* :articleTags inputs))))
+            [soul-talk.database.db :refer [*db*]]
+            [soul-talk.tag.db :refer [add-tags-to-article]]
+            [taoensso.timbre :as log]))
 
 (defn save-article-tags! [article-tags]
   (jdbc/insert-multi! *db*
@@ -32,9 +24,8 @@
         id (:id article)
         article (-> article (dissoc :tagList))]
     (do
+      (add-tags-to-article id tagList)
       (insert-article! article)
-      ;(when-not (empty? tagList)
-      ;  (add-tags-to-article id tagList))
       )))
 
 (defn update-article! [{:keys [id] :as article}]

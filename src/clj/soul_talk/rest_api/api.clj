@@ -1,5 +1,5 @@
 (ns soul-talk.rest-api.api
-  (:require [ring.util.http-response :refer :all]
+  (:require [ring.util.http-response :as resp]
             [compojure.api.sweet :refer :all]
             [compojure.api.exception :as ex]
             [compojure.api.meta :refer [restructure-param]]
@@ -11,24 +11,48 @@
 ;; 错误处理
 (defn exception-handler [f type]
   (fn [^Exception e data request]
-    ;(log/log! type e (.getMessage e))
-    (f {:message (.getMessage e), :type type})))
+    (log/error (str "**************错误信息：" (.getMessage e)))
+    (f {:result :error :message (str "**********发生错误：" (.getMessage e)), :type type})))
+
+;;
+(defn request-validation-handler [f type]
+  (fn [^Exception e data req]
+    (log/error " 请求发生错误：" (.getMessage e))
+    (let [message (->> data
+                    :problems
+                    :clojure.spec.alpha/problems
+                    (map :reason))]
+      (f {:result :error :message message}))))
+
+(defn response-validation-handler [f type]
+  (fn [^Exception e data resp]
+    (log/error " 响应发生错误：" (.getMessage e))
+    (let [message (->> data
+                    :problems
+                    :clojure.spec.alpha/problems)]
+      (f {:result :error :message message}))))
+
+(defn request-parsing-handler
+  [^Exception ex data req]
+  (let [cause (.getCause ex)
+        original (.getCause cause)]
+    (resp/bad-request
+      (merge (select-keys data [:type :format :charset])
+        (if original {:original (.getMessage original)})
+        {:message (.getMessage cause)}))))
 
 ;; 多重方法用来注入中间件
 (defmethod restructure-param :auth-rules
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-rule rule]))
 
-(defn handle-missing-routes-fn []
-  )
-
 (def exceptions-config
-  {:handlers {::calm                    (exception-handler enhance-your-calm :calm)
-              java.sql.SQLException     (exception-handler internal-server-error :sql)
-              ::ex/request-validation   (ex/with-logging ex/request-parsing-handler :error)
+  {:handlers {::calm                    (exception-handler resp/enhance-your-calm :calm)
+              java.sql.SQLException     (exception-handler resp/internal-server-error :sql)
+              ::ex/request-validation   (request-validation-handler resp/bad-request :error)
               ::ex/request-parsing      (ex/with-logging ex/request-parsing-handler :info)
-              ::ex/response-validation  (exception-handler ex/response-validation-handler :error)
-              ::ex/default              (exception-handler internal-server-error :unknown)}})
+              ::ex/response-validation  (response-validation-handler resp/internal-server-error  :error)
+              ::ex/default              (exception-handler resp/internal-server-error :unknown)}})
 
 (def swagger-config
   {:ui   "/api-docs"
@@ -40,7 +64,12 @@
                  :contact {:name "jiesoul"
                            :email "jiesoul@gmail.com"
                            :url "http://www.jiesoul.com"}}
-          :tags [{:name "user" :description "user info"}]}})
+          :tags [{:name "登陆" :description "用户登陆相关API"}
+                 {:name "用户" :description "用户信息相关API"}
+                 {:name "文章" :description "文章相关API"}
+                 {:name "标签" :description "标签相关API"}
+                 {:name "评论" :description "评论相关API"}
+                 ]}})
 
 
 

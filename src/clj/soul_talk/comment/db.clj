@@ -10,11 +10,11 @@
   (jdbc/delete! *db* :comments ["id = ? " id]))
 
 
-(defn get-comments-by-post-id [post-id]
+(defn get-comments-by-articleId [article-id]
   (jdbc/query *db*
              :comments
              ["select * from comments where id = ? order by create_time desc"
-              post-id]))
+              article-id]))
 
 (defn get-comments-by-reply-id [reply-id]
   (jdbc/query *db*

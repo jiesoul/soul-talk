@@ -14,5 +14,9 @@
          (internal-server-error {:result :error
                                  :message "请求发生错误"})))))
 
+(defn coll->str [coll]
+  (subs
+    (reduce #(str %1 "," %2) "" coll) 1))
+
 
 

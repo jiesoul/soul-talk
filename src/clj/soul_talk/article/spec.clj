@@ -7,6 +7,7 @@
             :spec {:title spec/non-empty-string?
                    :description spec/non-empty-string?
                    :body spec/non-empty-string?
+                   :userId int?
                    (ds/opt :tagList) [spec/non-empty-string?]}}))
 
 (def update-article

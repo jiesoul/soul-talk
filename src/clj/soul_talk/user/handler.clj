@@ -82,8 +82,8 @@
     (resp/ok {:result :error
               :message "未找到用户"})))
 
-(defn save-user-profile! [id {:keys [username image bio] :as params}]
-  (if-let [user (user-db/find-by-id (long id))]
+(defn save-user-profile! [id {:keys [username image] :as params}]
+  (if-let [user (user-db/find-by-id id)]
     (let [user-profile (user-db/save-user-profile! (assoc user :name username))]
       (resp/ok {:result :ok
                 :message "保存成功"}))

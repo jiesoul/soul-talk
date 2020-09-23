@@ -36,3 +36,7 @@
   jdbc/ISQLParameter
   (set-parameter [v ^PreparedStatement stmt ^long idx]
     (.setTimestamp stmt idx (Timestamp. (.getTime v)))))
+
+(defn coll-to-in-str [coll]
+  (subs
+    (reduce #(str %1 "," (str "'" %2 "'")) "" coll) 1))
