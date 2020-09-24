@@ -6,7 +6,8 @@
             [soul-talk.core]
             [mount.core :as mount]
             [mount-up.core :as mu]
-            [soul-talk.database.my-migrations :as my-migrations]))
+            [soul-talk.database.my-migrations :as my-migrations]
+            [com.jakemccrary.test-refresh :as test-refresh]))
 
 (defn migrate [args]
   (my-migrations/migrate args (select-keys env [:database-url :migrations])))

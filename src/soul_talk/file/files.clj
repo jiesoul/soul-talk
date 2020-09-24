@@ -1,10 +1,9 @@
-(ns soul-talk.handlers.files
-  (:require [soul-talk.base.common :refer [handler]]
-            [taoensso.timbre :as log]
+(ns soul-talk.file.files
+  (:require [taoensso.timbre :as log]
             [ring.util.http-response :as resp]
             [clojure.java.io :as io]))
 
-(handler upload-md! [{:keys [body params] :as req}]
+(defn upload-md! [{:keys [body params] :as req}]
   (log/info (:params req))
   (let [file (:file params)
         s (slurp (:tempfile file))]

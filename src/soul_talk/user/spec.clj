@@ -54,9 +54,7 @@
 
 (def profile-user
   (ds/spec {:name :core/profile-user
-            :spec {:username spec/username?
-                   :image (ds/maybe spec/uri-string?)
-                   :bio (ds/maybe spec/non-empty-string?)}}))
+            :spec {:username spec/username?}}))
 
 (def visible-user
   (ds/spec {:name :core/visible-user

@@ -1,4 +1,4 @@
-(ns soul-talk.test.session-tests
+(ns soul-talk.session-tests
   (:require [clojure.test :refer :all]
             [buddy.core.codecs :refer :all]
             [buddy.auth :refer [throw-unauthorized]]

@@ -37,9 +37,9 @@
 
   :ring {:handler soul-talk.handler/app}
 
-  :source-paths ["src/clj"]
+  :source-paths ["src"]
   :resource-paths ["resources"]
-  :test-paths ["test/clj"]
+  :test-paths ["test"]
 
   :docker {:image-name "jiesoul/soul-talk"}
 
@@ -54,10 +54,16 @@
  :dev {:source-paths   ["env/dev/clj"]
        :resource-paths ["env/dev/resources"]
        :repl-options   {:init-ns user}
+       :middleware      [whidbey.plugin/repl-pprint]
        :dependencies   [[ring/ring-devel "1.6.3"]
                         [ring/ring-mock "0.3.2"]
-                        [pjstadig/humane-test-output "0.8.3"]
+                        [com.jakemccrary/lein-test-refresh "0.24.1"]
                         [com.cemerick/piggieback "0.2.2"]
                         [org.clojure/tools.nrepl "0.2.13"]
-                        [org.clojure/test.check "0.9.0"]]
-       :plugins        [[com.jakemccrary/lein-test-refresh "0.23.0"]]}})
+                        [org.clojure/test.check "1.1.0"]]
+       :injections [(require 'pjstadig.humane-test-output)
+                    (pjstadig.humane-test-output/activate!)]
+       :plugins        [[mvxcvi/whidbey "2.2.1"]
+                        [venantius/ultra "0.6.0"]
+                        ;[pjstadig/humane-test-output "0.10.0"]
+                        ]}})
