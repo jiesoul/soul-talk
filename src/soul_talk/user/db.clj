@@ -5,12 +5,13 @@
             [taoensso.timbre :as log]))
 
 (defn find-by [key value]
-  (let [sql (str "select * from users where " key " = ?")]
-    (first
-      (jdbc/query *db* [sql value]))))
+  (let [sql (str "select * from users where " key " = ?")
+        rs (jdbc/query *db* [sql value])]
+    (some-> rs
+      first)))
 
 (defn find-by-id [id]
-  (find-by "id" id))
+  (jdbc/get-by-id *db* :users id))
 
 (defn find-by-email [email]
   (find-by "email" email))
