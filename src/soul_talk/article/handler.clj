@@ -18,11 +18,11 @@
 
 (defn get-publish-article [req]
   (let [pagination (p/create req)
-        article (article-db/get-article-publish-page pagination)
+        articles (article-db/get-article-publish-page pagination)
         total (article-db/count-article-publish)
         pagination (p/create-total pagination total)]
     (resp/ok {:result :ok
-              :article article
+              :articles articles
               :pagination pagination})))
 
 (defn get-article [article-id]
