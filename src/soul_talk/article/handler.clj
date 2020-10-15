@@ -36,8 +36,8 @@
     (let [article (article-db/save-article!
                     (-> article
                       (assoc :id id)
-                      (assoc :createAt time)
-                      (assoc :modifyAt time)))]
+                      (assoc :create_at time)
+                      (assoc :update_at time)))]
       (-> {:result :ok
            :message "保存成功"
            :article article}
@@ -48,7 +48,7 @@
         md (slurp (:tempfile file))
         time (l/local-date-time)
         id (f/format format-id time)
-        article {:id id :content md :createAt time :modifyAt time :title "" :author "" :publish 0}]
+        article {:id id :content md :create_at time :update_at time :title "" :author "" :publish 0}]
     (do
       (article-db/insert-article! article)
       (-> {:result :ok
@@ -57,7 +57,7 @@
 
 (defn update-article! [article]
   (article-db/update-article! (-> article
-                                (assoc :modifyAt (l/local-date-time))))
+                                (assoc :update_at (l/local-date-time))))
   (-> {:result :ok
        :article   (assoc article :body nil)}
     (resp/ok)))

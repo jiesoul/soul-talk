@@ -1,3 +1,4 @@
+;; 服务商配置文件 使用 leiningen 作用运行
 (defproject soul-talk "0.1.5"
   :description "self site"
   :url "http://github.com/jiesoul/soul-talk"

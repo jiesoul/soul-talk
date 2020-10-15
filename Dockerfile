@@ -4,7 +4,7 @@ FROM clojure
 MAINTAINER jiesoul <jiesoul@gmail.com>
 
 # 项目 jar 复制到容器下
-ADD target/soul-talk.jar /app/soul-talk.jar
+ADD ../target/soul-talk.jar /app/soul-talk.jar
 # 复制启动脚本
 COPY entrypoint.sh /app/entrypoint.sh
 # 给启动脚本加可执行权限

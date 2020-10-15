@@ -2,11 +2,11 @@ create table if not exists article (
     id varchar(20) primary key,
     image varchar(100) ,
     title varchar(200) not null,
-    description text not null,
+    description text,
     body text not null ,
-    createAt timestamp,
-    modifyAt timestamp,
+    create_at timestamp,
+    update_at timestamp,
     publish int default 0,
-    userId int,
+    create_by int,
     counter int default 0
 )

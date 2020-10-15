@@ -23,7 +23,7 @@
   (jdbc/query *db* ["SELECT * from users"]))
 
 (defn update-login-time [{:keys [id last-time]}]
-  (jdbc/update! *db* :users {:last_login last-time} ["id = ?" id]))
+  (jdbc/update! *db* :users {:last_login_at last-time} ["id = ?" id]))
 
 
 (defn update-pass! [{:keys [id password]}]

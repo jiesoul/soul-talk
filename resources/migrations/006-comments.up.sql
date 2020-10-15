@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS comments (
     id serial primary key,
-    articleId varchar (20) not null ,
+    article_id varchar (20) not null ,
     body text default '',
-    userId int not null ,
-    createAt timestamp,
-    updateAt timestamp,
+    create_by int not null ,
+    create_at timestamp,
+    update_at timestamp,
     reply_id int
                                     )

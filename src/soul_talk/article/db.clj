@@ -32,11 +32,11 @@
   (jdbc/update! *db* :article article ["id = ?" id]))
 
 (defn get-article-all []
-  (jdbc/query *db* ["select * from article order by createAt desc"]))
+  (jdbc/query *db* ["select * from article order by create_at desc"]))
 
 (defn get-article-page [{:keys [offset pre-page]}]
   (jdbc/query *db*
-    ["select * from article order by createAt desc
+    ["select * from article order by create_at desc
                 offset ? limit ?" offset pre-page]))
 
 (defn count-article-all []
@@ -55,12 +55,12 @@
 (defn get-article-publish []
   (jdbc/query *db*
     ["select * from article where publish = 1
-              order by createAt desc "]))
+              order by create_at desc "]))
 
 (defn get-article-publish-page [{:keys [offset pre-page]}]
   (jdbc/query *db*
     ["select * from article where publish = 1
-              order by createAt desc offset ? limit ? "
+              order by create_at desc offset ? limit ? "
      offset pre-page]))
 
 (defn count-article-publish []
@@ -76,17 +76,17 @@
   (jdbc/query *db*
     ["select year,month, count(month) as counter
                 from
-                  (select date_part('year', createAt) as year,
-                    date_part('month', createAt) as month
+                  (select date_part('year', create_at) as year,
+                    date_part('month', create_at) as month
                     from article where publish = 1) t
                 group by year,month"]))
 
 (defn get-article-archives-year-month [year month]
   (jdbc/query *db*
     ["select * from article where publish = 1
-      and date_part('year', createAt) = ?
-      and date_part('month', createAt) = ?
-      order by createAt desc"
+      and date_part('year', create_at) = ?
+      and date_part('month', create_at) = ?
+      order by create_at desc"
      year month]))
 
 

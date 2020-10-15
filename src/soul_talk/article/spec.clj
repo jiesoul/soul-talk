@@ -22,8 +22,8 @@
                    :title            spec/non-empty-string?
                    :description      spec/non-empty-string?
                    :body             spec/non-empty-string?
-                   :updateAt         string?
-                   :createAt         string?
+                   :update_at         string?
+                   :create_at         string?
                    (ds/opt :tagList) [spec/non-empty-string?]}}))
 (def visible-article
   (ds/spec {:name :core/visible-article

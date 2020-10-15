@@ -16,3 +16,12 @@ soul-talk.iml
 out/
 log/
 /.history
+dist
+.cpcache/
+.idea/
+out
+target
+.rebel_readline_history
+node_modules/
+package-lock.json
+yarn.lock
