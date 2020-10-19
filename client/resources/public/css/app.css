@@ -1,0 +1,88 @@
+.logo {
+  width: 200px;
+  height: 59px;
+  background: transparent;
+  float: left;
+  padding: 0;
+}
+.brand {
+  width: 100%;
+  height: auto;
+}
+.home-header {
+  background: rgba(0, 0, 0, 0);
+  height: 64px;
+  line-height: 64px;
+}
+.home-nav {
+  background: rgba(0, 0, 0, 0);
+  height: 64px;
+  padding: auto;
+}
+.home-nav .ant-menu-item {
+  height: 64px;
+  padding: 10px 20px;
+  margin: 0 10px;
+}
+.main {
+  background-color: #eceff1;
+  padding: 10px;
+  min-height: 80vh;
+}
+.sidebar {
+  min-height: 80vh;
+}
+.home {
+  width: 100%;
+}
+.home-wrapper {
+  background: #3e3e3e url("../images/sicp001.png") no-repeat;
+  height: auto;
+  text-align: center;
+  vertical-align: middle;
+  padding: 20px 0;
+  color: #fff;
+}
+.home-wrapper h1 {
+  font-size: 3.5em;
+  margin-top: 0;
+  margin-bottom: 0;
+  color: #fff;
+}
+.home-wrapper-post {
+  padding: 10px 5px;
+  min-height: auto;
+}
+.home-wrapper-about {
+  background: #3e3e3e;
+  color: #fff;
+  margin-top: 20px;
+  padding: 5px 20px;
+  min-height: auto;
+}
+.home-wrapper-about .contact-me {
+  background: #3e3e3e;
+  color: #fff;
+  margin-top: 5px;
+}
+.contact-me-title {
+  background-color: #3e3e3e;
+  color: #fff;
+  padding-left: 10px;
+}
+.table-operations {
+  margin-bottom: 16px;
+}
+.table-operations > button {
+  margin-right: 8px;
+}
+.ant-list {
+  background: #fff;
+}
+.post-title a {
+  font-size: large;
+}
+.post-title span {
+  text-align: right;
+}
+/*# sourceMappingURL=app.css.map */

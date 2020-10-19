@@ -1,0 +1,29 @@
+{:deps    {org.clojure/clojurescript       {:mvn/version "1.10.773"}
+           com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
+           org.clojure/core.incubator {:mvn/version "0.1.4"}
+           com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
+           markdown-clj {:mvn/version "1.10.5"}
+           camel-snake-kebab {:mvn/version "0.4.1"}
+           alandipert/storage-atom {:mvn/version "1.2.4"}
+           reagent                         {:mvn/version "0.10.0"
+                                            :exclusions [cljsjs/react cljsjs/react-dom]}
+           re-frame                        {:mvn/version "0.10.6"
+                                            :exclusions [cljsjs/react cljsjs/react-dom]}
+           venantius/accountant {:mvn/version "0.2.4"}
+           cljs-ajax {:mvn/version "0.8.0"}
+           clj-commons/secretary {:mvn/version "1.2.4"}
+           bouncer {:mvn/version "1.0.1"}
+           com.taoensso/timbre {:mvn/version "4.10.0"}
+           }
+
+ :paths   ["src" "src-cljc" "resources"]
+
+ :aliases {:fig {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.11"}
+                              com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
+                              re-frisk {:mvn/version "0.5.4.1"} }
+                 :extra-paths ["target"]}
+           :dev {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]
+                 :extra-paths ["env/dev"]}
+           :test {:extra-paths ["test"]}
+           :prod {:main-opts ["-m" "figwheel.main" "-bo" "prod"]
+                  :extra-paths ["env/prod"]}}}

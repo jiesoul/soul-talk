@@ -1,0 +1,4 @@
+{:production true
+ :port 3000
+ :database-url "jdbc:postgresql://localhost:5432/soul_talk?user=jiesoul&password=12345678"
+ :migrations "migrations"}

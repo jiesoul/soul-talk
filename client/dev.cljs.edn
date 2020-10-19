@@ -1,0 +1,20 @@
+^{:watch-dirs ["src-cljc" "src" "env/dev"]
+  :css-dirs ["resources/public/css"]}
+{:main soul-talk.app
+ :target :bundle
+ :bundle-cmd {:none ["npx.cmd" "webpack" "--mode=development" "-o" :final-output-to]}
+ :clean-outputs true
+ ;:infer-externs true
+ :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}
+ :preloads [re-frisk.preload]
+ :optimizations :none
+ ;:foreign-libs [{:file "dist/index.bundle.js"
+ ;                :provides ["react" "react-dom" "showdown" "antd" "hljs" "SimpleMDE"]
+ ;                :global-exports {react React
+ ;                                 react-dom ReactDOM
+ ;                                 hljs hljs
+ ;                                 showdown showdown
+ ;                                 antd antd
+ ;                                 SimpleMDE SimpleMDE
+ ;                                 api-uri "http://localhost:3001/api/v1"}}]
+ }
