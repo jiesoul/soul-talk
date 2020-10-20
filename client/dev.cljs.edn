@@ -2,12 +2,12 @@
   :css-dirs ["resources/public/css"]}
 {:main soul-talk.app
  :target :bundle
- :bundle-cmd {:none ["npx.cmd" "webpack" "--mode=development" "-o" :final-output-to]}
+ :bundle-cmd {:none ["npx.cmd" "webpack" "--mode=development"]}
  :clean-outputs true
  ;:infer-externs true
  :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}
  :preloads [re-frisk.preload]
- :optimizations :none
+ ;:optimizations :none
  ;:foreign-libs [{:file "dist/index.bundle.js"
  ;                :provides ["react" "react-dom" "showdown" "antd" "hljs" "SimpleMDE"]
  ;                :global-exports {react React
