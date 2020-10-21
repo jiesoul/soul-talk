@@ -21,6 +21,3 @@
 // window.antd = antd;
 
 import './default.less';
-
-export default () => {}
-
