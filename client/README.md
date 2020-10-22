@@ -1,4 +1,6 @@
-# soul-talk-web
+# soul-talk-client
+
+网站前端
 
 首先确保你安装了 java clojure nodejs yarn 
 

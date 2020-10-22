@@ -8,22 +8,23 @@
             [soul-talk.common.md-editor :refer [editor]]
             [soul-talk.date-utils :as du]
             [soul-talk.date-utils :refer [to-date]]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [antd]))
 
 (defn home-articles []
   (r/with-let [articles (subscribe [:public-articles])
                loading? (subscribe [:loading?])]
     (fn []
-      [:> js/antd.Skeleton
+      [:> antd/Skeleton
        {:loading @loading?
         :active true}
-       [:> js/antd.Layout.Content
-        [:> js/antd.Row {:gutter 10}
+       [:> antd/Layout.Content
+        [:> antd/Row {:gutter 10}
          (for [{:keys [id title createat author body] :as article} @articles]
            (let [url (str "/#/articles/" id)]
              ^{:key article}
-             [:> js/antd.Col {:xs 24 :sm 24 :md 8 :lg 8}
-              [:> js/antd.Card {:activeTabKey id
+             [:> antd/Col {:xs 24 :sm 24 :md 8 :lg 8}
+              [:> antd/Card {:activeTabKey id
                                 :title        (r/as-element
                                                 [:div
                                                  [:a.text-muted
@@ -39,14 +40,14 @@
                body]]))]]])))
 
 (defn blog-articles-list [articles]
-  [:> js/antd.List
+  [:> antd/List
    {:itemLayout "vertical"
     :size       "small"
     :dataSource @articles
     :renderItem #(let [{:keys [id title body createat author] :as article} (js->clj % :keywordize-keys true)]
                    (r/as-element
-                     [:> js/antd.List.Item
-                      [:> js/antd.List.Item.Meta
+                     [:> antd/List.Item
+                      [:> antd/List.Item.Meta
                        {:title       (r/as-element [:a
                                                     {:href   (str "#/articles/" id)
                                                      :target "_blank"}
@@ -64,13 +65,13 @@
               page (r/cursor edited-pagination [:page])
               pre-page (r/cursor edited-pagination[:pre-page])
               total (r/cursor edited-pagination [:total])]
-          [:> js/antd.Card
+          [:> antd/Card
            {:title "文章列表"}
            [:div
             [blog-articles-list articles]
             (when (pos? @total)
-              [:> js/antd.Row {:style {:text-align "center"}}
-               [:> js/antd.Pagination {:current   @page
+              [:> antd/Row {:style {:text-align "center"}}
+               [:> antd/Pagination {:current   @page
                                        :pageSize  @pre-page
                                        :total     @total
                                        :on-change #(do (reset! page %1)
@@ -81,25 +82,25 @@
   (r/with-let [articles (subscribe [:public-articles])]
     (when @articles
       (fn []
-        [:> js/antd.Card
+        [:> antd/Card
          {:title "文章列表"}
-         [:> js/antd.Layout.Content
+         [:> antd/Layout.Content
           [blog-articles-list articles]]]))))
 
 (defn blog-archives []
   (r/with-let [articles-archives (subscribe [:public-articles-archives])]
     (when @articles-archives
       (fn []
-        [:> js/antd.Card
+        [:> antd/Card
          {:title "文章归档"}
-         [:> js/antd.List
+         [:> antd/List
           {:itemLayout "vertical"
            :dataSource @articles-archives
            :renderItem (fn [article]
                          (let [{:keys [year month counter :as article]} (js->clj article :keywordize-keys true)
                                title (str year "年 " month " 月 (" counter ")")]
                            (r/as-element
-                             [:> js/antd.List.Item
+                             [:> antd/List.Item
                               [:div
                                [:a
                                 {:on-click #(navigate! (str "#/blog/archives/" year "/" month))}
@@ -125,7 +126,7 @@
               (r/as-element
                 (let [{:keys [id publish]} (js->clj article :keywordize-keys true)]
                   [:div
-                   [:> js/antd.Button {
+                   [:> antd/Button {
                                        :size   "small"
                                        :target "_blank"
                                        :href   (str "#/articles/" id)}

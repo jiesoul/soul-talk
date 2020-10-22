@@ -3,7 +3,8 @@
             [re-frame.core :as rf]
             [soul-talk.home.layout :refer [layout banner]]
             [soul-talk.article.component :refer [home-articles]]
-            [re-frame.core :refer [subscribe]]))
+            [re-frame.core :refer [subscribe]]
+            [antd]))
 
 (def resources-data
   [{:title "Clojure" :href "https://www.clojure.org"}
@@ -17,9 +18,9 @@
    {:title "Figwheel Main" :href "https://figwheel.org/"}])
 
 (def contact-data
-  [{:title "jiesoul" :icon "github" :href "https://github.com/jiesoul"}
-   {:title "jiesoul" :icon "weibo" :href "https://weibo.com/jiesoul"}
-   {:title "jiesoul1982" :icon "twitter" :http "https://twitter.com/jiesoul1982"}])
+  [{:title "github" :icon "github" :href "https://github.com/jiesoul"}
+   {:title "weibo" :icon "weibo" :href "https://weibo.com/jiesoul"}
+   {:title "twitter" :icon "twitter" :http "https://twitter.com/jiesoul1982"}])
 
 (defn list-resources [title data]
   [:div.contact-me
@@ -27,7 +28,7 @@
    (for [{:keys [title icon href]} data]
      ^{:key title}
      [:div
-      [:> js/antd.Button
+      [:> antd/Button
        {:href   href
         :target "_blank"
         :icon   icon
@@ -35,13 +36,13 @@
        title]])])
 
 (defn about []
-  [:> js/antd.Layout.Content
-   [:> js/antd.Row {:gutter 10}
-    [:> js/antd.Col {:xs 24 :sm 24 :md 6 :lg 6}
+  [:> antd/Layout.Content
+   [:> antd/Row {:gutter 10}
+    [:> antd/Col {:xs 24 :sm 24 :md 6 :lg 6}
      (list-resources "相关资源" resources-data)]
-    [:> js/antd.Col {:xs 24 :sm 24 :md 6 :lg 6}
+    [:> antd/Col {:xs 24 :sm 24 :md 6 :lg 6}
      (list-resources "联系我" contact-data)]]
-   [:> js/antd.Divider]
+   [:> antd/Divider]
    ])
 
 (defn home-page []
