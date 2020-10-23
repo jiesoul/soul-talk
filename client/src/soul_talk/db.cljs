@@ -7,5 +7,5 @@
    :breadcrumb ["Home"]
    :login-events []})
 
+(def api-uri js/soul_talk.api_url)
 
-(goog-define api-uri "http://localhost:3001/api/v1")

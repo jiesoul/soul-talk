@@ -3,8 +3,8 @@
             [reagent.core :as r]
             [reagent.dom :as rd]
             [showdown]
-            [highlight.js :as hljs]
-            [antd]))
+            [highlight.js :refer [hljs]]
+            [antd :as antd]))
 
 (defn to-time [date]
   (str (.toDateString (js/Date. date))))
@@ -79,7 +79,7 @@
     (loop [i (.-length nodes)]
       (when-not (neg? i)
         (when-let [item (.item nodes i)]
-          (.highlightBlock js/hljs item))
+          (.highlightBlock hljs item))
         (recur (dec i))))))
 
 ;; 处理 markdown 转换

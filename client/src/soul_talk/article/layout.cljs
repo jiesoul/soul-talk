@@ -3,7 +3,8 @@
             [re-frame.core :as rf]
             [bouncer.core :as b]
             [bouncer.validators :as v]
-            [soul-talk.common.component :refer [header]]))
+            [soul-talk.common.component :refer [header]]
+            [antd :as antd]))
 
 (defn article-errors [article]
   (->

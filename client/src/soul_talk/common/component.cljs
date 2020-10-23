@@ -1,6 +1,6 @@
 (ns soul-talk.common.component
   (:require [soul-talk.routes :refer [navigate!]]
-            [antd]))
+            [antd :as antd]))
 
 (defn logo []
   [:div.logo
@@ -9,12 +9,11 @@
 
 (defn header [nav]
   [:> antd/Layout.Header
-   {:className "home-header"}
    [:> antd/Row
     [:> antd/Col {:xs 24 :sm 24 :md 8 :lg 8}
      [logo]]
     [:> antd/Col {:xs 24 :sm 24 :md 16 :lg 16
-                     :style {:text-align "right"}}
+                     :style {:textAlign "right"}}
      nav]]])
 
 (defn header-dropdown [menu title]
@@ -27,14 +26,12 @@
    ])
 
 (defn footer []
-  [:> antd/Layout.Footer {:style {:text-align "center"
-                                     :background "#3e3e3e"}}
-   [:> antd/Row
-    [:h4 {:style {:color "#FFF"}}
-     "Made with By "
-     [:a
-      {:type   "link"
-       :href   "https://ant.design"
-       :target "_blank"}
-      "Ant Design"]
-     " and JIESOUL "]]])
+  [:> antd/Layout.Footer {:style {:textAlign "center"}}
+   [:h4 {:style {:color "#FFF"}}
+    "Made with By "
+    [:a
+     {:type   "link"
+      :href   "https://ant.design"
+      :target "_blank"}
+     "Ant Design"]
+    " and JIESOUL "]])
