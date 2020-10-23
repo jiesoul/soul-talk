@@ -1,6 +1,7 @@
 (ns soul-talk.common.component
   (:require [soul-talk.routes :refer [navigate!]]
-            [antd :as antd]))
+            [antd :as antd]
+            ["@ant-design/icons" :as antd-icons]))
 
 (defn logo []
   [:div.logo
@@ -12,8 +13,7 @@
    [:> antd/Row
     [:> antd/Col {:xs 24 :sm 24 :md 8 :lg 8}
      [logo]]
-    [:> antd/Col {:xs 24 :sm 24 :md 16 :lg 16
-                     :style {:textAlign "right"}}
+    [:> antd/Col {:xs 24 :sm 24 :md 16 :lg 16}
      nav]]])
 
 (defn header-dropdown [menu title]
@@ -21,7 +21,7 @@
                         :style {:color "#000"}}
    [:a {:className "ant-dropdown-link"
         :href "#"}
-    [:> js/antd.Icon {:type "user"}]
+    [:> antd-icons/UserOutlined]
     "  " title]
    ])
 

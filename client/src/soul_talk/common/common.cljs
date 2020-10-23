@@ -3,7 +3,7 @@
             [reagent.core :as r]
             [reagent.dom :as rd]
             [showdown]
-            [highlight.js :refer [hljs]]
+            ["react-highlight.js" :as hljs]
             [antd :as antd]))
 
 (defn to-time [date]
@@ -39,7 +39,7 @@
 (defn error-modal []
   (r/with-let [error (subscribe [:error])]
     (when @error
-      (antd/message.error @error)
+      ;(antd/message.error @error)
       (dispatch [:clean-error]))))
 
 
@@ -79,7 +79,7 @@
     (loop [i (.-length nodes)]
       (when-not (neg? i)
         (when-let [item (.item nodes i)]
-          (.highlightBlock hljs item))
+          (.highlightBlock hljs/hljs item))
         (recur (dec i))))))
 
 ;; 处理 markdown 转换

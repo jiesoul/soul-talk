@@ -4,7 +4,8 @@
             [soul-talk.common.component :refer [header header-dropdown footer]]
             [soul-talk.routes :refer [navigate!]]
             [soul-talk.common.common :as c]
-            [antd]))
+            [antd :as antd]
+            ["@ant-design/icons" :as antd-icons]))
 
 (defn layout [children]
   [:> antd/Layout
@@ -16,58 +17,48 @@
 (defn nav []
   [:> antd/Menu
    [:> antd/Menu.Item {:key "user-profile"
-                          :on-click #(navigate! "#/user-profile")}
-    [:> antd/Icon {:type "user"}]
+                       :on-click #(navigate! "#/user/profile")}
     "个人信息"]
    [:> antd/Menu.Item {:key "change-pass"
-                          :on-click #(navigate! "#/change-pass")}
-    [:> antd/Icon {:type "setting"}]
+                       :on-click #(navigate! "#/user/password")}
+
     "密码修改"]
    [:> antd/Menu.Divider]
    [:> antd/Menu.Item {:key      "cancel"
-                          :on-click #(dispatch [:logout])}
-    [:> antd/Icon {:type "poweroff"}]
+                       :on-click #(dispatch [:logout])
+                       :icon (r/as-element [:> antd-icons/LoginOutlined])}
     "退出登录"]])
 
 (defn sidebar [active-page]
   [:> antd/Layout.Sider {:className "sidebar"}
    [:> antd/Menu {:mode                "inline"
-                     :className            "sidebar"
-                     :theme               "light"
-                     :default-select-keys ["dash"]
-                     :default-open-keys   ["tags" "articles" "users"]
-                     :selected-keys       [(key->js @active-page)]}
+                  :defaultselectkeys ["dash"]
+                  :selected-keys       [(key->js @active-page)]}
     [:> antd/Menu.Item {:key      "dash"
-                           :on-click #(navigate! "#/dash")}
-     [:span
-      [:> antd/Icon {:type "area-chart"}]
-      [:span "Dash"]]]
+                        :on-click #(navigate! "#/dash")} [:span
+                                                          [:span "面板"]]]
     [:> antd/Menu.SubMenu {:key   "tags"
-                              :title (r/as-element [:span
-                                                    [:> antd/Icon {:type "form"}]
-                                                    [:span "标签管理"]])}
+                           :title (r/as-element [:span
+                                                 [:span "标签管理"]])}
      [:> antd/Menu.Item {:key      "tags-list"
-                            :on-click #(navigate! "#/tags")}
+                         :on-click #(navigate! "#/tags")}
       "分类"]]
     [:> antd/Menu.SubMenu {:key   "articles"
-                              :title (r/as-element [:span
-                                                    [:> antd/Icon {:type "form"}]
-                                                    [:span "文章管理"]])}
+                           :title (r/as-element [:span
+                                                 [:span "文章管理"]])}
      [:> antd/Menu.Item {:key      "articles-list"
-                            :on-click #(navigate! "#/articles")}
+                         :on-click #(navigate! "#/articles")}
       "文章"]]
 
     [:> antd/Menu.SubMenu {:key   "user"
-                              :title (r/as-element
-                                       [:span
-                                        [:> antd/Icon {:type "user"}]
-                                        [:span "个人管理"]])}
+                           :title (r/as-element
+                                    [:span
+                                     [:span "个人管理"]])}
      [:> antd/Menu.Item {:key      "user-profile"
-                            :icon     "user"
-                            :on-click #(navigate! "#/user/profile")}
+                         :on-click #(navigate! "#/user/profile")}
       "个人信息"]
      [:> antd/Menu.Item {:key      "change-pass"
-                            :on-click #(navigate! "#/user/password")} "密码修改"]
+                         :on-click #(navigate! "#/user/password")} "密码修改"]
      ]]])
 
 (defn basic-layout [main]

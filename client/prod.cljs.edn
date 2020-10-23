@@ -11,7 +11,7 @@
  :pretty-print    true
  :closure-defines {"goog.DEBUG"       false
                    cljs.core/*global* "window"
-                   soul-talk/api-uri "https://jiesoul.com/api/v1"}
+                   "soul_talk.db.api_uri" "https://jiesoul.com/api/v1"}
  :foreign-libs    [{:file           "dist/index.bundle.js"
                     :provides       ["react" "react-dom" "showdown" "hljs" "SimpleMDE"]
                     :global-exports {react     React

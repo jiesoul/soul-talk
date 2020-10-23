@@ -1,6 +1,7 @@
 (ns soul-talk.dash.page
   (:require [reagent.core :as r]
-            [soul-talk.common.layout :refer [basic-layout]]))
+            [soul-talk.common.layout :refer [basic-layout]]
+            [antd :as antd]))
 
 (defn show-revenue-chart
   []

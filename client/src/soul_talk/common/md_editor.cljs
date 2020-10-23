@@ -1,7 +1,8 @@
 (ns soul-talk.common.md-editor
   (:require [reagent.dom :as rd]
             [reagent.core :as r]
-            [re-frame.core :refer [dispatch subscribe]]))
+            [re-frame.core :refer [dispatch subscribe]]
+            [react-simplemde-editor :as sm]))
 
 (def ^{:private true} hint-limit 10)
 
@@ -111,6 +112,10 @@
                       (nth 3)))))
 
 (defn editor [text keys]
+  [:div
+   ])
+
+(defn editor-js [text keys]
   (r/create-class
     {:display-name "me-editor"
      :component-did-mount

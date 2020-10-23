@@ -7,6 +7,6 @@
  :aot-cache       false
  :clean-outputs   true
  :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true
-                   soul-talk.app/api-uri "http://localhost:3000/api/v1"}
- :preloads        [day8.re-frame-10x.preload devtools.preload]
+                   "soul_talk.db.api_url"               "http://localhost:3000/api/v1"}
+ :preloads        [re-frisk.preload devtools.preload]
  }

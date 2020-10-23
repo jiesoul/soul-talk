@@ -31,8 +31,8 @@
      :dispatch-n (list
                    [:set-breadcrumb ["Home" "Post" "List"]]
                    [:run-login-events]
-                   [:set-active-page :admin]
-                   [:navigate-to "/#/admin"])
+                   [:set-active-page :dash]
+                   [:navigate-to "/#/dash"])
      :set-user! user
      :set-auth-token! token}))
 

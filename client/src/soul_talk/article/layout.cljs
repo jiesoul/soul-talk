@@ -26,25 +26,21 @@
      (for [{:keys [id name]} @categories]
        ^{:key id} [:> antd/Select.Option {:value id} name]))])
 
-(defn edit-menu [article edited-article categories]
-  (let [category (r/cursor edited-article [:category])]
-    [:div {:style {:color "#FFF"}}
-     [:> antd/Col {:span 2 :offset 2}
-      [:h3 {:style {:color "#FFF"}}
-       (if @article "修改文章" "写文章")]]
-     [:> antd/Col {:span 16}
-      [category-select category categories]
-      [:> antd/Button {:ghost   true
-                       :on-click #(if-let [error (r/as-element (article-errors @edited-article))]
-                                    (rf/dispatch [:set-error error])
-                                    (if @article
-                                      (rf/dispatch [:articles/edit @edited-article])
-                                      (rf/dispatch [:articles/add @edited-article])))}
-       "保存"]]]))
+(defn edit-menu []
+  (r/with-let [article [rf/subscribe [:article]]]
+    [:> antd/Col {:span 2 :offset 2}
+     [:h3 {:style {:color "#FFF"}}
+      (if @article "修改文章" "写文章")]]
+    [:> antd/Col {:span 16}
+     [:> antd/Button {:ghost    true
+                      :on-click #(if @article
+                                  (rf/dispatch [:articles/edit @article])
+                                  (rf/dispatch [:articles/add @article]))}
+      "保存"]]))
 
-(defn article-layout [article edited-article categories main]
+(defn article-layout [article edited-article main]
   [:> antd/Layout
    [header
-    [edit-menu article edited-article categories]]
+    [edit-menu]]
    [:> antd/Layout.Content {:className "main"}
     main]])
