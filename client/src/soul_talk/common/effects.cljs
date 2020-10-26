@@ -1,7 +1,7 @@
-(ns soul-talk.base.effects
+(ns soul-talk.common.effects
   (:require [re-frame.core :as rf :refer [dispatch reg-fx reg-event-fx]]
             [accountant.core :as accountant]
-            [soul-talk.base.local-storage :as storage]))
+            [soul-talk.common.local-storage :as storage]))
 
 (reg-fx
  :http
@@ -56,3 +56,7 @@
  :clean-auth-token
  (fn []
    (storage/remove-item! storage/auth-token-key)))
+
+;; 响应事件
+(defn query [db [event-id]]
+  (event-id db))

@@ -1,5 +1,6 @@
 (ns soul-talk.subs
-  (:require [re-frame.core :refer [reg-sub]]))
+  (:require [re-frame.core :refer [reg-sub]]
+            [soul-talk.article.subs]))
 
 ;; 获取当时全部数据
 (reg-sub
@@ -45,15 +46,7 @@
 
 (reg-sub :tags query)
 
-(reg-sub :articles query)
 
-(reg-sub :article query)
-
-(reg-sub :public-articles query)
-
-(reg-sub :public-articles-archives query)
-
-(reg-sub :public-articles-archives-year-month query)
 
 (reg-sub :users query)
 

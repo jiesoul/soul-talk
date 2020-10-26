@@ -1,4 +1,4 @@
-(ns soul-talk.user.handler
+(ns soul-talk.user.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db subscribe]]
             [ajax.core :refer [GET POST PUT]]
             [soul-talk.db :refer [api-uri]]))

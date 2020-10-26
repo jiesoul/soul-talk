@@ -1,8 +1,8 @@
-(ns soul-talk.auth.handler
+(ns soul-talk.auth.events
   (:require [soul-talk.db :refer [api-uri] :as db]
             [re-frame.core :refer [reg-event-fx reg-event-db dispatch inject-cofx]]
             [ajax.core :refer [POST GET DELETE PUT]]
-            [soul-talk.base.local-storage :refer [login-user-key auth-token-key]]))
+            [soul-talk.common.local-storage :refer [login-user-key auth-token-key]]))
 
 
 ;; 运行 login

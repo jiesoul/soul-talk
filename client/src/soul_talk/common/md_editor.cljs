@@ -2,7 +2,7 @@
   (:require [reagent.dom :as rd]
             [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe]]
-            [react-simplemde-editor :as sm]))
+            [react-simplemde-editor :as sm :refer [SimpleMDE]]))
 
 (def ^{:private true} hint-limit 10)
 
@@ -112,7 +112,7 @@
                       (nth 3)))))
 
 (defn editor [text keys]
-  [:div
+  [:> SimpleMDE
    ])
 
 (defn editor-js [text keys]

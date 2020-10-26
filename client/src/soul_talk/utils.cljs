@@ -1,4 +1,4 @@
-(ns soul-talk.date-utils
+(ns soul-talk.utils
   (:require [cljs-time.format :as cf :refer [parse unparse formatter formatters]]
             [cljs-time.coerce :as tc]))
 
@@ -17,4 +17,7 @@
    (to-date date custom-formatter-date))
   ([date formatter]
    (unparse formatter (tc/from-date date))))
+
+(defn to-time [date]
+  (str (.toDateString (js/Date. date))))
 

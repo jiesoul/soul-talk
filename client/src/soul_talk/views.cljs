@@ -2,14 +2,14 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.routes :refer [logged-in? navigate!]]
-            [soul-talk.common.common :as c]
-            [soul-talk.dash.page :as dash]
-            [soul-talk.home.page :as home]
-            [soul-talk.auth.component :as auth]
-            [soul-talk.user.component :as users]
-            [soul-talk.article.component :as article]
-            [soul-talk.blog.page :as blog]
-            [soul-talk.tag.component :as tag]
+            [soul-talk.common.views :as c]
+            [soul-talk.dash.views :as dash]
+            [soul-talk.home.view :as home]
+            [soul-talk.auth.views :as auth]
+            [soul-talk.user.views :as users]
+            [soul-talk.article.views :as article]
+            [soul-talk.blog.views :as blog]
+            [soul-talk.tag.views :as tag]
             [clojure.string :as str]))
 
 ;;多重方法  响应对应的页面
@@ -27,16 +27,16 @@
   (r/with-let [user (subscribe [:user])]
     (if @user
       [page]
-      (navigate! "#/dash"))))
+      (navigate! "#/login"))))
 
 ;;后台页面
 (defmethod pages :dash [_ _]
   (admin dash/dash-page))
 
-(defmethod pages :change-pass [_ _]
+(defmethod pages :users-password [_ _]
   (admin users/change-pass-page))
 
-(defmethod pages :user-profile [_ _]
+(defmethod pages :users-profile [_ _]
   (admin users/user-profile-page))
 
 (defmethod pages :users [_ _]
@@ -45,13 +45,13 @@
 (defmethod pages :articles [_ _]
   (admin article/articles-page))
 
-(defmethod pages :articles/add [_ _]
+(defmethod pages :articles-add [_ _]
   (admin article/add-article-page))
 
-(defmethod pages :articles/edit [_ _]
+(defmethod pages :articles-edit [_ _]
   (admin article/edit-article-page))
 
-(defmethod pages :default [_ _] [:div "页面未找到"])
+(defmethod pages :default [_ _] [:div "页面未找到,请检查URL"])
 
 ;; 根据配置加载不同页面
 (defn main-page []

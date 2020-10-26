@@ -80,13 +80,13 @@
   (run-events [[:set-breadcrumb ["面板"]]
                [:set-active-page :dash]]))
 
-(defroute "/user/password" []
+(defroute "/users/password" []
   (run-events [[:set-breadcrumb ["个人管理" "修改密码"]]
-               [:set-active-page :change-pass]]))
+               [:set-active-page :users-password]]))
 
-(defroute "/user/profile" []
+(defroute "/users/profile" []
   (run-events [[:set-breadcrumb ["个人管理" "个人信息"]]
-               [:set-active-page :user-profile]]))
+               [:set-active-page :users-profile]]))
 
 (defroute "/users/edit" []
   (run-events [[:set-breadcrumb ["用户" "清单"]]
@@ -107,12 +107,9 @@
                [:set-breadcrumb ["文章" "列表"]]
                [:set-active-page :articles]]))
 
-
-
 (defroute "/articles/add" []
-  (r/with-let [user (subscribe [:user])]
-    (run-events [[:load-tags]
-                 [:set-active-page :articles/add]])))
+  (run-events [[:load-tags]
+               [:set-active-page :articles-add]]))
 
 (defroute "/articles/:id/edit" [id]
   (if-not (or (logged-in?)
@@ -120,12 +117,12 @@
     (navigate! "/login")
     (run-events [[:load-post id]
                  [:load-tags]
-                 [:set-active-page :articles/edit]])))
+                 [:set-active-page :articles-edit]])))
 
 (defroute "/articles/:id" [id]
   (run-events [[:load-tags]
                [:load-article id]
-               [:set-active-page :articles/view]]))
+               [:set-active-page :articles-view]]))
 
 (defroute "*" []
   )

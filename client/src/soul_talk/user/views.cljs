@@ -1,15 +1,15 @@
-(ns soul-talk.user.component
-  (:require [reagent.core :as r]
-            [re-frame.core :refer [subscribe dispatch]]
-            [antd]
-            [soul-talk.common.layout :refer [basic-layout]]))
+(ns soul-talk.user.views
+  (:require [soul-talk.common.views :refer [manager-layout]]
+            [reagent.core :as r]
+            [re-frame.core :as rf]
+            [antd :as antd]))
 
 (defn users-page []
   (fn []
     [:div
      [:h2 "User List"]
      (r/with-let
-       [users (subscribe [:admin/users])]
+       [users (rf/subscribe [:admin/users])]
        (if @users
          [:div.table-responsive
           [:table.table.table-striped.table-sm
@@ -27,55 +27,52 @@
                             [:td (.toDateString (js/Date. last_login))]
                             [:td "action"]])]]]))]))
 
-
-
-
 (defn change-pass-page []
-  (r/with-let [user (subscribe [:user])
+  (r/with-let [user (rf/subscribe [:user])
                pass-data (r/atom @user)
                pass-old (r/cursor pass-data [:pass-old])
                pass-new (r/cursor pass-data [:pass-new])
                pass-confirm (r/cursor pass-data [:pass-confirm])
-               error (subscribe [:error])]
+               error (rf/subscribe [:error])]
     (fn []
       (if @user
-        [basic-layout
+        [manager-layout
          [:> antd/Layout.Content {:className "main" :align "center"}
           [:> antd/Row
            [:> antd/Col {:span 8 :offset 8}
             [:> antd/Input {:id           "username"
-                               :disabled     true
-                               :addon-before "用户名："
-                               :value        (:name @pass-data)}]
+                            :disabled     true
+                            :addon-before "用户名："
+                            :value        (:name @pass-data)}]
             [:> antd/Input.Password {:id           "old-pass"
-                                        :name         "old-pass"
-                                        :placeholder  "请输入旧密码"
-                                        :addon-before "旧密码："
-                                        :on-change    #(reset! pass-old (.-target.value %))}]
+                                     :name         "old-pass"
+                                     :placeholder  "请输入旧密码"
+                                     :addon-before "旧密码："
+                                     :on-change    #(reset! pass-old (.-target.value %))}]
             [:> antd/Input.Password {:id           "pass-new"
-                                        :name         "pass-new"
-                                        :placeholder  "请输入新密码"
-                                        :addon-before "新密码："
-                                        :on-change    #(reset! pass-new (.-target.value %))}]
+                                     :name         "pass-new"
+                                     :placeholder  "请输入新密码"
+                                     :addon-before "新密码："
+                                     :on-change    #(reset! pass-new (.-target.value %))}]
             [:> antd/Input.Password {:id           "pass-confirm"
-                                        :name         "pass-confirm"
-                                        :placeholder  "重复新密码"
-                                        :addon-before "新密码："
-                                        :on-change    #(reset! pass-confirm (.-target.value %))}]
+                                     :name         "pass-confirm"
+                                     :placeholder  "重复新密码"
+                                     :addon-before "新密码："
+                                     :on-change    #(reset! pass-confirm (.-target.value %))}]
             [:div
              [:> antd/Button {:type     "primary"
-                              :on-click #(dispatch [:change-pass @pass-data])}
+                              :on-click #(rf/dispatch [:change-pass @pass-data])}
               "保存"]]]]]]))))
 
 
 (defn user-profile-page []
-  (r/with-let [user (subscribe [:user])
+  (r/with-let [user (rf/subscribe [:user])
                edited-user (r/atom @user)
                name (r/cursor edited-user [:name])
-               error (subscribe [:error])]
+               error (rf/subscribe [:error])]
     (fn []
       (if @user
-        [basic-layout
+        [manager-layout
          [:> antd/Layout.Content
           [:> antd/Row
            [:> antd/Col {:span 8 :offset 8}
@@ -97,6 +94,19 @@
             [:div {:style {:text-align "center"}}
              [:> antd/Button
               {:type     :submit
-               :on-click #(dispatch [:save-user-profile @edited-user])}
+               :on-click #(rf/dispatch [:save-user-profile @edited-user])}
               "保存"]]]]]]))))
 
+
+(defn copyright []
+  [:> antd/Layout.Footer
+   "Copyright "
+   [:> antd/Icon]
+   " 2019 "])
+
+(defn user-layout [children]
+  [:> antd/Layout {:title ""}
+   [:> antd/Layout.Content {:style {:min-height "100vh"
+                                    :padding    "24px 0 20px 0"}}
+    children]
+   copyright])

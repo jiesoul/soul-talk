@@ -1,4 +1,4 @@
-(ns soul-talk.dash.handler
+(ns soul-talk.dash.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db]]
             [ajax.core :refer [POST GET]]
             [soul-talk.db :refer [api-uri]]))

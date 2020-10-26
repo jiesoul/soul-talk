@@ -1,4 +1,4 @@
-(ns soul-talk.tag.handler
+(ns soul-talk.tag.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db]]
             [ajax.core :refer [GET POST]]
             [clojure.string :as str]

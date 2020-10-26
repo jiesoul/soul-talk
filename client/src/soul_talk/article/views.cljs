@@ -1,14 +1,15 @@
-(ns soul-talk.article.component
+(ns soul-talk.article.views
   (:require [reagent.core :as r]
             [re-frame.core :as rf :refer [subscribe dispatch]]
             [soul-talk.routes :refer (navigate!)]
-            [soul-talk.common.layout :refer [layout basic-layout]]
-            [soul-talk.article.layout :refer [article-layout]]
-            [soul-talk.common.common :as c]
-            [soul-talk.common.md-editor :refer [editor]]
-            [soul-talk.date-utils :as du]
-            [soul-talk.date-utils :refer [to-date]]
+            [soul-talk.common.views :as c :refer [logo home-layout manager-layout header]]
+            ;[soul-talk.common.md-editor :refer [editor]]
+            [soul-talk.utils :as du]
+            [soul-talk.utils :refer [to-date]]
             [clojure.string :as str]
+            [bouncer.validators :as v]
+            [bouncer.core :as b]
+            ["react-simplemde-editor" :as ed]
             [antd :as antd]))
 
 (defn home-articles []
@@ -106,8 +107,6 @@
                                 {:on-click #(navigate! (str "#/blog/archives/" year "/" month))}
                                 title]]])))}]]))))
 
-
-
 (defn list-columns []
   [{:title "标题" :dataIndex "title", :key "title", :align "center"}
    {:title  "创建时间" :dataIndex "createat" :key "createat" :align "center"
@@ -164,7 +163,7 @@
                        :size       "small"}]])))
 
 (defn articles-page []
-  [basic-layout
+  [manager-layout
    [:> antd/Layout.Content {:className "main"}
     [:> antd/Button
      {:target "_blank"
@@ -174,8 +173,27 @@
     [:> antd/Divider]
     [articles-list]]])
 
+(defn edit-menu []
+  (r/with-let [article (rf/subscribe [:editing-article])]
+    (fn []
+      [:> antd/Col {:span 2 :offset 2}
+       [:h3
+        (if @article "修改文章" "写文章")]]
+      [:> antd/Col {:span 16}
+       [:> antd/Button
+        "保存"]])))
+
+(defn article-layout [main]
+  [:> antd/Layout
+   [header edit-menu]
+   [:> antd/Layout.Content
+    main]])
+
+(defn editor [text]
+  [:> ed/SimpleMDE ])
+
 (defn add-article-page []
-  (r/with-let [article (rf/subscribe [:article])
+  (r/with-let [article (rf/subscribe [:editing-article])
                user (rf/subscribe [:user])
                tags (rf/subscribe [:tags])]
     (fn []
@@ -193,16 +211,15 @@
             title       (r/cursor edited-article [:title])]
 
         [article-layout
-         [:> antd/Layout.Content {:style {:backdrop-color "#fff"}}
-          [:> antd/Col {:span 16 :offset 4 :style {:padding-top "10px"}}
-           [:> antd/Form
+         [:> antd/Form
+          [:> antd/Row
+           [:> antd/Col {:span 16 :offset 4 :style {:padding-top "10px"}}
             [:> antd/Input
              {:on-change   #(let [val (-> % .-target .-value)]
                               (reset! title val))
-              :placeholder "请输入标题"}]]
-           [:> antd/Row
-            [editor body]
-            ]]]]))))
+              :placeholder "请输入标题"}]]]
+          [:> antd/Row
+           [editor body]]]]))))
 
 (defn edit-article-page []
   (r/with-let [article (subscribe [:article])
@@ -268,3 +285,26 @@
                               title]]
                             [:p.blog-article-meta (str (.toDateString (js/Date. createat)) " by " author)]
                             [:hr]]))])))
+
+(defn article-errors [article]
+  (->
+    (b/validate
+      article
+      :title [[v/required :message "标题不能为空\n"]]
+      :body [[v/required :message "内容不能为空\n"]])
+    first
+    (vals)))
+
+(defn category-select [category categories]
+  [:> antd/Select {:value        {:key @category}
+                   :labelInValue true
+                   :style        {:width 120 :padding "5px"}
+                   :on-change    #(let [val (:key (js->clj % :keywordize-keys true))]
+                                    (reset! category val))}
+   [:> antd/Select.Option {:value ""} "选择分类"]
+   (doall
+     (for [{:keys [id name]} @categories]
+       ^{:key id} [:> antd/Select.Option {:value id} name]))])
+
+
+

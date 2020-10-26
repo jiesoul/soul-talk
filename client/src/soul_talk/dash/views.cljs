@@ -1,6 +1,6 @@
-(ns soul-talk.dash.page
+(ns soul-talk.dash.views
   (:require [reagent.core :as r]
-            [soul-talk.common.layout :refer [basic-layout]]
+            [soul-talk.common.views :refer [manager-layout]]
             [antd :as antd]))
 
 (defn show-revenue-chart
@@ -40,7 +40,7 @@
 
 (defn dash-page []
   (fn []
-    [basic-layout
+    [manager-layout
      [:div
       [:h1.h2 "Dashboard"]
       [:div.btn-toolbar.mb-2.mb-md-0

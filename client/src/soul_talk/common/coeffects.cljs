@@ -1,6 +1,6 @@
-(ns soul-talk.base.coeffects
+(ns soul-talk.common.coeffects
   (:require [re-frame.core :as rf]
-            [soul-talk.base.local-storage :as local-store]))
+            [soul-talk.common.local-storage :as local-store]))
 
 (rf/reg-cofx
   :now

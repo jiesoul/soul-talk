@@ -1,12 +1,11 @@
-(ns soul-talk.handlers
+(ns soul-talk.events
   (:require [re-frame.core :refer [inject-cofx dispatch dispatch-sync reg-event-db reg-event-fx subscribe]]
             [soul-talk.db :refer [default-db]]
-            [soul-talk.base.local-storage :as storage]
-            [soul-talk.article.handler]
-            [soul-talk.common.errors]
-            [soul-talk.auth.handler]
-            [soul-talk.tag.handler]
-            [soul-talk.user.handler]))
+            [soul-talk.common.local-storage :as storage]
+            [soul-talk.article.events]
+            [soul-talk.auth.events]
+            [soul-talk.tag.events]
+            [soul-talk.user.events]))
 
 ;; 初始化
 (reg-event-fx
@@ -73,3 +72,23 @@
      :db             (-> db
                        (assoc :should-be-loading? true)
                        (dissoc :error))}))
+
+(reg-event-fx
+  :ajax-error
+  (fn [db [_ {:keys [response status status-text] :as resp}]]
+    (js/console.log "ajax-error: " resp)
+    {:dispatch-n (condp = status
+                   0 (list [:set-error status-text])
+                   401 (list [:set-error (:message response)] [:logout])
+                   404 (list [:set-error "资源未找到"])
+                   (list [:set-error (:message response)]))}))
+
+(reg-event-db
+  :set-error
+  (fn [db [_ error]]
+    (assoc db :error error)))
+
+(reg-event-db
+  :clean-error
+  (fn [db _]
+    (dissoc db :error)))

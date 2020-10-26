@@ -1,4 +1,4 @@
-(ns soul-talk.article.handler
+(ns soul-talk.article.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db subscribe]]
             [ajax.core :refer [POST GET DELETE PUT]]
             [soul-talk.db :refer [api-uri]]
@@ -181,3 +181,27 @@
     {:http {:method        GET
             :url           (str api-uri "/articles/archives/" year "/" month)
             :success-event [:set-public-articles-archives-year-month]}}))
+
+(reg-event-db
+  :upload-md-file-ok
+  (fn [db [_ {:keys [md]}]]
+    (.val (js/$ "#editMdTextarea") md)
+    (assoc db :upload/md md)))
+
+(reg-event-db
+  :upload-md-file-error
+  (fn [_ [_ {:keys [message]}]]
+    (js/alert message)))
+
+(reg-event-fx
+  :upload-md-file
+  (fn [_ [_ files]]
+    (let [data (doto
+                 (js/FormData.)
+                 (.append "file" files))]
+      {:http
+       {:method   POST
+        :url               (str api-uri "/admin/files/md")
+        :ajax-map          {:body data}
+        :success-event [:upload-md-file-ok]
+        :error-event [:upload-md-file-error]}})))

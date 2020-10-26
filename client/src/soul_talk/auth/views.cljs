@@ -1,8 +1,8 @@
-(ns soul-talk.auth.component
+(ns soul-talk.auth.views
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe]]
             [soul-talk.routes :refer [navigate!]]
-            [soul-talk.common.component :refer [logo footer]]
+            [soul-talk.common.views :refer [logo footer]]
             [antd :as antd]
             ["@ant-design/icons" :as antd-icons])
   (:import goog.History))

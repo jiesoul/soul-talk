@@ -1,4 +1,4 @@
-(ns soul-talk.base.local-storage
+(ns soul-talk.common.local-storage
   (:require [taoensso.timbre :as log]))
 
 (defonce login-user-key "login-user")
