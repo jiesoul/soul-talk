@@ -2,7 +2,7 @@
   (:require [reagent.dom :as rd]
             [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe]]
-            [react-simplemde-editor :as sm :refer [SimpleMDE]]))
+            [easymde :as EasyMDE]))
 
 (def ^{:private true} hint-limit 10)
 
@@ -78,10 +78,10 @@
   IIndexed
   (-nth
     ([array n]
-      (if (< n (alength array)) (aget array n)))
+     (if (< n (alength array)) (aget array n)))
     ([array n not-found]
-      (if (< n (alength array)) (aget array n)
-                                not-found))))
+     (if (< n (alength array)) (aget array n)
+                               not-found))))
 
 (defn- inject-editor-implementation [editor]
   (do
@@ -98,29 +98,25 @@
                      .getScrollerElement
                      .-parentNode
                      .-parentNode)
-                    (-> editor
-                      .-codemirror
-                      .getScrollElement
-                      .-parentNode)
-                    (-> editor
-                      .-codemirror
-                      .getScrollerElement
-                      .-parentNode
-                      .-parentNode
-                      .-parentNode
-                      .-childNodes
-                      (nth 3)))))
+      (-> editor
+        .-codemirror
+        .getScrollElement
+        .-parentNode)
+      (-> editor
+        .-codemirror
+        .getScrollerElement
+        .-parentNode
+        .-parentNode
+        .-parentNode
+        .-childNodes
+        (nth 3)))))
 
 (defn editor [text keys]
-  [:> SimpleMDE
-   ])
-
-(defn editor-js [text keys]
   (r/create-class
-    {:display-name "me-editor"
+    {:display-name "md-editor"
      :component-did-mount
                    (fn [this olg-argv]
-                     (let [editor      (js/SimpleMDE.
+                     (let [editor      (EasyMDE.
                                          (clj->js
                                            {:display-name    "md-editor"
                                             :status          true
@@ -129,7 +125,7 @@
                                                               "heading" "code" "quote" "|"
                                                               "unordered-list" "ordered-list" "|"
                                                               "link" "image" "|"
-                                                              "preview" "guide" "|"
+                                                              "preview" "|"
                                                               {:name      "upload"
                                                                :action    (fn [] (.modal (js/$ "#uploadMdModal") "show"))
                                                                :className "fa fa-file"
@@ -138,17 +134,15 @@
                                             :element         (rd/dom-node this)
                                             :force-sync      true
                                             :initialValue    @text
-                                            :value @text}))
+                                            :value           @text}))
                            hints-shown (atom false)]
                        (do
-                         (js/console.log (.value editor))
                          ;(inject-editor-implementation editor)
                          ;(editor-set-shortcut (-> editor .codemirror))
                          ;(add-watch hints :watch-hints (show-hint (-> editor .-codemirror)))
                          (-> editor
                            .-codemirror
                            (.on "change" #(let [value (.value editor)]
-                                            (js/console.log value)
                                             (reset! text value))))
                          ;(-> editor .-codemirror (.on "change" (fn [] (when @hints-shown (sent-hint-request (-> editor .-codemirror))))))
                          ;(-> editor .-codemirror (.on "startCompletion" (fn [] (reset! hints-shown true))))
@@ -156,12 +150,5 @@
                          )))
      :reagent-render
                    (fn [text keys]
-                     (js/console.log "editor content: " @text)
                      [:textarea {:default-value @text
-                                 :value @text}])}))
-
-(defn editor-1 [text keys]
-  [:div
-   [:> js/SimpleMDE
-    {:value @text
-     :on-change #(dispatch [:update-value keys (.-value %)])}]])
+                                 :value         @text}])}))

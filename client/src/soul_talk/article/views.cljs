@@ -3,13 +3,9 @@
             [re-frame.core :as rf :refer [subscribe dispatch]]
             [soul-talk.routes :refer (navigate!)]
             [soul-talk.common.views :as c :refer [logo home-layout manager-layout header]]
-            ;[soul-talk.common.md-editor :refer [editor]]
-            [soul-talk.utils :as du]
-            [soul-talk.utils :refer [to-date]]
-            [clojure.string :as str]
-            [bouncer.validators :as v]
+            [soul-talk.utils :as du :refer [to-date]]
+            [soul-talk.common.md-editor :refer [editor]]
             [bouncer.core :as b]
-            ["react-simplemde-editor" :as ed]
             [antd :as antd]))
 
 (defn home-articles []
@@ -175,22 +171,19 @@
 
 (defn edit-menu []
   (r/with-let [article (rf/subscribe [:editing-article])]
-    (fn []
-      [:> antd/Col {:span 2 :offset 2}
-       [:h3
-        (if @article "修改文章" "写文章")]]
-      [:> antd/Col {:span 16}
-       [:> antd/Button
-        "保存"]])))
+    [:> antd/Row
+     [:> antd/Col {:span 14 :style {:text-align "left"}}
+      [:h3
+       (if @article "修改文章" "写文章")]]
+     [:> antd/Col {:span 4 :style {:text-align "right"}}
+      [:> antd/Button
+       "保存"]]]))
 
 (defn article-layout [main]
   [:> antd/Layout
    [header edit-menu]
    [:> antd/Layout.Content
     main]])
-
-(defn editor [text]
-  [:> ed/SimpleMDE ])
 
 (defn add-article-page []
   (r/with-let [article (rf/subscribe [:editing-article])
@@ -218,8 +211,10 @@
              {:on-change   #(let [val (-> % .-target .-value)]
                               (reset! title val))
               :placeholder "请输入标题"}]]]
+          [:> antd/Divider]
           [:> antd/Row
-           [editor body]]]]))))
+           [:> antd/Col {:span 16 :offset 4}
+            [editor body]]]]]))))
 
 (defn edit-article-page []
   (r/with-let [article (subscribe [:article])
@@ -240,18 +235,23 @@
             title       (r/cursor edited-article [:title])]
         (if-not @article
           [:div [:> antd/Spin {:tip "loading"}]]
-          [article-layout
-           [:> antd/Layout.Content {:style {:backdrop-color "#fff"}}
-            [:> antd/Col {:span 16 :offset 4 :style {:padding-top "10px"}}
-             [:> antd/Form
-              [:> antd/Input
-               {:on-change    #(let [val (-> % .-target .-value)]
-                                 (reset! title val))
-                :placeholder  "请输入标题"
-                :size         "large"
-                :defaultValue @title}]]
+          [:> antd/Form
+           [article-layout
+            [:> antd/Layout.Content
              [:> antd/Row
-              [editor body]]]]])))))
+              [:> antd/Col {:span 16 :offset 4 :style {:padding-top "10px"}}
+               [:> antd/Input
+                {:on-change    #(let [val (-> % .-target .-value)]
+                                  (reset! title val))
+                 :placeholder  "请输入标题"
+                 :size         "large"
+                 :defaultValue @title}]
+               [:> antd/Divider]]]
+             [:> antd/Row
+              [:> antd/Col {:span 12 :offset 4}
+               [:> antd/Input.Textarea {:row 4}]
+               ;[editor body]
+               ]]]]])))))
 
 
 (defn article-view-page []
@@ -288,10 +288,6 @@
 
 (defn article-errors [article]
   (->
-    (b/validate
-      article
-      :title [[v/required :message "标题不能为空\n"]]
-      :body [[v/required :message "内容不能为空\n"]])
     first
     (vals)))
 
