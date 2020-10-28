@@ -5,7 +5,6 @@
             [soul-talk.common.views :as c :refer [logo home-layout manager-layout header]]
             [soul-talk.utils :as du :refer [to-date]]
             [soul-talk.common.md-editor :refer [editor]]
-            [bouncer.core :as b]
             [antd :as antd]))
 
 (defn home-articles []
@@ -171,11 +170,12 @@
 
 (defn edit-menu []
   (r/with-let [article (rf/subscribe [:editing-article])]
-    [:> antd/Row
-     [:> antd/Col {:span 14 :style {:text-align "left"}}
-      [:h3
-       (if @article "修改文章" "写文章")]]
-     [:> antd/Col {:span 4 :style {:text-align "right"}}
+    [:<>
+     [:> antd/Col {:span 1}
+      [:> antd/Divider {:type "vertical"}]]
+     [:> antd/Col {:span 15}
+      [:h2 "写文章"]]
+     [:> antd/Col {:span 4}
       [:> antd/Button
        "保存"]]]))
 
@@ -186,20 +186,15 @@
     main]])
 
 (defn add-article-page []
-  (r/with-let [article (rf/subscribe [:editing-article])
-               user (rf/subscribe [:user])
-               tags (rf/subscribe [:tags])]
+  (r/with-let [user (rf/subscribe [:user])]
     (fn []
-      (let [edited-article (-> @article
-                             (update :id #(or % nil))
-                             (update :title #(or % nil))
-                             (update :body #(or % nil))
-                             (update :tags #(or % nil))
-                             (update :author #(or % (:name @user)))
-                             (update :publish #(or % 0))
-                             (update :counter #(or % 0))
-                             (update :createat #(or % (js/Date.)))
-                             r/atom)
+      (let [edited-article (r/atom {:title ""
+                                    :body ""
+                                    :description "sssss"
+                                    :create_by (:id @user)
+                                    :publish 0
+                                    :counter 0
+                                    :create_at (js/Date.now)})
             body     (r/cursor edited-article [:body])
             title       (r/cursor edited-article [:title])]
 
@@ -209,9 +204,9 @@
            [:> antd/Col {:span 16 :offset 4 :style {:padding-top "10px"}}
             [:> antd/Input
              {:on-change   #(let [val (-> % .-target .-value)]
-                              (reset! title val))
+                              (reset! title val)
+                              (dispatch [:articles/add @edited-article]))
               :placeholder "请输入标题"}]]]
-          [:> antd/Divider]
           [:> antd/Row
            [:> antd/Col {:span 16 :offset 4}
             [editor body]]]]]))))

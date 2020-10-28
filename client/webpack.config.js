@@ -17,10 +17,14 @@ module.exports = {
                     },
                     {
                         loader: 'css-loader',
+                        options: {
+                            sourceMap: true,
+                        },
                     },
                     {
                         loader: 'less-loader',
                         options: {
+                            sourceMap: true,
                             lessOptions: {
                                 modifyVars: {
                                     'primary-color': '#1DA57A',

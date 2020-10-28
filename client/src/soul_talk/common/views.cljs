@@ -21,15 +21,14 @@
 (defn logo []
   [:div.logo
    [:a {:on-click #(navigate! "/")}
-    [:h1 "JIESOUL的个人网站"]]])
+    [:h1 "不过如此"]]])
 
 (defn header [nav]
   [:> antd/Layout.Header
    [:> antd/Row
-    [:> antd/Col {:xs 24 :sm 24 :md 8 :lg 8}
+    [:> antd/Col {:span 4 :style {:text-align "right"}}
      [logo]]
-    [:> antd/Col {:xs 24 :sm 24 :md 16 :lg 16 :style {:text-align "right"}}
-     [nav]]]])
+    [nav]]])
 
 (defn footer []
   [:> antd/Layout.Footer {:style {:textAlign "center"}}

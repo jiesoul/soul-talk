@@ -46,7 +46,7 @@
 (reg-event-fx
   :articles/add-ok
   (fn [{:keys [db]} [_ {:keys [article]}]]
-    {:dispatch-n (list [:set-success "保存成功"])}))
+    {:dispatch-n (list [:dispatch (str "/articles/" (:id article) "/edit")])}))
 
 (reg-event-fx
   :articles/add
@@ -85,7 +85,7 @@
   :articles/edit-ok
   (fn [_ _]
     {:dispatch-n (list [:set-success "保存成功"]
-                   [:admin/load-articles])}))
+                        [:admin/load-articles])}))
 
 (reg-event-fx
   :articles/edit-error
