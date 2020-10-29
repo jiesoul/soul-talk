@@ -32,4 +32,4 @@
 
 (defn get-tag-by-article-id [id]
   (jdbc/query *db*
-    ["select * from tags where id in (select tagId from articleTags where articleId = ?)" id]))
+    ["select * from tags where id in (select tag_id from article_tags where article_id = ?)" id]))

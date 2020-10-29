@@ -21,11 +21,12 @@
         :summary "用户登出"
         (user/logout!))
 
-      (POST "/register" req
-        :return spec/Result
-        :body [user user/register]
-        :summary "注册新用户"
-        (user/register! req user)))
+      ;(POST "/register" req
+      ;  :return spec/Result
+      ;  :body [user user/register]
+      ;  :summary "注册新用户"
+      ;  (user/register! req user))
+      )
 
     (context "/users" []
       :tags ["用户"]
@@ -61,7 +62,7 @@
         :path-params [id :- string?]
         :return spec/Result
         :summary "获取文章标签"
-        (tag/get-tags-by-article-id [id]))
+        (tag/get-tags-by-article-id id))
 
       (GET "/:id/comments" [id]
         :return spec/Result

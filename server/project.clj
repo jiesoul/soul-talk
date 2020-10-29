@@ -4,28 +4,39 @@
   :url "http://github.com/jiesoul/soul-talk"
 
   :dependencies [[org.clojure/clojure "1.10.1"]
-                 [org.clojure/java.jdbc "0.7.8"]
-                 [seancorfield/next.jdbc "1.1.588"]
-                 [org.postgresql/postgresql "42.2.4"]
                  [org.clojure/tools.cli "0.3.1"]
-                 [hikari-cp "2.13.0"]
-                 [ragtime "0.8.0"]
-                 [ring "1.8.1"]
-                 [mount "0.1.13"]
-                 [tolitius/mount-up "0.1.1"]
                  [org.clojure/tools.namespace "0.2.11"]
+
+                 ;; web api
+                 [ring "1.8.1"]
+                 [ring-cors "0.1.13"]
+                 [ring/ring-defaults "0.3.2"]
                  [compojure "1.6.1"]
                  [metosin/compojure-api "2.0.0-alpha31"]
-                 [expound "0.7.1"]
-                 [metosin/spec-tools "0.10.4"]
                  [metosin/ring-http-response "0.9.0"]
+                 [metosin/ring-swagger-ui "3.36.0"]
+                 [metosin/spec-tools "0.10.4"]
                  [metosin/muuntaja "0.6.0"]
-                 [com.taoensso/timbre "4.10.0"]
-                 [ring/ring-defaults "0.3.2"]
-                 [ring-cors "0.1.13"]
-                 [toucan "1.12.0"]
-                 [bouncer "1.0.1"]
+
+                 ;;database
+                 [org.clojure/java.jdbc "0.7.8"]
+                 [seancorfield/next.jdbc "1.1.610"]
+                 [org.postgresql/postgresql "42.2.4"]
+                 [com.zaxxer/HikariCP "3.4.5"]
+                 [hikari-cp "2.13.0"]
+                 [ragtime "0.8.0"]
+
+                 ;; Auth validation
                  [buddy "2.0.0"]
+                 [bouncer "1.0.1"]
+
+                 ;; DI
+                 [mount "0.1.13"]
+                 [tolitius/mount-up "0.1.1"]
+
+                 [expound "0.7.1"]
+                 [com.taoensso/timbre "4.10.0"]
+                 [toucan "1.12.0"]
                  [clojure.java-time "0.3.2"]
                  [environ "1.2.0"]
                  [cheshire "5.10.0"]

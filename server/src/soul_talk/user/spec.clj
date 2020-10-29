@@ -37,11 +37,12 @@
 
 (def update-password
   (ds/spec {:name :core/update-password
-            :spec {:oldPassword (st/spec {:spec spec/password?
-                                          :reason "原始密码不能为空或小于8位"})
+            :spec {:oldPassword old-password
                    :newPassword (st/spec {:spec spec/password?
+                                          :description "新密码"
                                           :reason "新密码不能为空或小于8位"})
                    :confirmPassword (st/spec {:spec spec/password?
+                                              :description "确认新密码"
                                               :reason "确认密码不能为空或小于8位"})}}))
 
 (def user

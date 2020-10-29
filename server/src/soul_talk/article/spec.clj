@@ -4,11 +4,11 @@
 
 (def create-article
   (ds/spec {:name :core/create-article
-            :spec {:title spec/non-empty-string?
-                   :description spec/non-empty-string?
+            :spec {:title string?
+                   :description string?
                    :body spec/non-empty-string?
-                   :userId int?
-                   (ds/opt :tagList) [spec/non-empty-string?]}}))
+                   :create_by int?
+                   (ds/opt :tagList) #{spec/non-empty-string?}}}))
 
 (def update-article
   (ds/spec {:name :core/update-article
@@ -18,12 +18,12 @@
 
 (def article
   (ds/spec {:name :core/article
-            :spec {:id               pos-int?
+            :spec {:id               spec/non-empty-string?
                    :title            spec/non-empty-string?
                    :description      spec/non-empty-string?
                    :body             spec/non-empty-string?
-                   :update_at         string?
-                   :create_at         string?
+                   :update_at        string?
+                   :create_at        string?
                    (ds/opt :tagList) [spec/non-empty-string?]}}))
 (def visible-article
   (ds/spec {:name :core/visible-article

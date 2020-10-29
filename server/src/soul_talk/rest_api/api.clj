@@ -12,7 +12,7 @@
 (defn exception-handler [f type]
   (fn [^Exception e data request]
     (log/error (str "**************错误信息：" (.getMessage e)))
-    (f {:result :error :message (str "**********发生错误：" (.getMessage e)), :type type})))
+    (f {:result :error :message (str "发生未知错误"), :type type})))
 
 ;;
 (defn request-validation-handler [f type]
@@ -66,20 +66,15 @@
                            :url "http://www.jiesoul.com"}}
           :tags [{:name "登陆" :description "用户登陆相关API"}
                  {:name "用户" :description "用户信息相关API"}
-                 {:name "文章" :description "文章相关API"}
                  {:name "标签" :description "标签相关API"}
+                 {:name "文章" :description "文章相关API"}
                  {:name "评论" :description "评论相关API"}
                  ]}})
 
-
-
 (def api-config
-  {
-   ;:api {:invalid-routes-fn handle-missing-routes-fn}
-   :exceptions exceptions-config
-   :coercion   :spec
-   :swagger swagger-config })
-
+  {:exceptions exceptions-config
+   :coercion :spec
+   :swagger swagger-config})
 
 (def api-routes
   (api

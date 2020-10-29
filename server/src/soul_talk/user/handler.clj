@@ -50,7 +50,8 @@
 
 (defn logout! []
   (do (log/info "user: " :session " log out")
-      (-> {:result :ok}
+      (-> {:result :ok
+           :message "用户已登出"}
         (resp/ok)
         (assoc :session nil))))
 

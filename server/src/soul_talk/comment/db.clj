@@ -13,7 +13,7 @@
 (defn get-comments-by-articleId [article-id]
   (jdbc/query *db*
              :comments
-             ["select * from comments where id = ? order by create_time desc"
+             ["select * from comments where article_id = ? order by create_time desc"
               article-id]))
 
 (defn get-comments-by-reply-id [reply-id]

@@ -1,41 +1,52 @@
 (ns soul-talk.database.db
-  (:require [hikari-cp.core :refer :all]
-            [mount.core :refer [defstate]]
-            [clojure.java.jdbc :as jdbc]
-            [soul-talk.config :refer [env]])
-  (:import (java.sql Date Timestamp PreparedStatement)))
+  (:require [mount.core :refer [defstate]]
+            [next.jdbc :as jdbc]
+            [next.jdbc.connection :as connection]
+            [soul-talk.config :refer [env]]
+            [mount.core :as mount]
+            [taoensso.timbre :as log])
+  (:import (java.sql Date Timestamp PreparedStatement)
+           (com.zaxxer.hikari HikariDataSource)))
 
-(defonce datasource
-         (delay (make-datasource {:jdbc-url (:database-url env)})))
+(def db-spec {:dbtype "postgresql"
+              :jdbcUrl (:database-url env)
+              :connectionInitSql "COMMIT"
+              :maximumPoolSize 15})
+
+(def datasource (atom nil))
 
 (defn create-conn []
-  {:datasource @datasource})
+  (let [ds (connection/->pool HikariDataSource db-spec)]
+    (reset! datasource ds)
+    @datasource))
 
 (defn close-conn []
-  (close-datasource @datasource))
+  (.close @datasource))
 
 (defstate ^:dynamic *db*
   :start (create-conn)
   :stop (close-conn))
 
 (defn test-db []
-  (jdbc/query *db* "select 3*5 as result"))
+  (let [sql "select 3*5 as result"]
+    (log/info (str "执行 DB 操作 " sql " 查询结果为: ")
+      (jdbc/execute! *db* "select 3*5 as result"))))
 
 (defn to-date [^Date sql-date]
   (-> sql-date (.getTime) (java.util.Date.)))
 
-(extend-protocol jdbc/IResultSetReadColumn
+;(extend-protocol jdbc/IResultSetReadColumn
+;
+;  Date
+;  (result-set-read-column [v _ _] (to-date v))
+;
+;  Timestamp
+;  (result-set-read-column [v _ _] (to-date v)))
 
-  Date
-  (result-set-read-column [v _ _] (to-date v))
-
-  Timestamp
-  (result-set-read-column [v _ _] (to-date v)))
-
-(extend-type java.util.Date
-  jdbc/ISQLParameter
-  (set-parameter [v ^PreparedStatement stmt ^long idx]
-    (.setTimestamp stmt idx (Timestamp. (.getTime v)))))
+;(extend-type java.util.Date
+;  jdbc/ISQLParameter
+;  (set-parameter [v ^PreparedStatement stmt ^long idx]
+;    (.setTimestamp stmt idx (Timestamp. (.getTime v)))))
 
 (defn coll-to-in-str [coll]
   (subs
