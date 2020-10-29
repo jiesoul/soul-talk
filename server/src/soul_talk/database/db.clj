@@ -2,30 +2,60 @@
   (:require [mount.core :refer [defstate]]
             [next.jdbc :as jdbc]
             [next.jdbc.connection :as connection]
+            [next.jdbc.result-set :as rs]
             [soul-talk.config :refer [env]]
             [mount.core :as mount]
             [taoensso.timbre :as log])
   (:import (java.sql Date Timestamp PreparedStatement)
            (com.zaxxer.hikari HikariDataSource)))
 
-(def db-spec {:dbtype "postgresql"
-              :jdbcUrl (:database-url env)
-              :connectionInitSql "COMMIT"
-              :maximumPoolSize 15})
+(def default-datasource-options
+  {:auto-commit        true
+   :read-only          false
+   :connection-timeout 30000
+   :validation-timeout 5000
+   :idle-timeout       600000
+   :max-lifetime       1800000
+   :minimum-idle       10
+   :maximum-pool-size  10
+   :register-mbeans    false})
 
-(def datasource (atom nil))
+(def options
+  (assoc default-datasource-options :jdbcUrl (:database-url env)))
+
+(defonce datasource
+  (delay
+    (connection/->pool HikariDataSource
+      (assoc default-datasource-options :jdbcUrl (:database-url env)))))
+
+(defn connect!
+  [options]
+  (log/info "datasource option: " options)
+  (let [ds (delay (connection/->pool HikariDataSource {:jdbcUrl (:database-url)}))]
+    @datasource))
+
+(defn disconnect!
+  [conn]
+  (when (and (instance? HikariDataSource conn)
+          (not (.isClosed conn)))
+    (.close conn)))
+
+(defn reconnect!
+  "calls disconnect! to ensure the connection is closed
+   then calls connect! to establish a new connection"
+  [conn options]
+  (disconnect! conn)
+  (connect! options))
 
 (defn create-conn []
-  (let [ds (connection/->pool HikariDataSource db-spec)]
-    (reset! datasource ds)
-    @datasource))
+    @datasource)
 
 (defn close-conn []
   (.close @datasource))
 
 (defstate ^:dynamic *db*
-  :start (create-conn)
-  :stop (close-conn))
+  :start (connect! options)
+  :stop (disconnect! *db*))
 
 (defn test-db []
   (let [sql "select 3*5 as result"]
@@ -34,6 +64,18 @@
 
 (defn to-date [^Date sql-date]
   (-> sql-date (.getTime) (java.util.Date.)))
+
+(extend-protocol rs/ReadableColumn
+  java.sql.Date
+  (read-column-by-label [^java.sql.Date v _]
+    (.toLocalDate v))
+  (read-column-by-index [^java.sql.Date v _2 _3]
+    (.toLocalDate v))
+  java.sql.Timestamp
+  (read-column-by-label [^java.sql.Timestamp v _]
+    (.toInstant v))
+  (read-column-by-index [^java.sql.Timestamp v _2 _3]
+    (.toInstant v)))
 
 ;(extend-protocol jdbc/IResultSetReadColumn
 ;

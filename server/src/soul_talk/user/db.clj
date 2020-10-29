@@ -1,41 +1,42 @@
 (ns soul-talk.user.db
-  (:require [clojure.java.jdbc :as jdbc]
+  (:require [next.jdbc :as jdbc]
+            [next.jdbc.sql :as sql]
+            [next.jdbc.result-set :as rs-set]
             [soul-talk.database.db :refer [*db*]]
             [crypto.random :refer [base64]]
             [taoensso.timbre :as log]))
 
-(defn find-by [key value]
-  (let [sql (str "select * from users where " key " = ?")
-        rs (jdbc/query *db* [sql value])]
-    (some-> rs
+(defn find-by [query-map]
+  (let [users (sql/find-by-keys *db* :users query-map {:builder-fn rs-set/as-unqualified-lower-maps})]
+    (some-> users
       first)))
 
 (defn find-by-id [id]
-  (jdbc/get-by-id *db* :users id))
+  (sql/get-by-id *db* :users id))
 
 (defn find-by-email [email]
-  (find-by "email" email))
+  (find-by {:email email}))
 
 (defn insert-user! [user]
-  (jdbc/insert! *db* :users user))
+  (sql/insert! *db* :users user))
 
 (defn select-all-users []
-  (jdbc/query *db* ["SELECT * from users"]))
+  (sql/query *db* ["SELECT * from users"]))
 
 (defn update-login-time [{:keys [id last-time]}]
-  (jdbc/update! *db* :users {:last_login_at last-time} ["id = ?" id]))
+  (sql/update! *db* :users {:last_login_at last-time} ["id = ?" id]))
 
 
 (defn update-pass! [{:keys [id password]}]
-  (jdbc/update! *db* :users {:password password} ["id = ?" id]))
+  (sql/update! *db* :users {:password password} ["id = ?" id]))
 
 (defn save-user-profile! [{:keys [id name] :as user}]
-  (jdbc/update! *db* :users user ["id = ?" id]))
+  (sql/update! *db* :users user ["id = ?" id]))
 
 (defn count-users []
   (:count
     (first
-      (jdbc/query *db*
+      (sql/query *db*
         ["SELECT count(email) as count from users"]))))
 
 (defn gen-session-id
@@ -45,7 +46,7 @@
 (defn make-token
   [user-id]
   (let [token (gen-session-id)]
-    (jdbc/insert! *db* :auth_tokens {:id token
+    (sql/insert! *db* :auth_tokens {:id token
                                     :user_id user-id})))
 
 (defn authenticate-token
@@ -53,7 +54,7 @@
   (log/debug "auth request: " req)
   (let [sql-str (str "SELECT * FROM auth_tokens "
                   " WHERE id = ? and create_at + interval '10 h' > now()")
-        tokens (jdbc/query *db* [sql-str token])]
+        tokens (sql/query *db* [sql-str token])]
     (some-> tokens
       first
       :user_id
