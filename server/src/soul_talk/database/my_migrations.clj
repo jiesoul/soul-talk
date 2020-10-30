@@ -2,7 +2,7 @@
   (:require [ragtime.jdbc :as ragtime]
             [ragtime.repl :as repl]
             [clojure.string :refer [join]]
-            [soul-talk.config :refer [env]]
+            [soul-talk.env :refer [conf]]
             [taoensso.timbre :as log]))
 
 (def migrations

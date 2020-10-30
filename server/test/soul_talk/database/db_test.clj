@@ -2,14 +2,14 @@
   (:require [clojure.test :refer :all]
             [soul-talk.database.db :refer :all]
             [clojure.java.jdbc :as jdbc]
-            [soul-talk.config :refer [env]]
+            [soul-talk.env :refer [conf]]
             [mount.core :as mount]))
 
 (use-fixtures
   :once
   (fn [f]
     (mount/start
-      #'soul-talk.config/env
+      #'soul-talk.env/conf
       #'soul-talk.database.db/*db*)
     (f)))
 

@@ -6,7 +6,6 @@
             [spec-tools.data-spec :as ds])
   (:import (java.util UUID)))
 
-
 (def ^:private email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
 (def ^:private uri-regex #"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")
 (def ^:private slug-regex #"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -14,14 +13,11 @@
 (s/def ::id int?)
 (s/def ::description string?)
 (s/def ::amount pos-int?)
-(s/def ::result keyword?)
-(s/def ::message string?)
-(s/def ::Result (s/keys :req-un [::result]
-                  :opt-un [::message]))
 
 (s/def ::page int?)
 (s/def ::pre-page int?)
 (s/def ::Pagination (s/keys :opt-un [::page ::pre-page]))
+
 
 (def result
   (st/spec {:spec keyword?
@@ -31,11 +27,30 @@
 (def message
   (st/spec {:spec string?
             :type :string
-            :description "返回消息"}))
+            :description "返回信息"}))
+
+(def data
+  (st/spec {:spec map?
+            :type :map
+            :description "返回的数据 （k-v 键值对）"}))
 
 (def Result
   (ds/spec {:name :core/Result
-            :spec ::Result}))
+            :spec {:result           result
+                   (ds/opt :message) message
+                   (ds/opt :data)    data}}))
+
+(def page (st/spec {:spec int?
+                    :type :integer
+                    :description "当前页"}))
+(def pre-page (st/spec {:spec int?
+                        :type :integer
+                        :description "上一页"}))
+
+(def Pagination
+  (ds/spec {:name :core/Pagination
+            :spec {:page page
+                   :pre-page pre-page}}))
 
 (def non-empty-string?
   (st/spec {:spec        (s/and string? #(not (str/blank? %)))

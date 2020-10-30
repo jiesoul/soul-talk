@@ -19,11 +19,9 @@
                  [metosin/muuntaja "0.6.0"]
 
                  ;;database
-                 [org.clojure/java.jdbc "0.7.8"]
                  [seancorfield/next.jdbc "1.1.610"]
                  [org.postgresql/postgresql "42.2.4"]
                  [com.zaxxer/HikariCP "3.4.5"]
-                 [hikari-cp "2.13.0"]
                  [ragtime "0.8.0"]
 
                  ;; Auth validation
@@ -69,6 +67,7 @@
        :middleware      [whidbey.plugin/repl-pprint]
        :dependencies   [[ring/ring-devel "1.6.3"]
                         [ring/ring-mock "0.3.2"]
+                        [midje "1.7.0"]
                         [com.jakemccrary/lein-test-refresh "0.24.1"]
                         [com.cemerick/piggieback "0.2.2"]
                         [org.clojure/tools.nrepl "0.2.13"]

@@ -4,6 +4,7 @@
 
 (def login spec/login)
 (def register spec/register)
+(def auth-token spec/auth-token)
 (def update-user spec/update-user)
 (def user spec/user)
 (def visible-user spec/visible-user)
@@ -13,8 +14,8 @@
 (defn login! [req user]
   (handler/login! req user))
 
-(defn logout! []
-  (handler/logout!))
+(defn logout! [auth-token]
+  (handler/logout! auth-token))
 
 (defn register! [req user]
   (handler/register! req user))

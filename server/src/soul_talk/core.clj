@@ -1,9 +1,8 @@
 (ns soul-talk.core
   (:require [ring.adapter.jetty :as jetty]
-            [soul-talk.config :refer [env]]
             [soul-talk.handler :refer [app]]
             [mount.core :as mount :refer [defstate]]
-            [soul-talk.env :refer [defaults]]
+            [soul-talk.env :refer [defaults conf]]
             [clojure.tools.cli :refer [parse-opts]]
             [soul-talk.database.my-migrations :as migrations]
             [taoensso.timbre :as log])
@@ -23,8 +22,8 @@
   ;(log/info "total config: " env)
   (-> #'app
       (jetty/run-jetty
-        (-> env
-          (update :port #(or (-> env :options :port) %))
+        (-> conf
+          (update :port #(or (-> conf :options :port) %))
           (assoc :join? false)))))
 
 (defstate ^{:on-reload :noop}
@@ -48,8 +47,8 @@
   (cond
     (some #{"migrate" "rollback"} args)
     (do
-      (mount/start #'soul-talk.config/env)
-      (migrations/migrate args (select-keys env [:database-url :migrations]))
+      (mount/start #'soul-talk.env/conf)
+      (migrations/migrate args (select-keys conf [:database-url :migrations]))
       (System/exit 0))
     :else
     (start-app args)))

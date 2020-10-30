@@ -5,16 +5,16 @@
 (defn get-all-tags []
   (let [tags (tag-db/get-tags)]
     (resp/ok {:result :ok
-              :tags tags})))
+              :data   {:tags tags}})))
 
 (defn insert-tag! [{:keys [name] :as tag}]
   (if-let [t (tag-db/get-tag-by-name name)]
     (resp/bad-request {:result  :error
-                       :message (str name "标签已经存在")})
+                       :message (str "<" name "> 标签已经存在")})
 
     (let [t (tag-db/save-tag! tag)]
       (resp/ok {:result :ok
-                :tag    t}))))
+                :data   {:tag t}}))))
 
 (defn delete-tag! [id]
   (let [m (tag-db/delete-tag! id)]
@@ -24,14 +24,14 @@
 (defn get-tag-by-id [id]
   (let [tag (tag-db/get-tag-by-id id)]
     (resp/ok {:result :ok
-              :tag tag})))
+              :data   {:tag tag}})))
 
 (defn get-tag-by-name [name]
   (let [tag (tag-db/get-tag-by-name name)]
     (resp/ok {:result :ok
-              :tag tag})))
+              :data   {:tag tag}})))
 
 (defn get-tags-by-article-id [id]
   (let [tags (tag-db/get-tag-by-article-id id)]
     (resp/ok {:result :ok
-              :tags tags})))
+              :data   {:tags tags}})))

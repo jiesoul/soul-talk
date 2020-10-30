@@ -16,10 +16,11 @@
        :summary "用户登陆，登陆成功返回 Token"
        (user/login! req user))
 
-      (POST "/logout" []
+      (POST "/logout" req
         :return spec/Result
+        :body [auth-token user/auth-token]
         :summary "用户登出"
-        (user/logout!))
+        (user/logout! auth-token))
 
       ;(POST "/register" req
       ;  :return spec/Result

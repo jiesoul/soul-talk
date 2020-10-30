@@ -13,8 +13,8 @@
         total (article-db/count-article-all)
         pagination (p/create-total pagination total)]
     (resp/ok {:result :ok
-              :pagination pagination
-              :articles  articles})))
+              :data   {:pagination pagination
+                       :articles   articles}})))
 
 (defn get-publish-article [req]
   (let [pagination (p/create req)
@@ -22,13 +22,13 @@
         total (article-db/count-article-publish)
         pagination (p/create-total pagination total)]
     (resp/ok {:result :ok
-              :articles articles
-              :pagination pagination})))
+              :data   {:articles   articles
+                       :pagination pagination}})))
 
 (defn get-article [article-id]
   (let [article (article-db/get-article-by-id article-id)]
     (resp/ok {:result :ok
-              :article article})))
+              :data   {:article article}})))
 
 (defn insert-article! [article]
   (let [time (l/local-date-time)
@@ -38,9 +38,9 @@
                       (assoc :id id)
                       (assoc :create_at time)
                       (assoc :update_at time)))]
-      (-> {:result :ok
+      (-> {:result  :ok
            :message "保存成功"
-           :article article}
+           :data    {:article article}}
         (resp/ok)))))
 
 (defn upload-article! [{:keys [body params] :as req}]
@@ -52,14 +52,14 @@
     (do
       (article-db/insert-article! article)
       (-> {:result :ok
-           :id id}
+           :data   {:id id}}
         resp/ok))))
 
 (defn update-article! [article]
   (article-db/update-article! (-> article
                                 (assoc :update_at (l/local-date-time))))
   (-> {:result :ok
-       :article   (assoc article :body nil)}
+       :data   {:article (assoc article :body nil)}}
     (resp/ok)))
 
 (defn delete-article! [id]
@@ -78,11 +78,11 @@
 (defn get-article-archives []
   (let [archives (article-db/get-article-archives)]
     (-> {:result :ok
-         :archives archives}
+         :data   {:archives archives}}
       resp/ok)))
 
 (defn get-article-archives-year-month [year month]
   (let [article (article-db/get-article-archives-year-month year month)]
     (-> {:result :ok
-         :article article}
+         :data   {:article article}}
       resp/ok)))

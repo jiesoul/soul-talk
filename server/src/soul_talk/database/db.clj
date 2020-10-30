@@ -3,8 +3,7 @@
             [next.jdbc :as jdbc]
             [next.jdbc.connection :as connection]
             [next.jdbc.result-set :as rs]
-            [soul-talk.config :refer [env]]
-            [mount.core :as mount]
+            [soul-talk.env :refer [conf]]
             [taoensso.timbre :as log])
   (:import (java.sql Date Timestamp PreparedStatement)
            (com.zaxxer.hikari HikariDataSource)))
@@ -21,17 +20,20 @@
    :register-mbeans    false})
 
 (def options
-  (assoc default-datasource-options :jdbcUrl (:database-url env)))
+  (assoc default-datasource-options :jdbcUrl (:database-url conf)))
 
 (defonce datasource
   (delay
     (connection/->pool HikariDataSource
-      (assoc default-datasource-options :jdbcUrl (:database-url env)))))
+      (assoc default-datasource-options :jdbcUrl (:database-url conf)))))
 
 (defn connect!
-  [options]
-  (log/info "datasource option: " options)
-  (let [ds (delay (connection/->pool HikariDataSource {:jdbcUrl (:database-url)}))]
+  [conf]
+  (log/debug "conf: " (:database-url conf))
+  (let [options (assoc default-datasource-options :jdbcUrl (:database-url conf))
+        ds (connection/->pool HikariDataSource options)]
+    (log/debug "options: " options)
+    (log/debug "datasource: " ds)
     @datasource))
 
 (defn disconnect!
@@ -43,9 +45,9 @@
 (defn reconnect!
   "calls disconnect! to ensure the connection is closed
    then calls connect! to establish a new connection"
-  [conn options]
+  [conn conf]
   (disconnect! conn)
-  (connect! options))
+  (connect! conf))
 
 (defn create-conn []
     @datasource)
@@ -54,7 +56,7 @@
   (.close @datasource))
 
 (defstate ^:dynamic *db*
-  :start (connect! options)
+  :start (connect! conf)
   :stop (disconnect! *db*))
 
 (defn test-db []

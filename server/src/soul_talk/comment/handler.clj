@@ -6,4 +6,4 @@
 (defn get-comments-by-articleId [articleId]
   (let [comments (comment-db/get-comments-by-articleId articleId)]
     (resp/ok {:result :ok
-              :comments comments})))
+              :data   {:comments comments}})))

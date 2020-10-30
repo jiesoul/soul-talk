@@ -9,25 +9,24 @@
             :description "user id"
             :reason "id 必须为非负整数！"}))
 
-(def old-password
-  (st/spec {:sepc spec/password?
-            :type :string
-            :description "原始密码"
-            :reason "原始密码不能为空或小于8位"}))
-
 (def login
-  (ds/spec {:name :core/login
-             :spec {:email spec/email?
-                    :password spec/password?}}))
+  (ds/spec {:name :user/login
+            :spec {:email spec/email?
+                   :password spec/password?}}))
 
 (def register
-  (ds/spec {:name :core/register
+  (ds/spec {:name :user/register
             :spec {:email spec/email?
                    :username spec/username?
                    :password spec/password?}}))
 
+(def auth-token
+  (ds/spec {:name :user/auth-token
+            :spec {:id spec/non-empty-string?
+                   :user_id id}}))
+
 (def update-user
-  (ds/spec {:name :core/update-user
+  (ds/spec {:name :user/update-user
             :spec {:email spec/email?
                    :username spec/username?
                    :password spec/password?
@@ -36,27 +35,25 @@
             :keys-default ds/opt}))
 
 (def update-password
-  (ds/spec {:name :core/update-password
-            :spec {:oldPassword old-password
-                   :newPassword (st/spec {:spec spec/password?
-                                          :description "新密码"
-                                          :reason "新密码不能为空或小于8位"})
-                   :confirmPassword (st/spec {:spec spec/password?
-                                              :description "确认新密码"
-                                              :reason "确认密码不能为空或小于8位"})}}))
+  (ds/spec {:name :user/update-password
+            :spec {:oldPassword spec/password?
+                   :newPassword spec/password?
+                   :confirmPassword spec/password?}}))
 
 (def user
-  (ds/spec {:name :core/user
-            :spec {:id id
-                   :email spec/email?
-                   :username spec/username?
-                   :image (ds/opt spec/uri-string?)
-                   :bio (ds/opt spec/non-empty-string?)}}))
+  (ds/spec {:name :user/User
+            :spec {:id             id
+                   :email          spec/email?
+                   :username       spec/username?
+                   (ds/opt :image) spec/uri-string?
+                   (ds/opt :bio)   spec/non-empty-string?}}))
 
 (def profile-user
-  (ds/spec {:name :core/profile-user
-            :spec {:username spec/username?}}))
+  (ds/spec {:name :user/profile-user
+            :spec {:username spec/username?
+                   (ds/opt :image) spec/uri-string?
+                   (ds/opt :bio)   spec/non-empty-string?}}))
 
 (def visible-user
-  (ds/spec {:name :core/visible-user
+  (ds/spec {:name :user/visible-user
             :spec {:user user}}))

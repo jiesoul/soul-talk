@@ -11,6 +11,4 @@
 
 (def tag
   (ds/spec {:name :core/tag
-            :spec {:name (st/spec {:spec spec/non-empty-string?
-                                   :type string?
-                                   :reason "名称不能为空"})}}))
+            :spec {:name spec/username?}}))
