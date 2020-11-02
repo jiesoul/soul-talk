@@ -16,7 +16,7 @@
                  [metosin/ring-http-response "0.9.0"]
                  [metosin/ring-swagger-ui "3.36.0"]
                  [metosin/spec-tools "0.10.4"]
-                 [metosin/muuntaja "0.6.0"]
+                 [metosin/muuntaja "0.6.7"]
 
                  ;;database
                  [seancorfield/next.jdbc "1.1.610"]

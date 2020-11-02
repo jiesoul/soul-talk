@@ -19,9 +19,6 @@
    :maximum-pool-size  10
    :register-mbeans    false})
 
-(def options
-  (assoc default-datasource-options :jdbcUrl (:database-url conf)))
-
 (defonce datasource
   (delay
     (connection/->pool HikariDataSource
@@ -29,12 +26,7 @@
 
 (defn connect!
   [conf]
-  (log/debug "conf: " (:database-url conf))
-  (let [options (assoc default-datasource-options :jdbcUrl (:database-url conf))
-        ds (connection/->pool HikariDataSource options)]
-    (log/debug "options: " options)
-    (log/debug "datasource: " ds)
-    @datasource))
+  @datasource)
 
 (defn disconnect!
   [conn]
@@ -49,20 +41,9 @@
   (disconnect! conn)
   (connect! conf))
 
-(defn create-conn []
-    @datasource)
-
-(defn close-conn []
-  (.close @datasource))
-
 (defstate ^:dynamic *db*
   :start (connect! conf)
   :stop (disconnect! *db*))
-
-(defn test-db []
-  (let [sql "select 3*5 as result"]
-    (log/info (str "执行 DB 操作 " sql " 查询结果为: ")
-      (jdbc/execute! *db* "select 3*5 as result"))))
 
 (defn to-date [^Date sql-date]
   (-> sql-date (.getTime) (java.util.Date.)))
@@ -70,14 +51,14 @@
 (extend-protocol rs/ReadableColumn
   java.sql.Date
   (read-column-by-label [^java.sql.Date v _]
-    (.toLocalDate v))
+    (to-date v))
   (read-column-by-index [^java.sql.Date v _2 _3]
-    (.toLocalDate v))
+    (to-date v))
   java.sql.Timestamp
   (read-column-by-label [^java.sql.Timestamp v _]
-    (.toInstant v))
+    (to-date v))
   (read-column-by-index [^java.sql.Timestamp v _2 _3]
-    (.toInstant v)))
+    (to-date v)))
 
 ;(extend-protocol jdbc/IResultSetReadColumn
 ;

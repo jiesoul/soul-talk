@@ -11,7 +11,10 @@
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.cors :refer [wrap-cors]]
             [taoensso.timbre :as log]
-            [soul-talk.env :refer [defaults]]))
+            [soul-talk.env :refer [defaults]]
+            [cognitect.transit :as transit]
+            [muuntaja.core :as m])
+  (:import [java.time Instant]))
 
 (defn error-500 []
   {:status 500
@@ -59,13 +62,34 @@
       (assoc-in [:security :anti-forgery] false)
       (assoc :session true))))
 
+;(def instant-encoders
+;  {:handlers
+;   {Instant
+;    (transit/write-handler (constantly "Instant")
+;      str)
+;    }})
+;
+;(def instant-decoders
+;  {:handlers
+;   {"Instant" (transit/read-handler t/parse)}})
+
+(def format-options
+  (-> m/default-options
+    (update-in [:formats "application/transit+json" :encode-opts]
+      (partial merge {:handlers
+                      {Instant (transit/write-handler (constantly "Instant")
+                                 #(.toString %))}}))
+    (update-in [:formats "application/transit+json" :encode-opts]
+      (partial merge {:handlers
+                      {"Instant" (transit/read-handler #(Instant/parse %))}}))))
+
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
     (wrap-cors :access-control-allow-origin [#".*"]
-      :access-control-allow-methods [:get :post :put :delete])
+      :access-control-allow-methods [:get :post :put :delete :options])
     wrap-token-auth
     wrap-flash
-    wrap-format
+    (wrap-format format-options)
     wrap-multipart-params
     wrap-defaults
     wrap-internal-error
