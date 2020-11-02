@@ -11,7 +11,6 @@
   (r/with-let [active-page (rf/subscribe [:active-page])]
     [:> antd/Menu {:className         "home-nav"
                    :mode              "horizontal"
-                   :theme             "dark"
                    :defaultselectkeys ["home"]
                    :selected-keys     [(key->js @active-page)]}
      [:> antd/Menu.Item {:key "home" :on-click #(navigate! "#/")} "首页"]
@@ -20,19 +19,16 @@
 
 (defn logo []
   [:div.logo
-   [:a {:on-click #(navigate! "/")}
-    [:h1 "不过如此"]]])
+   "不过如此"])
 
 (defn header [nav]
   [:> antd/Layout.Header
-   [:> antd/Row
-    [:> antd/Col {:span 4 :style {:text-align "right"}}
-     [logo]]
-    [nav]]])
+   [logo]
+   [nav]])
 
 (defn footer []
   [:> antd/Layout.Footer {:style {:textAlign "center"}}
-   [:h4 {:style {:color "#FFF"}}
+   [:h4
     "Made with By "
     [:a
      {:type   "link"
@@ -44,14 +40,16 @@
 (defn home-layout [main]
   [:> antd/Layout
    [header nav]
-   [:> antd/Layout.Content
+   [:> antd/Layout.Content {:style {:padding "0 50px"}}
     main]
    [footer]])
 
 (defn sidebar [active-page]
   (r/with-let [active-page (rf/subscribe [:active-page])]
-    [:> antd/Layout.Sider {:className "sidebar"}
+    [:> antd/Layout.Sider {:className "site-layout-background"
+                           :width "200px"}
      [:> antd/Menu {:mode              "inline"
+                    :style {:height "100%" :borderRight 0}
                     :defaultselectkeys ["dash"]
                     :open-keys ["tag" "user" "article"]
                     :selected-keys [(key->js @active-page)]}
@@ -75,11 +73,10 @@
 
 (defn manager-breadcrumb []
   (r/with-let [items (rf/subscribe [:breadcrumb])]
-    (fn []
-      [:> antd/Breadcrumb
-       (for [item @items]
-         ^{:key item}
-         [:> antd/Breadcrumb.Item item])])))
+    [:> antd/Breadcrumb {:style {:margin "16px 0"}}
+     (for [item @items]
+       ^{:key item}
+       [:> antd/Breadcrumb.Item item])]))
 
 (defn manager-user-nav []
   [:> antd/Menu
@@ -100,23 +97,23 @@
 
 (defn manager-header-dropdown []
   (r/with-let [user (rf/subscribe [:user])]
-    [:> antd/Dropdown {:overlay (r/as-element [manager-user-nav])
-                       :style   {:color "#000"}}
-     [:a {:className "ant-dropdown-link"
-          :href      "#"}
-      [:> antd-icons/UserOutlined]
-      "  " (:name @user)]]))
+    [:div {:style {:text-align "right"}}
+     [:> antd/Dropdown {:overlay (r/as-element [manager-user-nav])}
+      [:a {:className "ant-dropdown-link"
+           :href      "#"}
+       [:> antd-icons/UserOutlined]
+       "  " (:name @user)]]]))
 
 (defn manager-layout [main]
   [:> antd/Layout
    [header manager-header-dropdown]
    [:> antd/Layout
     [sidebar]
-    [:> antd/Layout.Content {:className "main"}
-     [:div
-      [manager-breadcrumb]
-      [:hr]
-      main]]]
+    [:> antd/Layout {:style {:padding "0 24px 24px"}}
+     [manager-breadcrumb]]
+    [:> antd/Layout.Content {:className "site-layout-background"
+                             :style {:padding 24 :margin 0 :min-height 280}}
+     main]]
    [footer]])
 
 (defn page-nav [handler]

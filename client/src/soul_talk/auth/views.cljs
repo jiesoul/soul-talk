@@ -11,11 +11,12 @@
   [:> antd/Row {:align   "middle"
                 :justify "center"}
    [:> antd/Col
-    [:div {:textalign "center"}
-     [:h1.h3.mb-3.font-weight-normal.text-center "Login"]]]])
+    [:div
+     [logo]
+     [:h1.mb-3.font-weight-normal.text-center "Login"]]]])
 
 (defn layout [children]
-  [:> antd/Layout {:title ""}
+  [:> antd/Layout
    [:> antd/Layout.Content {:style {:min-height "90vh"
                                     :padding    "24px 0 20px 0"}}
     [header]
@@ -61,7 +62,7 @@
            [:> antd/Button {:type     "primary"
                             :htmlType "submit"
                             :on-click #(dispatch [:login @login-data])}
-            "Login"]]]]]])))
+            "登陆"]]]]]])))
 
 (defn register-page []
   (r/with-let

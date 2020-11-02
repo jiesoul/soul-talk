@@ -6,9 +6,9 @@
 
 (reg-event-db
   :set-public-articles
-  (fn [db [_ {:keys [articles pagination]}]]
-    (assoc db :public-articles articles
-              :home-pagination pagination)))
+  (fn [db [_ {:keys [data]}]]
+    (assoc db :public-articles (:articles data)
+              :home-pagination (:pagination data))))
 
 (reg-event-fx
   :load-public-articles
@@ -26,9 +26,9 @@
 
 (reg-event-db
   :set-articles
-  (fn [db [_ {:keys [articles pagination]}]]
-    (assoc db :articles articles
-              :edit-pagination pagination)))
+  (fn [db [_ {:keys [data]}]]
+    (assoc db :articles (:articles data)
+              :edit-pagination (:pagination data))))
 
 (reg-event-fx
   :load-articles
@@ -45,8 +45,8 @@
 
 (reg-event-fx
   :articles/add-ok
-  (fn [{:keys [db]} [_ {:keys [article]}]]
-    {:dispatch-n (list [:dispatch (str "/articles/" (:id article) "/edit")])}))
+  (fn [{:keys [db]} [_ {:keys [data]}]]
+    {:dispatch-n (list [:dispatch (str "/articles/" (get-in data :article :id) "/edit")])}))
 
 (reg-event-fx
   :articles/add

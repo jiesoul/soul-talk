@@ -26,15 +26,18 @@
 ;; 处理login ok
 (reg-event-fx
   :handle-login-ok
-  (fn [{:keys [db]} [_ {:keys [user token]}]]
-    {:db         (assoc db :user user :auth-token token)
-     :dispatch-n (list
-                   [:set-breadcrumb ["Home" "Post" "List"]]
-                   [:run-login-events]
-                   [:set-active-page :dash]
-                   [:navigate-to "/#/dash"])
-     :set-user! user
-     :set-auth-token! token}))
+  (fn [{:keys [db]} [_ {:keys [data]}]]
+    (let [user (:user data)
+          token (:token data)]
+      (js/console.log "user: " user)
+      {:db              (assoc db :user user :auth-token token)
+       :dispatch-n      (list
+                          [:set-breadcrumb ["Home" "Post" "List"]]
+                          [:run-login-events]
+                          [:set-active-page :dash]
+                          [:navigate-to "/#/dash"])
+       :set-user!       user
+       :set-auth-token! token})))
 
 ;; login
 (reg-event-fx
