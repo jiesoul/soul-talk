@@ -5,7 +5,8 @@
             [soul-talk.common.views :as c :refer [logo home-layout manager-layout header]]
             [soul-talk.utils :as du :refer [to-date]]
             [soul-talk.common.md-editor :refer [editor]]
-            [antd :as antd]))
+            [antd :as antd]
+            ["@ant-design/icons" :as antd-icons]))
 
 (defn home-articles []
   (r/with-let [articles (subscribe [:public-articles])
@@ -16,7 +17,7 @@
         :active true}
        [:> antd/Layout.Content
         [:> antd/Row {:gutter 10}
-         (for [{:keys [id title createat author body] :as article} @articles]
+         (for [{:keys [id title create_at author body] :as article} @articles]
            (let [url (str "/#/articles/" id)]
              ^{:key article}
              [:> antd/Col {:xs 24 :sm 24 :md 8 :lg 8}
@@ -28,7 +29,7 @@
                                                 :target "_blank"}
                                                title]
                                               [:br]
-                                              [:span (str (to-date createat) " by " author)]])
+                                              [:span (str (to-date create_at) " by " author)]])
                              :bodyStyle    {:height "220px" :overflow "hidden"}
                              :style        {:margin 5}
                              ;:bordered     false
@@ -40,7 +41,7 @@
    {:itemLayout "vertical"
     :size       "small"
     :dataSource @articles
-    :renderItem #(let [{:keys [id title body createat author] :as article} (js->clj % :keywordize-keys true)]
+    :renderItem #(let [{:keys [id title body create_at author] :as article} (js->clj % :keywordize-keys true)]
                    (r/as-element
                      [:> antd/List.Item
                       [:> antd/List.Item.Meta
@@ -48,7 +49,7 @@
                                                     {:href   (str "#/articles/" id)
                                                      :target "_blank"}
                                                     [:h2 title]])
-                        :description (str " " (to-date createat) " by " author)}]
+                        :description (str " " (to-date create_at) " by " author)}]
                       [c/markdown-preview body]]))}])
 
 (defn blog-articles []
@@ -104,14 +105,14 @@
 
 (defn list-columns []
   [{:title "标题" :dataIndex "title", :key "title", :align "center"}
-   {:title  "创建时间" :dataIndex "createat" :key "createat" :align "center"
+   {:title  "创建时间" :dataIndex "create_at" :key "create_at" :align "center"
     :render (fn [_ article]
               (let [article (js->clj article :keywordize-keys true)]
-                (du/to-date-time (:createat article))))}
-   {:title  "更新时间" :dataIndex "modifyat" :key "modifyat" :align "center"
+                (du/to-date-time (:create_at article))))}
+   {:title  "更新时间" :dataIndex "update_at" :key "update_at" :align "center"
     :render (fn [_ article]
               (let [article (js->clj article :keywordize-keys true)]
-                (du/to-date-time (:modifyat article))))}
+                (du/to-date-time (:update_at article))))}
    {:title "发布状态" :dataIndex "publish" :key "publish" :align "center"}
    {:title "作者" :dataIndex "author" :key "author" :align "center"}
    {:title "浏览量" :dataIndex "counter" :key "counter" :align "center"}
@@ -125,13 +126,13 @@
                                     :href   (str "#/articles/" id)}
                     "查看"]
                    [:> antd/Divider {:type "vertical"}]
-                   [:> antd/Button {:icon   "edit"
+                   [:> antd/Button {:icon (r/as-element [:> antd-icons/EditOutlined])
                                     :size   "small"
                                     :target "_blank"
                                     :href   (str "#/articles/" id "/edit")}]
                    [:> antd/Divider {:type "vertical"}]
                    [:> antd/Button {:type     "danger"
-                                    :icon     "delete"
+                                    :icon     (r/as-element [:> antd-icons/DeleteOutlined])
                                     :size     "small"
                                     :on-click (fn []
                                                 (r/as-element
@@ -224,7 +225,7 @@
                              (update :author #(or % (:name @user)))
                              (update :publish #(or % 0))
                              (update :counter #(or % 0))
-                             (update :createat #(or % (js/Date.)))
+                             (update :create_at #(or % (js/Date.)))
                              r/atom)
             body     (r/cursor edited-article [:body])
             title       (r/cursor edited-article [:title])]
@@ -261,7 +262,7 @@
             (:title @article)]
            [:div
             {:style {:text-align "center"}}
-            (str (to-date (:createat @article)) " by " (:author @article))]
+            (str (to-date (:create_at @article)) " by " (:author @article))]
            [:> antd/Divider]
            [:> antd/Typography.Text
             [c/markdown-preview (:body @article)]]]]]))))
@@ -271,14 +272,14 @@
     (fn []
       [:div
        (doall
-         (for [{:keys [id title createat author] :as article} @articles]
+         (for [{:keys [id title create_at author] :as article} @articles]
            ^{:key article} [:div.blog-article
                             [:h2.blog-article-title
                              [:a.text-muted
                               {:href   (str "/articles/" id)
                                :target "_blank"}
                               title]]
-                            [:p.blog-article-meta (str (.toDateString (js/Date. createat)) " by " author)]
+                            [:p.blog-article-meta (str (.toDateString (js/Date. create_at)) " by " author)]
                             [:hr]]))])))
 
 (defn article-errors [article]

@@ -1,5 +1,6 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path")
+
 module.exports = {
     plugins: [
         new MiniCssExtractPlugin({
@@ -16,10 +17,7 @@ module.exports = {
                         loader: 'style-loader'
                     },
                     {
-                        loader: 'css-loader',
-                        options: {
-                            sourceMap: true,
-                        },
+                        loader: 'css-loader'
                     },
                     {
                         loader: 'less-loader',

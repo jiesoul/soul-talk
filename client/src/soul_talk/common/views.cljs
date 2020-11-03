@@ -7,7 +7,7 @@
             ["react-highlight.js" :as hljs]
             [soul-talk.routes :refer [navigate!]]))
 
-(defn nav [active-page]
+(defn nav []
   (r/with-let [active-page (rf/subscribe [:active-page])]
     [:> antd/Menu {:className         "home-nav"
                    :mode              "horizontal"
@@ -19,35 +19,45 @@
 
 (defn logo []
   [:div.logo
-   "不过如此"])
+   [:h1
+    "不过如此"]])
+
+(defn home-row-col [component]
+  [:> antd/Row {:justify "center" :align "middle"}
+   [:> antd/Col {:xs 24 :sm 24 :md 24 :lg 24}
+    component]])
 
 (defn header [nav]
-  [:> antd/Layout.Header
-   [logo]
-   [nav]])
+  [:> antd/Layout.Header {:className "site-layout-header"}
+   [:> antd/Row {:justify "left"}
+    [:> antd/Col {:xs 24 :sm 24 :md 8 :lg 8}
+     [logo]]
+    [:> antd/Col {:xs 24 :sm 24 :md 16 :lg 16}
+     [nav]]]])
 
 (defn footer []
-  [:> antd/Layout.Footer {:style {:textAlign "center"}}
-   [:h4
-    "Made with By "
-    [:a
-     {:type   "link"
-      :href   "https://ant.design"
-      :target "_blank"}
-     "Ant Design"]
-    " and JIESOUL "]])
+  [:> antd/Layout.Footer {:className "site-layout-footer"}
+   [home-row-col
+    [:section
+     [:h4
+      "Made with By "
+      [:a
+       {:type   "link"
+        :href   "https://ant.design"
+        :target "_blank"}
+       "Ant Design"]
+      " and JIESOUL "]]]])
 
 (defn home-layout [main]
   [:> antd/Layout
    [header nav]
-   [:> antd/Layout.Content {:style {:padding "0 50px"}}
+   [:> antd/Layout.Content {:className "site-layout-content"}
     main]
    [footer]])
 
 (defn sidebar [active-page]
   (r/with-let [active-page (rf/subscribe [:active-page])]
-    [:> antd/Layout.Sider {:className "site-layout-background"
-                           :width "200px"}
+    [:> antd/Layout.Sider {:className "site-layout-sidebar"}
      [:> antd/Menu {:mode              "inline"
                     :style {:height "100%" :borderRight 0}
                     :defaultselectkeys ["dash"]
@@ -67,9 +77,7 @@
                              :title "文章管理"}
        [:> antd/Menu.Item {:key      "articles"
                            :on-click #(navigate! "#/articles")}
-        "文章"]]
-
-      ]]))
+        "文章"]]]]))
 
 (defn manager-breadcrumb []
   (r/with-let [items (rf/subscribe [:breadcrumb])]
@@ -110,10 +118,9 @@
    [:> antd/Layout
     [sidebar]
     [:> antd/Layout {:style {:padding "0 24px 24px"}}
-     [manager-breadcrumb]]
-    [:> antd/Layout.Content {:className "site-layout-background"
-                             :style {:padding 24 :margin 0 :min-height 280}}
-     main]]
+     [manager-breadcrumb]
+     [:> antd/Layout.Content {:className "site-layout-content"}
+      main]]]
    [footer]])
 
 (defn page-nav [handler]
@@ -151,6 +158,12 @@
            [:a.page-link
             {:on-click #(rf/dispatch [handler (assoc paginate-params :page @next-page)])}
             "Next"]]]]))))
+
+(defn admin [page]
+  (r/with-let [user (rf/subscribe [:user])]
+    (if @user
+      [page]
+      (navigate! "#/login"))))
 
 (defn loading-modal []
   (r/with-let [loading? (rf/subscribe [:loading?])]

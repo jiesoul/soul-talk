@@ -42,6 +42,9 @@
 (defmethod pages :users [_ _]
   (admin users/users-page))
 
+(defmethod pages :tags [_ _]
+  (admin tag/tags-page))
+
 (defmethod pages :articles [_ _]
   (admin article/articles-page))
 

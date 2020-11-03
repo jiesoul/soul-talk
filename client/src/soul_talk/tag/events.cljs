@@ -4,11 +4,11 @@
             [clojure.string :as str]
             [soul-talk.db :refer [api-uri]]))
 
-
 (reg-event-db
   :set-tags
-  (fn [db [_ {:keys [tags]}]]
-    (assoc db :tags tags)))
+  (fn [db [_ {:keys [data]}]]
+    (let [tags (:tags data)]
+      (assoc db :tags tags))))
 
 
 (reg-event-fx

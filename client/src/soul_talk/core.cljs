@@ -4,8 +4,6 @@
             [soul-talk.common.interceptors :refer [load-interceptors!]]
             [soul-talk.routes :refer [hook-browser-navigation! logged-in? navigate!]]
             [re-frame.core :refer [dispatch-sync dispatch]]
-            [react]
-            [react-simplemde-editor :as ed]
             ;;初始化处理器和订阅器
             [soul-talk.common.coeffects]
             [soul-talk.common.effects]

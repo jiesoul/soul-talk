@@ -2,24 +2,20 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe]]
             [soul-talk.routes :refer [navigate!]]
-            [soul-talk.common.views :refer [logo footer]]
+            [soul-talk.common.views :refer [header logo footer]]
             [antd :as antd]
             ["@ant-design/icons" :as antd-icons])
   (:import goog.History))
 
-(defn header []
-  [:> antd/Row {:align   "middle"
-                :justify "center"}
-   [:> antd/Col
-    [:div
-     [logo]
-     [:h1.mb-3.font-weight-normal.text-center "Login"]]]])
+(defn nav []
+  [:> antd/Menu {:className         "home-nav"
+                 :mode              "horizontal"}
+   [:> antd/Menu.Item "登录"]])
 
 (defn layout [children]
   [:> antd/Layout
-   [:> antd/Layout.Content {:style {:min-height "90vh"
-                                    :padding    "24px 0 20px 0"}}
-    [header]
+   [header nav]
+   [:> antd/Layout.Content {:className "site-layout-content"}
     children]
    [footer]])
 
@@ -39,7 +35,7 @@
                         :style         {:textAlign "center"}
                         :labelCol      {:span 8}
                         :wrapperCol    {:span 16}}
-          [:> antd/Form.Item {:label "Email" :name "email" :rules [{:required true
+          [:> antd/Form.Item {:label "邮箱" :name "email" :rules [{:required true
                                                                     :message  "请输入Email"}]}
            [:> antd/Input {:id          "email"
                            :prefix      (r/as-element [:> antd-icons/UserOutlined])
@@ -49,7 +45,7 @@
                            :required    true
                            :auto-focus  true
                            :on-change   #(reset! email (-> % .-target .-value))}]]
-          [:> antd/Form.Item {:label "Password" :name "Password" :rules [{:required true
+          [:> antd/Form.Item {:label "密码" :name "Password" :rules [{:required true
                                                                           :message  "请输入密码"}]}
            [:> antd/Input.Password {:id          "password"
                                     :prefix      (r/as-element [:> antd-icons/LockOutlined])
@@ -58,7 +54,7 @@
                                     :required    true
                                     :on-change   #(reset! password (-> % .-target .-value))}]]
           (when @error [:div @error])
-          [:> antd/Form.Item {:offset 8 :span 16}
+          [:> antd/Form.Item {:offset 8 :span 16 :align "right"}
            [:> antd/Button {:type     "primary"
                             :htmlType "submit"
                             :on-click #(dispatch [:login @login-data])}
