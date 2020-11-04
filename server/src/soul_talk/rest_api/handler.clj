@@ -37,12 +37,30 @@
         :summary "查看个人信息"
         (user/get-user-profile id)))
 
+    (context "/tags" []
+      :tags ["标签"]
+      (GET "/" []
+        :return spec/Result
+        :summary "得到所有标签"
+        (tag/get-all-tags)))
+
     (context "/articles" []
       :tags ["文章"]
       (GET "/public" req
         :return spec/Result
         :summary "查看所有发布的文章"
         (article/get-publish-article req))
+
+      (GET "/public/tags/:tag-id" []
+        :path-params [tag-id :- int?]
+        :return spec/Result
+        :summary "查询某个标签下的已发布文章")
+
+      (GET "/public/q=:query" []
+        :path-params [query :- string?]
+        :return spec/Result
+        :summary "根据条件查询文章")
+
       (GET "/archives" []
         :return spec/Result
         :summary "查看发布文章的存档"
@@ -70,13 +88,6 @@
         :summary "文章评论"
         (comment/get-comments-by-articleId id)))
 
-    (context "/tags" []
-      :tags ["标签"]
-      (GET "/" []
-        :return spec/Result
-        :summary "标签"
-        (tag/get-all-tags)))
-
     ;(context "/comments" []
     ;  :tags ["comments"])
     ))
@@ -91,14 +102,14 @@
         :summary "查看所有用户"
         (user/load-users))
 
-      (PUT "/:id/password" []
+      (PATCH "/:id/password" []
         :return spec/Result
         :path-params [id :- int?]
         :body [update-password user/update-password]
         :summary "更改用户密码"
         (user/update-password! id update-password))
 
-      (PUT "/:id/profile" []
+      (PATCH "/:id/profile" []
         :path-params [id :- int?]
         :body [user-profile user/profile-user]
         :return spec/Result
