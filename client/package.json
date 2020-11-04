@@ -26,7 +26,6 @@
     "webpack-cli": "^3.3.2"
   },
   "dependencies": {
-    "@ant-design/aliyun-theme": "^0.0.4",
     "@ant-design/icons": "^4.2.2",
     "antd": "^4.7.2",
     "easymde": "^2.12.1",

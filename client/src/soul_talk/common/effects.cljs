@@ -22,20 +22,19 @@
                                                 (conj success-event response))))
                                   (dispatch [:unset-loading]))
                  :error-handler (fn [resp]
-                                  (js/console.log resp)
                                   (dispatch (conj error-event resp))
                                   (dispatch [:unset-loading]))}
                 ajax-map))))
 
 (reg-fx
- :navigate
- (fn [url]
-   (accountant/navigate! url)))
+  :navigate
+  (fn [url]
+    (accountant/navigate! url)))
 
 (reg-fx
- :reload-page
- (fn [_]
-   (accountant/dispatch-current!)))
+  :reload-page
+  (fn [_]
+    (accountant/dispatch-current!)))
 
 (reg-fx
  :set-user!

@@ -62,7 +62,6 @@
                active-page (subscribe [:active-page])]
     (when @ready?
       (fn []
-        [:div
-         [c/success-modal]
-         [c/error-modal]
-         (pages @active-page nil)]))))
+        (c/success-message)
+        (c/error-message) 
+        (pages @active-page nil)))))

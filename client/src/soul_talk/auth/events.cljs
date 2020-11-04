@@ -43,7 +43,6 @@
 (reg-event-fx
   :login
   (fn [_ [_ {:keys [email password] :as user}]]
-    (.log js/console email)
     {:http {:method        POST
             :url           (str api-uri "/login")
             :ajax-map      {:params {:email    email

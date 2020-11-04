@@ -4,29 +4,20 @@
             [soul-talk.db :refer [api-uri]]))
 
 (reg-event-db
-  :admin/set-users
+  :users/load-all-ok
   (fn [db [_ {:keys [users]}]]
-    (assoc db :admin/users users)))
+    (assoc db :users users)))
 
 (reg-event-fx
-  :admin/load-users
+  :users/load-all
   (fn [_ _]
     {:http {:method        GET
             :url           (str api-uri "/users")
-            :success-event [:admin/set-users]}}))
+            :success-event [:users/load-all-ok]
+            :error-event   [:set-error "保存用户失败"]}}))
 
 (reg-event-fx
-  :change-pass-ok
-  (fn [{:keys [db]} [_ {:keys [user]}]]
-    {:dispatch-n (list [:set-success "修改密码成功"])}))
-
-(reg-event-fx
-  :change-pass-error
-  (fn [_ [_ {:keys [response]}]]
-    {:dispatch [:set-error (:message response)]}))
-
-(reg-event-fx
-  :change-pass
+  :users/password
   [reagent.debug/tracking]
   (fn [_ [_ {:keys [id email pass-old pass-new pass-confirm] :as params}]]
     {:http {:method        POST
@@ -35,8 +26,8 @@
                                      :pass-old     pass-old
                                      :pass-new     pass-new
                                      :pass-confirm pass-confirm}}
-            :success-event [:change-pass-ok]
-            :error-event   [:change-pass-error]}}))
+            :success-event [:set-success "保存用户成功"]
+            :error-event   [:set-error]}}))
 
 (reg-event-fx
   :save-user-profile-ok

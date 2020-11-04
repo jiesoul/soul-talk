@@ -53,7 +53,6 @@
                                     :placeholder "请输入密码"
                                     :required    true
                                     :on-change   #(reset! password (-> % .-target .-value))}]]
-          (when @error [:div @error])
           [:> antd/Form.Item {:offset 8 :span 16 :align "right"}
            [:> antd/Button {:type     "primary"
                             :htmlType "submit"

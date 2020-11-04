@@ -94,11 +94,12 @@
                [:set-active-page :users]]))
 
 (defroute "/tags" []
-  (run-events [[:load-tags]
+  (run-events [[:tags/load-all]
+               [:set-breadcrumb ["标签" "列表"]]
                [:set-active-page :tags]]))
 
 (defroute "/tags/:id" [id]
-  (run-events [[:load-tag id]
+  (run-events [[:tag/load id]
                [:set-active-page :tag-view]]))
 
 
@@ -115,7 +116,7 @@
   (if-not (or (logged-in?)
             (nil? @(subscribe [:post])))
     (navigate! "/login")
-    (run-events [[:load-post id]
+    (run-events [[:articles/get id]
                  [:load-tags]
                  [:set-active-page :articles-edit]])))
 

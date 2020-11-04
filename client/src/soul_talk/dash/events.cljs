@@ -14,3 +14,8 @@
     {:http {:method        GET
             :url           (str api-uri "/dashboard")
             :success-event [:set-dashboard]}}))
+
+(reg-event-db
+  :set-breadcrumb
+  (fn [db [_ breadcrumb]]
+    (assoc db :breadcrumb breadcrumb)))

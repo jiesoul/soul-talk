@@ -2,6 +2,7 @@
   (:require [re-frame.core :refer [inject-cofx dispatch dispatch-sync reg-event-db reg-event-fx subscribe]]
             [soul-talk.db :refer [default-db]]
             [soul-talk.common.local-storage :as storage]
+            [soul-talk.dash.events]
             [soul-talk.article.events]
             [soul-talk.auth.events]
             [soul-talk.tag.events]
@@ -24,11 +25,6 @@
   :set-active-page
   (fn [db [_ page]]
     (assoc db :active-page page)))
-
-(reg-event-db
-  :set-breadcrumb
-  (fn [db [_ breadcrumb]]
-    (assoc db :breadcrumb breadcrumb)))
 
 (reg-event-fx
   :navigate-to
@@ -75,20 +71,22 @@
 
 (reg-event-fx
   :ajax-error
-  (fn [db [_ {:keys [response status status-text] :as resp}]]
-    (js/console.log "ajax-error: " resp)
+  (fn [_ [_ {:keys [response status status-text] :as resp}]]
     {:dispatch-n (condp = status
-                   0 (list [:set-error status-text])
-                   401 (list [:set-error (:message response)] [:logout])
-                   404 (list [:set-error "资源未找到"])
-                   (list [:set-error (:message response)]))}))
+                   0 (list [:set-error response])
+                   400 (list [:set-error response])
+                   401 (list [:set-error response] [:logout])
+                   403 (list [:set-error response] [:logout])
+                   404 (list [:set-error response])
+                   (list [:set-error response]))}))
 
-(reg-event-db
+(reg-event-fx
   :set-error
-  (fn [db [_ error]]
-    (assoc db :error error)))
+  (fn [{:keys [db]} [_ {:keys [message]}]]
+    {:db (assoc db :error message)}))
 
 (reg-event-db
   :clean-error
   (fn [db _]
     (dissoc db :error)))
+

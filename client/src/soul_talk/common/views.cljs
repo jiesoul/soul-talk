@@ -177,7 +177,7 @@
     (when @loading?
       (antd/message.loading "正在加载中。。。。"))))
 
-(defn success-modal []
+(defn success-message []
   (r/with-let [success (rf/subscribe [:success])]
     (when @success
       (antd/message.success @success)
@@ -192,10 +192,10 @@
               :onOk     ok-fun
               :onCancel cancel-fun})))
 
-(defn error-modal []
+(defn error-message []
   (r/with-let [error (rf/subscribe [:error])]
     (when @error
-      ;(antd/message.error @error)
+      (antd/message.error @error)
       (rf/dispatch [:clean-error]))))
 
 

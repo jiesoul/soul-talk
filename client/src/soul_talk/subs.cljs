@@ -1,5 +1,8 @@
 (ns soul-talk.subs
   (:require [re-frame.core :refer [reg-sub]]
+            [soul-talk.common.effects :refer [query]]
+            [soul-talk.user.subs]
+            [soul-talk.tag.subs]
             [soul-talk.article.subs]))
 
 ;; 获取当时全部数据
@@ -13,28 +16,11 @@
   (fn [db _]
     (not (empty? db))))
 
-;; 响应事件
-(defn query [db [event-id]]
-  (event-id db))
-
 (reg-sub
   :api-url
   query)
 
-(reg-sub :home-pagination query)
-
-(reg-sub :edit-pagination query)
-
-;; 当前页配置
-(reg-sub :auth-token query)
-
-(reg-sub :csrf-token query)
-
 (reg-sub :active-page query)
-
-(reg-sub :breadcrumb query)
-
-(reg-sub :user query)
 
 (reg-sub :error query)
 
@@ -43,11 +29,3 @@
 (reg-sub :login-events query)
 
 (reg-sub :loading? query)
-
-(reg-sub :tags query)
-
-
-
-(reg-sub :users query)
-
-
