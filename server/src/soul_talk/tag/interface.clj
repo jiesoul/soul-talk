@@ -1,7 +1,6 @@
 (ns soul-talk.tag.interface
   (:require [soul-talk.tag.handler :as handler]
-            [soul-talk.tag.spec :as spec]
-            [taoensso.timbre :as log]))
+            [soul-talk.tag.spec :as spec]))
 
 (def tag spec/tag)
 

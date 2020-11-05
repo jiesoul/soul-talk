@@ -4,8 +4,12 @@
             [compojure.api.exception :as ex]
             [compojure.api.meta :refer [restructure-param]]
             [compojure.core :refer [wrap-routes]]
-            [soul-talk.rest-api.handler :as h]
             [soul-talk.rest-api.middleware :as m]
+            [soul-talk.auth.routes :refer [auth-routes]]
+            [soul-talk.user.routes :refer [user-routes]]
+            [soul-talk.tag.routes :refer [tag-routes]]
+            [soul-talk.article.routes :refer [article-routes]]
+            [soul-talk.comment.routes :refer [comment-routes]]
             [taoensso.timbre :as log]))
 
 ;; 错误处理
@@ -44,7 +48,11 @@
 ;; 多重方法用来注入中间件
 (defmethod restructure-param :auth-rules
   [_ rule acc]
-  (update-in acc [:middleware] conj [m/wrap-rule rule]))
+  (update-in acc [:middleware] conj [m/wrap-require-roles rule]))
+
+(defmethod restructure-param :auth-api-key
+  [_ rule acc]
+  (update-in acc [:middleware] conj [m/wrap-auth-api-key rule]))
 
 (def exceptions-config
   {:handlers {::calm                    (exception-handler resp/enhance-your-calm :calm)
@@ -76,11 +84,17 @@
    :coercion :spec
    :swagger swagger-config})
 
+
+
 (def api-routes
   (api
     api-config
     (context "/api/v1" []
       :tags ["api version 1"]
-      h/public-routes
-      h/private-routes)))
+      (apply routes
+        auth-routes
+        user-routes
+        tag-routes
+        article-routes
+        comment-routes))))
 

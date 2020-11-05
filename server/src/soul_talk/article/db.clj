@@ -3,7 +3,6 @@
             [next.jdbc.sql :as sql]
             [soul-talk.database.db :refer [*db*]]
             [soul-talk.tag.db :refer [add-tags-to-article]]
-            [taoensso.timbre :as log]
             [next.jdbc.result-set :as rs-set]))
 
 (defn save-article-tags! [article-tags]

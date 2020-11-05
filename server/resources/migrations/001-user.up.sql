@@ -1,11 +1,16 @@
 CREATE TABLE IF NOT EXISTS users
 (id serial primary key,
-name VARCHAR(50),
-email VARCHAR(50) unique,
-admin BOOLEAN default FALSE ,
-last_login_at timestamp,
-is_active BOOLEAN default TRUE,
-password VARCHAR(200) NOT NULL);
+ email VARCHAR(50) unique,
+ name VARCHAR(50),
+ password VARCHAR(200) NOT NULL,
+ admin BOOLEAN default FALSE ,
+ last_login_at timestamp,
+ is_active BOOLEAN default TRUE,
+ create_by int default 0,
+ create_at timestamp default now(),
+ update_by int default 0,
+ update_at timestamp default now()
+);
 
 -- 插入初始用户 密码为 12345678
 insert into users (name, email, admin, last_login_at, is_active, password)

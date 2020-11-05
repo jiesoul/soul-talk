@@ -11,8 +11,6 @@
             [taoensso.timbre :as log]))
 
 (defn migrate [args]
-  (log/info "migrate args: " args)
-  (log/info "conf: " conf)
   (my-migrations/migrate args (select-keys conf [:database-url :migrations])))
 
 (mu/on-upndown :info mu/log :before)

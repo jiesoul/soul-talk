@@ -4,9 +4,10 @@ create table if not exists article (
     title varchar(200) not null,
     description text,
     body text not null ,
-    create_at timestamp,
-    update_at timestamp,
     publish int default 0,
-    create_by int,
-    counter int default 0
+    pv int default 0,
+    create_by int default 0,
+    create_at timestamp default now(),
+    update_by int default 0,
+    update_at timestamp default now()
 )

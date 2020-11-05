@@ -3,28 +3,6 @@
             [spec-tools.data-spec :as ds]
             [soul-talk.spec.core :as spec]))
 
-(def id
-  (st/spec {:spec        pos-int?
-            :type        :long
-            :description "user id"
-            :reason "id 必须为非负整数！"}))
-
-(def login
-  (ds/spec {:name :user/login
-            :spec {:email spec/email?
-                   :password spec/password?}}))
-
-(def register
-  (ds/spec {:name :user/register
-            :spec {:email spec/email?
-                   :username spec/username?
-                   :password spec/password?}}))
-
-(def auth-token
-  (ds/spec {:name :user/auth-token
-            :spec {:id spec/non-empty-string?
-                   :user_id id}}))
-
 (def update-user
   (ds/spec {:name :user/update-user
             :spec {:email spec/email?
@@ -42,7 +20,7 @@
 
 (def user
   (ds/spec {:name :user/User
-            :spec {:id             id
+            :spec {:id             spec/id
                    :email          spec/email?
                    :username       spec/username?
                    (ds/opt :image) spec/uri-string?

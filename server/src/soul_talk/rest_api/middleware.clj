@@ -3,7 +3,7 @@
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [ring.middleware.flash :refer [wrap-flash]]
             [muuntaja.middleware :refer [wrap-format]]
-            [soul-talk.user.handler :refer [auth-backend]]
+            [soul-talk.auth.handler :refer [auth-backend]]
             [buddy.auth.accessrules :refer [wrap-access-rules]]
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
@@ -13,8 +13,48 @@
             [taoensso.timbre :as log]
             [soul-talk.env :refer [defaults]]
             [cognitect.transit :as transit]
-            [muuntaja.core :as m])
+            [muuntaja.core :as m]
+            [ring.util.http-response :as resp]
+            [soul-talk.utils :refer [parse-int]])
   (:import [java.time Instant]))
+
+(defn- parse-header [request token-name]
+  (some->> (some->
+             (resp/find-header request "authorization")
+             (second))
+    (re-find (re-pattern (str "^" token-name " (.+$")))
+    (second)))
+
+(defn- parse-token [token]
+  )
+
+(defn- not-expire? [user]
+  (let [now (quot (System/currentTimeMillis) 1000)]
+    (if (< now (-> user :exp parse-int))
+      user
+      nil)))
+
+(defn- has-role? [role required-roles]
+  (let [has-roles (case role
+                    "admin" #{"any" "user" "poweruser" "admin"}
+                    "poweruser" #{"any" "user" "poweruser"}
+                    "user" #{"any" "user"}
+                    #{})
+        matched-roles (clojure.set/intersection has-roles required-roles)]
+    (not (empty? matched-roles))))
+
+(defn wrap-require-roles [handler roles]
+  (fn [request]
+    (let [user (some->
+                 (parse-header request "Token")
+                 (parse-token)
+                 (not-expire?))]
+      (if-not user
+        (resp/unauthorized "用户未验证")
+        (if-not (has-role? (:role user) roles)
+          (resp/forbidden "权限不足")
+          (let [request (assoc request :identity user)]
+            (handler request)))))))
 
 (defn error-500 []
   {:status 500
@@ -54,6 +94,11 @@
                                  :handler rule}]
                         :on-error error-401})))
 
+(defn wrap-auth-api-key [handler rule]
+  (-> handler
+    (wrap-access-rules {:rules [{:pattern #".*"
+                                 :handler rule}]
+                        :on-error error-401})))
 ;;
 (defn wrap-defaults [handler]
   (ring-defaults/wrap-defaults
@@ -62,16 +107,6 @@
       (assoc-in [:security :anti-forgery] false)
       (assoc :session true))))
 
-;(def instant-encoders
-;  {:handlers
-;   {Instant
-;    (transit/write-handler (constantly "Instant")
-;      str)
-;    }})
-;
-;(def instant-decoders
-;  {:handlers
-;   {"Instant" (transit/read-handler t/parse)}})
 
 (def format-options
   (-> m/default-options
@@ -89,7 +124,7 @@
       :access-control-allow-methods [:get :post :put :delete :options])
     wrap-token-auth
     wrap-flash
-    (wrap-format format-options)
+    ;(wrap-format format-options)
     wrap-multipart-params
     wrap-defaults
     wrap-internal-error

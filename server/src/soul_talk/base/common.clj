@@ -1,6 +1,5 @@
 (ns soul-talk.base.common
   (:require [ring.util.http-response :refer [internal-server-error]]
-            [clojure.spec.alpha :as s]
             [taoensso.timbre :as log]))
 
 (defmacro handler
