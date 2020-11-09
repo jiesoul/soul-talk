@@ -8,9 +8,8 @@
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.backends.token :refer [token-backend]]
             [java-time.local :as l]
-            [taoensso.timbre :as log]))
-
-
+            [taoensso.timbre :as log]
+            [soul-talk.utils :as utils]))
 
 (defn register! [{:keys [session] :as req} user]
   (let [count (user-db/count-users)]
@@ -34,19 +33,15 @@
       user)))
 
 ;; token 验证
-(defn unauthorized-handler [req msg]
-  {:status 401
-   :body {:result :error
-          :message (or msg "用户未验证")}})
+(def auth-backend (token-backend {:authfn       auth-db/authenticate-token
+                                  :unauthorized utils/unauthorized}))
 
-(def auth-backend (token-backend {:authfn auth-db/authenticate-token
-                                  :unauthorized unauthorized-handler}))
+(def auth-api-key (token-backend {:authfn auth-db/authenticate-token
+                                  :unauthorized utils/unauthorized}))
 
-(defn authenticated [req]
-  (authenticated? req))
-
-(defn admin [req]
-  (authenticated? req))
+(defn admin?
+  [request]
+  (:headers request))
 
 (defn login!
   [{:keys [session remote-addr] :as req} {:keys [email password]}]
@@ -69,9 +64,9 @@
         {:result  :error
          :message "email或密码错误,登录失败"}))))
 
-(defn logout! [{:keys [user_id] :as auth-token}]
+(defn logout! [{:keys [user_id token]}]
   (do
-    (auth-db/disable-token auth-token)
+    (auth-db/disable-token {:user_id user_id :id token})
     (log/info "user_id: " user_id  " log out")
     (-> {:result :ok
          :message "用户已登出"}

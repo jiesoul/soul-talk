@@ -40,7 +40,6 @@
                  ;; 日志
                  [com.taoensso/timbre "5.1.0"]
                  [com.fzakaria/slf4j-timbre "0.3.20"]
-                 [ch.qos.logback/logback-classic "1.1.3"]
 
                  ;; formats clojure.spec error messages
                  [expound "0.7.1"]

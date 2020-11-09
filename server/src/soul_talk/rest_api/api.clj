@@ -5,11 +5,13 @@
             [compojure.api.meta :refer [restructure-param]]
             [compojure.core :refer [wrap-routes]]
             [soul-talk.rest-api.middleware :as m]
-            [soul-talk.auth.routes :refer [auth-routes]]
-            [soul-talk.user.routes :refer [user-routes]]
-            [soul-talk.tag.routes :refer [tag-routes]]
-            [soul-talk.article.routes :refer [article-routes]]
-            [soul-talk.comment.routes :refer [comment-routes]]
+            [soul-talk.spec.core :refer [Result]]
+            [soul-talk.auth.interface :refer [backend api-key]]
+            [soul-talk.auth.routes :as auth]
+            [soul-talk.user.routes :as user]
+            [soul-talk.tag.routes :as tag]
+            [soul-talk.article.routes :as article]
+            [soul-talk.comment.routes :as comment]
             [taoensso.timbre :as log]))
 
 ;; 错误处理
@@ -48,11 +50,7 @@
 ;; 多重方法用来注入中间件
 (defmethod restructure-param :auth-rules
   [_ rule acc]
-  (update-in acc [:middleware] conj [m/wrap-require-roles rule]))
-
-(defmethod restructure-param :auth-api-key
-  [_ rule acc]
-  (update-in acc [:middleware] conj [m/wrap-auth-api-key rule]))
+  (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
 (def exceptions-config
   {:handlers {::calm                    (exception-handler resp/enhance-your-calm :calm)
@@ -72,7 +70,7 @@
                  :contact {:name "jiesoul"
                            :email "jiesoul@gmail.com"
                            :url "http://www.jiesoul.com"}}
-          :tags [{:name "登陆" :description "用户登陆相关API"}
+          :tags [{:name "登录" :description "登陆"}
                  {:name "用户" :description "用户信息相关API"}
                  {:name "标签" :description "标签相关API"}
                  {:name "文章" :description "文章相关API"}
@@ -81,20 +79,40 @@
 
 (def api-config
   {:exceptions exceptions-config
+   :ring-swagger {:ignore-missing-mappings? true}
    :coercion :spec
    :swagger swagger-config})
 
-
-
-(def api-routes
+(def public-api-routes
   (api
     api-config
-    (context "/api/v1" []
+
+    (context "" []
       :tags ["api version 1"]
-      (apply routes
-        auth-routes
-        user-routes
-        tag-routes
-        article-routes
-        comment-routes))))
+
+      (context "/api/v1" []
+        :auth-rules api-key
+
+        user/public-routes
+        tag/public-routes
+        article/public-routes
+        comment/public-routes
+        )
+      (context "" []
+        :auth-rules backend
+
+        auth/private-routes
+        user/private-routes
+        tag/private-routes
+        article/private-routes
+        )
+
+      )))
+
+(def private-api-routes
+  (api
+    api-config
+
+
+    ))
 
