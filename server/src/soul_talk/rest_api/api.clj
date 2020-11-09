@@ -47,10 +47,7 @@
         (if original {:original (.getMessage original)})
         {:message (.getMessage cause)}))))
 
-;; 多重方法用来注入中间件
-(defmethod restructure-param :auth-rules
-  [_ rule acc]
-  (update-in acc [:middleware] conj [m/wrap-auth rule]))
+
 
 (def exceptions-config
   {:handlers {::calm                    (exception-handler resp/enhance-your-calm :calm)
@@ -83,6 +80,11 @@
    :coercion :spec
    :swagger swagger-config})
 
+;; 多重方法用来注入中间件
+(defmethod restructure-param :auth-rules
+  [_ rule acc]
+  (update-in acc [:middleware] conj [m/wrap-auth rule]))
+
 (def public-api-routes
   (api
     api-config
@@ -91,21 +93,24 @@
       :tags ["api version 1"]
 
       (context "/api/v1" []
-        :auth-rules api-key
 
-        user/public-routes
-        tag/public-routes
-        article/public-routes
-        comment/public-routes
-        )
-      (context "" []
-        :auth-rules backend
+        (context "" []
 
-        auth/private-routes
-        user/private-routes
-        tag/private-routes
-        article/private-routes
-        )
+          :auth-rules api-key
+
+          user/public-routes
+          tag/public-routes
+          article/public-routes
+          comment/public-routes)
+
+        (context "" []
+          :auth-rules backend
+
+          auth/private-routes
+          user/private-routes
+          tag/private-routes
+          article/private-routes
+          ))
 
       )))
 

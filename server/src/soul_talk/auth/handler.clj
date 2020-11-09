@@ -51,7 +51,7 @@
         (assoc :last_login_at (l/local-date-time))
         (user-db/update-login-time))
       (let [token (auth-db/gen-session-id)
-            user-token {:id token :user_id id}]
+            user-token {:token token :user_id id}]
         (auth-db/make-token user-token)
         (log/info "user:" email " successfully logged from ip " remote-addr " Token: " token)
         (-> {:result :ok
@@ -66,7 +66,7 @@
 
 (defn logout! [{:keys [user_id token]}]
   (do
-    (auth-db/disable-token {:user_id user_id :id token})
+    (auth-db/disable-token {:user_id user_id :token token})
     (log/info "user_id: " user_id  " log out")
     (-> {:result :ok
          :message "用户已登出"}

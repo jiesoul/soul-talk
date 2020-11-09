@@ -16,7 +16,7 @@
 (defn authenticate-token
   [req token]
   (let [sql-str (str "SELECT * FROM auth_tokens "
-                  " WHERE id = ? and create_at + interval '10 h' > now()")
+                  " WHERE token = ? and create_at + interval '10 h' > now()")
         tokens (sql/query *db* [sql-str token] {:builder-fn rs-set/as-unqualified-maps})]
     (some-> tokens
       first

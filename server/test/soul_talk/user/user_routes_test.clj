@@ -5,7 +5,7 @@
             [taoensso.timbre :as log]
             [cheshire.core :as cheshire]))
 
-(def api-pre "/api/v1")
+(def api-pre "http://localhost:3000/api/v1")
 
 (defn api-url [url]
   (str api-pre url))
@@ -18,9 +18,10 @@
 
 (deftest user-test
 
-  (testing "load categories"
+  (testing "logout"
     (test
       (let [response (app (mock/request :post (api-url "/logout")))]
+        (log/info "response body: " response)
         (is (= 200 (:status response))))))
 
 

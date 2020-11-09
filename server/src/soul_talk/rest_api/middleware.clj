@@ -21,6 +21,7 @@
 
 ;; 验证和授权 token
 (defn wrap-auth [handler rule]
+  (log/info "request: " rule)
   (-> handler
     (wrap-authentication rule)
     (wrap-authorization rule)))
