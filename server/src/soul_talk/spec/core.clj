@@ -35,8 +35,8 @@
             :description "返回信息"}))
 
 (def data
-  (st/spec {:spec        (or nil? map?)
-            :type        :map
+  (st/spec {:spec map?
+            :type :map
             :description "返回的数据 （k-v 键值对）"}))
 
 (def Result
@@ -106,3 +106,4 @@
             :type :string
             :description "密码大于等于8个字符"
             :reason "密码必须大于等于8位"}))
+

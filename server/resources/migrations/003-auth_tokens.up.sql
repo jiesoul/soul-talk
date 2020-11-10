@@ -1,5 +1,6 @@
 CREATE TABLE auth_tokens (
-    token varchar(256) primary key ,
+    id serial primary key ,
+    token varchar(256) unique ,
     user_id int,
     create_at timestamp not null default now(),
     refresh_at timestamp not null default now()

@@ -1,5 +1,10 @@
 (ns soul-talk.utils
-  (:require [ring.util.http-response :as resp]))
+  (:require [ring.util.http-response :as resp]
+            [crypto.random :refer [base64]]))
+
+(defn gen-token
+  []
+  (base64 64))
 
 (defn parse-int [s]
   (if s

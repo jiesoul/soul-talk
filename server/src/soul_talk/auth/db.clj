@@ -2,26 +2,22 @@
   (:require [next.jdbc.sql :as sql]
             [next.jdbc.result-set :as rs-set]
             [soul-talk.database.db :refer [*db*]]
-            [crypto.random :refer [base64]]))
+            [taoensso.timbre :as log]))
 
-(defn gen-session-id
-  []
-  (base64 32))
-
-(defn make-token
+(defn save-token
   [user-token]
   (first
     (sql/insert! *db* :auth_tokens user-token)))
 
-(defn authenticate-token
-  [req token]
+(defn auth-token
+  [token]
   (let [sql-str (str "SELECT * FROM auth_tokens "
                   " WHERE token = ? and create_at + interval '10 h' > now()")
         tokens (sql/query *db* [sql-str token] {:builder-fn rs-set/as-unqualified-maps})]
+    (log/info "验证token：" tokens)
     (some-> tokens
-      first
-      :user_id)))
+      first)))
 
-(defn disable-token
-  [auth-token]
-  (sql/delete! *db* :auth_tokens auth-token))
+(defn delete-token
+  [token]
+  (sql/delete! *db* :auth_tokens ["token = ?" token]))

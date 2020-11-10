@@ -3,5 +3,5 @@
             [soul-talk.utils :as utils]))
 
 (defn load-all []
-  (let [data-dics (db/load-all)]
+  (let [data-dics (db/get-data-dic-all)]
     (utils/ok "加载成功" {:data-dics data-dics})))

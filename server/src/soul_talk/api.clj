@@ -3,7 +3,7 @@
             [compojure.api.meta :refer [restructure-param]]
             [soul-talk.middleware :as m]
             [soul-talk.spec.core :refer [Result]]
-            [soul-talk.auth.interface :refer [api-key]]
+            [soul-talk.api-key.interface :refer [auth-api-key]]
             [soul-talk.auth.routes :as auth]
             [soul-talk.user.routes :as user]
             [soul-talk.tag.routes :as tag]
@@ -42,7 +42,7 @@
       :tags ["api version 1"]
 
       (context "/api/v1" []
-        :auth-rules api-key
+        :auth-rules auth-api-key
 
         user/public-routes
         tag/public-routes

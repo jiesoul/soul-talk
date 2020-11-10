@@ -21,7 +21,7 @@
 ;; 错误处理
 (defn exception-handler [f type]
   (fn [^Exception e data request]
-    (log/error "exception -- " e)
+    (log/error "exception -- " (.getMessage e))
     (f {:result :error :message (str "发生未知错误"), :type type})))
 
 ;;
@@ -32,8 +32,8 @@
                     :problems
                     :clojure.spec.alpha/problems
                     (map :reason))]
-      (log/info "错误信息：" message)
-      (f {:result :error :message message}))))
+      (log/error "错误信息：" message)
+      (f {:result :error :message message :type type}))))
 
 (defn response-validation-handler [f type]
   (fn [^Exception e data resp]
@@ -41,7 +41,7 @@
     (let [message (->> data
                     :problems
                     :clojure.spec.alpha/problems)]
-      (f {:result :error :message message}))))
+      (f {:result :error :message message :type type}))))
 
 (def exceptions-config
   {:handlers {::calm                   (exception-handler resp/enhance-your-calm :calm)
@@ -55,6 +55,7 @@
 
 ;; 验证和授权 token
 (defn wrap-auth [handler rule]
+  (log/info "正在进行验证......")
   (-> handler
     (wrap-authentication rule)
     (wrap-authorization rule)))

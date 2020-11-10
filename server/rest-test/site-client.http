@@ -1,10 +1,18 @@
-# 数据字典
-# 全部数据
-GET {{baseUrl}}/data-dics
-Accept: application/json
+# 登陆
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{"email" : "jiesoul@gmail.com", "password" : "12345678" }
 
 ###
 
+# 登出
+POST {{baseUrl}}/logout
+Content-Type: application/json
+
+{"user_id" : 1, "token" : "string"}
+
+###
 
 # 用户
 # 修改密码
@@ -27,25 +35,30 @@ Content-type: application/json
 GET {{baseUrl}}/users
 Accept: application/json
 
-<> 2020-11-10T035143.200.json
+###
+
+
+# api-keys
+GET {{baseUrl}}/api-keys/gen
+Accept: application/json
 
 ###
 
-# 登陆
-POST {{baseUrl}}/login
+POST {{baseUrl}}/api-keys
 Content-Type: application/json
 
-{"email" : "jiesoul@gmail.com", "password" : "12345678" }
-
-<> 2020-11-10T034841.200.json
-<> 2020-11-10T034806.400.json
+{"app_name":  "web","create_by": 1, "token":  "i/ByCooZNZeVlPFfwtJ+KYKIh+8jhlWs6+5yyu9NexcIWD5KYjsUgy/EG4tr7KOAvOGK8WsXEBCYjbESp14k+A=="}
 
 ###
 
-# 登出
-POST {{baseUrl}}/logout
-Content-Type: application/json
-
-{"user_id" : 1, "token" : "string"}
+DELETE {{baseUrl}}/2
 
 ###
+
+# 数据字典
+# 全部数据
+GET {{baseUrl}}/data-dics
+Accept: application/json
+
+###
+

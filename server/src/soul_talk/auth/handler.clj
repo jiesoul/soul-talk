@@ -28,15 +28,8 @@
       user)))
 
 ;; token 验证
-(def auth-backend (token-backend {:authfn       auth-db/authenticate-token
+(def auth-backend (token-backend {:authfn       auth-db/auth-token
                                   :unauthorized utils/unauthorized}))
-
-(def auth-api-key (token-backend {:authfn auth-db/authenticate-token
-                                  :unauthorized utils/unauthorized}))
-
-(defn admin?
-  [request]
-  (:headers request))
 
 (defn login!
   [{:keys [session remote-addr] :as req} {:keys [email password]}]
@@ -45,9 +38,9 @@
       (-> user
         (assoc :last_login_at (l/local-date-time))
         (user-db/update-login-time))
-      (let [token (auth-db/gen-session-id)
+      (let [token (utils/gen-token)
             user-token {:token token :user_id id}]
-        (auth-db/make-token user-token)
+        (auth-db/save-token user-token)
         (log/info "user:" email " successfully logged from ip " remote-addr " Token: " token)
         (utils/ok "保存成功" {:user  (dissoc user :password)
                       :token token})))
@@ -55,6 +48,6 @@
 
 (defn logout! [{:keys [user_id token]}]
   (do
-    (auth-db/disable-token {:user_id user_id :token token})
+    (auth-db/delete-token token)
     (log/info "user_id: " user_id  " log out")
     (utils/ok "用户已登出")))

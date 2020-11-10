@@ -10,4 +10,5 @@
       :return Result
       :summary "全部字典数据"
       (data-dic/load-all))
+
     ))
