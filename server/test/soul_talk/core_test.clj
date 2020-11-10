@@ -5,6 +5,12 @@
             [soul-talk.handler :refer :all]
             [taoensso.timbre :as log]))
 
+(defn api-url [url]
+  (str url "/api/v1" url))
+
+(def user {:email    "jiesoul@gmail.com"
+           :password "12345678"})
+
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
 

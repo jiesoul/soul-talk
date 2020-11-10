@@ -1,6 +1,5 @@
 (ns soul-talk.auth.handler
-  (:require [soul-talk.utils :refer [parse-int]]
-            [ring.util.http-response :as resp]
+  (:require [soul-talk.utils :as utils]
             [soul-talk.auth.db :as auth-db]
             [soul-talk.user.db :as user-db]
             [buddy.hashers :as hashers]
@@ -8,24 +7,20 @@
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.backends.token :refer [token-backend]]
             [java-time.local :as l]
-            [taoensso.timbre :as log]
-            [soul-talk.utils :as utils]))
+            [taoensso.timbre :as log]))
 
 (defn register! [{:keys [session] :as req} user]
   (let [count (user-db/count-users)]
     (if (pos? count)
-      (resp/bad-request {:result  :error
-                         :message "系统不允许注册！！"})
+      (utils/bad-request "系统不允许注册！！")
       (if-let [temp-user (user-db/find-by-email (:email user))]
-        (resp/unauthorized {:result  :error
-                            :message (str (:email temp-user) " 已被注册")})
+        (utils/unauthorized (str (:email temp-user) " 已被注册"))
         (do
           (user-db/insert-user!
             (-> user
               (dissoc :pass-confirm)
               (update :password hashers/derive)))
-          (-> {:result :ok}
-            (resp/ok)))))))
+          (utils/ok))))))
 
 (defn authenticate-local [email password]
   (when-let [user (user-db/find-by-email email)]
@@ -54,21 +49,12 @@
             user-token {:token token :user_id id}]
         (auth-db/make-token user-token)
         (log/info "user:" email " successfully logged from ip " remote-addr " Token: " token)
-        (-> {:result :ok
-             :data   {:user  (dissoc user :password)
-                      :token token}}
-          (resp/ok))))
-    (do
-      (log/info "login failed for " email)
-      (resp/unauthorized
-        {:result  :error
-         :message "email或密码错误,登录失败"}))))
+        (utils/ok "保存成功" {:user  (dissoc user :password)
+                      :token token})))
+    (utils/unauthorized "email或密码错误,登录失败")))
 
 (defn logout! [{:keys [user_id token]}]
   (do
     (auth-db/disable-token {:user_id user_id :token token})
     (log/info "user_id: " user_id  " log out")
-    (-> {:result :ok
-         :message "用户已登出"}
-      (resp/ok)
-      (assoc :session nil))))
+    (utils/ok "用户已登出")))

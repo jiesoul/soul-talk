@@ -1,6 +1,6 @@
 create table if not exists article (
     id varchar(20) primary key,
-    image varchar(100) ,
+    image varchar(200) ,
     title varchar(200) not null,
     description text,
     body text not null ,

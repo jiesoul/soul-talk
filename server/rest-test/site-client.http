@@ -1,0 +1,51 @@
+# 数据字典
+# 全部数据
+GET {{baseUrl}}/data-dics
+Accept: application/json
+
+###
+
+
+# 用户
+# 修改密码
+PATCH {{baseUrl}}/users/1/password
+Content-Type: application/json
+
+{"oldPassword" :  "123456789", "newPassword" :  "12345678", "confirmPassword" : "12345678"}
+
+###
+
+# 修改个人信息
+PATCH {{baseUrl}}/users/1/profile
+Content-type: application/json
+
+{ "username" : "ss" }
+
+###
+
+# 全部用户
+GET {{baseUrl}}/users
+Accept: application/json
+
+<> 2020-11-10T035143.200.json
+
+###
+
+# 登陆
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{"email" : "jiesoul@gmail.com", "password" : "12345678" }
+
+<> 2020-11-10T034841.200.json
+<> 2020-11-10T034806.400.json
+
+###
+
+# 登出
+POST {{baseUrl}}/logout
+Content-Type: application/json
+
+{"user_id" : 1, "token" : "string"}
+
+###

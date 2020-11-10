@@ -21,6 +21,7 @@
                  [metosin/ring-swagger-ui "3.36.0"]
                  [metosin/spec-tools "0.10.4"]
                  [metosin/muuntaja "0.6.7"]
+                 [metosin/metosin-common "0.4.2"]
 
                  ;;database
                  [seancorfield/next.jdbc "1.1.610"]
@@ -77,12 +78,10 @@
        :dependencies   [[ring/ring-mock "0.3.2"]
                         [midje "1.7.0"]
                         [lein-ancient "0.6.15"]
-                        [com.jakemccrary/lein-test-refresh "0.24.1"]
                         [com.cemerick/piggieback "0.2.2"]
                         [org.clojure/tools.nrepl "0.2.13"]
                         [org.clojure/test.check "1.1.0"]]
-       :injections [(require 'pjstadig.humane-test-output)
-                    (pjstadig.humane-test-output/activate!)]
        :plugins        [[mvxcvi/whidbey "2.2.1"]
                         [venantius/ultra "0.6.0"]
+                        [com.jakemccrary/lein-test-refresh "0.24.1"]
                         [pjstadig/humane-test-output "0.10.0"]]}})

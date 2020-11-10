@@ -35,15 +35,15 @@
             :description "返回信息"}))
 
 (def data
-  (st/spec {:spec map?
-            :type :map
+  (st/spec {:spec        (or nil? map?)
+            :type        :map
             :description "返回的数据 （k-v 键值对）"}))
 
 (def Result
   (ds/spec {:name :core/Result
             :spec {:result           result
                    (ds/opt :message) message
-                   (ds/opt :data)    data}}))
+                   (ds/opt :data)    (ds/maybe data)}}))
 
 (def page (st/spec {:spec int?
                     :type :integer

@@ -43,3 +43,6 @@
 (defn upload-article!
   [req]
   (handler/update-article! req))
+
+(defn get-comments-by-articleId [id]
+  (handler/get-comments-by-articleId id))

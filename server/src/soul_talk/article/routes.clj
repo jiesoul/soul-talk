@@ -42,7 +42,17 @@
       :path-params [id :- string?]
       :return Result
       :summary "获取文章标签"
-      (tag/get-tags-by-article-id id))))
+      (tag/get-tags-by-article-id id))
+
+    (POST "/:id/commnets" []
+      :summary "发布评论"
+      :return Result)
+
+    (GET "/:id/comments" []
+      :summary "查看文章评论"
+      :return Result)
+
+    ))
 
 (def private-routes
   (context "/articles" []

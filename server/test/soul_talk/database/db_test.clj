@@ -4,7 +4,8 @@
             [next.jdbc :as jdbc]
             [next.jdbc.sql :as sql]
             [soul-talk.env :refer [conf]]
-            [mount.core :as mount]))
+            [mount.core :as mount]
+            [soul-talk.database.my-migrations :as migrations]))
 
 (use-fixtures
   :once
@@ -13,3 +14,7 @@
       #'soul-talk.env/conf
       #'soul-talk.database.db/*db*)
     (f)))
+
+(deftest test-db
+  (jdbc/with-transaction [t-conn *db*]
+    (is (= 1 1))))
