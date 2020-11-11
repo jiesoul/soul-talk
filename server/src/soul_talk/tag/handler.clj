@@ -28,3 +28,7 @@
 (defn get-tags-by-article-id [id]
   (let [tags (tag-db/get-tag-by-article-id id)]
     (utils/ok {:tags tags})))
+
+(defn query-tags [name]
+  (let [tags (tag-db/query-tags name)]
+    (utils/ok {:tags tags})))

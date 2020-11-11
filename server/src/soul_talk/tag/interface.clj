@@ -21,3 +21,6 @@
 
 (defn get-tags-by-article-id [id]
   (handler/get-tags-by-article-id id))
+
+(defn query-tags [name]
+  (handler/query-tags name))

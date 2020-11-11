@@ -1,3 +1,5 @@
+
+
 # 登陆
 POST {{baseUrl}}/login
 Content-Type: application/json
@@ -10,7 +12,7 @@ Content-Type: application/json
 POST {{baseUrl}}/logout
 Content-Type: application/json
 
-{"user_id" : 1, "token" : "string"}
+{"user_id" : 1, "token" : "6kpLKukQIAUJCJbvnAa5hwNopVlGzYxSocqaweYl4Ec="}
 
 ###
 
@@ -18,14 +20,16 @@ Content-Type: application/json
 # 修改密码
 PATCH {{baseUrl}}/users/1/password
 Content-Type: application/json
+Authorization: Token 6kpLKukQIAUJCJbvnAa5hwNopVlGzYxSocqaweYl4Ec=
 
-{"oldPassword" :  "123456789", "newPassword" :  "12345678", "confirmPassword" : "12345678"}
+{"oldPassword" :  "12345678", "newPassword" :  "123456789", "confirmPassword" : "123456789"}
 
 ###
 
 # 修改个人信息
 PATCH {{baseUrl}}/users/1/profile
 Content-type: application/json
+Authorization: Token 6kpLKukQIAUJCJbvnAa5hwNopVlGzYxSocqaweYl4Ec=
 
 { "username" : "ss" }
 
@@ -34,26 +38,46 @@ Content-type: application/json
 # 全部用户
 GET {{baseUrl}}/users
 Accept: application/json
+Authorization: {{token}}
 
 ###
 
 
-# api-keys
-GET {{baseUrl}}/api-keys/gen
+# app-keys
+GET {{baseUrl}}/app-keys/gen
 Accept: application/json
+Authorization: {{token}}
 
 ###
 
-POST {{baseUrl}}/api-keys
+POST {{baseUrl}}/app-keys
 Content-Type: application/json
+Authorization: {{token}}
 
-{"app_name":  "web","create_by": 1, "token":  "i/ByCooZNZeVlPFfwtJ+KYKIh+8jhlWs6+5yyu9NexcIWD5KYjsUgy/EG4tr7KOAvOGK8WsXEBCYjbESp14k+A=="}
+{"app_name":  "web","create_by": 1, "token":  "ty57zxCEOc6KQeEcAz6PZcb3FneD2p7ANrsm0rmZID4="}
+
+###
+
+DELETE {{baseUrl}}/app-keys/1
+Content-Type: application/json
+Authorization: {{token}}
 
 ###
 
-DELETE {{baseUrl}}/2
+
+GET {{baseUrl}}/app-keys
+Accept: application/json
+Authorization: {{token}}
 
 ###
+
+GET {{baseUrl}}/app-keys/q?app_name=web&sort=e
+Accept: application/json
+Authorization: {{token}}
+
+###
+
+
 
 # 数据字典
 # 全部数据

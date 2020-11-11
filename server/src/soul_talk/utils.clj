@@ -4,7 +4,7 @@
 
 (defn gen-token
   []
-  (base64 64))
+  (base64 32))
 
 (defn parse-int [s]
   (if s
@@ -13,7 +13,9 @@
 
 (defn ok
   ([] (ok nil nil))
-  ([msg] (ok msg nil))
+  ([param] (if (map? param)
+             (ok nil param)
+             (ok param nil)))
   ([msg data] (resp/ok {:result  :ok
                         :message (or msg "操作成功")
                         :data    data})))

@@ -2,7 +2,8 @@
   (:require [next.jdbc.sql :as sql]
             [next.jdbc.result-set :as rs-set]
             [soul-talk.database.db :refer [*db*]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [next.jdbc :as jdbc]))
 
 (defn save-token
   [user-token]
@@ -11,12 +12,14 @@
 
 (defn auth-token
   [token]
-  (let [sql-str (str "SELECT * FROM auth_tokens "
-                  " WHERE token = ? and create_at + interval '10 h' > now()")
+  (let [sql-str (str "SELECT * FROM auth_tokens WHERE token = ? and refresh_at + interval '10 h' > now () "
+                  " order by refresh_at desc")
         tokens (sql/query *db* [sql-str token] {:builder-fn rs-set/as-unqualified-maps})]
-    (log/info "验证token：" tokens)
     (some-> tokens
-      first)))
+            first)))
+
+(defn refresh-token [{:keys [refresh_at token]}]
+  (sql/update! *db* :auth_tokens {:refresh_at refresh_at} {:token token} {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn delete-token
   [token]

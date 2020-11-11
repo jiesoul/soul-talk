@@ -2,25 +2,22 @@
   (:require [compojure.api.sweet :refer :all]
             [compojure.api.meta :refer [restructure-param]]
             [soul-talk.middleware :as m]
-            [soul-talk.spec.core :refer [Result]]
-            [soul-talk.api-key.interface :refer [auth-api-key]]
-            [soul-talk.auth.routes :as auth]
             [soul-talk.user.routes :as user]
             [soul-talk.tag.routes :as tag]
             [soul-talk.article.routes :as article]))
 
 ;; 多重方法用来注入中间件
-(defmethod restructure-param :auth-rules
+(defmethod restructure-param :auth-app-key
   [_ rule acc]
-  (update-in acc [:middleware] conj [m/wrap-auth rule]))
+  (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
 (def swagger-config
   {:ui   "/api-docs"
    :spec "/swagger.json"
    :options {:ui {:validatorUrl nil}}
    :data {:info {:version "1.0.0"
-                 :title       "Self Site API"
-                 :description "Self Site API"
+                 :title       "个人网站公共API"
+                 :description "提供网站部分数据的API"
                  :contact {:name "jiesoul"
                            :email "jiesoul@gmail.com"
                            :url "http://www.jiesoul.com"}}
@@ -42,7 +39,7 @@
       :tags ["api version 1"]
 
       (context "/api/v1" []
-        :auth-rules auth-api-key
+        :auth-app-key #{"admin"}
 
         user/public-routes
         tag/public-routes

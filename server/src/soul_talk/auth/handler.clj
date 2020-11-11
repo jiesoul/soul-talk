@@ -6,7 +6,7 @@
             [buddy.auth.accessrules :refer [success error restrict]]
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.backends.token :refer [token-backend]]
-            [java-time.local :as l]
+            [java-time.local :as l :refer [local-date-time]]
             [taoensso.timbre :as log]))
 
 (defn register! [{:keys [session] :as req} user]
@@ -27,9 +27,11 @@
     (when (hashers/check password (:password user))
       user)))
 
-;; token 验证
-(def auth-backend (token-backend {:authfn       auth-db/auth-token
-                                  :unauthorized utils/unauthorized}))
+(defn auth-token [token]
+  (auth-db/auth-token token))
+
+(defn refresh-token [user-token]
+  (auth-db/refresh-token (assoc user-token :refresh_at (l/local-date-time))))
 
 (defn login!
   [{:keys [session remote-addr] :as req} {:keys [email password]}]

@@ -5,7 +5,6 @@
 (def login spec/login)
 (def register spec/register)
 (def auth-token spec/auth-token)
-(def backend handler/auth-backend)
 
 (defn login! [req user]
   (handler/login! req user))
@@ -15,3 +14,9 @@
 
 (defn register! [req user]
   (handler/register! req user))
+
+(defn auth-token [token]
+  (handler/auth-token token))
+
+(defn refresh-token [user-token]
+  (handler/refresh-token user-token))

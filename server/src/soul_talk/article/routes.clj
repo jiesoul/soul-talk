@@ -17,8 +17,7 @@
       :return Result
       :summary "查询某个标签下的已发布文章")
 
-    (GET "/public/q=:query" []
-      :path-params [query :- string?]
+    (GET "/public/q" req
       :return Result
       :summary "根据条件查询文章")
 
@@ -44,7 +43,7 @@
       :summary "获取文章标签"
       (tag/get-tags-by-article-id id))
 
-    (POST "/:id/commnets" []
+    (POST "/:id/comments" []
       :summary "发布评论"
       :return Result)
 

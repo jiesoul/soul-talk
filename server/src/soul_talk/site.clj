@@ -2,8 +2,7 @@
   (:require [compojure.api.sweet :refer :all]
             [compojure.api.meta :refer [restructure-param]]
             [soul-talk.middleware :as m]
-            [soul-talk.auth.interface :refer [backend]]
-            [soul-talk.api-key.routes :as api-key]
+            [soul-talk.app-key.routes :as app-key]
             [soul-talk.data-dic.routes :as data-dic]
             [soul-talk.auth.routes :as auth]
             [soul-talk.user.routes :as user]
@@ -25,10 +24,10 @@
       site-config
       (context "" []
         auth/private-routes)
-      (context "" []
-        :auth-rules backend
+      (context "/" []
+        :auth-rules #{"admin"}
         data-dic/private-routes
-        api-key/private-routes
+        app-key/private-routes
         user/private-routes
         tag/private-routes
         article/private-routes)

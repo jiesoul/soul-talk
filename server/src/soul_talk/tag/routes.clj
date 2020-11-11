@@ -8,8 +8,16 @@
     :tags ["标签"]
     (GET "/" []
       :return Result
+      :query-params [name :- string?]
       :summary "得到所有标签"
-      (tag/get-all-tags)))
+      (tag/get-all-tags))
+
+    (GET "/q" []
+      :return Result
+      :summary "根据名称模糊查询"
+      :query-params [name :- string?]
+      (tag/query-tags name))
+    )
   )
 
 (def private-routes

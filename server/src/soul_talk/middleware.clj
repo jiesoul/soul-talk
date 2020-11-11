@@ -3,8 +3,7 @@
             [soul-talk.utils :as utils]
             [ring.middleware.flash :refer [wrap-flash]]
             [muuntaja.core :as m]
-            [soul-talk.auth.handler :refer [auth-backend]]
-            [buddy.auth.accessrules :refer [wrap-access-rules]]
+            [buddy.auth.accessrules :refer [wrap-access-rules restrict]]
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
             [ring.middleware.defaults :as ring-defaults]
@@ -14,8 +13,10 @@
             [soul-talk.env :refer [defaults]]
             [cognitect.transit :as transit]
             [compojure.api.middleware :as cm]
+            [soul-talk.auth.interface :as auth]
             [compojure.api.exception :as ex]
-            [ring.util.http-response :as resp])
+            [ring.util.http-response :as resp]
+            [soul-talk.app-key.interface :as app-key])
   (:import [java.time Instant]))
 
 ;; 错误处理
@@ -53,12 +54,43 @@
 
 ;; ***** Auth implementation ****************************************************
 
+(defn- parse-header [request token-name]
+  (some->> (some-> (resp/find-header request "authorization")
+             (second))
+    (re-find (re-pattern (str "^" token-name " (.+)$")))
+    (second)))
+
+(defn- has-role? [role required-roles]
+  (let [has-roles (case role
+                    "admin"     #{"any" "user" "poweruser" "admin"}
+                    "poweruser" #{"any" "user" "poweruser"}
+                    "user"      #{"any" "user"}
+                    #{}
+                    )
+        matched-roles (clojure.set/intersection has-roles required-roles)]
+    (not (empty? matched-roles))))
+
 ;; 验证和授权 token
-(defn wrap-auth [handler rule]
-  (log/info "正在进行验证......")
-  (-> handler
-    (wrap-authentication rule)
-    (wrap-authorization rule)))
+(defn wrap-auth [handler roles]
+  (fn [request]
+    (let [token (some-> (parse-header request "Token")
+                        (auth/auth-token)
+                        (auth/refresh-token))]
+      (if-not token
+        (utils/unauthorized)
+        (if-not (has-role? "admin" roles)
+          (utils/forbidden)
+          (handler request))))))
+
+;; 验证APP key
+(defn wrap-app-key [handler rule]
+  (fn [request]
+    (let [app-key (some-> (parse-header request "AppKey")
+                    (app-key/auth-app-key))]
+      (log/info "ssssss" app-key)
+      (if-not app-key
+        (utils/forbidden)
+        (handler request)))))
 
 ;; 内部错误
 (defn wrap-internal-error [handler]
@@ -75,26 +107,6 @@
     (-> ring-defaults/api-defaults
       (assoc-in [:security :anti-forgery] false)
       (assoc :session true))))
-
-;; custom Record
-(defrecord Ping [])
-
-;; custom transit handlers
-(def write-handlers
-  {Ping (transit/write-handler (constantly "Ping") (constantly {}))})
-
-(def read-handlers
-  {"Ping" (transit/read-handler map->Ping)})
-
-;; a configured Muuntaja
-(def muuntaja
-  (m/create
-    (update-in
-      m/default-options
-      [:formats "application/transit+json"]
-      merge
-      {:encoder-opts {:handlers write-handlers}
-       :decoder-opts {:handlers read-handlers}})))
 
 (def format-options
   (-> m/default-options
