@@ -16,8 +16,8 @@
 (defn delete-app-key [id]
   (handler/delete-app-key id))
 
-(defn load-app-key []
-  (handler/load-app-keys))
+(defn load-app-key [req]
+  (handler/load-app-keys req))
 
 (defn query-app-key [req]
   (handler/query-app-key req))
