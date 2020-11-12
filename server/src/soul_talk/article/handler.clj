@@ -3,25 +3,32 @@
             [soul-talk.utils :as utils]
             [java-time.local :as l]
             [java-time.format :as f]
-            [soul-talk.pagination :as p]))
+            [soul-talk.pagination :as p]
+            [soul-talk.article.spec :as spec]))
+
+(def create-article spec/create-article)
+(def update-article spec/update-article)
+(def create-comment spec/create-comment)
 
 (def format-id (java-time.format/formatter "yyyyMMddHHmmssSSS"))
 
-(defn get-all-articles [request]
+(defn load-articles-page [request]
   (let [pagination (p/create request)
-        articles (article-db/get-article-page pagination)
-        total (article-db/count-article-all)
+        params (:param request)
+        [articles total] (article-db/load-articles-page pagination params)
         pagination (p/create-total pagination total)]
-    (utils/ok "加载成功" {:pagination pagination
-                  :articles   articles})))
+    (utils/ok  {:pagination pagination
+                :articles   articles
+                :query-str params})))
 
-(defn get-publish-article [req]
+(defn load-articles-publish-page [req]
   (let [pagination (p/create req)
-        articles (article-db/get-article-publish-page pagination)
-        total (article-db/count-article-publish)
+        params (:params req)
+        [articles total] (article-db/load-articles-page pagination (assoc params :public 1))
         pagination (p/create-total pagination total)]
     (utils/ok {:articles   articles
-                 :pagination pagination})))
+               :pagination pagination
+               :query-str params})))
 
 (defn get-article [article-id]
   (let [article (article-db/get-article-by-id article-id)]
@@ -74,4 +81,23 @@
 (defn get-comments-by-articleId [articleId]
   (let [comments (article-db/get-comments-by-articleId articleId)]
     (utils/ok "获取成功" {:comments comments})))
+
+(defn get-article-public [id]
+  (let [article (article-db/get-article-publish id)]
+    (utils/ok {:article article})))
+
+(defn save-article-comment [id comment]
+  (let [comment (article-db/save-comment! comment)]
+    (utils/ok {:comment comment})))
+
+(defn delete-article-comment [id]
+  (article-db/delete-comment! id))
+
+(defn load-articles-comments-page [req]
+  (let [params (:params req)
+        pagination (p/create req)
+        [comments total] (article-db/load-articles-comments-page pagination params)
+        pagination (p/create-total pagination total)]
+    (utils/ok {:comments comments
+               :pagination pagination})))
 

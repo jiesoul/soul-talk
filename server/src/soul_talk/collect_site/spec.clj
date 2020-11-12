@@ -5,20 +5,26 @@
             [clojure.spec.alpha :as s]
             [clojure.string :as str]))
 
-(def token
-  (st/spec {:spec        (s/and string? #(<= 32 (count %)))
-            :type        :string
-            :description "key"
-            :reason      "api Key 必须大于等于64位"}))
-
-(def app-name
+(def title
   (st/spec {:spec        (s/and string? #(not (str/blank? %)))
             :type        :string
-            :description "app-name"
+            :description "标题"
             :reason      "名称不能为空"}))
 
 (def create-collect-site
   (ds/spec {:name :collect-site/create-collect-site
-            :spec {:token    token
-                   :app_name app-name
-                   :create_by spec/id}}))
+            :spec {:title title
+                   (ds/opt :url) (ds/maybe spec/uri-string?)
+                   (ds/opt :image) (ds/maybe spec/uri-string?)
+                   :create_by spec/id
+                   :update_by spec/id
+                   }}))
+
+(def update-collect-site
+  (ds/spec {:name :collect-site/update-collect-site
+            :spec {:id spec/id
+                   :title title
+                   (ds/opt :url) (ds/maybe spec/uri-string?)
+                   (ds/opt :image) (ds/maybe spec/uri-string?)
+                   :update_by spec/id
+                   }}))

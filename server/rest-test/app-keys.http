@@ -1,0 +1,27 @@
+# app-keys
+GET {{baseUrl}}/app-keys/gen
+Accept: application/json
+Authorization: {{token}}
+
+###
+
+POST {{baseUrl}}/app-keys
+Content-Type: application/json
+Authorization: {{token}}
+
+{"app_name":  "web","create_by": 1, "token":  "ty57zxCEOc6KQeEcAz6PZcb3FneD2p7ANrsm0rmZID4="}
+
+###
+
+DELETE {{baseUrl}}/app-keys/1
+Content-Type: application/json
+Authorization: {{token}}
+
+###
+
+
+GET {{baseUrl}}/app-keys
+Accept: application/json
+Authorization: {{token}}
+
+###

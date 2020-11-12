@@ -29,3 +29,11 @@
 (def visible-article
   (ds/spec {:name :core/visible-article
             :spec {:article article}}))
+
+
+(def create-comment
+  (ds/spec {:name :article/create-comment
+            :spec {:article spec/non-empty-string?
+                   :body spec/non-empty-string?
+                   :create_by_name spec/non-empty-string?
+                   :create_by_email spec/email?}}))

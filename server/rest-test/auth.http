@@ -1,0 +1,15 @@
+# 登陆
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{"email" : "jiesoul@gmail.com", "password" : "12345678" }
+
+###
+
+# 登出
+POST {{baseUrl}}/logout
+Content-Type: application/json
+
+{"user_id" : 1, "token" : "6kpLKukQIAUJCJbvnAa5hwNopVlGzYxSocqaweYl4Ec="}
+
+###

@@ -2,7 +2,11 @@
   (:require [soul-talk.data-dic.db :as db]
             [soul-talk.utils :as utils]
             [soul-talk.pagination :as p]
-            [java-time.local :as l]))
+            [java-time.local :as l]
+            [soul-talk.data-dic.spec :as spec]))
+
+(def create-data-dic spec/create-data-dic)
+(def update-data-dic spec/update-data-dic)
 
 (defn load-all []
   (let [data-dics (db/get-data-dic-all)]
@@ -30,7 +34,7 @@
                :pagination pagination
                :query-str params})))
 
-(defn load-data-by-pid [pid]
+(defn load-data-dics-by-pid [pid]
   (let [data-dics (db/load-data-dics-by-pid pid)]
     (utils/ok {:data-dics data-dics})))
 

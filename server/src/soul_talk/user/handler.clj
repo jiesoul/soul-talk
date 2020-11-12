@@ -5,7 +5,14 @@
             [buddy.auth.accessrules :refer [success error restrict]]
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.backends.token :refer [token-backend]]
-            [java-time.local :as l]))
+            [java-time.local :as l]
+            [soul-talk.user.spec :as spec]))
+
+(def update-user spec/update-user)
+(def user spec/user)
+(def visible-user spec/visible-user)
+(def update-password spec/update-password)
+(def profile-user spec/profile-user)
 
 ;; 用户操作
 (defn load-users []

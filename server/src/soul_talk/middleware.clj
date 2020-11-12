@@ -13,16 +13,16 @@
             [soul-talk.env :refer [defaults]]
             [cognitect.transit :as transit]
             [compojure.api.middleware :as cm]
-            [soul-talk.auth.interface :as auth]
+            [soul-talk.auth.handler :as auth]
             [compojure.api.exception :as ex]
             [ring.util.http-response :as resp]
-            [soul-talk.app-key.interface :as app-key])
+            [soul-talk.app-key.handler :as app-key])
   (:import [java.time Instant]))
 
 ;; 错误处理
 (defn exception-handler [f type]
   (fn [^Exception e data request]
-    (log/error "exception -- " (.getMessage e))
+    (log/error "exception -- " (.printStackTrace e))
     (f {:result :error :message (str "发生未知错误"), :type type})))
 
 ;;

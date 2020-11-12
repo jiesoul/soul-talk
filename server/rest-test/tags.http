@@ -1,0 +1,6 @@
+# tags
+GET {{baseUrl}}/tags
+Accept: application/json
+Authorization: {{token}}
+
+###

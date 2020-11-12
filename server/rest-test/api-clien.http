@@ -1,7 +1,0 @@
-# curl -X GET "http://localhost:3000/api/v1/Users/1/profile" -H  "accept: application/json"
-GET {{apiUrl}}/Users/1/profile
-accept: application/json
-Authorization: {{app-key}}
-
-###
-

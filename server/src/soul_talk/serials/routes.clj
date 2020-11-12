@@ -1,7 +1,7 @@
 (ns soul-talk.serials.routes
   (:require [compojure.api.sweet :refer :all]
             [soul-talk.spec.core :refer [Result]]
-            [soul-talk.serials.interface :as serials]))
+            [soul-talk.serials.handler :as serials]))
 
 (def private-routes
   (context "serials" []

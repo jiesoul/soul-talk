@@ -1,0 +1,41 @@
+# 数据字典
+# 全部数据
+GET {{baseUrl}}/data-dics
+Accept: application/json
+Authorization: {{token}}
+
+###
+
+GET {{baseUrl}}/data-dics/10
+Accept: application/json
+Authorization: {{token}}
+
+###
+
+GET {{baseUrl}}/data-dics/pid/0
+Accept: application/json
+Authorization: {{token}}
+
+###
+
+POST {{baseUrl}}/data-dics
+Content-Type: application/json
+Authorization: {{token}}
+
+{"id": "99", "name" :  "test" ,"pid" :  "0", "create_by" :  1, "update_by" : 1}
+
+###
+
+PATCH {{baseUrl}}/data-dics
+Content-Type: application/json
+Authorization: {{token}}
+
+{"id": "99", "name" :  "test-patch", "note": "" ,"pid" :  "0", "update_by" : 1}
+
+###
+
+DELETE {{baseUrl}}/data-dics/99
+Content-Type: application/json
+Authorization: {{token}}
+
+###

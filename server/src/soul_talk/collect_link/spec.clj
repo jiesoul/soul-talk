@@ -19,3 +19,12 @@
                    :create_by spec/id
                    :update_by spec/id
                    }}))
+
+(def update-collect-link
+  (ds/spec {:name :collect-link/update-collect-link
+            :spec {:id spec/id
+                   :title title
+                   (ds/opt :url) (ds/maybe spec/uri-string?)
+                   (ds/opt :image) (ds/maybe spec/uri-string?)
+                   :update_by spec/id
+                   }}))

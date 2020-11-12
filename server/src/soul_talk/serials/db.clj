@@ -9,18 +9,16 @@
     [where-str coll]))
 
 (defn load-serials-page [{:keys [per_page offset]} params]
-  (let [where (gen-where params)
-        sql-str (str "select * from serials " (first where) " offset ? limit")]
-    (sql/query *db*
-      (into [sql-str] (second where))
-      {:builder-fn rs-set/as-unqualified-maps})))
-
-(defn count-serials-page [params]
-  (let [where (gen-where params)
-        sql-str (str "select count(1) as c from serials " (first where))]
-    (:c
-      (first
-        (sql/query *db* (into [sql-str] (second where)))))))
+  (let [[where coll] (gen-where params)
+        sql-str (str "select * from serials " (first where) " offset ? limit ?")
+        serials (sql/query *db*
+                  (into [sql-str] (conj coll offset per_page))
+                  {:builder-fn rs-set/as-unqualified-maps})
+        count-str (str "select count(1) as c from serials " (first where))
+        total (:c
+                (first
+                  (sql/query *db* (into [count-str] coll))))]
+    [serials total]))
 
 (defn save-serials [serials]
   (sql/insert! *db* :serials serials {:builder-fn rs-set/as-unqualified-maps}))

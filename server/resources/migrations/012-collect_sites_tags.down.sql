@@ -1,0 +1,1 @@
+drop table if exists collect_sites_tags;

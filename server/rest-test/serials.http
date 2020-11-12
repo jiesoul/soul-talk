@@ -1,0 +1,7 @@
+# 系列
+
+GET {{baseUrl}}/serials
+Accept: application/json
+Authorization: {{token}}
+
+###

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS collect_link_comments (
+CREATE TABLE IF NOT EXISTS collect_links_comments (
     id serial primary key,
     collect_link_id int ,
     body text default '',

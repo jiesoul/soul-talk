@@ -1,1 +1,0 @@
-DROP TABLE IF EXISTS collect_link_comments;

@@ -11,9 +11,24 @@
 (defn delete-tag! [id]
   (sql/delete! *db* :tags ["id = ?" id]))
 
-(defn get-tags []
-  (sql/query *db* ["select * from tags"]
-    {:builder-fn rs-set/as-unqualified-maps}))
+(defn gen-where [{:keys [name]}]
+  (let [where-str (str "where name like ?")
+        coll [(str "%" name "%")]]
+    [where-str coll]))
+
+(defn load-tags-page [{:keys [per_page offset]} params]
+  (let [where   (gen-where params)
+        sql-str (str "select * from tags " (first where) " offset ? limit ?")
+        tags
+                (sql/query *db*
+                  (into [sql-str] (conj (second where) offset per_page))
+                  {:builder-fn rs-set/as-unqualified-maps})
+        count-str (str "select count(1) as c from tags " (first where))
+        total   (:c
+                  (first
+                    (sql/query *db*
+                      (into [count-str] (second where)))))]
+    [tags total]))
 
 (defn get-tag-by-id [id]
   (sql/get-by-id *db* :tags id))
@@ -44,3 +59,5 @@
   (sql/query *db*
     ["select * from tags where name like ?" (str "%" name "%")]
     {:builder-fn rs-set/as-unqualified-maps}))
+
+

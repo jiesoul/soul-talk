@@ -1,1 +1,1 @@
-drop table if exists article_tags;
+drop table if exists articles_tags;

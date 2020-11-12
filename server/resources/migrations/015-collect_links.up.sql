@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS collect_site (
+CREATE TABLE IF NOT EXISTS collect_links (
     id SERIAL primary key,
     title varchar(200) not null ,
     url varchar(200) not null unique,

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS collect_site_comments (
+CREATE TABLE IF NOT EXISTS collect_sites_comments (
     id serial primary key,
     collect_site_id int ,
     body text default '',

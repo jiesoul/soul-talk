@@ -1,7 +1,7 @@
 (ns soul-talk.data-dic.routes
   (:require [compojure.api.sweet :refer :all]
             [soul-talk.spec.core :refer [Result]]
-            [soul-talk.data-dic.interface :as data-dic]))
+            [soul-talk.data-dic.handler :as data-dic]))
 
 (def private-routes
   (context "/data-dics" []
@@ -35,6 +35,6 @@
     (GET "/pid/:pid" []
       :summary "通过父ID"
       :path-params [pid :- string?]
-      (data-dic/load-data-dic-by-pid pid))
+      (data-dic/load-data-dics-by-pid pid))
 
     ))

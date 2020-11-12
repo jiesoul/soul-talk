@@ -3,7 +3,11 @@
             [soul-talk.app-key.db :as db]
             [soul-talk.utils :as utils]
             [taoensso.timbre :as log]
-            [soul-talk.pagination :as p]))
+            [soul-talk.pagination :as p]
+            [soul-talk.app-key.spec :as spec]))
+
+(def token spec/token)
+(def create-app-key spec/create-app-key)
 
 (defn auth-app-key [token]
   (db/auth-app-key token))
@@ -20,17 +24,15 @@
   (let [result (db/delete-app-key id)]
     (utils/ok "删除成功")))
 
-(defn load-app-keys [req]
+(defn load-app-keys-page [req]
   (let [params (:params req)
         pagination (p/create req)
-        keys (db/load-app-keys pagination params)
-        total (db/count-app-keys params)
-        pagination (p/create-total pagination (:c total))]
+        [keys total] (db/load-app-keys pagination params)
+        pagination (p/create-total pagination total)]
     (utils/ok "获取成功" {:app-keys keys
-                      :pagination pagination
-                      :query-str params})))
+                         :pagination pagination
+                         :query-str params})))
 
 (defn query-app-key [req]
   (let [query-str (:query-params req)]
-    (log/info "query params: " query-str)
     (utils/ok {:query-str query-str})))

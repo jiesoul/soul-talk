@@ -1,6 +1,6 @@
 (ns soul-talk.app-key.routes
   (:require [compojure.api.sweet :refer :all]
-            [soul-talk.app-key.interface :as app-key]
+            [soul-talk.app-key.handler :as app-key]
             [soul-talk.spec.core :refer [Result]]))
 
 (def private-routes
@@ -10,10 +10,10 @@
     (GET "/" req
       :summary "获取全部app key"
       :return Result
-      (app-key/load-app-key req))
+      (app-key/load-app-keys-page req))
 
     (POST "/" []
-      :summary "保存apikey"
+      :summary "保存"
       :body [app-key app-key/create-app-key]
       :return Result
       (app-key/save-app-key app-key))

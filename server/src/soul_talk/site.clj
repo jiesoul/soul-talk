@@ -24,7 +24,7 @@
     (api
       site-config
       (context "" []
-        auth/private-routes)
+        auth/login-routes)
       (context "/" []
         :auth-rules #{"admin"}
         data-dic/private-routes

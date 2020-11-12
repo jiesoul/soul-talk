@@ -1,15 +1,23 @@
 (ns soul-talk.tag.handler
   (:require [soul-talk.tag.db :as tag-db]
-            [soul-talk.utils :as utils]))
+            [soul-talk.utils :as utils]
+            [soul-talk.pagination :as p]
+            [soul-talk.tag.spec :as spec]))
 
-(defn get-all-tags []
-  (let [tags (tag-db/get-tags)]
-    (utils/ok {:tags tags})))
+(def tag spec/tag)
+
+(defn load-tags-page [req]
+  (let [pagination (p/create req)
+        params (:params req)
+        tags (tag-db/load-tags-page pagination params)
+        pagination (p/create-total pagination (second tags))]
+    (utils/ok {:tags (first tags)
+               :pagination pagination
+               :query-str params})))
 
 (defn insert-tag! [{:keys [name] :as tag}]
   (if-let [t (tag-db/get-tag-by-name name)]
     (utils/bad-request (str "<" name "> 标签已经存在"))
-
     (let [t (tag-db/save-tag! tag)]
       (utils/ok {:tag t}))))
 

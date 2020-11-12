@@ -1,4 +1,4 @@
-create table if not exists article (
+create table if not exists articles (
     id varchar(20) primary key,
     image varchar(200) ,
     title varchar(200) not null,

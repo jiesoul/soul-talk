@@ -1,0 +1,32 @@
+# 用户
+# 修改密码
+PATCH {{baseUrl}}/users/1/password
+Content-Type: application/json
+Authorization: Token 6kpLKukQIAUJCJbvnAa5hwNopVlGzYxSocqaweYl4Ec=
+
+{"oldPassword" :  "12345678", "newPassword" :  "123456789", "confirmPassword" : "123456789"}
+
+###
+
+# 修改个人信息
+PATCH {{baseUrl}}/users/1/profile
+Content-type: application/json
+Authorization: Token 6kpLKukQIAUJCJbvnAa5hwNopVlGzYxSocqaweYl4Ec=
+
+{ "username" : "ss" }
+
+###
+
+# 全部用户
+GET {{baseUrl}}/users
+Accept: application/json
+Authorization: {{token}}
+
+###
+
+# curl -X GET "http://localhost:3000/api/v1/Users/1/profile" -H  "accept: application/json"
+GET {{apiUrl}}/Users/1/profile
+accept: application/json
+Authorization: {{app-key}}
+
+###

@@ -4,7 +4,7 @@
             [next.jdbc.sql :as sql]))
 
 (defn get-data-dic-all []
-  (sql/query *db* ["select * from data_dic"]))
+  (sql/query *db* ["select * from data_dics"]))
 
 (defn save-data-dic [data-dic]
   (sql/insert! *db* :data_dics data-dic))

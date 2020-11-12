@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS article_comments (
+CREATE TABLE IF NOT EXISTS articles_comments (
     id serial primary key,
     article_id varchar (20) not null ,
     body text default '',

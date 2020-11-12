@@ -7,7 +7,12 @@
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.backends.token :refer [token-backend]]
             [java-time.local :as l :refer [local-date-time]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [soul-talk.auth.spec :as spec]))
+
+(def login spec/login)
+(def register spec/register)
+(def auth-token spec/auth-token)
 
 (defn register! [{:keys [session] :as req} user]
   (let [count (user-db/count-users)]
