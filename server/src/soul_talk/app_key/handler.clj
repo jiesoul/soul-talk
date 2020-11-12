@@ -21,13 +21,14 @@
     (utils/ok "删除成功")))
 
 (defn load-app-keys [req]
-  (let [query-params (:query-params req)
-        pagination (p/create query-params)
-        keys (db/load-app-keys pagination query-params)
-        total (db/count-app-keys query-params)]
+  (let [params (:params req)
+        pagination (p/create req)
+        keys (db/load-app-keys pagination params)
+        total (db/count-app-keys params)
+        pagination (p/create-total pagination (:c total))]
     (utils/ok "获取成功" {:app-keys keys
                       :pagination pagination
-                      :query-str query-params})))
+                      :query-str params})))
 
 (defn query-app-key [req]
   (let [query-str (:query-params req)]

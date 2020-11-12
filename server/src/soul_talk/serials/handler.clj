@@ -1,10 +1,17 @@
 (ns soul-talk.serials.handler
   (:require [soul-talk.serials.db :as db]
-            [soul-talk.utils :as utils]))
+            [soul-talk.utils :as utils]
+            [soul-talk.pagination :as p]))
 
-(defn load-serials []
-  (let [serials (db/load-serials)]
-    (utils/ok {:serials serials})))
+(defn load-serials-page [req]
+  (let [params (:params req)
+        pagination (p/create req)
+        serials (db/load-serials-page pagination params)
+        total (db/count-serials-page params)
+        pagination (p/create-total pagination total)]
+    (utils/ok {:serials serials
+               :pagination pagination
+               :query-str params})))
 
 (defn save-serials [serials]
   (let [serials (db/save-serials serials)]

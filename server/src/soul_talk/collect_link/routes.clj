@@ -8,30 +8,20 @@
     :tags ["collect-link"]
 
     (GET "/" req
-      :summary "获取全部app key"
+      :summary "获取全部"
       :return Result
       (collect-link/load-collect-link req))
 
     (POST "/" []
-      :summary "保存apikey"
+      :summary "保存"
       :body [collect-link collect-link/create-collect-link]
       :return Result
       (collect-link/save-collect-link collect-link))
-
-    (GET "/gen" []
-      :summary "生成KEY"
-      :return Result
-      (collect-link/gen-collect-link))
 
     (DELETE "/:id" []
       :return Result
       :path-params [id :- int?]
       :summary "删除key"
       (collect-link/delete-collect-link id))
-
-    (GET "/q" req
-      :return Result
-      :summary "条件查询"
-      (collect-link/query-collect-link req))
 
     ))

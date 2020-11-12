@@ -9,11 +9,11 @@ CREATE TABLE IF NOT EXISTS data_dic (
     update_at timestamp default now()
 );
 
-insert into data_dic (id, name, pid, note) values ('10', '不过如此', '0', '');
-insert into data_dic (id, name, pid, note) values ('11', '网站关键词', '0', '');
+insert into data_dics (id, name, pid, note) values ('10', '不过如此', '0', '');
+insert into data_dics (id, name, pid, note) values ('11', '网站关键词', '0', '');
 
-insert into data_dic (id, name, pid, note) values ('12', '系列类型', '0', '');
-insert into data_dic (id, name, pid, note) values ('1201', '文章', '12', '');
-insert into data_dic (id, name, pid, note) values ('1202', '网站', '12', '');
-insert into data_dic (id, name, pid, note) values ('1203', '链接', '12', '');
+insert into data_dics (id, name, pid, note) values ('12', '系列类型', '0', '');
+insert into data_dics (id, name, pid, note) values ('1201', '文章', '12', '');
+insert into data_dics (id, name, pid, note) values ('1202', '网站', '12', '');
+insert into data_dics (id, name, pid, note) values ('1203', '链接', '12', '');
 

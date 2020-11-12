@@ -5,8 +5,8 @@
 (def create-serials spec/create-serials)
 (def update-serials spec/update-serials)
 
-(defn load-serials []
-  (handler/load-serials))
+(defn load-serials-page [req]
+  (handler/load-serials-page req))
 
 (defn save-serials [serials]
   (handler/save-serials serials))

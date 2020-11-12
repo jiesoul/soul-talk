@@ -29,6 +29,7 @@
                  [com.zaxxer/HikariCP "3.4.5"]
                  [ragtime "0.8.0"]
                  [toucan "1.15.0"]
+                 [honeysql "1.0.444"]
 
                  ;; Auth validation
                  [buddy "2.0.0"]

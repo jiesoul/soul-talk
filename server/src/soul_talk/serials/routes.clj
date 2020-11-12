@@ -3,7 +3,7 @@
             [soul-talk.spec.core :refer [Result]]
             [soul-talk.serials.interface :as serials]))
 
-(def public-routes
+(def private-routes
   (context "serials" []
     :tags ["系列"]
 
@@ -22,8 +22,8 @@
       :path-params [id :- int?]
       (serials/delete-serials id))
 
-    (GET "/" []
+    (GET "/" req
       :summary "所有系列"
       :return Result
-      (serials/load-serials))
+      (serials/load-serials-page req))
     ))

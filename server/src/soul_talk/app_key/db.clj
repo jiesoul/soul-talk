@@ -18,12 +18,24 @@
   [id]
   (sql/delete! *db* :app_keys ["id = ?" id]))
 
-(defn load-app-keys [{:keys [pre_page page offset]} {:keys [app_name] :as params}]
-  (let [sql-str (str "select * from app_keys where 1=1 offset ? limit ? ")]
-    (sql/query *db* [sql-str offset page]
+(defn gen-where [{:keys [name pid]}]
+  (let [sql-str " where name like ? "
+        coll    [(str "%" name "%")]
+        sql-str (if (nil? pid) sql-str (str sql-str " and pid = ?"))
+        coll (if (nil? pid) coll (conj coll pid) )]
+    (vector sql-str coll)))
+
+(defn load-app-keys [{:keys [per_page offset]} params]
+  (let [where (gen-where params)
+        sql-str (str "select * from app_keys " (first where) " offset ? limit ?")]
+    (sql/query *db* (into [sql-str] (second where))
       {:builder-fn rs-set/as-unqualified-maps})))
 
-(defn count-app-keys [{:keys [] :as params}]
-  (let [sql-str (str "select count(1) from app_keys where 1 = 1 ")]
-    (sql/query *db* [sql-str]
-      {:builder-fn rs-set/as-unqualified-maps})))
+(defn count-app-keys [params]
+  (let [where (gen-where params)
+        sql-str (str "select count(1) as c from app_keys " (first where))]
+    (first (sql/query *db* (into [sql-str] (second where))
+             {:builder-fn rs-set/as-unqualified-maps}))))
+
+(defn load-app-keys-page [{:keys [page offset]} page] {:keys [app_name] :as params}
+  (let []))

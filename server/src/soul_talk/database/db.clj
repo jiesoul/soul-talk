@@ -1,12 +1,14 @@
 (ns soul-talk.database.db
   (:require [mount.core :refer [defstate]]
             [next.jdbc :as jdbc]
+            [next.jdbc.prepare :as p]
             [next.jdbc.connection :as connection]
             [next.jdbc.result-set :as rs]
             [soul-talk.env :refer [conf]]
             [taoensso.timbre :as log])
   (:import (java.sql Date Timestamp PreparedStatement)
-           (com.zaxxer.hikari HikariDataSource)))
+           (com.zaxxer.hikari HikariDataSource)
+           (java.time Instant LocalDate LocalDateTime)))
 
 (def default-datasource-options
   {:auto-commit        true
@@ -54,10 +56,10 @@
     (to-date v))
   (read-column-by-index [^java.sql.Date v _2 _3]
     (to-date v))
-  java.sql.Timestamp
-  (read-column-by-label [^java.sql.Timestamp v _]
+  Timestamp
+  (read-column-by-label [^Timestamp v _]
     (to-date v))
-  (read-column-by-index [^java.sql.Timestamp v _2 _3]
+  (read-column-by-index [^Timestamp v _2 _3]
     (to-date v)))
 
 ;(extend-protocol jdbc/IResultSetReadColumn
@@ -73,6 +75,27 @@
 ;  (set-parameter [v ^PreparedStatement stmt ^long idx]
 ;    (.setTimestamp stmt idx (Timestamp. (.getTime v)))))
 
+(extend-protocol p/SettableParameter
+  Instant
+  (set-parameter [^Instant v ^PreparedStatement ps ^long i]
+    (.setTimestamp ps i (Timestamp/from v)))
+  LocalDate
+  (set-parameter [^LocalDate v ^PreparedStatement ps ^long i]
+    (.setTimestamp ps i (Timestamp/valueOf (.atStartOfDay v))))
+  LocalDateTime
+  (set-parameter [^LocalDateTime v ^PreparedStatement ps ^long i]
+    (.setTimestamp ps i (Timestamp/valueOf v))))
+
 (defn coll-to-in-str [coll]
   (subs
     (reduce #(str %1 "," (str "'" %2 "'")) "" coll) 1))
+
+
+(defn gen-sql-str [query-key query-sign])
+
+(defn gen-where [{:keys [sql-str query-coll] :as sql-query} params-map query-key query-sign]
+  (if (contains? params-map query-key)
+    {:sql-str  (gen-sql-str sql-str query-key)
+     :query-coll (into query-coll (:query-key params-map))}
+
+    sql-query))

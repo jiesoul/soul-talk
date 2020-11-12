@@ -5,9 +5,6 @@
             [taoensso.timbre :as log]
             [soul-talk.pagination :as p]))
 
-(defn auth-collect-link [token]
-  (db/auth-collect-link token))
-
 (defn save-collect-link [collect-link]
   (let [collect-link (db/save-collect-link collect-link)]
     (utils/ok "保存成功" {:collect-link collect-link})))
@@ -28,8 +25,3 @@
     (utils/ok "获取成功" {:collect-links keys
                       :pagination pagination
                       :query-str query-params})))
-
-(defn query-collect-link [req]
-  (let [query-str (:query-params req)]
-    (log/info "query params: " query-str)
-    (utils/ok {:query-str query-str})))

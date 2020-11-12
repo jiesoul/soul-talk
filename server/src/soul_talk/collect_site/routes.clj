@@ -5,33 +5,23 @@
 
 (def private-routes
   (context "/collect-sites" []
-    :tags ["collect-site"]
+    :tags ["收藏的网站"]
 
     (GET "/" req
-      :summary "获取全部app key"
+      :summary "获取全部"
       :return Result
       (collect-site/load-collect-site req))
 
     (POST "/" []
-      :summary "保存apikey"
+      :summary "保存"
       :body [collect-site collect-site/create-collect-site]
       :return Result
       (collect-site/save-collect-site collect-site))
 
-    (GET "/gen" []
-      :summary "生成KEY"
-      :return Result
-      (collect-site/gen-collect-site))
-
     (DELETE "/:id" []
       :return Result
       :path-params [id :- int?]
-      :summary "删除key"
+      :summary "删除"
       (collect-site/delete-collect-site id))
-
-    (GET "/q" req
-      :return Result
-      :summary "条件查询"
-      (collect-site/query-collect-site req))
 
     ))

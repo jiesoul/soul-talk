@@ -9,15 +9,15 @@
 (def min-pre-page 1)
 (def offset-key :offset)
 (def page-key :page)
-(def pre-page-key :pre-page)
+(def per-page-key :per_page)
 (def prev-key :previous)
 (def next-key :next)
 (def total-key :total)
-(def total-pages-key :total-pages)
+(def total-pages-key :total_pages)
 
 ;;默认值
 (def default-pagination-params
-  {page-key default-page pre-page-key default-pre-page})
+  {page-key default-page per-page-key default-pre-page})
 
 ;; 把 string 转换为 数字
 (defn parser-number [s]
@@ -37,7 +37,7 @@
 (defn extract [request]
   (let [params (:params request)
         params (merge default-pagination-params params)
-        pagination (select-keys params [page-key pre-page-key])]
+        pagination (select-keys params [page-key per-page-key])]
     (map-kv pagination parser-number)))
 
 ;;计算当前页
@@ -58,7 +58,7 @@
 ;; 每页显示多少条
 (defn pre-page [pagination]
   (let [paginate-params (extract pagination)]
-    (max (pre-page-key paginate-params) min-pre-page)))
+    (max (per-page-key paginate-params) min-pre-page)))
 
 ;; 记录的开始值
 (defn offset [pagination]
@@ -71,7 +71,7 @@
         offset (offset request)
         next-page (next-page request)
         prev-page (prev-page request)]
-    {page-key page pre-page-key pre-page offset-key offset next-key next-page prev-key prev-page}))
+    {page-key page per-page-key pre-page offset-key offset next-key next-page prev-key prev-page}))
 
 ;; 计算总页数
 (defn total-pages [total pre-page]
@@ -83,7 +83,7 @@
 
 ;; 根据总记录数生成最终的分页 map
 (defn create-total [pagination total]
-  (let [total-pages (total-pages total (:pre-page pagination))]
+  (let [total-pages (total-pages total (per-page-key pagination))]
     (-> pagination
         (assoc total-key total)
         (assoc total-pages-key total-pages))))
