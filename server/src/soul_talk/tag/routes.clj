@@ -6,13 +6,16 @@
 (def public-routes
   (context "/tags" []
     :tags ["标签"]
-
+    (GET "/hot" req
+      :summary "查看多个标签"
+      :return Result
+      (tag/load-tags-page req))
     )
   )
 
 (def private-routes
   (context "/tags" []
-    :tags ["标签"]
+    :tags [""]
 
     (GET "/" req
       :return Result

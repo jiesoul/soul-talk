@@ -22,13 +22,17 @@
 ;; 错误处理
 (defn exception-handler [f type]
   (fn [^Exception e data request]
-    (log/error "exception -- " (.printStackTrace e))
+    (log/error "发生未知错误： -- " (.getStackTrace e))
+    (log/error "发生错误的数据: " data)
+    (log/error "发生错误的请求: " request)
     (f {:result :error :message (str "发生未知错误"), :type type})))
 
 ;;
 (defn request-validation-handler [f type]
   (fn [^Exception e data req]
-    (log/error " 请求发生错误：" (.getMessage e) "\n")
+    (log/error "发生请求错误： -- " (.getStackTrace e))
+    (log/error "发生错误的数据: " data)
+    (log/error "发生错误的请求: " req)
     (let [message (->> data
                     :problems
                     :clojure.spec.alpha/problems
@@ -38,19 +42,22 @@
 
 (defn response-validation-handler [f type]
   (fn [^Exception e data resp]
-    (log/error " 响应发生错误：" (.getMessage e))
+    (log/error "发生响应错误： -- " (.getStackTrace e))
+    (log/error "发生错误的数据: " data)
+    (log/error "发生错误的响应: " resp)
     (let [message (->> data
                     :problems
                     :clojure.spec.alpha/problems)]
       (f {:result :error :message message :type type}))))
 
+
 (def exceptions-config
   {:handlers {::calm                   (exception-handler resp/enhance-your-calm :calm)
-              java.sql.SQLException    (exception-handler resp/internal-server-error :sql)
-              ::ex/request-validation  (request-validation-handler resp/bad-request :error)
+              java.sql.SQLException    (exception-handler utils/internal-server-error :sql)
+              ::ex/request-validation  (request-validation-handler utils/bad-request :request)
               ::ex/request-parsing     (ex/with-logging ex/request-parsing-handler :error)
-              ::ex/response-validation (response-validation-handler resp/internal-server-error :error)
-              ::ex/default             (exception-handler resp/internal-server-error :unknown)}})
+              ::ex/response-validation (response-validation-handler utils/bad-request :response)
+              ::ex/default             (exception-handler utils/internal-server-error :unknown)}})
 
 ;; ***** Auth implementation ****************************************************
 
@@ -85,9 +92,9 @@
 ;; 验证APP key
 (defn wrap-app-key [handler rule]
   (fn [request]
+    (log/info "starting app-key auth, handler: " handler " rule: " rule)
     (let [app-key (some-> (parse-header request "AppKey")
                     (app-key/auth-app-key))]
-      (log/info "ssssss" app-key)
       (if-not app-key
         (utils/forbidden)
         (handler request)))))

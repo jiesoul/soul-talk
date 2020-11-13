@@ -1,36 +1,26 @@
 (ns soul-talk.auth.auth-test
   (:require [clojure.test :refer :all]
-            [soul-talk.core-test :refer [api-url parse-body]]
+            [soul-talk.core-test :refer [api-url user parse-body *token*]]
             [soul-talk.handler :refer :all]
             [ring.mock.request :as mock]
-            [taoensso.timbre :as log]
-            [cheshire.core :as json]))
+            [taoensso.timbre :as log]))
 
-(def token (atom ""))
-
-(deftest site-routes-test
+(deftest auth-routes-test
 
   (testing "login"
     (test
-      (let [user     {:email    "jiesoul@gmail.com"
-                      :password "123456789"}
-            response (app (-> (mock/request :post "/login")
-                            (mock/content-type "application/transit+json")
-                            (mock/json-body user)))
-            body (parse-body (:body response))]
-        (is (= 200 (:status response)))
-        (is (= (:data body) user))))
-
-    (test
-      (let [user     {:email    "jiesoul@gmail.com"
-                      :password "12345678"}
-            response (app (-> (mock/request :post "/login")
+      (let [response (app (-> (mock/request :post "/login")
+                            (mock/content-type "application/json")
                             (mock/json-body user)))]
-        (is (= 401 (:status response))))))
+        (log/info "response: " response)
+        (is (= 200 (:status response))))))
 
   (testing "logout"
     (test
-      (let [response (app (mock/request :post "/logout"))]
+      (let [req {:user_id 1}
+            response (app (-> (mock/request :post "/logout")
+                            (mock/content-type "application/json")
+                            (mock/json-body req)))]
         (log/info "response body: " response)
         (is (= 200 (:status response))))))
   )

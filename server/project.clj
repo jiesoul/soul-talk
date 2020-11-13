@@ -8,7 +8,6 @@
                  [org.clojure/tools.cli "0.3.1"]
                  [org.clojure/tools.namespace "0.3.1"]
                  [clojure.java-time "0.3.2"]
-                 [org.clojure/tools.logging "1.1.0"]
 
                  ;; web api
                  [ring "1.8.1"]
@@ -37,7 +36,7 @@
 
                  ;; DI
                  [mount "0.1.13"]
-                 [tolitius/mount-up "0.1.1"]
+                 [tolitius/mount-up "0.1.1" :exclusions [ch.qos.logback/logback-classic]]
 
                  ;; 日志
                  [com.taoensso/timbre "5.1.0"]
@@ -81,6 +80,7 @@
                         [lein-ancient "0.6.15"]
                         [com.cemerick/piggieback "0.2.2"]
                         [org.clojure/tools.nrepl "0.2.13"]
+                        [com.jakemccrary/lein-test-refresh "0.24.1"]
                         [org.clojure/test.check "1.1.0"]]
        :plugins        [[mvxcvi/whidbey "2.2.1"]
                         [venantius/ultra "0.6.0"]

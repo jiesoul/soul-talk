@@ -23,7 +23,7 @@
 (defn select-all-users []
   (sql/query *db* ["SELECT * from users"] {:builder-fn rs-set/as-unqualified-maps}))
 
-(defn update-login-time [{:keys [id last_login_at]}]
+(defn update-login-time! [{:keys [id last_login_at]}]
   (sql/update! *db* :users {:last_login_at last_login_at} ["id = ?" id]))
 
 

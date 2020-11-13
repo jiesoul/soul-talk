@@ -12,7 +12,7 @@
 
 (def login spec/login)
 (def register spec/register)
-(def auth-token spec/auth-token)
+(def logout spec/logout)
 
 (defn register! [{:keys [session] :as req} user]
   (let [count (user-db/count-users)]
@@ -33,10 +33,10 @@
       user)))
 
 (defn auth-token [token]
-  (auth-db/auth-token token))
+  (auth-db/auth-token? token))
 
 (defn refresh-token [user-token]
-  (auth-db/refresh-token (assoc user-token :refresh_at (l/local-date-time))))
+  (auth-db/refresh-token! (assoc user-token :refresh_at (l/local-date-time))))
 
 (defn login!
   [{:keys [session remote-addr] :as req} {:keys [email password]}]
@@ -44,17 +44,17 @@
     (do
       (-> user
         (assoc :last_login_at (l/local-date-time))
-        (user-db/update-login-time))
+        (user-db/update-login-time!))
       (let [token (utils/gen-token)
             user-token {:token token :user_id id}]
-        (auth-db/save-token user-token)
+        (auth-db/save-token! user-token)
         (log/info "user:" email " successfully logged from ip " remote-addr " Token: " token)
         (utils/ok "保存成功" {:user  (dissoc user :password)
                       :token token})))
     (utils/unauthorized "email或密码错误,登录失败")))
 
-(defn logout! [{:keys [user_id token]}]
+(defn logout! [{:keys [user_id]}]
   (do
-    (auth-db/delete-token token)
+    (auth-db/delete-token-by-user-id! user_id)
     (log/info "user_id: " user_id  " log out")
     (utils/ok "用户已登出")))

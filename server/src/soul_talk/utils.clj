@@ -1,6 +1,7 @@
 (ns soul-talk.utils
   (:require [ring.util.http-response :as resp]
-            [crypto.random :refer [base64]]))
+            [crypto.random :refer [base64]]
+            [taoensso.timbre :as log]))
 
 (defn gen-token
   []
@@ -24,22 +25,22 @@
   ([] (bad-request nil nil))
   ([msg] (bad-request msg nil))
   ([msg data] (resp/bad-request {:result  :error
-                                 :message (or msg "请求错误，请检查请求参数")
+                                 :message (or msg "请求错误，请检查请求参数。")
                                  :data    data})))
 
 (defn unauthorized
   ([] (unauthorized nil nil))
   ([msg] (unauthorized msg nil))
   ([msg data] (resp/unauthorized {:result  :error
-                                  :message (or msg "未认证或认证过期，请重新登录或者联系管理员.")
+                                  :message (or msg "认证失败，请重新登录或者联系管理员.")
                                   :data    data})))
 
 (defn forbidden
   ([] (forbidden nil nil))
   ([msg] (forbidden msg nil))
   ([msg data] (resp/forbidden {:result  :error
-                               :message (or msg "用户的权限不足")
-                               :data data})))
+                    :message (or msg "非法请求，请检查用户权限。")
+                    :data    data})))
 
 (defn internal-server-error
   ([] (internal-server-error nil nil))

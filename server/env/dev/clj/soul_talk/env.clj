@@ -5,9 +5,6 @@
             [cprop.core :refer [load-config]]
             [cprop.source :as source :refer [from-system-props from-env]]))
 
-(defstate conf :start (load-config :resources "dev/resources/config.edn"
-                       :merge [(args) (from-system-props) (from-env)]))
-
 (def defaults
   {:init
    (fn []

@@ -8,5 +8,3 @@ CREATE TABLE app_keys (
 );
 CREATE INDEX ON app_keys (token);
 
-
-insert into app_keys (token, app_name, create_by) values ('ttuy8JElV95vu8DbRF6d6GiUsiLseC3NAMQG1nvqtr8=', 'web' ,1);

@@ -1,10 +1,9 @@
 (ns soul-talk.database.db
   (:require [mount.core :refer [defstate]]
-            [next.jdbc :as jdbc]
             [next.jdbc.prepare :as p]
             [next.jdbc.connection :as connection]
             [next.jdbc.result-set :as rs]
-            [soul-talk.env :refer [conf]]
+            [soul-talk.config :refer [conf]]
             [taoensso.timbre :as log])
   (:import (java.sql Date Timestamp PreparedStatement)
            (com.zaxxer.hikari HikariDataSource)
@@ -30,22 +29,32 @@
   [conf]
   @datasource)
 
-(defn disconnect!
-  [conn]
-  (when (and (instance? HikariDataSource conn)
-          (not (.isClosed conn)))
-    (.close conn)))
+(defn- disconnect!
+  [conf conn]
+  (let [uri (get conf :database-url)]
+    (log/info "disconnecting from " uri)
+    (when (and (instance? HikariDataSource conn)
+            (not (.isClosed conn)))
+      (.close conn))))
 
-(defn reconnect!
+(defn- reconnect!
   "calls disconnect! to ensure the connection is closed
    then calls connect! to establish a new connection"
   [conn conf]
-  (disconnect! conn)
+  (disconnect! conf conn)
   (connect! conf))
 
+(defn- new-connection! [conf]
+  (log/info "conf: " conf)
+  (let [uri (get conf :database-url)]
+    (log/info "creating a connection to Hikari:" uri)
+    (connection/->pool HikariDataSource
+      (assoc default-datasource-options :jdbcUrl uri))))
+
+
 (defstate ^:dynamic *db*
-  :start (connect! conf)
-  :stop (disconnect! *db*))
+  :start (new-connection! conf)
+  :stop (disconnect! conf *db*))
 
 (defn to-date [^Date sql-date]
   (-> sql-date (.getTime) (java.util.Date.)))

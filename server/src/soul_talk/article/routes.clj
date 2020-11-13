@@ -44,7 +44,7 @@
       :summary "获取文章标签"
       (tag/get-tags-by-article-id id))
 
-    (POST "/:id/comments/" []
+    (POST "/:id/comments" []
       :summary "发表评论"
       :path-params [id :- string?]
       :body [comment article/create-comment]

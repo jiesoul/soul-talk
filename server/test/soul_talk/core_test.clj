@@ -5,11 +5,19 @@
             [soul-talk.handler :refer :all]
             [taoensso.timbre :as log]))
 
+(defn start-states [f]
+  (mount.core/start)
+  (f))
+
+(use-fixtures :once start-states)
+
 (defn api-url [url]
-  (str url "/api/v1" url))
+  (str "/api/v1" url))
 
 (def user {:email    "jiesoul@gmail.com"
            :password "12345678"})
+
+(def ^:dynamic *token* (atom ""))
 
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
@@ -18,8 +26,4 @@
   (testing "api "
     (let [response (app (-> (mock/request :get "/api-docs")))]
       (log/debug "default test response message:" response)
-      (is (= (:status response) 302))))
-
-  (testing "not-found route"
-    (let [response (app (mock/request :get "/invalid"))]
-      (is (= 404 (:status response))))))
+      (is (= (:status response) 302)))))

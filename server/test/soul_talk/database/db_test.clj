@@ -3,7 +3,7 @@
             [soul-talk.database.db :refer :all]
             [next.jdbc :as jdbc]
             [next.jdbc.sql :as sql]
-            [soul-talk.env :refer [conf]]
+            [soul-talk.config :refer [conf]]
             [mount.core :as mount]
             [soul-talk.database.my-migrations :as migrations]))
 
@@ -11,7 +11,7 @@
   :once
   (fn [f]
     (mount/start
-      #'soul-talk.env/conf
+      #'soul-talk.config/conf
       #'soul-talk.database.db/*db*)
     (f)))
 

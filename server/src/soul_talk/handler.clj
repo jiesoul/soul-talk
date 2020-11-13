@@ -7,8 +7,8 @@
 
 (def app
   (-> (routes
-        api/api-routes
         site/site-routes
+        api/api-routes
         (route/resources "/")
         (route/not-found
           {:status 404
