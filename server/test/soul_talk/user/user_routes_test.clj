@@ -35,7 +35,6 @@
         (let [response (app (-> (mock/request :get "/users?name=sss")
                               (mock/header :Authorization token)))
               body (parse-body (:body response))]
-          (log/info "响应体：" body)
           (test
             (is (= 200 (:status response))))))
 
@@ -46,12 +45,12 @@
           (test
             (is (= 200 (:status response))))))
 
-      (testing "update profile error"
-        (let [response (app (-> (mock/request :patch "/users/1/profile")
-                              (mock/header :Authorization token)
-                              (mock/json-body {:name "test"})))]
-          (test
-            (is (= 400 (:status response))))))
+      ;(testing "update profile error"
+      ;  (let [response (app (-> (mock/request :patch "/users/1/profile")
+      ;                        (mock/header :Authorization token)
+      ;                        (mock/json-body {:name "test"})))]
+      ;    (test
+      ;      (is (= 400 (:status response))))))
 
 
       (testing "update password"

@@ -12,9 +12,8 @@
                             (mock/content-type "application/json")
                             (mock/json-body user)))
             body (parse-body (:body response))]
-        (is (= 200 (:status response)))
-        (swap! *token* (str "Token " (get-in body [:data :token])))
-        ))))
+        (log/info (get-in body [:data :token]))
+        (is (= 200 (:status response)))))))
 
 (deftest logout-test
 

@@ -23,12 +23,24 @@
 (def user {:email    "jiesoul@gmail.com"
            :password "12345678"})
 
-(def ^:dynamic *token* (atom ""))
-
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
+
+
 
 (deftest default-test
   (testing "api "
     (let [response (app (-> (mock/request :get "/api/v1/api-docs")))]
       (is (= (:status response) 302)))))
+
+(defn get-login-token! []
+  (let [response (app (-> (mock/request :post "/login")
+                        (mock/content-type "application/json")
+                        (mock/json-body user)))
+        body (parse-body (:body response))]
+    (str "Token " (get-in body [:data :token]))))
+
+(defn make-request-token
+  []
+  (let [header (format "Token %s" (get-login-token!))]
+    {:header {:Authorization header}}))
