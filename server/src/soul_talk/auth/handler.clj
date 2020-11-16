@@ -55,6 +55,6 @@
 
 (defn logout! [{:keys [user_id]}]
   (do
-    (auth-db/delete-token-by-user-id! user_id)
+    (auth-db/invalid-token-by-user-id! user_id)
     (log/info "user_id: " user_id  " log out")
     (utils/ok "用户已登出")))

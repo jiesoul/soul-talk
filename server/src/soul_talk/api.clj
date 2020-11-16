@@ -6,13 +6,14 @@
             [soul-talk.tag.routes :as tag]
             [soul-talk.article.routes :as article]))
 
-;; 多重方法用来注入中间件
+; 多重方法用来注入中间件
+;; 如果需要这里添加路由，请拷贝此方法到路由文件。
 (defmethod restructure-param :auth-app-key
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
 (def swagger-config
-  {:ui   "/api-docs"
+  {:ui   "/api/v1/api-docs"
    :spec "/swagger.json"
    :options {:ui {:validatorUrl nil}}
    :data {:info {:version "1.0.0"
@@ -34,14 +35,12 @@
 (def api-routes
   (api
     api-config
-
     (context "" []
       :tags ["api version 1"]
 
       (context "/api/v1" []
-        :auth-app-key #{"admin"}
 
-        user/public-routes
         tag/public-routes
+        user/public-routes
         article/public-routes))))
 

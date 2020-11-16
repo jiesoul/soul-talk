@@ -39,3 +39,21 @@
       (sql/query *db*
         ["SELECT count(email) as count from users"]))))
 
+(defn gen-where [{:keys [name]}]
+  (let [[where coll] [(str " where name like ?")
+                      [(str "%" name "%")]]]
+    [where coll]))
+
+(defn load-users-page [{:keys [offset per-page]} params]
+  (let [[where coll] (gen-where params)
+        query-sql (str "select * from users " where " offset ? limit ?")
+        users (sql/query *db*
+                (into [query-sql] (conj coll offset per-page))
+                {:builder-fn rs-set/as-unqualified-maps})
+        count-sql (str "select count(0) as c from users " where)
+        total (:c
+                (first
+                  (sql/query *db*
+                    (into [count-sql] coll))))]
+    [users total]))
+

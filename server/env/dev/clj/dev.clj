@@ -12,7 +12,7 @@
 
 (mu/on-upndown :info mu/log :before)
 
-(log/set-level! :debug)
+;(log/set-level! :debug)
 
 (def test-refresh test-refresh/run-in-repl)
 

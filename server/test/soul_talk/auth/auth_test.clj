@@ -5,15 +5,18 @@
             [ring.mock.request :as mock]
             [taoensso.timbre :as log]))
 
-(deftest auth-routes-test
-
+(deftest login-test
   (testing "login"
     (test
       (let [response (app (-> (mock/request :post "/login")
                             (mock/content-type "application/json")
-                            (mock/json-body user)))]
-        (log/info "response: " response)
-        (is (= 200 (:status response))))))
+                            (mock/json-body user)))
+            body (parse-body (:body response))]
+        (is (= 200 (:status response)))
+        (swap! *token* (str "Token " (get-in body [:data :token])))
+        ))))
+
+(deftest logout-test
 
   (testing "logout"
     (test
@@ -21,6 +24,5 @@
             response (app (-> (mock/request :post "/logout")
                             (mock/content-type "application/json")
                             (mock/json-body req)))]
-        (log/info "response body: " response)
         (is (= 200 (:status response))))))
   )

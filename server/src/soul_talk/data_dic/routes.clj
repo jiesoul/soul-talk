@@ -1,38 +1,54 @@
 (ns soul-talk.data-dic.routes
   (:require [compojure.api.sweet :refer :all]
+            [compojure.api.meta :refer [restructure-param]]
             [soul-talk.spec.core :refer [Result]]
-            [soul-talk.data-dic.handler :as data-dic]))
+            [soul-talk.data-dic.handler :as data-dic]
+            [soul-talk.middleware :as m]))
+
+(defmethod restructure-param :auth-app-key
+  [_ rule acc]
+  (update-in acc [:middleware] conj [m/wrap-app-key rule]))
+
+(defmethod restructure-param :auth-rules
+  [_ rule acc]
+  (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
 (def private-routes
   (context "/data-dics" []
     :tags ["数据字典"]
 
     (GET "/" req
+      :auth-rules #{"admin"}
       :return Result
       :summary "全部字典数据"
       (data-dic/load-data-dic-page req))
 
     (POST "/" []
+      :auth-rules #{"admin"}
       :summary "新增"
       :body [data-dic data-dic/create-data-dic]
       (data-dic/save-data-dic data-dic))
 
     (PATCH "/" []
+      :auth-rules #{"admin"}
       :summary "更新"
       :body [data-dic data-dic/update-data-dic]
       (data-dic/update-data-dic data-dic))
 
 
     (DELETE "/:id" []
+      :auth-rules #{"admin"}
       :summary "删除"
       :path-params [id :- string?]
       (data-dic/delete-data-dic-by-id id))
 
     (GET "/:id" []
+      :auth-rules #{"admin"}
       :path-params [id :- string?]
       (data-dic/get-data-dic-by-id id))
 
     (GET "/pid/:pid" []
+      :auth-rules #{"admin"}
       :summary "通过父ID"
       :path-params [pid :- string?]
       (data-dic/load-data-dics-by-pid pid))

@@ -11,6 +11,7 @@
             [soul-talk.article.routes :as article]))
 
 ;; 多重方法用来注入中间件
+;; 如果需要这里添加路由，请拷贝此方法到路由文件。
 (defmethod restructure-param :auth-rules
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
@@ -24,9 +25,7 @@
     (api
       site-config
       (context "" []
-        auth/login-routes)
-      (context "/" []
-        :auth-rules #{"admin"}
+        auth/login-routes
         data-dic/private-routes
         app-key/private-routes
         user/private-routes

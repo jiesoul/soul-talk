@@ -6,7 +6,8 @@
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.backends.token :refer [token-backend]]
             [java-time.local :as l]
-            [soul-talk.user.spec :as spec]))
+            [soul-talk.user.spec :as spec]
+            [soul-talk.pagination :as p]))
 
 (def update-user spec/update-user)
 (def user spec/user)
@@ -18,6 +19,14 @@
 (defn load-users []
   (let [users (user-db/select-all-users)]
     (utils/ok "保存成功" {:users (->> users (map #(dissoc % :password)))})))
+
+(defn load-users-page [req]
+  (let [pagination (p/create req)
+        params (:params req)
+        [users total] (user-db/load-users-page pagination params)
+        pagination (p/create-total pagination total)]
+    (utils/ok {:users users
+               :pagination pagination})))
 
 (defn update-password! [id {:keys [oldPassword newPassword confirmPassword] :as params}]
   (let [user (user-db/find-by-id (long id))]

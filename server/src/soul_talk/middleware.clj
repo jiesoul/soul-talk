@@ -13,6 +13,7 @@
             [soul-talk.env :refer [defaults]]
             [cognitect.transit :as transit]
             [compojure.api.middleware :as cm]
+            [compojure.api.meta :refer [restructure-param]]
             [soul-talk.auth.handler :as auth]
             [compojure.api.exception :as ex]
             [ring.util.http-response :as resp]
@@ -22,33 +23,26 @@
 ;; 错误处理
 (defn exception-handler [f type]
   (fn [^Exception e data request]
-    (log/error "发生未知错误： -- " (.getStackTrace e))
-    (log/error "发生错误的数据: " data)
-    (log/error "发生错误的请求: " request)
-    (f {:result :error :message (str "发生未知错误"), :type type})))
+    (log/error "发生未知错误： -- " (.printStackTrace e))
+    (f {:result :error :message (str "发生未知错误,请重试或联系管理员。"), :type type})))
 
 ;;
 (defn request-validation-handler [f type]
   (fn [^Exception e data req]
-    (log/error "发生请求错误： -- " (.getStackTrace e))
-    (log/error "发生错误的数据: " data)
-    (log/error "发生错误的请求: " req)
+    (log/error "发生请求错误： -- " (.getMessage e))
     (let [message (->> data
                     :problems
                     :clojure.spec.alpha/problems
                     (map :reason))]
-      (log/error "错误信息：" message)
-      (f {:result :error :message message :type type}))))
+      (f {:result :error :message (if (nil? message) "请求参数错误" message) :type type}))))
 
 (defn response-validation-handler [f type]
   (fn [^Exception e data resp]
-    (log/error "发生响应错误： -- " (.getStackTrace e))
-    (log/error "发生错误的数据: " data)
-    (log/error "发生错误的响应: " resp)
+    (log/error "发生响应错误： -- " (.getMessage e))
     (let [message (->> data
                     :problems
                     :clojure.spec.alpha/problems)]
-      (f {:result :error :message message :type type}))))
+      (f {:result :error :message (if (nil? message) "响应错误" message) :type type}))))
 
 
 (def exceptions-config
@@ -96,7 +90,7 @@
     (let [app-key (some-> (parse-header request "AppKey")
                     (app-key/auth-app-key))]
       (if-not app-key
-        (utils/forbidden)
+        (utils/forbidden "无效的APP KEY")
         (handler request)))))
 
 ;; 内部错误
