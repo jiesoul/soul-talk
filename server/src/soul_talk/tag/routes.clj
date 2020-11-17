@@ -21,8 +21,27 @@
       :summary "查看多个标签"
       :return Result
       (tag/load-tags-page req))
-    )
-  )
+
+    (POST "/" []
+      :auth-app-key #{"admin"}
+      :body [tag tag/tag]
+      :return Result
+      :summary "添加标签"
+      (tag/insert-tag! tag))
+
+    (GET "/" req
+      :auth-app-key #{"admin"}
+      :return Result
+      :summary "得到所有标签"
+      (tag/load-tags-page req))
+
+    (GET "/:id" []
+      :auth-app-key #{"admin"}
+      :summary "查看标签"
+      :path-params [id :- int?]
+      :return Result
+      (tag/get-tag-by-id id))
+    ))
 
 (def private-routes
   (context "/tags" []
@@ -34,12 +53,12 @@
       :summary "得到所有标签"
       (tag/load-tags-page req))
 
-    (POST "/" []
+    (GET "/:id" []
       :auth-rules #{"admin"}
-      :body [tag tag/tag]
+      :summary "查看标签"
+      :path-params [id :- int?]
       :return Result
-      :summary "添加标签"
-      (tag/insert-tag! tag))
+      (tag/get-tag-by-id id))
 
     (PATCH "/:id" []
       :auth-rules #{"admin"}

@@ -8,7 +8,9 @@
 
 (def create-article spec/create-article)
 (def update-article spec/update-article)
-(def create-comment spec/create-comment)
+(def article-tag spec/article-tag)
+(def article-series spec/article-series)
+(def article-comment spec/article-comment)
 
 (def format-id (java-time.format/formatter "yyyyMMddHHmmssSSS"))
 
@@ -65,9 +67,12 @@
     (utils/ok "删除成功")))
 
 (defn publish-article! [id]
-  (do
-    (article-db/publish-article! id)
-    (utils/ok "发布成功")))
+  (let [article (article-db/get-article-by-id id)]
+    (if article
+      (let [article (assoc article :publish 1 :update_at (l/local-date-time))
+            article (article-db/publish-article! article)]
+        (utils/ok "发布成功" {:article article}))
+      (utils/bad-request "未找到文章"))))
 
 (defn get-article-archives []
   (let [archives (article-db/get-article-archives)]
@@ -77,21 +82,53 @@
   (let [article (article-db/get-article-archives-year-month year month)]
     (utils/ok "获取成功" {:article article})))
 
-
-(defn get-comments-by-articleId [articleId]
-  (let [comments (article-db/get-comments-by-articleId articleId)]
-    (utils/ok "获取成功" {:comments comments})))
-
 (defn get-article-public [id]
   (let [article (article-db/get-article-publish id)]
     (utils/ok {:article article})))
 
-(defn save-article-comment [id comment]
-  (let [comment (article-db/save-comment! comment)]
-    (utils/ok {:comment comment})))
+(defn save-article-tag! [article-tag]
+  (let [article-tag (article-db/save-article-tag! article-tag)]
+    (utils/ok "保存成功" {:article-tag article-tag})))
 
-(defn delete-article-comment [id]
-  (article-db/delete-comment! id))
+(defn save-article-tags! [article-tags]
+  (let [article-tags (article-db/save-article-tags! article-tag)]
+    (utils/ok "保存成功" {:article-tags article-tags})))
+
+(defn get-article-tags [article-id]
+  (let [article-tags (article-db/get-article-tags-by-article-id article-id)]))
+
+(defn delete-article-tag-by-article-id! [article-id]
+  (let [rs (article-db/delete-article-tag-by-article-id article-id)]))
+
+(defn delete-article-tag-by-id! [id]
+  (let [rs (article-db/delete-article-tag-by-id id)]
+    (utils/ok "删除成功")))
+
+(defn save-article-series! [article-series]
+  (let [article-series (article-db/save-article-series! article-series)]
+    (utils/ok "保存成功" {:article-series article-series})))
+
+(defn save-article-series-all! [article-series-all]
+  (let [article-series-all (article-db/save-article-series-all! article-series-all)]
+    (utils/ok "保存成功" {:article-series article-series-all})))
+
+(defn get-article-series [article-id]
+  (let [article-series (article-db/get-article-series-by-article-id article-id)]))
+
+(defn delete-article-series-by-article-id! [article-id]
+  (let [rs (article-db/delete-article-series-by-article-id article-id)]))
+
+(defn delete-article-series-by-id! [id]
+  (let [rs (article-db/delete-article-series-by-id id)]
+    (utils/ok "删除成功")))
+
+(defn save-article-comment! [article-comment]
+  (let [article-comment (article-db/save-article-comment! article-comment)]
+    (utils/ok {:comment article-comment})))
+
+(defn get-comments-by-articleId [articleId]
+  (let [comments (article-db/get-comments-by-articleId articleId)]
+    (utils/ok "获取成功" {:comments comments})))
 
 (defn load-articles-comments-page [req]
   (let [params (:params req)
@@ -100,4 +137,16 @@
         pagination (p/create-total pagination total)]
     (utils/ok {:comments comments
                :pagination pagination})))
+
+(defn delete-article-comment-by-id! [id]
+  (let [rs (article-db/delete-article-comment-by-id! id)]
+    (utils/ok "删除成功")))
+
+(defn delete-article-comments-by-article-id! [article-id]
+  (let [rs (article-db/delete-article-comments-by-article-id! article-id)]
+    (utils/ok "删除成功")))
+
+
+
+
 

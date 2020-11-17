@@ -19,7 +19,7 @@
 
 (defn update-article! [{:keys [id] :as article}]
   (sql/update! *db* :articles
-    (select-keys article [:title :image :description :body :update_by :update_at])
+    (select-keys article [:title :image :description :body :update_by :update_at :publish])
     ["id = ?" id]))
 
 (defn get-article-all []
@@ -49,8 +49,11 @@
   (sql/get-by-id *db* :articles id
     {:builder-fn rs-set/as-unqualified-maps}))
 
-(defn publish-article! [id]
-  (sql/update! *db* :articles {:publish 1} ["id = ?" id]))
+(defn publish-article! [{:keys [id] :as article} ]
+  (sql/update! *db* :articles
+    (select-keys article [:publish :update_at :update_by])
+    ["id = ?" id]
+    {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn get-article-publish [id]
   (sql/query *db*
@@ -80,23 +83,66 @@
      year month]
     {:builder-fn rs-set/as-unqualified-maps}))
 
+;; tags
+(defn save-article-tag! [article-tag]
+  (sql/insert! *db* :article_tags
+    article-tag
+    {:builder-fn rs-set/as-unqualified-maps}))
+
 (defn save-article-tags! [article-tags]
-  (sql/insert-multi! *db* :article-tags
-    [:article_id :tag_id] (map #([(:article_id %) (:tag_id %)]) article-tags {:builder-fn rs-set/as-unqualified-maps})))
+  (sql/insert-multi! *db*
+    :articles-tags
+    [:article_id :tag_id]
+    (map #([(:article_id %) (:tag_id %)]) article-tags
+      {:builder-fn rs-set/as-unqualified-maps})))
 
-(defn delete-post-tag-by-post-id [article-id]
-  (sql/delete! *db* :article-tags ["post_id = ?" article-id]))
+(defn get-article-tags-by-article-id [article-id]
+  (sql/query *db*
+    ["select * from articles_tags where article_id = ?" article-id]
+    {:builder-fn rs-set/as-unqualified-maps}))
+
+(defn delete-article-tag-by-article-id [article-id]
+  (sql/delete! *db* :article_tags ["article_id = ?" article-id]))
+
+(defn delete-article-tag-by-id [id]
+  (sql/delete! *db* :article_tags ["id = ?" id]))
+
+;; series
+
+(defn save-article-series! [article-series]
+  (sql/insert! *db* :article_series
+    article-series
+    {:builder-fn rs-set/as-unqualified-maps}))
+
+(defn save-article-series-all! [article-series-all]
+  (sql/insert-multi! *db*
+    :articles-series
+    [:article_id :series_id]
+    (map #([(:article_id %) (:series_id %)]) article-series-all
+      {:builder-fn rs-set/as-unqualified-maps})))
 
 
-(defn delete-post-tag-by-tag-id [tag-id]
-  (sql/delete! *db* :article-tags ["tag_id = ?" tag-id] {:builder-fn rs-set/as-unqualified-maps}))
+(defn get-article-series-by-article-id [article-id]
+  (sql/query *db*
+    ["select * from articles_series where article_id = ?" article-id]
+    {:builder-fn rs-set/as-unqualified-maps}))
 
-(defn save-comment! [comment]
-  (sql/insert! *db* :comments comment {:builder-fn rs-set/as-unqualified-maps}))
+(defn delete-article-series-by-article-id [article-id]
+  (sql/delete! *db* :article_series ["article_id = ?" article-id]))
+
+(defn delete-article-series-by-id [id]
+  (sql/delete! *db* :article_series ["id = ?" id]))
+
+;; 评论
+(defn save-article-comment! [comment]
+  (sql/insert! *db* :article_comments comment {:builder-fn rs-set/as-unqualified-maps}))
 
 
-(defn delete-comment! [id]
-  (sql/delete! *db* :comments ["id = ? " id]))
+(defn delete-article-comment-by-id! [id]
+  (sql/delete! *db* :article_comments ["id = ? " id]))
+
+(defn delete-article-comments-by-article-id! [article-id]
+  (sql/delete! *db* :article_comments ["article_id = ?" article-id]))
 
 
 (defn get-comments-by-articleId [article-id]
@@ -137,5 +183,13 @@
                   (sql/query *db*
                     (into [count-str] coll))))]
     [comments total]))
+
+
+
+
+
+
+
+
 
 

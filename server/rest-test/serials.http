@@ -1,6 +1,6 @@
 # 系列
 
-GET {{baseUrl}}/serials
+GET {{baseUrl}}/series
 Accept: application/json
 Authorization: {{token}}
 

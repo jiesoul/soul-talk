@@ -55,23 +55,31 @@
       (article/get-article-public id))
 
     (GET "/:id/tags" []
-      :auth-app-key #{"admin"}
-      :path-params [id :- string?]
+      :auth-rules #{"admin"}
+      :summary "查看所有文章标签"
       :return Result
-      :summary "获取文章标签"
-      (tag/get-tags-by-article-id id))
+      :path-params [id :- string?]
+      (article/get-article-tags id))
+
+    (GET "/:id/series" []
+      :auth-rules #{"admin"}
+      :summary "查看所属系列"
+      :return Result
+      :path-params [id :- string?]
+      (article/get-article-series id))
 
     (POST "/:id/comments" []
       :auth-app-key #{"admin"}
       :summary "发表评论"
       :path-params [id :- string?]
-      :body [comment article/create-comment]
-      (article/save-article-comment id comment))
+      :body [comment article/article-comment]
+      (article/save-article-comment! comment))
 
-    (GET "/:id/comments" []
-      :auth-app-key #{"admin"}
-      :summary "查看文章评论"
-      :return Result)
+    (GET "/" req
+      :auth-rules #{"admin"}
+      :summary "评论列表"
+      :return Result
+      (article/load-articles-comments-page req))
 
     ))
 
@@ -92,24 +100,18 @@
       :summary "添加文章"
       (article/insert-article! article))
 
+    (GET "/:id" [id]
+      :auth-rules #{"admin"}
+      :return Result
+      :summary "查看文章"
+      (article/get-article id))
+
     (PATCH "/" []
       :auth-rules #{"admin"}
       :return Result
       :body [article article/update-article]
       :summary "更新文章"
       (article/update-article! article))
-
-    (DELETE "/:id" [id]
-      :auth-rules #{"admin"}
-      :return Result
-      :summary "删除文章"
-      (article/delete-article! id))
-
-    (GET "/:id" [id]
-      :auth-rules #{"admin"}
-      :return Result
-      :summary "查看文章"
-      (article/get-article id))
 
     (PATCH "/:id/publish" []
       :auth-rules #{"admin"}
@@ -118,15 +120,100 @@
       :summary "发布文章"
       (article/publish-article! id))
 
-    (GET "/comments" req
+    (DELETE "/:id" [id]
       :auth-rules #{"admin"}
-      :summary "评论列表"
       :return Result
-      (article/load-articles-comments-page req))
+      :summary "删除文章"
+      (article/delete-article! id))
 
-    (DELETE "/comments/:id" []
-      :auth-rules #{"admin"}
-      :summary "删除评论"
-      :path-params [id :- int?]
-      (article/delete-article-comment id))
+
+    (context "/:id/tags" []
+
+      (POST "/" []
+        :auth-rules #{"admin"}
+        :summary "保存文章标签"
+        :return Result
+        :path-params [id :- string?]
+        :body [article-tag article/article-tag]
+        (article/save-article-tag! article-tag))
+
+      (GET "/" []
+        :auth-rules #{"admin"}
+        :summary "查看所有文章标签"
+        :return Result
+        :path-params [id :- string?]
+        (article/get-article-tags id))
+
+
+      (DELETE "/:tag-id" []
+        :auth-rules #{"admin"}
+        :summary "删除文章标签"
+        :return Result
+        :path-params [id :- string?
+                      tag-id :- int?]
+        (article/delete-article-tag-by-id! tag-id))
+
+
+      (DELETE "/" []
+        :auth-rules #{"admin"}
+        :summary "删除文章所有标签"
+        :return Result
+        :path-params [id :- string?]
+        (article/delete-article-tag-by-article-id! id))
+      )
+
+    (context "/:id/series" []
+      (POST "/" []
+        :auth-rules #{"admin"}
+        :summary "保存系列"
+        :return Result
+        :path-params [id :- string?]
+        :body [article-series article/article-series]
+        (article/save-article-series! article-series))
+
+      (GET "/" []
+        :auth-rules #{"admin"}
+        :summary "查看所属系列"
+        :return Result
+        :path-params [id :- string?]
+        (article/get-article-series id))
+
+
+      (DELETE "/:series_id" []
+        :auth-rules #{"admin"}
+        :summary "删除文章某个系列"
+        :return Result
+        :path-params [id :- string?
+                      series_id :- int?]
+        (article/delete-article-series-by-id! series_id))
+
+
+      (DELETE "/" []
+        :auth-rules #{"admin"}
+        :summary "删除文章所有系列"
+        :return Result
+        :path-params [id :- string?]
+        (article/delete-article-series-by-article-id! id))
+      )
+
+    (context "/:id/comments" []
+
+      (GET "/" req
+        :auth-rules #{"admin"}
+        :summary "评论列表"
+        :return Result
+        (article/load-articles-comments-page req))
+
+      (DELETE "/:comment-id" []
+        :auth-rules #{"admin"}
+        :summary "删除某条评论"
+        :path-params [id :- string?
+                      comment-id :- int?]
+        (article/delete-article-comment-by-id! comment-id))
+
+      (DELETE "/" []
+        :auth-rules #{"admin"}
+        :summary "删除文章所有评论"
+        :path-params [id :- string?]
+        (article/delete-article-comments-by-article-id! id)))
     ))

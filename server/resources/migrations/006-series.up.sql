@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS serials(
+CREATE TABLE IF NOT EXISTS series(
     id SERIAL primary key ,
     name varchar(200) not null unique,
     description text default '',

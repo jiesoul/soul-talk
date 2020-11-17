@@ -6,7 +6,7 @@
             [soul-talk.data-dic.routes :as data-dic]
             [soul-talk.auth.routes :as auth]
             [soul-talk.user.routes :as user]
-            [soul-talk.serials.routes :as serials]
+            [soul-talk.series.routes :as series]
             [soul-talk.tag.routes :as tag]
             [soul-talk.article.routes :as article]))
 
@@ -29,7 +29,7 @@
         data-dic/private-routes
         app-key/private-routes
         user/private-routes
-        serials/private-routes
+        series/private-routes
         tag/private-routes
         article/private-routes)
       )))

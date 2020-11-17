@@ -1,0 +1,29 @@
+(ns soul-talk.series.handler
+  (:require [soul-talk.series.db :as db]
+            [soul-talk.utils :as utils]
+            [soul-talk.pagination :as p]
+            [soul-talk.series.spec :as spec]))
+
+(def create-series spec/create-series)
+(def update-series spec/update-series)
+
+(defn load-series-page [req]
+  (let [params (:params req)
+        pagination (p/create req)
+        [series total] (db/load-series-page pagination params)
+        pagination (p/create-total pagination total)]
+    (utils/ok {:series series
+               :pagination pagination
+               :query-str params})))
+
+(defn save-series [series]
+  (let [series (db/save-series series)]
+    (utils/ok {:series series})))
+
+(defn update-series [series]
+  (let [series (db/update-series series)]
+    (utils/ok {:series series})))
+
+(defn delete-series [id]
+  (let [result (db/delete-series id)]
+    (utils/ok "删除成功")))

@@ -12,5 +12,5 @@
         (route/resources "/")
         (route/not-found
           {:status 404
-           :title  "无效的资源"}))
+           :message  "无效的资源"}))
     (m/wrap-base)))

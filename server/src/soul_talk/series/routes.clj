@@ -1,8 +1,8 @@
-(ns soul-talk.serials.routes
+(ns soul-talk.series.routes
   (:require [compojure.api.sweet :refer :all]
             [compojure.api.meta :refer [restructure-param]]
             [soul-talk.spec.core :refer [Result]]
-            [soul-talk.serials.handler :as serials]
+            [soul-talk.series.handler :as series]
             [soul-talk.middleware :as m]))
 
 (defmethod restructure-param :auth-app-key
@@ -14,30 +14,30 @@
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
 (def private-routes
-  (context "serials" []
+  (context "series" []
     :tags ["系列"]
 
     (POST "/" []
       :auth-rules #{"admin"}
       :summary "保存系列"
-      :body [serials serials/create-serials]
-      (serials/save-serials serials))
+      :body [series series/create-series]
+      (series/save-series series))
 
     (PATCH "/" []
       :auth-rules #{"admin"}
       :summary "更新"
-      :body [serials serials/update-serials]
-      (serials/update-serials serials))
+      :body [series series/update-series]
+      (series/update-series series))
 
     (DELETE "/:id" []
       :auth-rules #{"admin"}
       :summary "删除"
       :path-params [id :- int?]
-      (serials/delete-serials id))
+      (series/delete-series id))
 
     (GET "/" req
       :auth-rules #{"admin"}
       :summary "所有系列"
       :return Result
-      (serials/load-serials-page req))
+      (series/load-series-page req))
     ))
