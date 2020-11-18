@@ -13,6 +13,26 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
+
+(def public-routes
+  (context "series" []
+    :tags ["系列"]
+
+    (GET "/" req
+      :auth-app-key #{"admin"}
+      :summary "query series by attribute"
+      :return Result
+      (series/load-series-page req))
+
+    (GET "/:id" []
+      :auth-app-key #{"admin"}
+      :summary "get a series by id"
+      :path-params [id :- int?]
+      :return Result
+      (series/get-series-by-id id))
+
+    ))
+
 (def private-routes
   (context "series" []
     :tags ["系列"]
@@ -28,6 +48,13 @@
       :summary "更新"
       :body [series series/update-series]
       (series/update-series series))
+
+    (GET "/:id" []
+      :auth-rules #{"admin"}
+      :summary "get a series by id"
+      :path-params [id :- int?]
+      :return Result
+      (series/get-series-by-id id))
 
     (DELETE "/:id" []
       :auth-rules #{"admin"}

@@ -9,8 +9,8 @@
 (def update-data-dic spec/update-data-dic)
 
 (defn load-all []
-  (let [data-dics (db/get-data-dic-all)]
-    (utils/ok "加载成功" {:data-dics data-dics})))
+  (let [data-dices (db/get-data-dic-all)]
+    (utils/ok "加载成功" {:data-dices data-dices})))
 
 (defn save-data-dic [data-dic]
   (let [data-dic (db/save-data-dic data-dic)]
@@ -27,16 +27,16 @@
 (defn load-data-dic-page [req]
   (let [params (:params req)
         pagination (p/create req)
-        data-dics (db/load-data-dic-page pagination params)
+        data-dices (db/load-data-dic-page pagination params)
         totals (db/count-data-dic-page params)
         pagination (p/create-total pagination totals)]
-    (utils/ok {:data-dics data-dics
+    (utils/ok {:data-dices data-dices
                :pagination pagination
                :query-str params})))
 
-(defn load-data-dics-by-pid [pid]
-  (let [data-dics (db/load-data-dics-by-pid pid)]
-    (utils/ok {:data-dics data-dics})))
+(defn load-data-dices-by-pid [pid]
+  (let [data-dices (db/load-data-dices-by-pid pid)]
+    (utils/ok {:data-dices data-dices})))
 
 (defn get-data-dic-by-id [id]
   (let [data-dic (db/get-data-dic-by-id id)]

@@ -16,18 +16,12 @@
 (def public-routes
   (context "/tags" []
     :tags ["标签"]
+
     (GET "/hot" req
       :auth-app-key #{"admin"}
-      :summary "查看多个标签"
+      :summary "hot tags"
       :return Result
       (tag/load-tags-page req))
-
-    (POST "/" []
-      :auth-app-key #{"admin"}
-      :body [tag tag/tag]
-      :return Result
-      :summary "添加标签"
-      (tag/insert-tag! tag))
 
     (GET "/" req
       :auth-app-key #{"admin"}

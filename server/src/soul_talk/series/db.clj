@@ -28,3 +28,6 @@
 
 (defn delete-series [id]
   (sql/delete! *db* :series [:id id]))
+
+(defn get-series-by-id [id]
+  (sql/get-by-id *db* :series id {:builder-fn rs-set/as-unqualified-maps}))

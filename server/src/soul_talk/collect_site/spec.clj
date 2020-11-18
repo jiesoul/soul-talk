@@ -28,3 +28,22 @@
                    (ds/opt :image) (ds/maybe spec/uri-string?)
                    :update_by spec/id
                    }}))
+
+
+(def collect-site-tag
+  (ds/spec {:name :collect-site/article-tag
+            :spec {:collect_site_id string?
+                   :tag_id int?}}))
+
+
+(def collect-site-series
+  (ds/spec {:name :collect-site/article-series
+            :spec {:collect_site_id string?
+                   :series_id int?}}))
+
+(def collect-site-comment
+  (ds/spec {:name :collect-site/create-comment
+            :spec {:collect_site_id spec/non-empty-string?
+                   :body spec/non-empty-string?
+                   :create_by_name spec/non-empty-string?
+                   :create_by_email spec/email?}}))

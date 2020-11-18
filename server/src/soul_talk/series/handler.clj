@@ -27,3 +27,9 @@
 (defn delete-series [id]
   (let [result (db/delete-series id)]
     (utils/ok "删除成功")))
+
+(defn get-series-by-id [id]
+  (let [series (db/get-series-by-id id)]
+    (if series
+      (utils/ok {:series series})
+      (utils/bad-request "not find series by id " id))))

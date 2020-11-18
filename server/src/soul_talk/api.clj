@@ -13,18 +13,24 @@
   (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
 (def swagger-config
-  {:ui   "/api/v1/api-docs"
-   :spec "/swagger.json"
+  {:ui      "/api/v1/api-docs"
+   :spec    "/swagger.json"
    :options {:ui {:validatorUrl nil}}
-   :data {:info {:version "1.0.0"
-                 :title       "个人网站公共API"
-                 :description "提供网站部分数据的API"
-                 :contact {:name "jiesoul"
-                           :email "jiesoul@gmail.com"
-                           :url "http://www.jiesoul.com"}}
-          :tags [{:name "用户" :description "用户信息相关API"}
-                 {:name "标签" :description "标签相关API"}
-                 {:name "文章" :description "文章相关API"}]}})
+   :securityDefinitions {:apiAuth {:type "apiKey"
+                                   :name "Authorization"
+                                   :in "header"}}
+   :data    {:info {:version     "1.0.0"
+                    :title       "个人网站公共API"
+                    :description "提供网站部分数据的API"
+                    :contact     {:name  "jiesoul"
+                                  :email "jiesoul@gmail.com"
+                                  :url   "http://www.jiesoul.com"}}
+             :tags [{:name "用户" :description "用户信息相关API"}
+                    {:name "系列" :description "系列"}
+                    {:name "标签" :description "标签相关API"}
+                    {:name "文章" :description "文章相关API"}
+                    {:name "网站" :description "收集的网站相关"}
+                    {:name "链接" :description "收集的链接"}]}})
 
 (def api-config
   {:exceptions m/exceptions-config

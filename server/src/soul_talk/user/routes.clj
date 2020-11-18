@@ -20,6 +20,7 @@
     (GET "/:id/profile" []
       :auth-app-key #{"admin"}
       :return Result
+      :header-params [app-key :- string?]
       :path-params [id :- int?]
       :summary "查看个人信息"
       (handler/get-user-profile id))

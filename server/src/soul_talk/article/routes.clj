@@ -15,25 +15,14 @@
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
 (def public-routes
-  (context "/articles" []
+  (context "/articles/public" []
     :tags ["文章"]
 
-    (GET "/public" req
+    (GET "/" req
       :auth-app-key #{"admin"}
       :return Result
       :summary "查看所有发布的文章"
       (article/load-articles-publish-page req))
-
-    (GET "/public/tags/:tag-id" []
-      :auth-app-key #{"admin"}
-      :path-params [tag-id :- int?]
-      :return Result
-      :summary "查询某个标签下的已发布文章")
-
-    (GET "/public/q" req
-      :auth-app-key #{"admin"}
-      :return Result
-      :summary "根据条件查询文章")
 
     (GET "/archives" []
       :auth-app-key #{"admin"}
@@ -45,10 +34,10 @@
       :auth-app-key #{"admin"}
       :return Result
       :path-params [year :- int? month :- int?]
-      :summary "按年月查看发布存档"
+      :summary "按年月查看归档"
       (article/get-article-archives-year-month year month))
 
-    (GET "/:id/publish" [id]
+    (GET "/:id" [id]
       :auth-app-key #{"admin"}
       :return Result
       :summary "查看文章"
