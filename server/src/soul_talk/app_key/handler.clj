@@ -12,9 +12,14 @@
 (defn auth-app-key [token]
   (db/auth-app-key token))
 
-(defn save-app-key [app-key]
-  (let [app-key (db/save-app-key app-key)]
-    (utils/ok "保存成功" {:app-key app-key})))
+(defn save-app-key [{:keys [app_name] :as app-key}]
+  (let [app-key? (db/get-app-key-by-name app_name)]
+    (if (nil? app-key?)
+      (let [app-key (db/save-app-key app-key)]
+        (utils/ok {:app-key app-key}))
+      (do
+        (db/update-app-key app-key?)
+        (utils/ok "保存成功" {:app-key app-key})))))
 
 (defn gen-app-key []
   (let [token (utils/gen-token)]
@@ -27,7 +32,7 @@
 (defn load-app-keys-page [req]
   (let [params (:params req)
         pagination (p/create req)
-        [keys total] (db/load-app-keys pagination params)
+        [keys total] (db/load-app-keys-page pagination params)
         pagination (p/create-total pagination total)]
     (utils/ok "获取成功" {:app-keys keys
                          :pagination pagination

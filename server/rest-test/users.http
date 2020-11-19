@@ -2,16 +2,16 @@
 # 修改密码
 PATCH {{baseUrl}}/users/1/password
 Content-Type: application/json
-Authorization: Token 6kpLKukQIAUJCJbvnAa5hwNopVlGzYxSocqaweYl4Ec=
+Authorization: {{token}}
 
-{"oldPassword" :  "12345678", "newPassword" :  "123456789", "confirmPassword" : "123456789"}
+{"oldPassword" :  "123456789", "newPassword" :  "12345678", "confirmPassword" : "12345678"}
 
 ###
 
 # 修改个人信息
 PATCH {{baseUrl}}/users/1/profile
 Content-type: application/json
-Authorization: Token 6kpLKukQIAUJCJbvnAa5hwNopVlGzYxSocqaweYl4Ec=
+Authorization: {{token}}
 
 { "username" : "ss" }
 

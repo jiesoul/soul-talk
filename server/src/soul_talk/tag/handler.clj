@@ -15,7 +15,7 @@
                :pagination pagination
                :query-str params})))
 
-(defn insert-tag! [{:keys [name] :as tag}]
+(defn save-tag! [{:keys [name] :as tag}]
   (if-let [t (tag-db/get-tag-by-name name)]
     (utils/bad-request (str "<" name "> 标签已经存在"))
     (let [t (tag-db/save-tag! tag)]

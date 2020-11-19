@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [ring.mock.request :as mock]
             [soul-talk.handler :refer :all]
-            [soul-talk.helper :refer [app-token user parse-body]]
+            [soul-talk.helper :refer [user parse-body]]
             [soul-talk.helper :as h]
             [taoensso.timbre :as log]))
 
@@ -11,8 +11,7 @@
 
   (testing "get user profile"
     (let [response (h/make-request-by-app-token :get "/api/v1/users/1/profile")]
-      (test
-        (is (= 200 (:status response))))))
+      (is (= 200 (:status response)))))
   )
 
 (deftest user-site-test
@@ -22,8 +21,7 @@
     (testing "get users all"
       (let [response (h/make-request-by-login-token :get
                        "/users")]
-        (test
-          (is (= 200 (:status response))))))
+        (is (= 200 (:status response)))))
 
     (testing "get users by like name"
       (let [response (h/make-request-by-login-token :get

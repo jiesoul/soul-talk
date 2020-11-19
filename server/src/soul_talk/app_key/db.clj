@@ -25,7 +25,7 @@
         coll (if (nil? pid) coll (conj coll pid) )]
     (vector sql-str coll)))
 
-(defn load-app-keys [{:keys [per_page offset]} params]
+(defn load-app-keys-page [{:keys [per_page offset]} params]
   (let [[where coll]   (gen-where params)
         sql-str (str "select * from app_keys " where " offset ? limit ?")
         app-keys (sql/query *db*
@@ -38,5 +38,8 @@
                     (into [count-str] coll))))]
     [app-keys total]))
 
-(defn load-app-keys-page [{:keys [page offset]} page] {:keys [app_name] :as params}
-  (let []))
+(defn get-app-key-by-name [app_name]
+  (sql/find-by-keys *db* :app_keys {:app_name app_name}))
+
+(defn update-app-key [{:keys [token app_name]}]
+  (sql/update! *db* :app_keys {:token token} {:app_name app_name}))

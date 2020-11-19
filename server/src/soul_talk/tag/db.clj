@@ -35,7 +35,7 @@
 
 (defn get-tag-by-name [name]
   (first
-    (sql/query *db* ["select * from tags where name = ?" name]
+    (sql/find-by-keys  *db* :tags ["name = ?" name]
       {:builder-fn rs-set/as-unqualified-maps})))
 
 (defn tags-with-names [tag-names]

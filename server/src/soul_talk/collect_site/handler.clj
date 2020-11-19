@@ -101,6 +101,6 @@
     (utils/ok "删除成功")))
 
 (defn delete-collect-site-comments-by-collect-site-id! [collect-site-id]
-  (let [rs (db/delete-collect-site-comments-by-collect-site-id! collect-site-id)]
+  (let [rs (db/delete-collect-sites-comments-by-collect-site-id! collect-site-id)]
     (utils/ok "删除成功")))
 

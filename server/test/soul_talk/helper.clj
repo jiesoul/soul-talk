@@ -18,9 +18,9 @@
 (defn site-uri [context url & opt]
   (apply str context url opt))
 
-(def ^:dynamic *token* nil)
+(def ^:dynamic *login-token* (atom nil))
 (def gen-app-token (utils/gen-token))
-(def app-token "AppKey ty57zxCEOc6KQeEcAz6PZcb3FneD2p7ANrsm0rmZID4=")
+(def ^:dynamic *app-token*  (atom (str "AppKey /XQ4OFeKXX2cuzufXwTFio+lkjJ6BcswnJTkOn8XOjs=")))
 
 (def user {:email    "jiesoul@gmail.com"
            :password "12345678"})
@@ -34,18 +34,43 @@
     nil))
 
 (defn get-login-token! []
-  (let [response (app (-> (mock/request :post "/login")
-                        (mock/content-type "application/json")
-                        (mock/json-body user)))
-        body (parse-body (:body response))]
-    (str "Token " (get body :token))))
+  (let [response    (app (-> (mock/request :post "/login")
+                           (mock/content-type "application/json")
+                           (mock/json-body user)))
+        body        (parse-body (:body response))
+        login-token (str "Token " (get body :token))]
+    (log/info "===========" body)
+    (reset! *login-token* login-token)
+    login-token))
 
 (def login-token (get-login-token!))
+
+(defn login-token!
+  []
+  (if @*login-token*
+    @*login-token*
+    (get-login-token!)))
+
+(defn get-app-key! []
+  (if @*app-token*
+    @*app-token*
+    (let [token     (utils/gen-token)
+          response  (app (-> (mock/request :post "/app-keys")
+                           (mock/content-type "application/json")
+                           (mock/json-body {:app_name  "web"
+                                            :token     token
+                                            :create_by 1})))
+          body      (parse-body (:body response))
+          app-token (str "AppKey " (get-in body [:app-key :token]))]
+      (reset! @*app-token* app-token)
+      (log/info "setting app token to: " app-token)
+      app-token)))
 
 (defn make-request-by-login-token
   ([method uri] (make-request-by-login-token method uri {}))
   ([method uri body]
-   (let [response (app (-> (mock/request method uri)
+   (let [login-token (login-token!)
+         response (app (-> (mock/request method uri)
                          (mock/content-type "application/json")
                          (mock/header :Authorization login-token)
                          (mock/json-body body)))]
@@ -56,6 +81,6 @@
   ([method uri body]
    (let [response (app (-> (mock/request method uri)
                          (mock/content-type "application/json")
-                         (mock/header :Authorization app-token)
+                         (mock/header :Authorization @*app-token*)
                          (mock/json-body body)))]
      response)))

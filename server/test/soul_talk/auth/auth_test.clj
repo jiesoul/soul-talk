@@ -1,6 +1,6 @@
 (ns soul-talk.auth.auth-test
   (:require [clojure.test :refer :all]
-            [soul-talk.helper :refer [api-url user parse-body *token*]]
+            [soul-talk.helper :as h]
             [soul-talk.handler :refer :all]
             [ring.mock.request :as mock]
             [taoensso.timbre :as log]))
@@ -10,8 +10,8 @@
     (test
       (let [response (app (-> (mock/request :post "/login")
                             (mock/content-type "application/json")
-                            (mock/json-body user)))
-            body (parse-body (:body response))]
+                            (mock/json-body h/user)))
+            body (h/body (:body response))]
         (is (= 200 (:status response)))))))
 
 (deftest logout-test

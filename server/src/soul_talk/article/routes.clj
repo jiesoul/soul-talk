@@ -15,7 +15,7 @@
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
 (def public-routes
-  (context "/articles/public" []
+  (context "/articles/p" []
     :tags ["文章"]
 
     (GET "/" req

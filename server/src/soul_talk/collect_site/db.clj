@@ -80,7 +80,7 @@
 
 (defn get-collect-site-series-by-collect-site-id [collect-site-id]
   (sql/query *db*
-    ["select * from collect-sites_series where collect-sites_id = ?" collect-sites-id]
+    ["select * from collect-sites_series where collect-sites_id = ?" collect-site-id]
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn delete-collect-site-series-by-collect-site-id [collect-site-id]
@@ -97,8 +97,8 @@
 (defn delete-collect-site-comment-by-id! [id]
   (sql/delete! *db* :collect-sites_comments ["id = ? " id]))
 
-(defn delete-collect-site-comments-by-collect-sites-id! [collect-sites-id]
-  (sql/delete! *db* :collect-sites_comments ["collect_sites_id = ?" collect-sites-id]))
+(defn delete-collect-sites-comments-by-collect-site-id! [collect-site-id]
+  (sql/delete! *db* :collect-sites_comments ["collect_sites_id = ?" collect-site-id]))
 
 
 (defn get-comments-by-collect-site-id [collect-sites-id]

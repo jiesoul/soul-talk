@@ -17,6 +17,13 @@
   (context "/tags" []
     :tags ["标签"]
 
+    (POST "/" []
+      :auth-app-key #{"admin"}
+      :summary "添加标签"
+      :return Result
+      :body [tag tag/tag]
+      (tag/save-tag! tag))
+
     (GET "/hot" req
       :auth-app-key #{"admin"}
       :summary "hot tags"
