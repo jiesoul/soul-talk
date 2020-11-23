@@ -56,14 +56,6 @@
       :body [data-dic data-dic/update-data-dic]
       (data-dic/update-data-dic data-dic))
 
-
-    (DELETE "/:id" []
-      :auth-rules #{"admin"}
-      :summary "删除"
-      :return Result
-      :path-params [id :- string?]
-      (data-dic/delete-data-dic-by-id id))
-
     (GET "/:id" []
       :auth-rules #{"admin"}
       :path-params [id :- string?]
@@ -76,5 +68,13 @@
       :return Result
       :path-params [pid :- string?]
       (data-dic/load-data-dices-by-pid pid))
+
+
+    (DELETE "/:id" []
+      :auth-rules #{"admin"}
+      :summary "删除"
+      :return Result
+      :path-params [id :- string?]
+      (data-dic/delete-data-dic-by-id id))
 
     ))

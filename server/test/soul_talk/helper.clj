@@ -12,11 +12,11 @@
 
 (use-fixtures :once start-states)
 
-(defn api-url [context url & opt]
-  (apply str "/api/v1" context url opt))
+(defn api-url [context & url ]
+  (apply str "/api/v1" context url))
 
-(defn site-uri [context url & opt]
-  (apply str context url opt))
+(defn site-uri [context & url]
+  (apply str context url))
 
 (def ^:dynamic *login-token* (atom nil))
 (def gen-app-token (utils/gen-token))
@@ -43,8 +43,6 @@
     (reset! *login-token* login-token)
     login-token))
 
-(def login-token (get-login-token!))
-
 (defn login-token!
   []
   (if @*login-token*
@@ -66,21 +64,31 @@
       (log/info "setting app token to: " app-token)
       app-token)))
 
+(defn make-header [request header]
+  (if (empty? header)
+    request
+    (let [[k v] (first header)
+          request (mock/header request k v)]
+      (make-header request (rest header)))))
+
+(defn make-request [method uri header body]
+  (let [response (app (-> (mock/request method uri)
+                        (mock/content-type "application/json")
+                        (make-header header)
+                        (mock/json-body body)))]
+    (log/info "response: " response)
+    (log/info "response body: " (body response))
+    response))
+
 (defn make-request-by-login-token
   ([method uri] (make-request-by-login-token method uri {}))
   ([method uri body]
    (let [login-token (login-token!)
-         response (app (-> (mock/request method uri)
-                         (mock/content-type "application/json")
-                         (mock/header :Authorization login-token)
-                         (mock/json-body body)))]
-     response)))
+         header {:Authorization login-token}]
+     (make-request method uri header body))))
 
 (defn make-request-by-app-token
   ([method uri] (make-request-by-app-token method uri {}))
   ([method uri body]
-   (let [response (app (-> (mock/request method uri)
-                         (mock/content-type "application/json")
-                         (mock/header :Authorization @*app-token*)
-                         (mock/json-body body)))]
-     response)))
+   (let [header {:Authorization @*app-token*}]
+     (make-request method uri header body))))

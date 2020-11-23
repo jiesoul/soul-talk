@@ -4,14 +4,15 @@
             [ajax.core :as ajax]))
 
 (defn request-headers [request]
-  (let [token (rf/subscribe [:auth-token])]
+  (let [login-token (rf/subscribe [:login-token])
+        app-key (rf/subscribe [:app-key])]
     (-> request
       (update
         :headers
         #(merge
            %
            {:Accept        "application/transit+json"
-            :Authorization (str "Token " @token)
+            :Authorization (str login-token " " app-key)
             :X-CSRF-Token  @(rf/subscribe [:csrf-token])})))))
 
 (defn load-interceptors! []

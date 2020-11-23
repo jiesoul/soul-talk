@@ -46,4 +46,4 @@
        (sql/query *db* (into [sql-str] (second where)))))))
 
 (defn get-data-dic-by-id [id]
-  (sql/get-by-id *db* :data_dices id))
+  (sql/get-by-id *db* :data_dices id {:builder-fn rs-set/as-unqualified-maps}))

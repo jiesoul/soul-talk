@@ -4,7 +4,11 @@
             [soul-talk.middleware :as m]
             [soul-talk.user.routes :as user]
             [soul-talk.tag.routes :as tag]
-            [soul-talk.article.routes :as article]))
+            [soul-talk.article.routes :as article]
+            [soul-talk.data-dic.routes :as data-dic]
+            [soul-talk.series.routes :as serials]
+            [soul-talk.collect-link.routes :as collect-link]
+            [soul-talk.collect-site.routes :as collect-site]))
 
 ; 多重方法用来注入中间件
 ;; 如果需要这里添加路由，请拷贝此方法到路由文件。
@@ -45,8 +49,11 @@
       :tags ["api version 1"]
 
       (context "/api/v1" []
-
+        data-dic/public-routes
         tag/public-routes
+        serials/public-routes
         user/public-routes
-        article/public-routes))))
+        article/public-routes
+        collect-site/public-routes
+        collect-link/public-routes))))
 

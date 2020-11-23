@@ -5,7 +5,9 @@
    :pagination {:page     1
                :pre-page 6}
    :breadcrumb ["Home"]
-   :login-events []})
+   :login-events []
+   :app-key "AppKey /XQ4OFeKXX2cuzufXwTFio+lkjJ6BcswnJTkOn8XOjs="
+   :login-token ""})
 
 (goog-define api-uri "http://localhost:3000/api/v1")
 

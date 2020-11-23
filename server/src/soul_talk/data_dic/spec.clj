@@ -3,10 +3,10 @@
             [soul-talk.spec.core :as spec]))
 
 (def create-data-dic
-  (ds/spec {:name :data-dices/dreate-date-dic
-            :spec {:id spec/non-empty-string?
-                   :name spec/non-empty-string?
-                   :pid spec/non-empty-string?
+  (ds/spec {:name :data-dices/create-date-dic
+            :spec {:id            spec/non-empty-string?
+                   :name          spec/non-empty-string?
+                   :pid           spec/non-empty-string?
                    (ds/opt :note) (ds/maybe spec/non-empty-string?)}}))
 
 

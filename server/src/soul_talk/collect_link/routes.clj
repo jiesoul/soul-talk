@@ -15,6 +15,7 @@
 
 (def public-routes
   (context "/collect-links" []
+    :tags ["链接"]
     :auth-app-key #{"admin"}
 
     (GET "/" req
@@ -97,7 +98,7 @@
 
       (POST "/" []
         :auth-rules #{"admin"}
-        :summary "保存文章标签"
+        :summary "保存链接标签"
         :return Result
         :path-params [id :- string?]
         :body [collect-link-tag collect-link/collect-link-tag]
@@ -105,7 +106,7 @@
 
       (GET "/" []
         :auth-rules #{"admin"}
-        :summary "查看所有文章标签"
+        :summary "查看所有链接标签"
         :return Result
         :path-params [id :- string?]
         (collect-link/get-collect-link-tags id))
@@ -113,7 +114,7 @@
 
       (DELETE "/:tag-id" []
         :auth-rules #{"admin"}
-        :summary "删除文章标签"
+        :summary "删除链接标签"
         :return Result
         :path-params [id :- string?
                       tag-id :- int?]
@@ -122,7 +123,7 @@
 
       (DELETE "/" []
         :auth-rules #{"admin"}
-        :summary "删除文章所有标签"
+        :summary "删除链接所有标签"
         :return Result
         :path-params [id :- string?]
         (collect-link/delete-collect-link-tag-by-collect-link-id! id))
@@ -147,7 +148,7 @@
 
       (DELETE "/:series_id" []
         :auth-rules #{"admin"}
-        :summary "删除文章某个系列"
+        :summary "删除链接某个系列"
         :return Result
         :path-params [id :- string?
                       series_id :- int?]
@@ -156,7 +157,7 @@
 
       (DELETE "/" []
         :auth-rules #{"admin"}
-        :summary "删除文章所有系列"
+        :summary "删除链接所有系列"
         :return Result
         :path-params [id :- string?]
         (collect-link/delete-collect-link-series-by-collect-link-id! id))
@@ -179,7 +180,7 @@
 
       (DELETE "/" []
         :auth-rules #{"admin"}
-        :summary "删除文章所有评论"
+        :summary "删除链接所有评论"
         :path-params [id :- string?]
         (collect-link/delete-collect-link-comments-by-collect-link-id! id)))
 

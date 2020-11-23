@@ -9,7 +9,8 @@
 
 (deftest api-routes-test
   (testing "add tag "
-    (let [tag @*test-tag*
+    (let [name (str "test-tag" (rand-int 100))
+          tag {:name name}
           resp (h/make-request-by-app-token
                  :post
                  (h/api-url context "/")

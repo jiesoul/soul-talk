@@ -16,7 +16,8 @@
 
 (def public-routes
   (context "/collect-sites" []
-    :auth-rules #{"admin"}
+    :tags ["网站"]
+    :auth-app-key #{"admin"}
 
     (GET "/" req
       :summary "获取全部"
@@ -81,7 +82,7 @@
 
       (POST "/" []
         :auth-rules #{"admin"}
-        :summary "保存文章标签"
+        :summary "保存网站标签"
         :return Result
         :path-params [id :- string?]
         :body [collect-site-tag collect-site/collect-site-tag]
@@ -89,7 +90,7 @@
 
       (GET "/" []
         :auth-rules #{"admin"}
-        :summary "查看所有文章标签"
+        :summary "查看所有网站标签"
         :return Result
         :path-params [id :- string?]
         (collect-site/get-collect-site-tags id))
@@ -97,7 +98,7 @@
 
       (DELETE "/:tag-id" []
         :auth-rules #{"admin"}
-        :summary "删除文章标签"
+        :summary "删除网站标签"
         :return Result
         :path-params [id :- string?
                       tag-id :- int?]
@@ -106,7 +107,7 @@
 
       (DELETE "/" []
         :auth-rules #{"admin"}
-        :summary "删除文章所有标签"
+        :summary "删除网站所有标签"
         :return Result
         :path-params [id :- string?]
         (collect-site/delete-collect-site-tag-by-collect-site-id! id))
@@ -131,7 +132,7 @@
 
       (DELETE "/:series_id" []
         :auth-rules #{"admin"}
-        :summary "删除文章某个系列"
+        :summary "删除网站某个系列"
         :return Result
         :path-params [id :- string?
                       series_id :- int?]
@@ -140,7 +141,7 @@
 
       (DELETE "/" []
         :auth-rules #{"admin"}
-        :summary "删除文章所有系列"
+        :summary "删除网站所有系列"
         :return Result
         :path-params [id :- string?]
         (collect-site/delete-collect-site-series-by-collect-site-id! id))
@@ -163,7 +164,7 @@
 
       (DELETE "/" []
         :auth-rules #{"admin"}
-        :summary "删除文章所有评论"
+        :summary "删除网站所有评论"
         :path-params [id :- string?]
         (collect-site/delete-collect-site-comments-by-collect-site-id! id)))
 
