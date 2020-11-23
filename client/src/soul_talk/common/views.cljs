@@ -87,21 +87,22 @@
        [:> antd/Breadcrumb.Item item])]))
 
 (defn manager-user-nav []
-  [:> antd/Menu
-   [:> antd/Menu.Item {:key "user-profile"
-                       :icon (r/as-element [:> antd-icons/UserOutlined])
-                       :on-click #(navigate! "#/user/profile")}
-    "个人信息"]
-   [:> antd/Menu.Item {:key "change-pass"
-                       :icon (r/as-element [:> antd-icons/EditOutlined])
-                       :on-click #(navigate! "#/user/password")}
+  (r/with-let [user (rf/subscribe [:user])]
+    [:> antd/Menu
+     [:> antd/Menu.Item {:key      "user-profile"
+                         :icon     (r/as-element [:> antd-icons/UserOutlined])
+                         :on-click #(navigate! "#/user/profile")}
+      "个人信息"]
+     [:> antd/Menu.Item {:key      "change-pass"
+                         :icon     (r/as-element [:> antd-icons/EditOutlined])
+                         :on-click #(navigate! "#/user/password")}
 
-    "密码修改"]
-   [:> antd/Menu.Divider]
-   [:> antd/Menu.Item {:key      "cancel"
-                       :on-click #(rf/dispatch [:logout])
-                       :icon (r/as-element [:> antd-icons/LoginOutlined])}
-    "退出登录"]])
+      "密码修改"]
+     [:> antd/Menu.Divider]
+     [:> antd/Menu.Item {:key      "cancel"
+                         :on-click #(rf/dispatch [:logout @user])
+                         :icon     (r/as-element [:> antd-icons/LoginOutlined])}
+      "退出登录"]]))
 
 (defn manager-header-dropdown []
   (r/with-let [user (rf/subscribe [:user])]

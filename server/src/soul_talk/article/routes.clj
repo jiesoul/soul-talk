@@ -20,17 +20,20 @@
 
     (GET "/" req
       :auth-app-key #{"admin"}
+      :query-params [app-key :- string?]
       :return Result
       :summary "查看所有发布的文章"
       (article/load-articles-publish-page req))
 
     (GET "/archives" []
+      :query-params [app-key :- string?]
       :auth-app-key #{"admin"}
       :return Result
       :summary "查看发布文章的存档"
       (article/get-article-archives))
 
     (GET "/archives/:year/:month" []
+      :query-params [app-key :- string?]
       :auth-app-key #{"admin"}
       :return Result
       :path-params [year :- int? month :- int?]
@@ -38,26 +41,30 @@
       (article/get-article-archives-year-month year month))
 
     (GET "/:id" [id]
+      :query-params [app-key :- string?]
       :auth-app-key #{"admin"}
       :return Result
       :summary "查看文章"
       (article/get-article-public id))
 
     (GET "/:id/tags" []
-      :auth-rules #{"admin"}
+      :query-params [app-key :- string?]
+      :auth-app-key #{"admin"}
       :summary "查看所有文章标签"
       :return Result
       :path-params [id :- string?]
       (article/get-article-tags id))
 
     (GET "/:id/series" []
-      :auth-rules #{"admin"}
+      :query-params [app-key :- string?]
+      :auth-app-key #{"admin"}
       :summary "查看所属系列"
       :return Result
       :path-params [id :- string?]
       (article/get-article-series id))
 
     (POST "/:id/comments" []
+      :query-params [app-key :- string?]
       :auth-app-key #{"admin"}
       :summary "发表评论"
       :path-params [id :- string?]
@@ -65,7 +72,8 @@
       (article/save-article-comment! comment))
 
     (GET "/" req
-      :auth-rules #{"admin"}
+      :query-params [app-key :- string?]
+      :auth-app-key #{"admin"}
       :summary "评论列表"
       :return Result
       (article/load-articles-comments-page req))

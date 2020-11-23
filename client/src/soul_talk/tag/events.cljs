@@ -5,17 +5,16 @@
             [soul-talk.db :refer [api-uri]]))
 
 (reg-event-db
-  :tags/load-ok
-  (fn [db [_ {:keys [data]}]]
-    (let [tags (:tags data)]
-      (assoc db :tags tags))))
+  :tags/load-all-ok
+  (fn [db [_ {:keys [tags pagination]}]]
+    (assoc db :tags tags :pagination pagination)))
 
 (reg-event-fx
-  :tags/load
+  :tags/load-all
   (fn [_ _]
     {:http {:method        GET
             :url           (str api-uri "/tags")
-            :success-event [:tags/load-ok]}}))
+            :success-event [:tags/load-all-ok]}}))
 
 (reg-event-db
   :tags/add-error

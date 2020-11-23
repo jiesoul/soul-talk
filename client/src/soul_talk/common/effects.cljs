@@ -1,7 +1,6 @@
 (ns soul-talk.common.effects
-  (:require [re-frame.core :as rf :refer [dispatch reg-fx reg-event-fx]]
-            [accountant.core :as accountant]
-            [soul-talk.common.local-storage :as storage]))
+  (:require [re-frame.core :as rf :refer [dispatch reg-fx reg-event-fx reg-event-db]]
+            [accountant.core :as accountant]))
 
 (reg-fx
  :http
@@ -35,26 +34,6 @@
   :reload-page
   (fn [_]
     (accountant/dispatch-current!)))
-
-(reg-fx
- :set-user!
- (fn [user-identity]
-   (storage/set-item! storage/login-user-key user-identity)))
-
-(reg-fx
- :clean-user!
- (fn []
-   (storage/remove-item! storage/login-user-key)))
-
-(reg-fx
- :set-auth-token!
- (fn [auth-token]
-   (storage/set-item! storage/auth-token-key auth-token)))
-
-(reg-fx
- :clean-auth-token
- (fn []
-   (storage/remove-item! storage/auth-token-key)))
 
 ;; 响应事件
 (defn query [db [event-id]]

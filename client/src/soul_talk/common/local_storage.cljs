@@ -2,7 +2,7 @@
   (:require [taoensso.timbre :as log]))
 
 (defonce login-user-key "login-user")
-(defonce auth-token-key "auth-token")
+(defonce auth-token-key "login-token")
 
 (defn set-item!
   [key val]

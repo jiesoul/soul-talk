@@ -9,5 +9,5 @@
    :app-key "AppKey /XQ4OFeKXX2cuzufXwTFio+lkjJ6BcswnJTkOn8XOjs="
    :login-token ""})
 
-(goog-define api-uri "http://localhost:3000/api/v1")
+(goog-define api-uri "http://localhost:3000")
 

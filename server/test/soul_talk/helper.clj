@@ -72,7 +72,7 @@
       (make-header request (rest header)))))
 
 (defn make-request [method uri header body]
-  (let [response (app (-> (mock/request method uri)
+  (let [response (app (-> (mock/request method uri {:app-key @*app-token*})
                         (mock/content-type "application/json")
                         (make-header header)
                         (mock/json-body body)))]
@@ -90,5 +90,4 @@
 (defn make-request-by-app-token
   ([method uri] (make-request-by-app-token method uri {}))
   ([method uri body]
-   (let [header {:Authorization @*app-token*}]
-     (make-request method uri header body))))
+   (make-request method uri {} body)))

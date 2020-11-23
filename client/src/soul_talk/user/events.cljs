@@ -1,7 +1,18 @@
 (ns soul-talk.user.events
-  (:require [re-frame.core :refer [reg-event-fx reg-event-db subscribe]]
+  (:require [re-frame.core :refer [reg-event-fx reg-event-db subscribe reg-fx]]
             [ajax.core :refer [GET POST PUT]]
-            [soul-talk.db :refer [api-uri]]))
+            [soul-talk.db :refer [api-uri]]
+            [soul-talk.common.local-storage :as storage]))
+
+(reg-fx
+  :set-user!
+  (fn [user-identity]
+    (storage/set-item! storage/login-user-key user-identity)))
+
+(reg-fx
+  :clean-user!
+  (fn []
+    (storage/remove-item! storage/login-user-key)))
 
 (reg-event-db
   :users/load-all-ok
