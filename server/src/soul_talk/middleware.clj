@@ -83,11 +83,19 @@
           (utils/forbidden)
           (handler request))))))
 
+
+(defn- parse-app-key [request token-name]
+  (some->> (some-> (resp/find-header request "authorization")
+             (second))
+    (re-find (re-pattern (str "^" token-name " (.+)$")))
+    (second)))
+
 ;; 验证APP key
 (defn wrap-app-key [handler rule]
   (fn [request]
     (log/info "starting app-key auth, handler: " handler " rule: " rule)
-    (let [app-key (some-> (parse-header request "AppKey")
+    (let [app-key (:app-key (:query-params request))
+          app-key (some-> (get-in request [:query-params :app-key])
                     (app-key/auth-app-key))]
       (if-not app-key
         (utils/forbidden "无效的APP KEY")

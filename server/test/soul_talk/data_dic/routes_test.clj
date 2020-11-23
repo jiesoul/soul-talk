@@ -32,4 +32,11 @@
                      (h/site-uri "/data-dices")
                      data-dic)
           body (h/body response)]
-      (is (= 200 (:status response))))))
+      (is (= 200 (:status response)))))
+
+  (testing "delete a data-dic"
+    (let [resp (h/make-request-by-login-token
+               :delete
+               (h/site-uri "/data-dices/9999"))
+          body (h/body resp)]
+      (is (= 200 (:status resp))))))

@@ -4,7 +4,8 @@
             [cheshire.core :as cheshire]
             [ring.mock.request :as mock]
             [soul-talk.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [clojure.string :as s]))
 
 (defn start-states [f]
   (mount.core/start)
@@ -20,7 +21,7 @@
 
 (def ^:dynamic *login-token* (atom nil))
 (def gen-app-token (utils/gen-token))
-(def ^:dynamic *app-token*  (atom (str "AppKey /XQ4OFeKXX2cuzufXwTFio+lkjJ6BcswnJTkOn8XOjs=")))
+(def ^:dynamic *app-token*  (atom (str "/XQ4OFeKXX2cuzufXwTFio+lkjJ6BcswnJTkOn8XOjs=")))
 
 (def user {:email    "jiesoul@gmail.com"
            :password "12345678"})
@@ -72,7 +73,7 @@
       (make-header request (rest header)))))
 
 (defn make-request [method uri header body]
-  (let [response (app (-> (mock/request method uri {:app-key @*app-token*})
+  (let [response (app (-> (mock/request method uri)
                         (mock/content-type "application/json")
                         (make-header header)
                         (mock/json-body body)))]
@@ -90,4 +91,5 @@
 (defn make-request-by-app-token
   ([method uri] (make-request-by-app-token method uri {}))
   ([method uri body]
-   (make-request method uri {} body)))
+   (let [uri (str uri (if (s/includes? uri "?") "&" "?")  "app-key=" @*app-token*)]
+     (make-request method uri {} body))))
