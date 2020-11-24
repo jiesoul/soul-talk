@@ -20,8 +20,7 @@
   (apply str context url))
 
 (def ^:dynamic *login-token* (atom nil))
-(def gen-app-token (utils/gen-token))
-(def ^:dynamic *app-token*  (atom (str "/XQ4OFeKXX2cuzufXwTFio+lkjJ6BcswnJTkOn8XOjs=")))
+(def ^:dynamic *app-token*  (atom (str "pmyzXOP27cbvyyqDuEWGM1WAy4Bw1UKK_qpYzfP63rk")))
 
 (def user {:email    "jiesoul@gmail.com"
            :password "12345678"})

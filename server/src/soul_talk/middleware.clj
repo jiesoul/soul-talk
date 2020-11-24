@@ -94,8 +94,8 @@
 (defn wrap-app-key [handler rule]
   (fn [request]
     (log/info "starting app-key auth, handler: " handler " rule: " rule)
-    (let [app-key (:app-key (:query-params request))
-          app-key (some-> (get-in request [:query-params :app-key])
+    (let [app-key (:app-key (:params request))
+          app-key (some-> app-key
                     (app-key/auth-app-key))]
       (if-not app-key
         (utils/forbidden "无效的APP KEY")

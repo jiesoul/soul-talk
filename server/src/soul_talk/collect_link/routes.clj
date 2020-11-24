@@ -9,7 +9,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
-(defmethod restructure-param :auth-rules
+(defmethod restructure-param :auth-login
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
@@ -61,33 +61,33 @@
     :tags ["collect-link"]
 
     (GET "/" req
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "获取全部"
       :return Result
       (collect-link/load-collect-links-page req))
 
     (POST "/" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "保存"
       :body [collect-link collect-link/create-collect-link]
       :return Result
       (collect-link/save-collect-link collect-link))
 
     (PATCH "/" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "更新"
       :body [collect-link collect-link/update-collect-link]
       :return Result
       (collect-link/update-collect-link collect-link))
 
     (GET "/:id" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "查看"
       :path-params [id :- string?]
       (collect-link/get-collect-link id))
 
     (DELETE "/:id" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :return Result
       :path-params [id :- int?]
       :summary "删除key"
@@ -97,7 +97,7 @@
     (context "/:id/tags" []
 
       (POST "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "保存链接标签"
         :return Result
         :path-params [id :- string?]
@@ -105,7 +105,7 @@
         (collect-link/save-collect-link-tag! collect-link-tag))
 
       (GET "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "查看所有链接标签"
         :return Result
         :path-params [id :- string?]
@@ -113,7 +113,7 @@
 
 
       (DELETE "/:tag-id" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除链接标签"
         :return Result
         :path-params [id :- string?
@@ -122,7 +122,7 @@
 
 
       (DELETE "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除链接所有标签"
         :return Result
         :path-params [id :- string?]
@@ -131,7 +131,7 @@
 
     (context "/:id/series" []
       (POST "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "保存系列"
         :return Result
         :path-params [id :- string?]
@@ -139,7 +139,7 @@
         (collect-link/save-collect-link-series! collect-link-series))
 
       (GET "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "查看所属系列"
         :return Result
         :path-params [id :- string?]
@@ -147,7 +147,7 @@
 
 
       (DELETE "/:series_id" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除链接某个系列"
         :return Result
         :path-params [id :- string?
@@ -156,7 +156,7 @@
 
 
       (DELETE "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除链接所有系列"
         :return Result
         :path-params [id :- string?]
@@ -166,20 +166,20 @@
     (context "/:id/comments" []
 
       (GET "/" req
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "评论列表"
         :return Result
         (collect-link/load-collect-links-comments-page req))
 
       (DELETE "/:comment-id" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除某条评论"
         :path-params [id :- string?
                       comment-id :- int?]
         (collect-link/delete-collect-link-comment-by-id! comment-id))
 
       (DELETE "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除链接所有评论"
         :path-params [id :- string?]
         (collect-link/delete-collect-link-comments-by-collect-link-id! id)))

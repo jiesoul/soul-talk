@@ -14,7 +14,7 @@
 
 ;; 多重方法用来注入中间件
 ;; 如果需要这里添加路由，请拷贝此方法到路由文件。
-(defmethod restructure-param :auth-rules
+(defmethod restructure-param :auth-login
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 

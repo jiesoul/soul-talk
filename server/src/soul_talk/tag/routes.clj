@@ -9,7 +9,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
-(defmethod restructure-param :auth-rules
+(defmethod restructure-param :auth-login
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
@@ -49,26 +49,26 @@
     :tags [""]
 
     (GET "/" req
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :return Result
       :summary "得到所有标签"
       (tag/load-tags-page req))
 
     (GET "/:id" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "查看标签"
       :path-params [id :- int?]
       :return Result
       (tag/get-tag-by-id id))
 
     (PATCH "/:id" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :path-params [id :- int?]
       :return Result
       :summary "修改标签")
 
     (DELETE "/:id" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :path-params [id :- int?]
       :return Result
       :summary "删除标签"

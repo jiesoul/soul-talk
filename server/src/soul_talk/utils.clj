@@ -1,15 +1,14 @@
 (ns soul-talk.utils
   (:require [ring.util.http-response :as resp]
-            [crypto.random :refer [base64]]
+            [crypto.random :refer [url-part]]
             [java-time.local :as l]
             [taoensso.timbre :as log]))
 
 (defn now []
   (l/local-date-time))
 
-(defn gen-token
-  []
-  (base64 32))
+(defn gen-token []
+  (url-part 32))
 
 (defn parse-int [s]
   (if s

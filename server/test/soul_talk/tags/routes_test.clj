@@ -30,7 +30,6 @@
       (is (= 200 (:status resp)))))
 
   (testing "get all tags page"
-
     (let [resp (h/make-request-by-app-token
                  :get
                  (h/api-url context "/"))
@@ -41,7 +40,6 @@
 
 (deftest site-routes-test
   (testing "get all tags page"
-
     (let [resp (h/make-request-by-login-token
                  :get
                  (h/site-uri context "/"))
@@ -55,6 +53,5 @@
                  :delete
                  (h/site-uri context "/" id))
           body (h/body resp)]
-      (is (= 200 (:status resp))))
-    )
+      (is (= 200 (:status resp)))))
   )

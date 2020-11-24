@@ -9,7 +9,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
-(defmethod restructure-param :auth-rules
+(defmethod restructure-param :auth-login
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
@@ -37,33 +37,33 @@
     :tags ["数据字典"]
 
     (GET "/" req
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :return Result
       :summary "全部字典数据"
       (data-dic/load-data-dic-page req))
 
     (POST "/" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "新增"
       :return Result
       :body [data-dic data-dic/create-data-dic]
       (data-dic/save-data-dic data-dic))
 
     (PATCH "/" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "更新"
       :return Result
       :body [data-dic data-dic/update-data-dic]
       (data-dic/update-data-dic data-dic))
 
     (GET "/:id" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :path-params [id :- string?]
       :return Result
       (data-dic/get-data-dic-by-id id))
 
     (GET "/pid/:pid" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "通过父ID"
       :return Result
       :path-params [pid :- string?]
@@ -71,7 +71,7 @@
 
 
     (DELETE "/:id" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "删除"
       :return Result
       :path-params [id :- string?]

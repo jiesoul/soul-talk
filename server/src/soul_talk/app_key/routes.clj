@@ -9,7 +9,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
-(defmethod restructure-param :auth-rules
+(defmethod restructure-param :auth-login
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
@@ -18,26 +18,26 @@
     :tags ["app-key"]
 
     (GET "/" req
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "获取全部app key"
       :return Result
       (app-key/load-app-keys-page req))
 
     (POST "/" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "保存"
       :body [app-key app-key/create-app-key]
       :return Result
       (app-key/save-app-key app-key))
 
     (GET "/gen" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "生成KEY"
       :return Result
       (app-key/gen-app-key))
 
     (DELETE "/:id" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :return Result
       :path-params [id :- int?]
       :summary "删除key"

@@ -6,9 +6,9 @@
 (defn site-uri [uri & opt]
   (apply str "/articles" uri opt))
 
-(def ^:dynamic *article* (atom {:title       "ass"
-                                :body        "ass"
-                                :description "ass"
+(def ^:dynamic *article* (atom {:title       "test"
+                                :body        "test"
+                                :description "test"
                                 :create_by   1}))
 
 (deftest site-routes-test
@@ -20,18 +20,26 @@
           add-body (h/body add-resp)
           article (get add-body :article)]
       (is (= 200 (:status add-resp)))
-      (is (= "ass" (:title article)))
+      (is (= "test" (:title article)))
       (reset! *article* article)))
 
   (testing "view article"
-    (let [id (:id @*article*)
+    (let [article @*article*
           resp (h/make-request-by-login-token
                  :get
-                 (site-uri "/" id))
+                 (site-uri "/" (:id article)))
           body (h/body resp)
           article (get body :article)]
       (is (= 200 (:status resp)))
-      (is (= "ass" (:title article)))))
+      (is (= "test" (:title article)))))
+
+  (testing "update article"
+    (let [article @*article*
+          resp (h/make-request-by-login-token
+                 :patch
+                 (site-uri "/")
+                 (assoc article :title "test-update"))]
+      (is (= 200 (:status resp)))))
 
   (testing "public article "
     (let [id           (:id @*article*)
@@ -39,7 +47,6 @@
                          :patch
                          (site-uri "/" id "/publish"))
           publish-body (h/body publish-resp)]
-      (log/info "article id: " id)
       (is (= 200 (:status publish-resp)))))
 
   (testing "update article"
@@ -63,7 +70,6 @@
                      (site-uri "/?title=?sss"))
           body     (h/body response)]
       (is (= 200 (:status response)))
-      (is (< 0 (count (:articles body)))))
-    )
+      (is (< 0 (count (:articles body))))))
 
   )

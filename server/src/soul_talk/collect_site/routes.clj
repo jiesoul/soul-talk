@@ -10,7 +10,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
-(defmethod restructure-param :auth-rules
+(defmethod restructure-param :auth-login
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
@@ -44,34 +44,34 @@
     :tags ["收藏的网站"]
 
     (GET "/" req
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "获取全部"
       :return Result
       (collect-site/load-collect-sites-page req))
 
     (POST "/" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "保存"
       :body [collect-site collect-site/create-collect-site]
       :return Result
       (collect-site/save-collect-site collect-site))
 
     (PATCH "/" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "更新"
       :body [collect-site collect-site/update-collect-site]
       :return Result
       (collect-site/update-collect-site collect-site))
 
     (GET "/:id" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "get site"
       :path-params [id :- int?]
       :return Result
       (collect-site/get-collect-site id))
 
     (DELETE "/:id" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :return Result
       :path-params [id :- int?]
       :summary "删除"
@@ -81,7 +81,7 @@
     (context "/:id/tags" []
 
       (POST "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "保存网站标签"
         :return Result
         :path-params [id :- string?]
@@ -89,7 +89,7 @@
         (collect-site/save-collect-site-tag! collect-site-tag))
 
       (GET "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "查看所有网站标签"
         :return Result
         :path-params [id :- string?]
@@ -97,7 +97,7 @@
 
 
       (DELETE "/:tag-id" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除网站标签"
         :return Result
         :path-params [id :- string?
@@ -106,7 +106,7 @@
 
 
       (DELETE "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除网站所有标签"
         :return Result
         :path-params [id :- string?]
@@ -115,7 +115,7 @@
 
     (context "/:id/series" []
       (POST "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "保存系列"
         :return Result
         :path-params [id :- string?]
@@ -123,7 +123,7 @@
         (collect-site/save-collect-site-series! collect-site-series))
 
       (GET "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "查看所属系列"
         :return Result
         :path-params [id :- string?]
@@ -131,7 +131,7 @@
 
 
       (DELETE "/:series_id" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除网站某个系列"
         :return Result
         :path-params [id :- string?
@@ -140,7 +140,7 @@
 
 
       (DELETE "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除网站所有系列"
         :return Result
         :path-params [id :- string?]
@@ -150,20 +150,20 @@
     (context "/:id/comments" []
 
       (GET "/" req
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "评论列表"
         :return Result
         (collect-site/load-collect-sites-comments-page req))
 
       (DELETE "/:comment-id" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除某条评论"
         :path-params [id :- string?
                       comment-id :- int?]
         (collect-site/delete-collect-site-comment-by-id! comment-id))
 
       (DELETE "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除网站所有评论"
         :path-params [id :- string?]
         (collect-site/delete-collect-site-comments-by-collect-site-id! id)))

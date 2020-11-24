@@ -10,7 +10,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
-(defmethod restructure-param :auth-rules
+(defmethod restructure-param :auth-login
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
@@ -29,13 +29,13 @@
   (context "/users" []
     :tags ["用户"]
     (GET "/" req
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :return Result
       :summary "查看所有用户"
       (handler/load-users-page req))
 
     (PATCH "/:id/password" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :return Result
       :path-params [id :- int?]
       :body [update-password handler/update-password]
@@ -43,7 +43,7 @@
       (handler/update-password! id update-password))
 
     (PATCH "/:id/profile" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :path-params [id :- int?]
       :body [user-profile handler/profile-user]
       :return Result

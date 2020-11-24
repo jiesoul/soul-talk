@@ -2,7 +2,8 @@
   (:require [soul-talk.series.db :as db]
             [soul-talk.utils :as utils]
             [soul-talk.pagination :as p]
-            [soul-talk.series.spec :as spec]))
+            [soul-talk.series.spec :as spec]
+            [java-time.local :as l]))
 
 (def create-series spec/create-series)
 (def update-series spec/update-series)
@@ -17,7 +18,8 @@
                :query-str params})))
 
 (defn save-series [series]
-  (let [series (db/save-series series)]
+  (let [now (l/local-date-time)
+        series (db/save-series (assoc series :create_at now :update_at now))]
     (utils/ok {:series series})))
 
 (defn update-series [series]

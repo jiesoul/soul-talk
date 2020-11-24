@@ -5,7 +5,7 @@
 
 (defn save-app-key
   [app-key]
-  (sql/insert! *db* :app_keys app-key {:build-fn rs-set/as-unqualified-maps}))
+  (sql/insert! *db* :app_keys app-key {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn auth-app-key
   [token]

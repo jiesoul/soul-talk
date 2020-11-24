@@ -9,13 +9,13 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
-(defmethod restructure-param :auth-rules
+(defmethod restructure-param :auth-login
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
 
 (def public-routes
-  (context "series" []
+  (context "/series" []
     :tags ["系列"]
 
     (GET "/" req
@@ -34,37 +34,39 @@
     ))
 
 (def private-routes
-  (context "series" []
+  (context "/series" []
     :tags ["系列"]
 
     (POST "/" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "保存系列"
+      :return Result
       :body [series series/create-series]
       (series/save-series series))
 
     (PATCH "/" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "更新"
       :body [series series/update-series]
       (series/update-series series))
 
     (GET "/:id" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "get a series by id"
       :path-params [id :- int?]
       :return Result
       (series/get-series-by-id id))
 
+    (GET "/" req
+      :auth-login #{"admin"}
+      :summary "所有系列"
+      :return Result
+      (series/load-series-page req))
+
     (DELETE "/:id" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :summary "删除"
       :path-params [id :- int?]
       (series/delete-series id))
 
-    (GET "/" req
-      :auth-rules #{"admin"}
-      :summary "所有系列"
-      :return Result
-      (series/load-series-page req))
     ))

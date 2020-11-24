@@ -13,13 +13,8 @@
   (db/auth-app-key token))
 
 (defn save-app-key [{:keys [app_name] :as app-key}]
-  (let [app-key? (db/get-app-key-by-name app_name)]
-    (if (nil? app-key?)
-      (let [app-key (db/save-app-key app-key)]
-        (utils/ok {:app-key app-key}))
-      (do
-        (db/update-app-key app-key?)
-        (utils/ok "保存成功" {:app-key app-key})))))
+  (let [app-key (db/save-app-key app-key)]
+    (utils/ok {:app-key app-key})))
 
 (defn gen-app-key []
   (let [token (utils/gen-token)]

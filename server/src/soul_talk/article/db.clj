@@ -20,7 +20,8 @@
 (defn update-article! [{:keys [id] :as article}]
   (sql/update! *db* :articles
     (select-keys article [:title :image :description :body :update_by :update_at :publish])
-    ["id = ?" id]))
+    ["id = ?" id]
+    {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn get-article-all []
   (sql/query *db* ["select * from articles order by create_at desc"] {:builder-fn rs-set/as-unqualified-maps}))

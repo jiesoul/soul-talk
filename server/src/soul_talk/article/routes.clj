@@ -10,7 +10,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
-(defmethod restructure-param :auth-rules
+(defmethod restructure-param :auth-login
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
@@ -85,40 +85,40 @@
     :tags ["文章"]
     ;; auth
     (GET "/" request
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :return Result
       :summary "查看所有文章"
       (article/load-articles-page request))
 
     (POST "/" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :return Result
       :body [article article/create-article]
       :summary "添加文章"
       (article/insert-article! article))
 
     (GET "/:id" [id]
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :return Result
       :summary "查看文章"
       (article/get-article id))
 
     (PATCH "/" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :return Result
       :body [article article/update-article]
       :summary "更新文章"
       (article/update-article! article))
 
     (PATCH "/:id/publish" []
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :path-params [id :- string?]
       :return Result
       :summary "发布文章"
       (article/publish-article! id))
 
     (DELETE "/:id" [id]
-      :auth-rules #{"admin"}
+      :auth-login #{"admin"}
       :return Result
       :summary "删除文章"
       (article/delete-article! id))
@@ -127,7 +127,7 @@
     (context "/:id/tags" []
 
       (POST "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "保存文章标签"
         :return Result
         :path-params [id :- string?]
@@ -135,7 +135,7 @@
         (article/save-article-tag! article-tag))
 
       (GET "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "查看所有文章标签"
         :return Result
         :path-params [id :- string?]
@@ -143,7 +143,7 @@
 
 
       (DELETE "/:tag-id" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除文章标签"
         :return Result
         :path-params [id :- string?
@@ -152,7 +152,7 @@
 
 
       (DELETE "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除文章所有标签"
         :return Result
         :path-params [id :- string?]
@@ -161,7 +161,7 @@
 
     (context "/:id/series" []
       (POST "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "保存系列"
         :return Result
         :path-params [id :- string?]
@@ -169,7 +169,7 @@
         (article/save-article-series! article-series))
 
       (GET "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "查看所属系列"
         :return Result
         :path-params [id :- string?]
@@ -177,7 +177,7 @@
 
 
       (DELETE "/:series_id" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除文章某个系列"
         :return Result
         :path-params [id :- string?
@@ -186,7 +186,7 @@
 
 
       (DELETE "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除文章所有系列"
         :return Result
         :path-params [id :- string?]
@@ -196,20 +196,20 @@
     (context "/:id/comments" []
 
       (GET "/" req
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "评论列表"
         :return Result
         (article/load-articles-comments-page req))
 
       (DELETE "/:comment-id" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除某条评论"
         :path-params [id :- string?
                       comment-id :- int?]
         (article/delete-article-comment-by-id! comment-id))
 
       (DELETE "/" []
-        :auth-rules #{"admin"}
+        :auth-login #{"admin"}
         :summary "删除文章所有评论"
         :path-params [id :- string?]
         (article/delete-article-comments-by-article-id! id)))
