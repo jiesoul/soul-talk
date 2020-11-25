@@ -14,5 +14,4 @@
                    :password spec/password?}}))
 
 (def logout
-  (ds/spec {:name :auth/logout
-            :spec {:user_id spec/id}}))
+  (ds/spec {:name :auth/logout}))

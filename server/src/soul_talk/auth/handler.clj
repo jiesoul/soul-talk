@@ -53,8 +53,5 @@
                       :token token})))
     (utils/unauthorized "email或密码错误,登录失败")))
 
-(defn logout! [{:keys [user_id]}]
-  (do
-    (auth-db/invalid-token-by-user-id! user_id)
-    (log/info "user_id: " user_id  " log out")
-    (utils/ok "用户已登出")))
+(defn logout! []
+  (utils/ok "用户已登出"))

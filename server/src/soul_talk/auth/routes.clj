@@ -14,6 +14,5 @@
 
     (POST "/logout" req
       :return Result
-      :body [auth-token auth/logout]
       :summary "用户登出"
-      (auth/logout! auth-token))))
+      (auth/logout!))))
