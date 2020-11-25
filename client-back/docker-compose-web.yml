@@ -1,0 +1,15 @@
+version: '3'
+services:
+  web:
+    image: jiesoul/soul-talk-web:0.1.5
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-site.conf:/etc/nginx/conf.d/default.conf
+      - ./data/letsencrypt:/etc/letsencrypt
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/letsencrypt:/etc/letsencrypt
