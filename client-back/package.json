@@ -1,7 +1,7 @@
 {
-  "name": "client",
+  "name": "client-back",
   "version": "1.0.0",
-  "description": "网站前端",
+  "description": "网站管理后台",
   "main": "index.js",
   "directories": {
     "doc": "docs",

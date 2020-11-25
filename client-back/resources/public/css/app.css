@@ -25,10 +25,15 @@ body {
     font-weight: bold;
 }
 
+.site-breadcrumb {
+    margin: 6px 0;
+}
+
 .site-layout-content {
     min-height: 680px;
-    padding: 10px 50px;
+    padding: 10px 10px;
     background: #fff;
+    text-align: left;
 }
 
 .site-layout-sidebar {
@@ -61,5 +66,10 @@ body {
     line-height: 450px;
     text-align: center;
     background: #364d79;
+}
+
+
+.list table {
+
 }
 

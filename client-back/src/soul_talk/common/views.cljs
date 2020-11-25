@@ -13,9 +13,7 @@
                    :mode              "horizontal"
                    :defaultselectkeys ["home"]
                    :selected-keys     [(key->js @active-page)]}
-     [:> antd/Menu.Item {:key "home" :on-click #(navigate! "#/")} "首页"]
-     [:> antd/Menu.Item {:key "blog" :on-click #(navigate! "#/blog")} "日志"]
-     [:> antd/Menu.Item {:key "resource" :on-click #(navigate! "#/resources")} "资源"]]))
+     [:> antd/Menu.Item {:key "home" :on-click #(navigate! "#/")} "首页"]]))
 
 (defn logo []
   [:div.logo
@@ -61,27 +59,30 @@
      [:> antd/Menu {:mode              "inline"
                     :style {:height "100%" :borderRight 0}
                     :defaultselectkeys ["dash"]
-                    :open-keys ["tag" "user" "article"]
+                    :open-keys ["base" "user" "article"]
                     :selected-keys [(key->js @active-page)]}
+
       [:> antd/Menu.Item {:key      "dash"
                           :icon (r/as-element [:> antd-icons/DashboardOutlined])
-                          :on-click #(navigate! "#/dash")}
-       "面板"]
-      [:> antd/Menu.SubMenu {:key   "tag"
-                             :title "标签管理"}
-       [:> antd/Menu.Item {:key      "tags"
-                           :on-click #(navigate! "#/tags")}
-        "标签"]]
-      [:> antd/Menu.SubMenu {:key   "article"
-                             :icon  (r/as-element [:> antd-icons/BookOutlined])
-                             :title "文章管理"}
-       [:> antd/Menu.Item {:key      "articles"
-                           :on-click #(navigate! "#/articles")}
-        "文章"]]]]))
+                          :on-click #(navigate! "#/dash")} "数据面板"]
+
+      [:> antd/Menu.SubMenu {:key   "article" :title "文章管理"}
+       [:> antd/Menu.Item {:key      "articles" :on-click #(navigate! "#/articles")} "文章"]]
+
+
+      [:> antd/Menu.SubMenu {:key   "base"
+                             :title "基础数据"}
+
+       [:> antd/Menu.Item {:key "series" :on-click #(navigate! "#/series")} "系列管理"]
+       [:> antd/Menu.Item {:key "tag" :on-click #(navigate! "#/tags")} "标签管理"]
+       [:> antd/Menu.Item {:key "data-dic" :on-click #(navigate! "#/data-dices")} "数据字典"]
+       [:> antd/Menu.Item {:key "app-key" :on-click #(navigate! "#/app-keys")} "APP Key管理"]]
+
+      ]]))
 
 (defn manager-breadcrumb []
   (r/with-let [items (rf/subscribe [:breadcrumb])]
-    [:> antd/Breadcrumb {:style {:margin "16px 0"}}
+    [:> antd/Breadcrumb {:className "site-breadcrumb"}
      (for [item @items]
        ^{:key item}
        [:> antd/Breadcrumb.Item item])]))
@@ -126,11 +127,11 @@
 
 (defn page-nav [handler]
   (r/with-let
-    [pagination (rf/subscribe [:admin/pagination])
+    [pagination (rf/subscribe [:pagination])
      prev-page (r/cursor pagination [:previous])
      next-page (r/cursor pagination [:next])
      page (r/cursor pagination [:page])
-     pre-page (r/cursor pagination [:pre-page])
+     per-page (r/cursor pagination [:per-page])
      total-pages (r/cursor pagination [:total-pages])
      total (r/cursor pagination [:total])
      paginate-params @pagination]
@@ -178,12 +179,6 @@
     (when @loading?
       (antd/message.loading "正在加载中。。。。"))))
 
-(defn success-message []
-  (r/with-let [success (rf/subscribe [:success])]
-    (when @success
-      (antd/message.success @success)
-      (rf/dispatch [:clean-success]))))
-
 (defn show-confirm
   [title content ok-fun cancel-fun]
   (antd/Modal.confirm
@@ -193,8 +188,15 @@
               :onOk     ok-fun
               :onCancel cancel-fun})))
 
+(defn success-message []
+  (r/with-let [success (rf/subscribe [:success])]
+    (when @success
+      (antd/message.success @success)
+      (rf/dispatch [:clean-success]))))
+
 (defn error-message []
   (r/with-let [error (rf/subscribe [:error])]
+    (js/console.log "error: " @error)
     (when @error
       (antd/message.error @error)
       (rf/dispatch [:clean-error]))))
@@ -207,8 +209,6 @@
     :onOk     success-fn
     :onCancel cancel-fn}
    content])
-
-
 
 (defn validation-modal [title errors]
   [:> antd/Modal {:is-open (boolean @errors)}

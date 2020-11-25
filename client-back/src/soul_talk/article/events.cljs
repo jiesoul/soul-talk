@@ -1,40 +1,21 @@
 (ns soul-talk.article.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db subscribe]]
             [ajax.core :refer [POST GET DELETE PUT]]
-            [soul-talk.db :refer [api-uri]]
+            [soul-talk.db :refer [site-uri]]
             [taoensso.timbre :as log]))
 
 (reg-event-db
-  :set-public-articles
-  (fn [db [_ {:keys [data]}]]
-    (assoc db :public-articles (:articles data)
-              :home-pagination (:pagination data))))
-
-(reg-event-fx
-  :load-public-articles
-  (fn [_ [_ pagination]]
-    (js/console.log "url:" api-uri)
-    {:http {:method        GET
-            :url           (str api-uri "/articles/public")
-            :ajax-map      {:params pagination}
-            :success-event [:set-public-articles]}}))
-
-(reg-event-db
-  :clear-public-articles
-  (fn [db _]
-    (dissoc db :public-articles)))
-
-(reg-event-db
   :set-articles
-  (fn [db [_ {:keys [data]}]]
-    (assoc db :articles (:articles data)
-              :edit-pagination (:pagination data))))
+  (fn [db [_ {:keys [articles pagination query-str]}]]
+    (assoc db :articles articles
+              :pagination pagination
+              :query-str query-str)))
 
 (reg-event-fx
   :load-articles
   (fn [_ [_ pagination]]
     {:http {:method        GET
-            :url           (str api-uri "/articles")
+            :url           (str site-uri "/articles")
             :ajax-map      {:params pagination}
             :success-event [:set-articles]}}))
 
@@ -52,34 +33,9 @@
   :articles/add
   (fn [_ [_ article]]
     {:http {:method        POST
-            :url           (str api-uri "/articles")
+            :url           (str site-uri "/articles")
             :ajax-map      {:params article}
             :success-event [:articles/add-ok article]}}))
-
-(reg-event-fx
-  :articles/upload-ok
-  (fn [{:keys [db]} [_ {:keys [id] :as article}]]
-    {:db (-> db
-           )
-     :dispatch-n (list [:set-success "保存成功"])}))
-
-(reg-event-db
-  :articles/upload-error
-  (fn [_ [_ {:keys [message]}]]
-    (js/alert message)))
-
-(reg-event-fx
-  :articles/upload
-  (fn [_ [_ files]]
-    (let [data (doto
-                 (js/FormData.)
-                 (.append "file" files))]
-      {:http
-       {:method   POST
-        :url               (str api-uri "/articles/upload")
-        :ajax-map          {:body data}
-        :success-event [:articles/upload-ok]
-        :error-event [:articles/upload-error]}})))
 
 (reg-event-fx
   :articles/edit-ok
@@ -96,7 +52,7 @@
   :articles/edit
   (fn [_ [_ {:keys [id counter] :as article}]]
     {:http {:method        PUT
-            :url           (str api-uri "/articles/" id)
+            :url           (str site-uri "/articles/" id)
             :ajax-map      {:params article}
             :success-event [:articles/edit-ok]
             :error-event   [:articles/edit-error]}}))
@@ -110,7 +66,7 @@
   :load-article
   (fn [_ [_ id]]
     {:http {:method        GET
-            :url           (str api-uri "/articles/" id)
+            :url           (str site-uri "/articles/" id)
             :success-event [:set-article]}}))
 
 (reg-event-db
@@ -135,7 +91,7 @@
   :articles/delete
   (fn [_ [_ id]]
     {:http {:method        DELETE
-            :url           (str api-uri "/articles/" id)
+            :url           (str site-uri "/articles/" id)
             :success-event [:articles/delete-ok id]
             :error-event   [:articles/delete-error]}}))
 
@@ -154,54 +110,7 @@
   :articles/publish
   (fn [_ [_ id]]
     {:http {:method PUT
-            :url (str api-uri "/articles/" id "/publish")
+            :url (str site-uri "/articles/" id "/publish")
             :success-event [:articles/publish-ok]
             :error-event [:articles/publish-error]}}))
 
-(reg-event-db
-  :set-public-articles-archives
-  (fn [db [_ {:keys [archives]}]]
-    (assoc db :public-articles-archives archives)))
-
-(reg-event-fx
-  :load-public-articles-archives
-  (fn [_ _]
-    {:http {:method        GET
-            :url           (str api-uri "/articles/archives")
-            :success-event [:set-public-articles-archives]}}))
-
-(reg-event-db
-  :set-public-articles-archives-year-month
-  (fn [db [_ {:keys [articles]}]]
-    (assoc db :public-articles-archives-year-month articles)))
-
-(reg-event-fx
-  :load-public-articles-archives-year-month
-  (fn [_ [_ year month]]
-    {:http {:method        GET
-            :url           (str api-uri "/articles/archives/" year "/" month)
-            :success-event [:set-public-articles-archives-year-month]}}))
-
-(reg-event-db
-  :upload-md-file-ok
-  (fn [db [_ {:keys [md]}]]
-    (.val (js/$ "#editMdTextarea") md)
-    (assoc db :upload/md md)))
-
-(reg-event-db
-  :upload-md-file-error
-  (fn [_ [_ {:keys [message]}]]
-    (js/alert message)))
-
-(reg-event-fx
-  :upload-md-file
-  (fn [_ [_ files]]
-    (let [data (doto
-                 (js/FormData.)
-                 (.append "file" files))]
-      {:http
-       {:method   POST
-        :url               (str api-uri "/admin/files/md")
-        :ajax-map          {:body data}
-        :success-event [:upload-md-file-ok]
-        :error-event [:upload-md-file-error]}})))

@@ -1,7 +1,7 @@
 (ns soul-talk.user.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db subscribe reg-fx]]
             [ajax.core :refer [GET POST PUT]]
-            [soul-talk.db :refer [api-uri]]
+            [soul-talk.db :refer [site-uri]]
             [soul-talk.common.local-storage :as storage]))
 
 (reg-fx
@@ -23,7 +23,7 @@
   :users/load-all
   (fn [_ _]
     {:http {:method        GET
-            :url           (str api-uri "/users")
+            :url           (str site-uri "/users")
             :success-event [:users/load-all-ok]
             :error-event   [:set-error "保存用户失败"]}}))
 
@@ -32,7 +32,7 @@
   [reagent.debug/tracking]
   (fn [_ [_ {:keys [id email pass-old pass-new pass-confirm] :as params}]]
     {:http {:method        POST
-            :url           (str api-uri "/user/" id "/password")
+            :url           (str site-uri "/user/" id "/password")
             :ajax-map      {:params {:email        email
                                      :pass-old     pass-old
                                      :pass-new     pass-new
@@ -54,7 +54,7 @@
   :save-user-profile
   (fn [_ [_ {:keys [id email name] :as user}]]
     {:http {:method        PUT
-            :url           (str api-uri "/users/" id "/profile")
+            :url           (str site-uri "/users/" id "/profile")
             :ajax-map      {:params user}
             :success-event [:save-user-profile-ok]
             :error-event   [:save-user-profile-error]}}))

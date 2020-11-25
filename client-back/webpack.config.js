@@ -1,5 +1,5 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const path = require("path")
+const path = require("path");
 
 module.exports = {
     plugins: [
@@ -28,7 +28,7 @@ module.exports = {
                                     'primary-color': '#1DA57A',
                                     'link-color': '#1DA571',
                                     'border-radius-bae': '2px',
-                                    'hack': `true; @import "default.less";`
+                                    'hack': 'true; @import "default.less";'
                                 },
                                 javascriptEnabled: true,
                             }

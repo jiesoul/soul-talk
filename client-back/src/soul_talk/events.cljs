@@ -12,13 +12,13 @@
 (reg-event-fx
   :initialize-db
   [(inject-cofx :local-store storage/login-user-key)
-   (inject-cofx :local-store storage/auth-token-key)]
+   (inject-cofx :local-store storage/login-token-key)]
   (fn [cofx _]
     (let [user (get-in cofx [:local-store storage/login-user-key])
-          auth-token (get-in cofx [:local-store storage/auth-token-key])
+          login-token (get-in cofx [:local-store storage/login-token-key])
           db (:db cofx)]
       {:db (merge db (assoc default-db :user (js->clj user :keywordize-keys true)
-                                       :auth-token auth-token))})))
+                                       :login-token login-token))})))
 
 ;; 设置当前页
 (reg-event-db
@@ -40,6 +40,16 @@
   :clean-success
   (fn [db _]
     (dissoc db :success)))
+
+(reg-event-db
+  :set-error
+  (fn [db [_ message]]
+    {:db (assoc db :error message)}))
+
+(reg-event-db
+  :clean-error
+  (fn [db _]
+    (dissoc db :error)))
 
 (reg-event-db
   :update-value
@@ -69,24 +79,7 @@
                        (assoc :should-be-loading? true)
                        (dissoc :error))}))
 
-(reg-event-fx
-  :ajax-error
-  (fn [_ [_ {:keys [response status status-text] :as resp}]]
-    {:dispatch-n (condp = status
-                   0 (list [:set-error response])
-                   400 (list [:set-error response])
-                   401 (list [:set-error response] [:logout])
-                   403 (list [:set-error response] [:logout])
-                   404 (list [:set-error response])
-                   (list [:set-error response]))}))
 
-(reg-event-fx
-  :set-error
-  (fn [{:keys [db]} [_ {:keys [message]}]]
-    {:db (assoc db :error message)}))
 
-(reg-event-db
-  :clean-error
-  (fn [db _]
-    (dissoc db :error)))
+
 

@@ -3,10 +3,9 @@
             [secretary.core :as secretary :refer-macros [defroute]]
             [accountant.core :as accountant]
             [reagent.core :as r]
-            [re-frame.core :refer [dispatch dispatch-sync subscribe]])
+            [re-frame.core :refer [dispatch dispatch-sync  subscribe]])
   (:import [goog History]
            [goog.History EventType]))
-
 
 ;; 判断是否登录
 (defn logged-in? []
@@ -18,14 +17,18 @@
 (defn href [url]
   {:href (str url)})
 
+(defn set-html! [el content]
+  (aset el "innerHTML" content))
+
 (defn navigate! [url]
   (accountant/navigate! (context-url url)))
 
-;; 加载多个事件
 (defn run-events
   [events]
-  (doseq [event events]
-    (dispatch event)))
+  (if (logged-in?)
+    (doseq [event events]
+      (dispatch event))
+    (dispatch [:set-active-page :login])))
 
 (defn run-events-admin
   [events]
@@ -34,99 +37,64 @@
       (dispatch event)
       (dispatch [:add-login-event event]))))
 
-
-(defn home-page-events [& events]
-  (.scrollTo js/window 0 0)
-  (run-events (into
-                [[:load-public-articles]
-                 [:load-tags]
-                 [:set-active-page :home]]
-                events)))
-
 ;; 首页
 (defroute "/" []
   (run-events
-    [[:load-public-articles {:page 1 :pre-page 3}]
-     [:set-active-page :home]]))
-
-(defroute "/blog" []
-  (let [pagination {:page     1
-                    :pre-page 20}]
-    (run-events
-      [[:load-public-articles pagination]
-       [:load-public-articles-archives]
-       [:set-active-page :blog]])))
-
-(defroute "/blog/archives/:year/:month" [year month]
-  (run-events [[:load-public-articles-archives-year-month year month]
-               [:load-public-articles-archives]
-               [:set-active-page :blog/archives]]))
+    [[:set-active-page :dash]]))
 
 (defroute "/login" []
-  (run-events [[:set-active-page :login]]))
-
-(defroute "/register" []
-  (run-events [[:set-active-page :register]]))
-
-;; 无登录下把事件加入登录事件
-(defn admin-page-events [& events]
-  (.scrollTo js/window 0 0)
-  (run-events-admin (into
-                      [[:set-active-page :dash]]
-                      events)))
+  (dispatch [:set-active-page :login]))
 
 ;; 后台管理
 (defroute "/dash" []
   (run-events [[:set-breadcrumb ["面板"]]
-               [:set-active-page :dash]]))
+                     [:set-active-page :dash]]))
 
 (defroute "/users/password" []
   (run-events [[:set-breadcrumb ["个人管理" "修改密码"]]
-               [:set-active-page :users-password]]))
+                     [:set-active-page :users-password]]))
 
 (defroute "/users/profile" []
   (run-events [[:set-breadcrumb ["个人管理" "个人信息"]]
-               [:set-active-page :users-profile]]))
+                     [:set-active-page :users-profile]]))
 
 (defroute "/users/edit" []
   (run-events [[:set-breadcrumb ["用户" "清单"]]
-               [:admin/load-users]
-               [:set-active-page :users]]))
+                     [:admin/load-users]
+                     [:set-active-page :users]]))
 
 (defroute "/tags" []
   (run-events [[:tags/load-all]
-               [:set-breadcrumb ["标签" "列表"]]
-               [:set-active-page :tags]]))
+                     [:set-breadcrumb ["标签" "列表"]]
+                     [:set-active-page :tags]]))
 
 (defroute "/tags/:id" [id]
   (run-events [[:tag/load id]
-               [:set-active-page :tag-view]]))
+                     [:set-active-page :tag-view]]))
 
 
 (defroute "/articles" []
   (run-events [[:load-articles]
-               [:set-breadcrumb ["文章" "列表"]]
-               [:set-active-page :articles]]))
+                     [:set-breadcrumb ["文章" "列表"]]
+                     [:set-active-page :articles]]))
 
 (defroute "/articles/add" []
   (run-events [[:load-tags]
-               [:set-active-page :articles-add]]))
+                     [:set-active-page :articles-add]]))
 
 (defroute "/articles/:id/edit" [id]
-  (if-not (or (logged-in?)
-            (nil? @(subscribe [:post])))
-    (navigate! "/login")
-    (run-events [[:articles/get id]
-                 [:load-tags]
-                 [:set-active-page :articles-edit]])))
+  (run-events [[:articles/get id]
+                     [:load-tags]
+                     [:set-active-page :articles-edit]]))
 
 (defroute "/articles/:id" [id]
   (run-events [[:load-tags]
-               [:load-article id]
-               [:set-active-page :articles-view]]))
+                     [:load-article id]
+                     [:set-active-page :articles-view]]))
 
 (defroute "*" []
-  )
+  (run-events [[:set-breadcrumb [""]]
+               [:set-active-page :default]]))
 
 (secretary/set-config! :prefix "#")
 
@@ -137,11 +105,9 @@
     (events/listen EventType.NAVIGATE #(secretary/dispatch! (.-token %)))
     (.setEnabled true))
   (accountant/configure-navigation!
-    {:nav-handler
-                        (fn [path]
-                          (secretary/dispatch! path))
-     :path-exists?
-                        (fn [path]
-                          (secretary/locate-route path))
+    {:nav-handler (fn [path]
+                    (secretary/dispatch! path))
+     :path-exists? (fn [path]
+                     (secretary/locate-route path))
      :reload-same-path? true})
   (accountant/dispatch-current!))

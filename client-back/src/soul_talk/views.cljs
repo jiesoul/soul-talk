@@ -4,11 +4,9 @@
             [soul-talk.routes :refer [logged-in? navigate!]]
             [soul-talk.common.views :as c]
             [soul-talk.dash.views :as dash]
-            [soul-talk.home.view :as home]
             [soul-talk.auth.views :as auth]
             [soul-talk.user.views :as users]
             [soul-talk.article.views :as article]
-            [soul-talk.blog.views :as blog]
             [soul-talk.tag.views :as tag]
             [clojure.string :as str]))
 
@@ -16,12 +14,7 @@
 (defmulti pages (fn [page _] page))
 
 ;;页面
-(defmethod pages :home [_ _] [home/home-page])
 (defmethod pages :login [_ _] [auth/login-page])
-(defmethod pages :register [_ _] [auth/register-page])
-(defmethod pages :blog/archives [_ _] [blog/blog-archives-page])
-(defmethod pages :blog [_ _] [blog/blog-page])
-(defmethod pages :articles/view [_ _] [article/article-view-page])
 
 (defn admin [page]
   (r/with-let [user (subscribe [:user])]
@@ -54,7 +47,8 @@
 (defmethod pages :articles-edit [_ _]
   (admin article/edit-article-page))
 
-(defmethod pages :default [_ _] [:div "页面未找到,请检查URL"])
+(defmethod pages :default [_ _] (c/manager-layout
+                                  [:div "页面未找到,请检查地址"]))
 
 ;; 根据配置加载不同页面
 (defn main-page []

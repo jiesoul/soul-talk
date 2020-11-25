@@ -1,13 +1,8 @@
 (ns soul-talk.db)
 
 (def default-db
-  {:active-page :home
-   :pagination {:page     1
-               :pre-page 6}
-   :breadcrumb ["Home"]
+  {:active-page :login
    :login-events []
-   :app-key "AppKey /XQ4OFeKXX2cuzufXwTFio+lkjJ6BcswnJTkOn8XOjs="
-   :login-token ""})
+   :login-token nil})
 
-(goog-define api-uri "http://localhost:3000")
-
+(goog-define site-uri "http://localhost:3000")

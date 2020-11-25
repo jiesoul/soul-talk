@@ -2,6 +2,20 @@
   (:require [re-frame.core :as rf :refer [dispatch reg-fx reg-event-fx reg-event-db]]
             [accountant.core :as accountant]))
 
+(reg-event-fx
+  :ajax-error
+  (fn [_ [_ {:keys [body status] :as resp}]]
+    (let [{:keys [message]} body]
+      (js/console.log "error response: " resp)
+      {:dispatch-n (condp = status
+                     0 (list [:set-error message])
+                     400 (list [:set-error message])
+                     401 (list [:set-error message] [:logout])
+                     403 (list [:set-error message] [:logout])
+                     404 (list [:set-error message])
+                     500 (list [:set-error message])
+                     (list [:set-error message]))})))
+
 (reg-fx
  :http
  (fn [{:keys [method

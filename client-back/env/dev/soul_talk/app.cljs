@@ -4,10 +4,6 @@
             [re-frame.core :as rf]
             [district0x.re-frame.google-analytics-fx :as ga]))
 
-;; disable Google analytics
-(ga/set-enabled! false)
-;(district0x.re-frame.google-analytics-fx/set-enabled! (not goog.DEBUG))
-
 (enable-console-print!)
 
 (set! *warn-on-infer* true)
