@@ -85,7 +85,7 @@
 
 
 (defn- parse-app-key [request token-name]
-  (some->> (some-> (resp/find-header request "authorization")
+  (some->> (some-> (resp/find-header request "X-API-Key")
              (second))
     (re-find (re-pattern (str "^" token-name " (.+)$")))
     (second)))
