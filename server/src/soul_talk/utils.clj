@@ -56,5 +56,14 @@
                         :message (or msg "出现内部错误，请联系管理员")}
                   data))))
 
+(defn enhance-your-calm
+  ([] (enhance-your-calm nil))
+  ([body] (resp/enhance-your-calm body)))
+
+(defn log-error
+  [^Exception e data request-or-response type]
+  (log/error "error type： -- " type)
+  (log/error "error case： -- " (.printStackTrace e)))
+
 (defn parse-header [request]
   (-> request))

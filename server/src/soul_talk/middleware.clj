@@ -20,33 +20,38 @@
             [soul-talk.app-key.handler :as app-key])
   (:import [java.time Instant]))
 
+
+
 ;; 错误处理
 (defn exception-handler [f type]
   (fn [^Exception e data request]
-    (log/error "发生未知错误： -- " (.printStackTrace e))
-    (f {:result :error :message (str "发生未知错误,请重试或联系管理员。"), :type type})))
+    (utils/log-error e data request type)
+    (f (str "发生未知错误,请重试或联系管理员。"))))
 
 ;;
 (defn request-validation-handler [f type]
   (fn [^Exception e data req]
-    (log/error "发生请求错误： -- " (.getMessage e))
-    (let [message (->> data
+    (utils/log-error e data req type)
+    (let [message (some->> data
                     :problems
                     :clojure.spec.alpha/problems
-                    (map :reason))]
-      (f {:result :error :message (if (nil? message) "请求参数错误" message) :type type}))))
+                    (map :reason)
+                    (apply str))]
+      (f (if (nil? message) "请求参数错误" message)))))
 
 (defn response-validation-handler [f type]
   (fn [^Exception e data resp]
-    (log/error "发生响应错误： -- " (.getMessage e))
-    (let [message (->> data
+    (utils/log-error e data resp type)
+    (let [message (some->> data
                     :problems
-                    :clojure.spec.alpha/problems)]
-      (f {:result :error :message (if (nil? message) "响应错误" message) :type type}))))
+                    :clojure.spec.alpha/problems
+                    (map :reason)
+                    (apply str))]
+      (f (if (nil? message) "响应错误" message)))))
 
 
 (def exceptions-config
-  {:handlers {::calm                   (exception-handler resp/enhance-your-calm :calm)
+  {:handlers {::calm                   (exception-handler utils/enhance-your-calm :calm)
               java.sql.SQLException    (exception-handler utils/internal-server-error :sql)
               ::ex/request-validation  (request-validation-handler utils/bad-request :request)
               ::ex/request-parsing     (ex/with-logging ex/request-parsing-handler :error)

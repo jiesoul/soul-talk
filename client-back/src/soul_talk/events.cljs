@@ -44,7 +44,8 @@
 (reg-event-db
   :set-error
   (fn [db [_ message]]
-    {:db (assoc db :error message)}))
+    (js/console.log "error message: " message)
+    (assoc db :error message)))
 
 (reg-event-db
   :clean-error
@@ -60,7 +61,7 @@
 (reg-event-db
   :unset-loading
   (fn [db _]
-    (dissoc db :loading? :error :should-be-loading?)))
+    (dissoc db :loading? :should-be-loading?)))
 
 ;; 设置加载为 true
 (reg-event-db

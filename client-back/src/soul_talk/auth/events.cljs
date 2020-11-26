@@ -39,8 +39,7 @@
     {:http {:method        POST
             :url           (str site-uri "/login")
             :ajax-map      {:params login-user}
-            :success-event [:login-ok]
-            :error-event [:login-error]}}))
+            :success-event [:login-ok]}}))
 
 
 (reg-event-fx
