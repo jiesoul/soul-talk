@@ -48,6 +48,13 @@
   (context "/tags" []
     :tags [""]
 
+    (POST "/" []
+      :auth-login #{"admin"}
+      :summary "添加标签"
+      :return Result
+      :body [tag tag/tag]
+      (tag/save-tag! tag))
+
     (GET "/" req
       :auth-login #{"admin"}
       :return Result
