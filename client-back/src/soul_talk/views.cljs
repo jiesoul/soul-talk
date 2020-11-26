@@ -22,9 +22,13 @@
       [page]
       (navigate! "#/login"))))
 
-;;后台页面
+;;面板
 (defmethod pages :dash [_ _]
   (admin dash/dash-page))
+
+;; user
+(defmethod pages :users [_ _]
+  (admin users/users-page))
 
 (defmethod pages :users-password [_ _]
   (admin users/change-pass-page))
@@ -32,12 +36,11 @@
 (defmethod pages :users-profile [_ _]
   (admin users/user-profile-page))
 
-(defmethod pages :users [_ _]
-  (admin users/users-page))
-
+;; tag
 (defmethod pages :tags [_ _]
   (admin tag/tags-page))
 
+;; article
 (defmethod pages :articles [_ _]
   (admin article/articles-page))
 
@@ -47,6 +50,8 @@
 (defmethod pages :articles-edit [_ _]
   (admin article/edit-article-page))
 
+
+;; default
 (defmethod pages :default [_ _] (c/manager-layout
                                   [:div "页面未找到,请检查地址"]))
 
@@ -57,5 +62,6 @@
     (when @ready?
       (fn []
         (c/success-message)
-        (c/error-message) 
+        (c/error-message)
+        (c/loading-modal)
         (pages @active-page nil)))))

@@ -7,7 +7,6 @@
   (fn [_ [_ {:keys [response status] :as resp}]]
     (let [message (:message response)]
       (js/console.log "error resp: " resp)
-      (js/console.log "error response message: " (:message response))
       {:dispatch-n (condp = status
                      0 (list [:set-error message])
                      400 (list [:set-error message])

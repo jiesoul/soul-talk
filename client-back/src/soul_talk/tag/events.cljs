@@ -11,41 +11,42 @@
 
 (reg-event-fx
   :tags/load-all
-  (fn [_ _]
+  (fn [_ params]
     {:http {:method        GET
             :url           (str site-uri "/tags")
+            :ajax-map      {:params params}
             :success-event [:tags/load-all-ok]}}))
 
 (reg-event-db
-  :tags/add-error
-  (fn [db [_ {:keys [message]}]]
-    (assoc db :error message)))
-
-(reg-event-db
   :tags/add-ok
-  (fn [db [_ {:keys [message]}]]
-    (assoc db :success message)))
+  (fn [db [_ {:keys [message body]}]]
+    (assoc db :success "add a tag ok")))
 
 (reg-event-fx
-  :add-tags
+  :tags/add
   (fn [_ [_ {:keys [name] :as tag}]]
     (if (str/blank? name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        POST
               :url           (str site-uri "/tags")
               :ajax-map      {:params tag}
-              :success-event [:tags/add-ok]
-              :error-event [:tags/add-error]}})))
+              :success-event [:tags/add-ok]}})))
 
 (reg-event-db
   :tags/delete-ok
-  (fn [db [_ {:keys [message]}]]
-    (assoc db :success message)))
+  (fn [db [_ id]]
+    (let [tags (:tags db)
+          tags (remove #(= id (:id %)) tags)]
+      (assoc db :success "删除成功" :tags tags))))
 
 (reg-event-fx
   :tags/delete
   (fn [_ [_ id]]
     {:http {:method  DELETE
             :url (str site-uri "/tags/" id)
-            :success-event [:tags/delete-ok]
-            :error-event [:tags/delete-error]}}))
+            :success-event [:tags/delete-ok id]}}))
+
+(reg-event-db
+  :tags/clean-tag
+  (fn [db _]
+    (dissoc db :tag)))

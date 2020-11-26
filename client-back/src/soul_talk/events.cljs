@@ -77,8 +77,7 @@
   (fn [{db :db} _]
     {:dispatch-later [{:ms 100 :dispatch [:set-loading-for-real-this-time]}]
      :db             (-> db
-                       (assoc :should-be-loading? true)
-                       (dissoc :error))}))
+                       (assoc :should-be-loading? true))}))
 
 
 

@@ -2,7 +2,7 @@
   (:require [reagent.core :as r]
             [reagent.dom :as rd]
             [re-frame.core :as rf]
-            [antd :as antd]
+            [antd :as antd :refer [Modal Menu Row Col Layout Footer]]
             ["@ant-design/icons" :as antd-icons]
             ["react-highlight.js" :as hljs]
             [soul-talk.routes :refer [navigate!]]))
@@ -196,18 +196,22 @@
 
 (defn error-message []
   (r/with-let [error (rf/subscribe [:error])]
-    (js/console.log "error: " @error)
     (when @error
       (antd/message.error @error)
       (rf/dispatch [:clean-error]))))
 
 
-(defn form-modal [title content state success-fn cancel-fn]
+(defn form-modal [title content visible success-fn cancel-fn]
   [:> antd/Modal
    {:title    title
-    :visible  state
+    :visible  visible
     :onOk     success-fn
     :onCancel cancel-fn}
+   content])
+
+(defn show-modal
+  [modal-option content]
+  [:> Modal modal-option
    content])
 
 (defn validation-modal [title errors]

@@ -44,18 +44,12 @@
                         [:admin/load-articles])}))
 
 (reg-event-fx
-  :articles/edit-error
-  (fn [_ [_ {:keys [response]}]]
-    {:dispatch [:set-error (:message response)]}))
-
-(reg-event-fx
   :articles/edit
   (fn [_ [_ {:keys [id counter] :as article}]]
     {:http {:method        PUT
             :url           (str site-uri "/articles/" id)
             :ajax-map      {:params article}
-            :success-event [:articles/edit-ok]
-            :error-event   [:articles/edit-error]}}))
+            :success-event [:articles/edit-ok]}}))
 
 (reg-event-db
   :set-article
@@ -74,13 +68,12 @@
   (fn [db _]
     (dissoc db :article)))
 
-(reg-event-fx
+(reg-event-db
   :articles/delete-ok
-  (fn [{:keys [db]} [_ id]]
+  (fn [db [_ id]]
     (let [articles (get db :admin/articles)
           articles (remove #(= id (:id %)) articles)]
-      {:dispatch [:set-success "删除成功"]
-       :db       (assoc db :admin/articles articles)})))
+      (assoc db :success "删除成功" :admin/articles articles))))
 
 (reg-event-db
   :articles/delete-error

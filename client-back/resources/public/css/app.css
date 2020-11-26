@@ -68,6 +68,16 @@ body {
     background: #364d79;
 }
 
+.advanced-search-form {
+    padding: 24px;
+    background: #fbfbfb;
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+}
+
+.search-result-list {
+
+}
 
 .list table {
 

@@ -22,7 +22,6 @@
 (defn login-page []
   (r/with-let [login-data (r/atom {:email    ""
                                    :password ""})
-               error      (subscribe [:error])
                email      (r/cursor login-data [:email])
                password   (r/cursor login-data [:password])]
     (fn []
@@ -36,7 +35,7 @@
                         :labelCol      {:span 8}
                         :wrapperCol    {:span 16}}
           [:> antd/Form.Item {:label "邮箱" :name "email" :rules [{:required true
-                                                                    :message  "请输入Email"}]}
+                                                                  :message  "请输入Email"}]}
            [:> antd/Input {:id          "email"
                            :prefix      (r/as-element [:> antd-icons/UserOutlined])
                            :type        :text
