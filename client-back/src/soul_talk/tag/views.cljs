@@ -8,60 +8,66 @@
 (def ^:dynamic *visible* (r/atom false))
 
 (defn edit-form []
-  (let [user (subscribe [:user])]
+  (let [user (subscribe [:user])
+        ori-tag (subscribe [:tag])
+        update-tag (-> @ori-tag
+                     (update :name #(or % ""))
+                     (update :create_by #(or % (:id @user)))
+                     r/atom)
+        name (r/cursor update-tag [:name])]
     (fn []
-      (let [tag (r/atom {})
-            name (r/cursor tag [:name])]
-        [:> Modal {:visible    @*visible*
-                   :title      "add a tag"
-                   :okText     "Create"
-                   :cancelText "Cancel"
-                   :onCancel   #(do
-                                  (reset! *visible* false)
-                                  (reset! tag nil))
-                   :onOk       #(do
-                                  (dispatch [:tags/add (assoc @tag :create_by (:id @user))])
-                                  (reset! tag nil))}
-         [:> Form {:name "add_tag_form"}
-          [:> Form.Item {:title "name"
-                         :label "name"
-                         :rules [{:require true :message "please enter name"}]}
-           [:> Input {:value @name
-                      :on-blur #(reset! name (-> % .-target .-value))}]]]]))))
+      [:> Modal {:visible    @*visible*
+                 :title      "add a tag"
+                 :okText     "Create"
+                 :cancelText "Cancel"
+                 :onCancel   #(do
+                                (dispatch [:tags/clean-tag])
+                                (reset! *visible* false))
+                 :onOk       #(do
+                                (dispatch [:tags/add @update-tag]))}
+       [:> Form {:name "add_tag_form"}
+        [:> Form.Item {:title "name"
+                       :label "name"
+                       :required true
+                       :rules [{:require true :message "please enter name"}]
+                       :on-change #(let [value (-> % .-target .-value)]
+                                     (reset! name value))}
+         [:> Input]]]])))
 
 (defn query-form []
-  (r/with-let [pagination (subscribe [:pagination])]
+  (let [pagination (subscribe [:pagination])
+        params (r/atom {:name ""})
+        name   (r/cursor params [:name])]
     (fn []
-      (let [params (r/atom {:name ""})
-            name   (r/cursor params [:name])]
-        [:div
-         [:> Form {:title     ""
-                   :className "advanced-search-form"}
-          [:> Row {:gutter 24}
-           [:> Col {:span 8}
-            [:> Form.Item {:name  "name"
-                           :label "name"}
-             [:> Input {:placeholder "name"
-                        :value       @name
-                        :on-blur   #(reset! name (-> % .-target .-value))}]]]]
-          [:> Row
-           [:> Col {:span 24 :style {:text-align "right"}}
-            [:<>
-             [:> Button {:type     "primary"
-                         :htmlType "submit"
-                         :on-click #(dispatch [:tags/load-all (merge @params @pagination)])}
-              "search"]
-             [:> Button {:style    {:margin "0 8px"}
-                         :on-click #(do
-                                      (reset! params {:name "445666465465464"})
-                                      (js/console.log "params: " @params))}
-              "clear"]
-             [:> Button {:type     "dashed" :style {:margin "0 8px"}
-                         :on-click #(reset! *visible* true)}
-              "new"]]
-            ]]]
-         [edit-form]
-         ]))))
+      [:div
+       [:> Form {:title     ""
+                 :className "advanced-search-form"}
+        [:> Row {:gutter 24}
+         [:> Col {:span 8}
+          [:> Form.Item {:name  "name"
+                         :label "name"}
+           [:> Input {:placeholder "name"
+                      :value       @name
+                      :on-blur     #(reset! name (-> % .-target .-value))}]]]]
+        [:> Row
+         [:> Col {:span 24 :style {:text-align "right"}}
+          [:div
+           [:> Button {:type     "primary"
+                       :htmlType "submit"
+                       :on-click #(dispatch [:tags/load-all (merge @params @pagination)])}
+            "search"]
+           [:> Button {:style    {:margin "0 8px"}
+                       :html-type "reset"
+                       :on-click #(do
+                                    (reset! params nil)
+                                    (js/console.log "name: " @name))}
+            "clear"]
+           [:> Button {:type     "dashed" :style {:margin "0 8px"}
+                       :on-click #(reset! *visible* true)}
+            "new"]]
+          ]]]
+       [edit-form]
+       ])))
 
 (def list-columns
   [{:title "名称" :dataIndex "name", :key "name", :align "center"}
@@ -91,7 +97,7 @@
 
 (defn tags-page []
   [c/manager-layout
-   [:div
+   [:<>
     [query-form]
     [tags-list]]])
 

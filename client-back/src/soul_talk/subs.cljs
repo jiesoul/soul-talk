@@ -33,3 +33,5 @@
 (reg-sub :loading? query)
 
 (reg-sub :pagination query)
+
+(reg-sub :query-params query)

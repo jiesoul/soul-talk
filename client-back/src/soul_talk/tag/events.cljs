@@ -20,7 +20,8 @@
 
 (reg-event-db
   :tags/add-ok
-  (fn [db [_ {:keys [message body]}]]
+  (fn [db [_ {:keys [tag]}]]
+    (js/console.log "body: " tag)
     (assoc db :success "add a tag ok")))
 
 (reg-event-fx
