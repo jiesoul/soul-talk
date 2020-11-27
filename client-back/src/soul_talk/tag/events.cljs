@@ -12,6 +12,7 @@
 (reg-event-fx
   :tags/load-all
   (fn [_ params]
+    (js/console.log "query params: " params)
     {:http {:method        GET
             :url           (str site-uri "/tags")
             :ajax-map      {:params params}

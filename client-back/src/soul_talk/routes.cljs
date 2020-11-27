@@ -72,6 +72,16 @@
   (run-events [[:tag/load id]
                      [:set-active-page :tag-view]]))
 
+(defroute "/series" []
+  (run-events [[:series/load-all]
+               [:set-breadcrumb ["系列"]]
+               [:set-active-page :tags]]))
+
+(defroute "/app-keys" []
+  (run-events [[:tags/load-all]
+               [:set-breadcrumb ["app key 管理"]]
+               [:set-active-page :app-keys]]))
+
 
 (defroute "/articles" []
   (run-events [[:load-articles]

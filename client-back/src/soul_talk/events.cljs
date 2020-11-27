@@ -2,6 +2,7 @@
   (:require [re-frame.core :refer [inject-cofx dispatch dispatch-sync reg-event-db reg-event-fx subscribe]]
             [soul-talk.db :refer [default-db]]
             [soul-talk.common.local-storage :as storage]
+            [soul-talk.app-key.events]
             [soul-talk.dash.events]
             [soul-talk.article.events]
             [soul-talk.auth.events]

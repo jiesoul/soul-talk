@@ -8,6 +8,7 @@
             [soul-talk.user.views :as users]
             [soul-talk.article.views :as article]
             [soul-talk.tag.views :as tag]
+            [soul-talk.app-key.views :as app-key]
             [clojure.string :as str]))
 
 ;;多重方法  响应对应的页面
@@ -39,6 +40,9 @@
 ;; tag
 (defmethod pages :tags [_ _]
   (admin tag/tags-page))
+
+(defmethod pages :app-keys [_ _]
+  (admin app-key/app-keys-page))
 
 ;; article
 (defmethod pages :articles [_ _]
