@@ -12,7 +12,6 @@
 (reg-event-fx
   :data-dices/load-all
   (fn [_ params]
-    (js/console.log "query params: " params)
     {:http {:method        GET
             :url           (str site-uri "/data-dices")
             :ajax-map      {:params params}
@@ -21,7 +20,6 @@
 (reg-event-db
   :data-dices/add-ok
   (fn [db [_ {:keys [data-dic]}]]
-    (js/console.log "body: " data-dic)
     (assoc db :success "add a data-dic ok")))
 
 (reg-event-fx

@@ -3,7 +3,8 @@
             [re-frame.core :refer [dispatch subscribe]]
             [soul-talk.common.views :as c]
             [antd :refer [Row Col Form Input Button Divider Table Modal]]
-            ["@ant-design/icons" :refer [EditOutlined DeleteOutlined]]))
+            ["@ant-design/icons" :refer [EditOutlined DeleteOutlined]]
+            [soul-talk.utils :as du]))
 
 (def ^:dynamic *visible* (r/atom false))
 
@@ -47,9 +48,6 @@
                      :htmlType "submit"
                      :on-click #(dispatch [:app-keys/load-all (merge @params @pagination)])}
           "search"]
-         [:> Button {:style    {:margin "0 8px"}
-                     :on-click #(reset! params nil)}
-          "clear"]
          [:> Button {:type     "dashed" :style {:margin "0 8px"}
                      :on-click #(reset! *visible* true)}
           "new"]]
@@ -58,11 +56,20 @@
      ]))
 
 (def list-columns
-  [{:title "名称" :dataIndex "name", :key "name", :align "center"}
+  [{:title "app" :dataIndex "app_name", :key "app_name", :align "center"}
+   {:title "token" :dataIndex "token" :key "token" :align "center"}
+   {:title  "创建时间" :dataIndex "create_at" :key "create_at" :align "center"
+    :render (fn [_ app-key]
+              (let [app-key (js->clj app-key :keywordize-keys true)]
+                (du/to-date-time (:create_at app-key))))}
+   {:title  "更新时间" :dataIndex "refresh_at" :key "refresh_at" :align "center"
+    :render (fn [_ app-key]
+              (let [app-key (js->clj app-key :keywordize-keys true)]
+                (du/to-date-time (:refresh_at app-key))))}
    {:title  "操作" :dataIndex "actions" :key "actions" :align "center"
-    :render (fn [_ article]
+    :render (fn [_ app-key]
               (r/as-element
-                (let [{:keys [id]} (js->clj article :keywordize-keys true)]
+                (let [{:keys [id]} (js->clj app-key :keywordize-keys true)]
                   [:div
                    [:> Button {:type     "danger"
                                :icon     (r/as-element [:> DeleteOutlined])

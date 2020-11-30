@@ -12,7 +12,6 @@
 (reg-event-fx
   :tags/load-all
   (fn [_ params]
-    (js/console.log "query params: " params)
     {:http {:method        GET
             :url           (str site-uri "/tags")
             :ajax-map      {:params params}
@@ -21,7 +20,6 @@
 (reg-event-db
   :tags/add-ok
   (fn [db [_ {:keys [tag]}]]
-    (js/console.log "body: " tag)
     (assoc db :success "add a tag ok")))
 
 (reg-event-fx

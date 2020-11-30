@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS data_dics;
+DROP TABLE IF EXISTS data_dices;

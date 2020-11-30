@@ -106,7 +106,7 @@
                                                #(js/console.log "cancel"))))}]])))}])
 
 (defn list-table []
-  (r/with-let [series-list (subscribe [:series-list])]
+  (let [series-list (subscribe [:series-list])]
     (fn []
       [:div.search-result-list
        [:> Table {:dataSource (clj->js @series-list)

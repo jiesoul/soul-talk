@@ -3,29 +3,30 @@
             [antd :refer [Row Col Form Input Button Divider Table Modal]]
             ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
             [reagent.core :as r]
-            [re-frame.core :refer [subscribe dispatch]]))
+            [re-frame.core :refer [subscribe dispatch]]
+            [soul-talk.utils :as du]))
 
 (def ^:dynamic *visible* (r/atom false))
 
 (defn edit-form []
   (let [user (subscribe [:user])
-        ori-tag (subscribe [:tag])
-        update-tag (-> @ori-tag
+        ori-data-dic (subscribe [:data-dic])
+        update-data-dic (-> @ori-data-dic
                      (update :name #(or % ""))
                      (update :create_by #(or % (:id @user)))
                      r/atom)
-        name (r/cursor update-tag [:name])]
+        name (r/cursor update-data-dic [:name])]
     (fn []
       [:> Modal {:visible    @*visible*
-                 :title      "add a tag"
+                 :title      "add a data-dic"
                  :okText     "Create"
                  :cancelText "Cancel"
                  :onCancel   #(do
-                                (dispatch [:tags/clean-tag])
+                                (dispatch [:data-dices/clean-data-dic])
                                 (reset! *visible* false))
                  :onOk       #(do
-                                (dispatch [:tags/add @update-tag]))}
-       [:> Form {:name "add_tag_form"}
+                                (dispatch [:data-dices/add @update-data-dic]))}
+       [:> Form {:name "add_data-dic_form"}
         [:> Form.Item {:title "name"
                        :label "name"
                        :required true
@@ -54,7 +55,7 @@
           [:div
            [:> Button {:type     "primary"
                        :htmlType "submit"
-                       :on-click #(dispatch [:tags/load-all (merge @params @pagination)])}
+                       :on-click #(dispatch [:data-dices/load-all (merge @params @pagination)])}
             "search"]
            [:> Button {:type     "dashed" :style {:margin "0 8px"}
                        :on-click #(reset! *visible* true)}
@@ -63,6 +64,14 @@
 
 (def list-columns
   [{:title "名称" :dataIndex "name", :key "name", :align "center"}
+   {:title  "创建时间" :dataIndex "create_at" :key "create_at" :align "center"
+    :render (fn [_ article]
+              (let [article (js->clj article :keywordize-keys true)]
+                (du/to-date-time (:create_at article))))}
+   {:title  "更新时间" :dataIndex "update_at" :key "update_at" :align "center"
+    :render (fn [_ article]
+              (let [article (js->clj article :keywordize-keys true)]
+                (du/to-date-time (:update_at article))))}
    {:title  "操作" :dataIndex "actions" :key "actions" :align "center"
     :render (fn [_ article]
               (r/as-element
@@ -76,14 +85,14 @@
                                              (c/show-confirm
                                                "删除"
                                                (str "你确认要删除吗？")
-                                               #(dispatch [:tags/delete id])
+                                               #(dispatch [:data-dices/delete id])
                                                #(js/console.log "cancel"))))}]])))}])
 
 (defn list-table []
-  (r/with-let [tags (subscribe [:tags])]
+  (r/with-let [data-dices (subscribe [:data-dices])]
     (fn []
       [:div.search-result-list
-       [:> Table {:dataSource (clj->js @tags)
+       [:> Table {:dataSource (clj->js @data-dices)
                   :columns    (clj->js list-columns)
                   :row-key    "id"
                   :bordered   true}]])))

@@ -12,7 +12,6 @@
 (reg-event-fx
   :collect-sites/load-all
   (fn [_ params]
-    (js/console.log "query params: " params)
     {:http {:method        GET
             :url           (str site-uri "/collect-sites")
             :ajax-map      {:params params}
@@ -21,7 +20,6 @@
 (reg-event-db
   :collect-sites/add-ok
   (fn [db [_ {:keys [collect-site]}]]
-    (js/console.log "body: " collect-site)
     (assoc db :success "add a collect-site ok")))
 
 (reg-event-fx

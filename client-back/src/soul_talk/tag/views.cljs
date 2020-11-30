@@ -4,7 +4,7 @@
             [soul-talk.common.views :as c]
             [antd :refer [Row Col Form Input Button Divider Table Modal]]
             ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
-            ))
+            [soul-talk.utils :as du]))
 
 (def ^:dynamic *visible* (r/atom false))
 
@@ -64,6 +64,14 @@
 
 (def list-columns
   [{:title "名称" :dataIndex "name", :key "name", :align "center"}
+   {:title  "创建时间" :dataIndex "create_at" :key "create_at" :align "center"
+    :render (fn [_ article]
+              (let [article (js->clj article :keywordize-keys true)]
+                (du/to-date-time (:create_at article))))}
+   {:title  "更新时间" :dataIndex "update_at" :key "update_at" :align "center"
+    :render (fn [_ article]
+              (let [article (js->clj article :keywordize-keys true)]
+                (du/to-date-time (:update_at article))))}
    {:title  "操作" :dataIndex "actions" :key "actions" :align "center"
     :render (fn [_ article]
               (r/as-element

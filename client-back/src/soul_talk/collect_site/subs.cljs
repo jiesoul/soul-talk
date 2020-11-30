@@ -4,4 +4,4 @@
 
 (reg-sub :collect-sites query)
 
-(reg-sub :collect-link query)
+(reg-sub :collect-site query)

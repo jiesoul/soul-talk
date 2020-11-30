@@ -58,7 +58,7 @@
     [:> antd/Layout.Sider {:className "site-layout-sidebar"}
      [:> antd/Menu {:mode              "inline"
                     :style {:height "100%" :borderRight 0}
-                    :defaultselectkeys ["dash"]
+                    :default-select-keys ["dash"]
                     :open-keys ["base" "user" "article"]
                     :selected-keys [(key->js @active-page)]}
 
@@ -68,11 +68,8 @@
 
       [:> antd/Menu.SubMenu {:key   "article" :title "文章管理"}
        [:> antd/Menu.Item {:key      "articles" :on-click #(navigate! "#/articles")} "文章"]]
-
-
       [:> antd/Menu.SubMenu {:key   "base"
                              :title "基础数据"}
-
        [:> antd/Menu.Item {:key "series" :on-click #(navigate! "#/series")} "系列管理"]
        [:> antd/Menu.Item {:key "tag" :on-click #(navigate! "#/tags")} "标签管理"]
        [:> antd/Menu.Item {:key "data-dic" :on-click #(navigate! "#/data-dices")} "数据字典"]

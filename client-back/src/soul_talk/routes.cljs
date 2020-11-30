@@ -60,7 +60,7 @@
                      [:set-active-page :users-profile]]))
 
 (defroute "/users" []
-  (run-events-admin [[:set-breadcrumb ["用户" "清单"]]
+  (run-events-admin [[:set-breadcrumb ["用户"]]
                      [:users/load-all]
                      [:set-active-page :users]]))
 
@@ -80,14 +80,13 @@
                      [:set-active-page :series]]))
 
 (defroute "/app-keys" []
-  (run-events-admin [[:tags/load-all]
+  (run-events-admin [[:app-keys/load-all]
                       [:set-breadcrumb ["app key 管理"]]
                       [:set-active-page :app-keys]]))
 
-
 (defroute "/articles" []
   (run-events-admin [[:load-articles]
-                     [:set-breadcrumb ["文章" "列表"]]
+                     [:set-breadcrumb ["文章"]]
                      [:set-active-page :articles]]))
 
 (defroute "/articles/add" []

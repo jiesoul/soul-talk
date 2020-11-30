@@ -12,7 +12,7 @@
 (reg-event-fx
   :series/load-all
   (fn [_ params]
-    (js/console.log "query params: " params)
+    (js/console.log "===== query params: " params)
     {:http {:method        GET
             :url           (str site-uri "/series")
             :ajax-map      {:params params}

@@ -12,7 +12,6 @@
 (reg-event-fx
   :collect-links/load-all
   (fn [_ params]
-    (js/console.log "query params: " params)
     {:http {:method        GET
             :url           (str site-uri "/collect-links")
             :ajax-map      {:params params}
@@ -21,7 +20,6 @@
 (reg-event-db
   :collect-links/add-ok
   (fn [db [_ {:keys [collect-link]}]]
-    (js/console.log "body: " collect-link)
     (assoc db :success "add a collect-link ok")))
 
 (reg-event-fx
