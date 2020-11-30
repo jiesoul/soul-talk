@@ -9,6 +9,10 @@
             [soul-talk.article.views :as article]
             [soul-talk.tag.views :as tag]
             [soul-talk.app-key.views :as app-key]
+            [soul-talk.data-dic.views :as data-dic]
+            [soul-talk.collect-link.views :as collect-link]
+            [soul-talk.collect-site.views :as collect-site]
+            [soul-talk.series.views :as series]
             [clojure.string :as str]))
 
 ;;多重方法  响应对应的页面
@@ -39,14 +43,23 @@
 
 ;; tag
 (defmethod pages :tags [_ _]
-  (admin tag/tags-page))
+  (admin tag/query-page))
 
 (defmethod pages :app-keys [_ _]
-  (admin app-key/app-keys-page))
+  (admin app-key/query-page))
+
+(defmethod pages :data-dices [_ _]
+  (admin data-dic/query-page))
+
+(defmethod pages :app-keys [_ _]
+  (admin app-key/query-page))
+
+(defmethod pages :series [_ _]
+  (admin series/query-page))
 
 ;; article
 (defmethod pages :articles [_ _]
-  (admin article/articles-page))
+  (admin article/query-page))
 
 (defmethod pages :articles-add [_ _]
   (admin article/add-article-page))

@@ -32,78 +32,80 @@
 
 (defn run-events-admin
   [events]
-  (doseq [event events]
-    (if (logged-in?)
-      (dispatch event)
-      (dispatch [:add-login-event event]))))
+  (if (logged-in?)
+    (doseq [event events]
+      (dispatch event))
+    (dispatch [:add-login-event events])))
 
-;; 首页
-(defroute "/" []
-  (run-events
-    [[:set-active-page :dash]]))
 
 (defroute "/login" []
   (dispatch [:set-active-page :login]))
 
+;; 首页
+(defroute "/" []
+  (run-events-admin
+    [[:set-active-page :dash]]))
+
 ;; 后台管理
 (defroute "/dash" []
-  (run-events [[:set-breadcrumb ["面板"]]
+  (run-events-admin [[:set-breadcrumb ["面板"]]
                      [:set-active-page :dash]]))
 
 (defroute "/users/password" []
-  (run-events [[:set-breadcrumb ["个人管理" "修改密码"]]
+  (run-events-admin [[:set-breadcrumb ["个人管理" "修改密码"]]
                      [:set-active-page :users-password]]))
 
 (defroute "/users/profile" []
-  (run-events [[:set-breadcrumb ["个人管理" "个人信息"]]
+  (run-events-admin [[:set-breadcrumb ["个人管理" "个人信息"]]
                      [:set-active-page :users-profile]]))
 
-(defroute "/users/edit" []
-  (run-events [[:set-breadcrumb ["用户" "清单"]]
-                     [:admin/load-users]
+(defroute "/users" []
+  (run-events-admin [[:set-breadcrumb ["用户" "清单"]]
+                     [:users/load-all]
                      [:set-active-page :users]]))
 
+(defroute "/data-dices" []
+  (run-events-admin [[:data-dices/load-all]
+                     [:set-breadcrumb ["数据字典管理"]]
+                     [:set-active-page :data-dices]]))
+
 (defroute "/tags" []
-  (run-events [[:tags/load-all]
-                     [:set-breadcrumb ["标签" "列表"]]
+  (run-events-admin [[:tags/load-all]
+                     [:set-breadcrumb ["标签"]]
                      [:set-active-page :tags]]))
 
-(defroute "/tags/:id" [id]
-  (run-events [[:tag/load id]
-                     [:set-active-page :tag-view]]))
-
 (defroute "/series" []
-  (run-events [[:series/load-all]
-               [:set-breadcrumb ["系列"]]
-               [:set-active-page :tags]]))
+  (run-events-admin [[:series/load-all]
+                     [:set-breadcrumb ["系列"]]
+                     [:set-active-page :series]]))
 
 (defroute "/app-keys" []
-  (run-events [[:tags/load-all]
-               [:set-breadcrumb ["app key 管理"]]
-               [:set-active-page :app-keys]]))
+  (run-events-admin [[:tags/load-all]
+                      [:set-breadcrumb ["app key 管理"]]
+                      [:set-active-page :app-keys]]))
 
 
 (defroute "/articles" []
-  (run-events [[:load-articles]
+  (run-events-admin [[:load-articles]
                      [:set-breadcrumb ["文章" "列表"]]
                      [:set-active-page :articles]]))
 
 (defroute "/articles/add" []
-  (run-events [[:load-tags]
+  (run-events-admin [[:load-tags]
                      [:set-active-page :articles-add]]))
 
 (defroute "/articles/:id/edit" [id]
-  (run-events [[:articles/get id]
+  (run-events-admin [[:articles/get id]
                      [:load-tags]
                      [:set-active-page :articles-edit]]))
 
 (defroute "/articles/:id" [id]
-  (run-events [[:load-tags]
+  (run-events-admin [[:load-tags]
                      [:load-article id]
                      [:set-active-page :articles-view]]))
 
 (defroute "*" []
-  (run-events [[:set-breadcrumb [""]]
+  (run-events-admin [[:set-breadcrumb [""]]
                [:set-active-page :default]]))
 
 (secretary/set-config! :prefix "#")

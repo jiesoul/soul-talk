@@ -19,11 +19,12 @@
 (reg-event-fx
   :login-ok
   (fn [{:keys [db]} [_ {:keys [user token]}]]
-    (let []
+    (let [login-events (:login-events db)]
       {:db               (assoc db :user user :login-token token)
-       :dispatch-n       (list
-                           [:run-login-events]
-                           [:navigate-to "#/dash"])
+       :dispatch-n      (list
+                           (if login-events
+                             [:run-login-events]
+                             [:navigate-to "#/dash"]))
        :set-user!        user
        :set-login-token! token})))
 
@@ -72,7 +73,7 @@
   :run-login-events
   (fn [{{events :login-events :as db} :db} _]
     {:dispatch-n events
-     :db         db}))
+     :db         (dissoc db :login-events)}))
 
 ;;; 处理register ok
 ;(reg-event-fx

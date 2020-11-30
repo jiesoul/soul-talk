@@ -2,11 +2,11 @@
   (:require [reagent.core :as r]
             [re-frame.core :as rf :refer [subscribe dispatch]]
             [soul-talk.routes :refer (navigate!)]
-            [soul-talk.common.views :as c :refer [logo home-layout manager-layout header]]
+            [soul-talk.common.views :as c :refer [logo home-layout manager-layout header Tooltip]]
             [soul-talk.utils :as du :refer [to-date]]
             [soul-talk.common.md-editor :refer [editor]]
-            [antd :as antd]
-            ["@ant-design/icons" :as antd-icons]))
+            [antd :refer [Col Row Layout Button Divider Form Input Table Typography Spin Card]]
+            ["@ant-design/icons" :refer [EditOutlined DeleteOutlined]]))
 
 (def list-columns
   [{:title "标题" :dataIndex "title", :key "title", :align "center"}
@@ -26,69 +26,92 @@
               (r/as-element
                 (let [{:keys [id publish]} (js->clj article :keywordize-keys true)]
                   [:div
-                   [:> antd/Button {:size   "small"
-                                    :target "_blank"
-                                    :href   (str "#/articles/" id)}
+                   [:> Button {:size   "small"
+                               :target "_blank"
+                               :href   (str "#/articles/" id)}
                     "查看"]
-                   [:> antd/Divider {:type "vertical"}]
-                   [:> antd/Button {:icon (r/as-element [:> antd-icons/EditOutlined])
-                                    :size   "small"
-                                    :target "_blank"
-                                    :href   (str "#/articles/" id "/edit")}]
-                   [:> antd/Divider {:type "vertical"}]
-                   [:> antd/Button {:type     "danger"
-                                    :icon     (r/as-element [:> antd-icons/DeleteOutlined])
-                                    :size     "small"
-                                    :on-click (fn []
-                                                (r/as-element
-                                                  (c/show-confirm
-                                                    "文章删除"
-                                                    (str "你确认要删除这篇文章吗？")
-                                                    #(dispatch [:articles/delete id])
-                                                    #(js/console.log "cancel"))))}]
-                   [:> antd/Divider {:type "vertical"}]
+                   [:> Divider {:type "vertical"}]
+                   [:> Button {:icon   (r/as-element [:> EditOutlined])
+                               :size   "small"
+                               :target "_blank"
+                               :href   (str "#/articles/" id "/edit")}]
+                   [:> Divider {:type "vertical"}]
+                   [:> Button {:type     "danger"
+                               :icon     (r/as-element [:> DeleteOutlined])
+                               :size     "small"
+                               :on-click (fn []
+                                           (r/as-element
+                                             (c/show-confirm
+                                               "文章删除"
+                                               (str "你确认要删除这篇文章吗？")
+                                               #(dispatch [:articles/delete id])
+                                               #(js/console.log "cancel"))))}]
+                   [:> Divider {:type "vertical"}]
                    (when (zero? publish)
-                     [:> antd/Button {:type     "primary"
-                                      :size     "small"
-                                      :on-click #(dispatch [:articles/publish id])}
+                     [:> Button {:type     "primary"
+                                 :size     "small"
+                                 :on-click #(dispatch [:articles/publish id])}
                       "发布"])])))}])
 
-(defn articles-list []
+(defn query-list []
   (r/with-let [articles (subscribe [:articles])]
     (fn []
-      [:div
-       [:> antd/Table {:columns    (clj->js list-columns)
-                       :dataSource (clj->js @articles)
-                       :row-key    "id"
-                       :bordered   true
-                       :size       "small"}]])))
+      [:div.search-result-list
+       [:> Table {:columns    (clj->js list-columns)
+                  :dataSource (clj->js @articles)
+                  :row-key    "id"
+                  :bordered   true
+                  :size       "small"}]])))
 
-(defn articles-page []
+
+(defn query-form []
+  (let [pagination (subscribe [:pagination])
+        params (r/atom nil)]
+    (fn []
+      (let [name (r/cursor params [:name])]
+        [:div.advanced-search-form
+         [:> Form {:title     ""
+                   :className "advanced-search-form"}
+          [:> Row {:gutter 24}
+           [:> Col {:span 8}
+            [:> Form.Item {:name  "name"
+                           :label "name"}
+             [:> Input {:placeholder "name"
+                        :value       @name
+                        :on-blur     #(reset! name (-> % .-target .-value))}]]]]
+          [:> Row
+           [:> Col {:span 24 :style {:text-align "right"}}
+            [:div
+             [:> Button {:type     "primary"
+                         :htmlType "submit"
+                         :on-click #(dispatch [:tags/load-all (merge @params @pagination)])}
+              "search"]
+             [:> Button {:target "_blank"
+                         :style {:margin "0 8px"}
+                         :href   "#/articles/add"}
+              "写文章"]]]]]]))))
+
+(defn query-page []
   [manager-layout
-   [:> antd/Layout.Content
-    [:> antd/Button
-     {:target "_blank"
-      :href   "#/articles/add"
-      :size   "small"}
-     "写文章"]
-    [:> antd/Divider]
-    [articles-list]]])
+   [:<>
+    [query-form]
+    [query-list]]])
 
 (defn edit-menu []
   (r/with-let [article (rf/subscribe [:editing-article])]
     [:<>
-     [:> antd/Col {:span 1}
-      [:> antd/Divider {:type "vertical"}]]
-     [:> antd/Col {:span 15}
+     [:> Col {:span 1}
+      [:> Divider {:type "vertical"}]]
+     [:> Col {:span 15}
       [:h2 "写文章"]]
-     [:> antd/Col {:span 4}
-      [:> antd/Button
+     [:> Col {:span 4}
+      [:> Button
        "保存"]]]))
 
 (defn article-layout [main]
-  [:> antd/Layout
+  [:> Layout
    [header edit-menu]
-   [:> antd/Layout.Content
+   [:> Layout.Content
     main]])
 
 (defn add-article-page []
@@ -105,16 +128,16 @@
             title       (r/cursor edited-article [:title])]
 
         [article-layout
-         [:> antd/Form
-          [:> antd/Row
-           [:> antd/Col {:span 16 :offset 4 :style {:padding-top "10px"}}
-            [:> antd/Input
+         [:> Form
+          [:> Row
+           [:> Col {:span 16 :offset 4 :style {:padding-top "10px"}}
+            [:> Input
              {:on-change   #(let [val (-> % .-target .-value)]
                               (reset! title val)
                               (dispatch [:articles/add @edited-article]))
               :placeholder "请输入标题"}]]]
-          [:> antd/Row
-           [:> antd/Col {:span 16 :offset 4}
+          [:> Row
+           [:> Col {:span 16 :offset 4}
             [editor body]]]]]))))
 
 (defn edit-article-page []
@@ -135,22 +158,22 @@
             body     (r/cursor edited-article [:body])
             title       (r/cursor edited-article [:title])]
         (if-not @article
-          [:div [:> antd/Spin {:tip "loading"}]]
-          [:> antd/Form
+          [:div [:> Spin {:tip "loading"}]]
+          [:> Form
            [article-layout
-            [:> antd/Layout.Content
-             [:> antd/Row
-              [:> antd/Col {:span 16 :offset 4 :style {:padding-top "10px"}}
-               [:> antd/Input
+            [:> Layout.Content
+             [:> Row
+              [:> Col {:span 16 :offset 4 :style {:padding-top "10px"}}
+               [:> Input
                 {:on-change    #(let [val (-> % .-target .-value)]
                                   (reset! title val))
                  :placeholder  "请输入标题"
                  :size         "large"
                  :defaultValue @title}]
-               [:> antd/Divider]]]
-             [:> antd/Row
-              [:> antd/Col {:span 12 :offset 4}
-               [:> antd/Input.Textarea {:row 4}]
+               [:> Divider]]]
+             [:> Row
+              [:> Col {:span 12 :offset 4}
+               [:> Input.Textarea {:row 4}]
                ;[editor body]
                ]]]]])))))
 
@@ -161,15 +184,15 @@
     (fn []
       (if @article
         [:div.article-view
-         [:> antd/Card
+         [:> Card
           [:div
-           [:> antd/Typography.Title {:style {:text-align "center"}}
+           [:> Typography.Title {:style {:text-align "center"}}
             (:title @article)]
            [:div
             {:style {:text-align "center"}}
             (str (to-date (:create_at @article)) " by " (:author @article))]
-           [:> antd/Divider]
-           [:> antd/Typography.Text
+           [:> Divider]
+           [:> Typography.Text
             [c/markdown-preview (:body @article)]]]]]))))
 
 

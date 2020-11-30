@@ -75,7 +75,7 @@
                                                #(dispatch [:app-keys/delete id])
                                                #(js/console.log "cancel"))))}]])))}])
 
-(defn app-keys-list []
+(defn query-list []
   (r/with-let [app-keys (subscribe [:app-keys])]
     [:div.search-result-list
      [:> Table {:dataSource (clj->js @app-keys)
@@ -83,11 +83,11 @@
                 :row-key "id"
                 :bordered true}]]))
 
-(defn app-keys-page []
+(defn query-page []
   [c/manager-layout
    [:div
     [query-form]
-    [app-keys-list]]])
+    [query-list]]])
 
 
 

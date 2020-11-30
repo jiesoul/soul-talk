@@ -1,7 +1,7 @@
-(ns soul-talk.app-key.subs
+(ns soul-talk.data-dic.subs
   (:require [re-frame.core :refer [reg-sub]]
             [soul-talk.common.effects :refer [query]]))
 
-(reg-sub :app-keys query)
+(reg-sub :data-dices query)
 
-(reg-sub :app-key query)
+(reg-sub :data-dic query)

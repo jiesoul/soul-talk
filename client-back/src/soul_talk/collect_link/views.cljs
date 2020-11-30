@@ -1,10 +1,9 @@
-(ns soul-talk.tag.views
-  (:require [reagent.core :as r]
-            [re-frame.core :refer [dispatch subscribe]]
-            [soul-talk.common.views :as c]
+(ns soul-talk.collect-link.views
+  (:require [soul-talk.common.views :as c]
+            [reagent.core :as r]
             [antd :refer [Row Col Form Input Button Divider Table Modal]]
             ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
-            ))
+            [re-frame.core :refer [subscribe dispatch]]))
 
 (def ^:dynamic *visible* (r/atom false))
 
@@ -89,12 +88,9 @@
                   :row-key    "id"
                   :bordered   true}]])))
 
-(defn query-page []
+(defn query-page
+  []
   [c/manager-layout
-   [:<>
+   [:div
     [query-form]
     [list-table]]])
-
-
-
-
