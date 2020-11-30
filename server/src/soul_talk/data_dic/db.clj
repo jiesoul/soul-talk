@@ -7,19 +7,19 @@
   (sql/query *db* ["select * from data_dices"]))
 
 (defn save-data-dic [data-dic]
-  (sql/insert! *db* :data_dices data-dic))
+  (sql/insert! *db* :data_dic data-dic))
 
 (defn update-data-dic [data-dic]
   (let [update-prop (select-keys data-dic [:name :pid :note :update_by :update_at])]
-    (sql/update! *db* :data_dices
+    (sql/update! *db* :data_dic
       update-prop
       (select-keys data-dic [:id]))))
 
 (defn delete-data-dic-by-id [id]
-  (sql/delete! *db* :data_dices ["id = ?" id]))
+  (sql/delete! *db* :data_dic ["id = ?" id]))
 
 (defn delete-data-dic-by-pid [pid]
-  (sql/delete! *db* :data_dices ["pid = ?" pid]))
+  (sql/delete! *db* :data_dic ["pid = ?" pid]))
 
 (defn load-data-dices-by-pid [pid]
   (sql/query *db* ["select * from data_dices where pid = ?" pid]))
@@ -46,4 +46,4 @@
        (sql/query *db* (into [sql-str] (second where)))))))
 
 (defn get-data-dic-by-id [id]
-  (sql/get-by-id *db* :data_dices id {:builder-fn rs-set/as-unqualified-maps}))
+  (sql/get-by-id *db* :data_dic id {:builder-fn rs-set/as-unqualified-maps}))

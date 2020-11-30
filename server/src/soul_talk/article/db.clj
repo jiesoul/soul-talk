@@ -6,7 +6,7 @@
             [next.jdbc.result-set :as rs-set]))
 
 (defn insert-article! [article]
-  (sql/insert! *db* :articles article {:builder-fn rs-set/as-unqualified-maps}))
+  (sql/insert! *db* :article article {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn save-article! [article]
   (let [tagList (:tagList article)
@@ -18,7 +18,7 @@
       )))
 
 (defn update-article! [{:keys [id] :as article}]
-  (sql/update! *db* :articles
+  (sql/update! *db* :article
     (select-keys article [:title :image :description :body :update_by :update_at :publish])
     ["id = ?" id]
     {:builder-fn rs-set/as-unqualified-maps}))
@@ -47,11 +47,11 @@
     [articles total]))
 
 (defn get-article-by-id [id]
-  (sql/get-by-id *db* :articles id
+  (sql/get-by-id *db* :article id
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn publish-article! [{:keys [id] :as article} ]
-  (sql/update! *db* :articles
+  (sql/update! *db* :article
     (select-keys article [:publish :update_at :update_by])
     ["id = ?" id]
     {:builder-fn rs-set/as-unqualified-maps}))
@@ -63,7 +63,7 @@
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn delete-article! [id]
-  (sql/delete! *db* :articles ["id = ?" id]))
+  (sql/delete! *db* :article ["id = ?" id]))
 
 (defn get-article-archives []
   (sql/query *db*
@@ -92,7 +92,7 @@
 
 (defn save-article-tags! [article-tags]
   (sql/insert-multi! *db*
-    :articles-tags
+    :article-tags
     [:article_id :tag_id]
     (map #([(:article_id %) (:tag_id %)]) article-tags
       {:builder-fn rs-set/as-unqualified-maps})))
@@ -117,7 +117,7 @@
 
 (defn save-article-series-all! [article-series-all]
   (sql/insert-multi! *db*
-    :articles-series
+    :article-series
     [:article_id :series_id]
     (map #([(:article_id %) (:series_id %)]) article-series-all
       {:builder-fn rs-set/as-unqualified-maps})))

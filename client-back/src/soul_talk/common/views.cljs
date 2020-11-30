@@ -11,7 +11,7 @@
   (r/with-let [active-page (rf/subscribe [:active-page])]
     [:> antd/Menu {:className         "home-nav"
                    :mode              "horizontal"
-                   :defaultselectkeys ["home"]
+                   :default-select-keys ["home"]
                    :selected-keys     [(key->js @active-page)]}
      [:> antd/Menu.Item {:key "home" :on-click #(navigate! "#/")} "首页"]]))
 

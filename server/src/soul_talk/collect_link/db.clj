@@ -5,7 +5,7 @@
 
 (defn save-collect-link
   [collect-link]
-  (sql/insert! *db* :collect_links collect-link {:build-fn rs-set/as-unqualified-maps}))
+  (sql/insert! *db* :collect_link collect-link {:build-fn rs-set/as-unqualified-maps}))
 
 (defn update-collect-link [collect-link]
   (sql/update! *db*
@@ -15,7 +15,7 @@
 
 (defn delete-collect-link
   [id]
-  (sql/delete! *db* :collect_links ["id = ?" id]))
+  (sql/delete! *db* :collect_link ["id = ?" id]))
 
 (defn gen-where [{:keys [title]}]
   (let [where-str " where title like ? "
@@ -24,11 +24,11 @@
 
 (defn load-collect-links-page [{:keys [per_page offset]} params]
   (let [[where coll] (gen-where params)
-        sql-str (str "select * from collect_links " where " offset ? limit ? order by create_at desc")
+        sql-str (str "select * from collect_link " where " offset ? limit ? order by create_at desc")
         collect-links (sql/query *db*
                        (into [sql-str] (conj coll offset per_page))
                         {:builder-fn rs-set/as-unqualified-maps})
-        count-str (str "select count(1) as c from collect_links " where)
+        count-str (str "select count(1) as c from collect_link " where)
         total (:c
                 (first
                   (sql/query *db*
@@ -36,7 +36,7 @@
     [collect-links total]))
 
 (defn count-collect-links [{:keys [] :as params}]
-  (let [sql-str (str "select count(1) from collect_links where 1 = 1 ")]
+  (let [sql-str (str "select count(1) from collect_link where 1 = 1 ")]
     (sql/query *db* [sql-str]
       {:builder-fn rs-set/as-unqualified-maps})))
 
@@ -59,11 +59,11 @@
 
 (defn get-collect-link-tags-by-collect-link-id [collect-link-id]
   (sql/query *db*
-    ["select * from collect_links_tags where collect_links_id = ?" collect-link-id]
+    ["select * from collect_link_tag where collect_link_id = ?" collect-link-id]
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn delete-collect-link-tag-by-collect-link-id [collect-link-id]
-  (sql/delete! *db* :collect-links_tags ["collect_links_id = ?" collect-link-id]))
+  (sql/delete! *db* :collect-links_tags ["collect_link_id = ?" collect-link-id]))
 
 (defn delete-collect-link-tag-by-id [id]
   (sql/delete! *db* :collect-links_tags ["id = ?" id]))
@@ -85,7 +85,7 @@
 
 (defn get-collect-link-series-by-collect-link-id [collect-link-id]
   (sql/query *db*
-    ["select * from collect_links_series where collect_link_id = ?" collect-link-id]
+    ["select * from collect_link_series where collect_link_id = ?" collect-link-id]
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn delete-collect-link-series-by-collect-link-id [collect-link-id]
@@ -108,19 +108,19 @@
 
 (defn get-comments-by-collect-link-id [collect-link-id]
   (sql/query *db*
-    ["select * from comments where collect_link_id = ? order by create_at desc" collect-link-id]
+    ["select * from comment where collect_link_id = ? order by create_at desc" collect-link-id]
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn get-comments-by-reply-id [reply-id]
   (sql/query *db*
-    ["select 8 from comments where reply_id = ? order by create_at desc"]
+    ["select 8 from comment where reply_id = ? order by create_at desc"]
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn gen-where-comments [{:keys [collect-links_id body create_by_name create_by_email]}]
   (let [[where-str coll] [(str " where 1 = 1") []]
         [where-str coll] (if (nil? collect-links_id)
                            [where-str coll]
-                           [(str where-str " and collect_links_id = ?") (conj coll collect-links_id)])
+                           [(str where-str " and collect_link_id = ?") (conj coll collect-links_id)])
         [where-str coll] (if (nil? body)
                            [where-str coll]
                            [(str where-str " and body like ?") (conj coll (str "%" body "%"))])
@@ -134,11 +134,11 @@
 
 (defn load-collect-links-comments-page [{:keys [per_page offset]} params]
   (let [[where coll] (gen-where-comments params)
-        query-str (str "select * from collect_links_comments " where " offset ? limit ?")
+        query-str (str "select * from collect_link_comment " where " offset ? limit ?")
         comments (sql/query *db*
                    (into [query-str] (conj coll offset per_page))
                    {:builder-fn rs-set/as-unqualified-maps})
-        count-str (str "select count(1) as c from collect_links_comments " where)
+        count-str (str "select count(1) as c from collect_link_comment " where)
         total (:c
                 (first
                   (sql/query *db*

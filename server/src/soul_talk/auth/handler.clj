@@ -2,6 +2,8 @@
   (:require [soul-talk.utils :as utils]
             [soul-talk.auth.db :as auth-db]
             [soul-talk.user.db :as user-db]
+            [soul-talk.role.db :as role-db]
+            [soul-talk.menu.db :as menu-db]
             [buddy.hashers :as hashers]
             [buddy.auth.accessrules :refer [success error restrict]]
             [buddy.auth :refer [authenticated?]]
@@ -46,11 +48,14 @@
         (assoc :last_login_at (l/local-date-time))
         (user-db/update-login-time!))
       (let [token (utils/gen-token)
-            user-token {:token token :user_id id}]
+            user-token {:token token :user_id id}
+            roles (role-db/get-roles-by-user-id id)
+            menus (menu-db/get-menu-by-role-id (map :id roles))]
         (auth-db/save-token! user-token)
         (log/info "user:" email " successfully logged from ip " remote-addr " Token: " token)
-        (utils/ok "保存成功" {:user  (dissoc user :password)
-                      :token token})))
+        (utils/ok "登录成功" {:user  (dissoc user :password)
+                            :token token
+                          :menus menus})))
     (utils/unauthorized "email或密码错误,登录失败")))
 
 (defn logout! []

@@ -5,7 +5,7 @@
 
 (defn save-collect-site
   [collect-site]
-  (sql/insert! *db* :collect_sites collect-site {:build-fn rs-set/as-unqualified-maps}))
+  (sql/insert! *db* :collect_site collect-site {:build-fn rs-set/as-unqualified-maps}))
 
 (defn update-collect-site [collect-site]
   (sql/update! *db*
@@ -14,11 +14,11 @@
     (:id collect-site)))
 
 (defn get-collect-site [id]
-  (sql/get-by-id *db* :collect_sites id))
+  (sql/get-by-id *db* :collect_site id))
 
 (defn delete-collect-site
   [id]
-  (sql/delete! *db* :collect_sites ["id = ?" id]))
+  (sql/delete! *db* :collect_site ["id = ?" id]))
 
 (defn gen-where [{:keys [title]}]
   (let [where-str (str "where title like ?")
