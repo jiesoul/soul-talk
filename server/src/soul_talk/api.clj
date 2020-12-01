@@ -2,6 +2,7 @@
   (:require [compojure.api.sweet :refer :all]
             [compojure.api.meta :refer [restructure-param]]
             [soul-talk.middleware :as m]
+            [soul-talk.site-info.routes :as site-info]
             [soul-talk.user.routes :as user]
             [soul-talk.tag.routes :as tag]
             [soul-talk.article.routes :as article]
@@ -29,7 +30,8 @@
                     :contact     {:name  "jiesoul"
                                   :email "jiesoul@gmail.com"
                                   :url   "http://www.jiesoul.com"}}
-             :tags [{:name "用户" :description "用户信息相关API"}
+             :tags [{:name "网站信息" :description "网站基本信息"}
+                    {:name "用户" :description "用户信息相关API"}
                     {:name "系列" :description "系列"}
                     {:name "标签" :description "标签相关API"}
                     {:name "文章" :description "文章相关API"}
@@ -49,11 +51,12 @@
       :tags ["api version 1"]
 
       (context "/api/v1" []
-        data-dic/public-routes
+        site-info/api-routes
+        data-dic/api-routes
         tag/public-routes
-        serials/public-routes
+        serials/api-routes
         user/public-routes
-        article/public-routes
-        collect-site/public-routes
-        collect-link/public-routes))))
+        article/api-routes
+        collect-site/api-routes
+        collect-link/api-routes))))
 

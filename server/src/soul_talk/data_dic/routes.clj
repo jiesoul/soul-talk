@@ -14,7 +14,7 @@
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
 
-(def public-routes
+(def api-routes
   (context "/data-dices" []
     :tags ["数据字典"]
 
@@ -32,7 +32,7 @@
       (data-dic/load-data-dices-by-pid pid))
     ))
 
-(def private-routes
+(def site-routes
   (context "/data-dices" []
     :tags ["数据字典"]
 

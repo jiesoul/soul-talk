@@ -14,7 +14,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
-(def public-routes
+(def api-routes
   (context "/collect-sites" []
     :tags ["网站"]
     :auth-app-key #{"admin"}
@@ -39,7 +39,7 @@
     ))
 
 
-(def private-routes
+(def site-routes
   (context "/collect-sites" []
     :tags ["收藏的网站"]
 

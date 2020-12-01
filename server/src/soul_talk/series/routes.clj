@@ -14,7 +14,7 @@
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
 
-(def public-routes
+(def api-routes
   (context "/series" []
     :tags ["系列"]
 
@@ -33,7 +33,7 @@
 
     ))
 
-(def private-routes
+(def site-routes
   (context "/series" []
     :tags ["系列"]
 

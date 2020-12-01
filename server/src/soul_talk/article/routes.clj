@@ -14,7 +14,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
-(def public-routes
+(def api-routes
   (context "/articles/p" []
     :tags ["文章"]
 
@@ -80,7 +80,7 @@
 
     ))
 
-(def private-routes
+(def site-routes
   (context "/articles" []
     :tags ["文章"]
     ;; auth

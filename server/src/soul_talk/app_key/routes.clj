@@ -13,7 +13,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
-(def private-routes
+(def site-routes
   (context "/app-keys" []
     :tags ["app-key"]
 

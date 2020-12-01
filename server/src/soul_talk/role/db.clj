@@ -3,10 +3,42 @@
             [next.jdbc.result-set :as rs-set]
             [next.jdbc.sql :as sql]))
 
+(defn save-role! [role]
+  (sql/insert! *db* :role role {:builder-fn rs-set/as-unqualified-maps}))
+
+(defn update-role! [role]
+  (sql/update! *db* :role (select-keys role [:name :note]) [" id = ? " (:id role)]))
+
+(defn delete-role! [id]
+  (sql/delete! *db* :role ["id = ?" id]))
+
 (defn get-role [id]
   (sql/get-by-id *db* :role id))
 
 (defn get-roles-by-user-id [user-id]
   (sql/query *db*
     ["select * from role where id in (select role_id from user_role where user_id = ?)" user-id]
+    {:builder-fn rs-set/as-unqualified-maps}))
+
+(defn gen-where [{:keys [name]}]
+  (let [[where-str coll] [(str " where 1=1 ") []]
+        [where-str coll] (if name
+                           [where-str coll]
+                           [(str where-str " and name like ?") (conj coll (str "%" name "%"))])]
+    [where-str coll]))
+
+(defn load-roles-page [{:keys [offset per_page]} params]
+  (let [[where coll] (gen-where params)
+        query-sql (str "select * from role " where " offset ? limit ?")
+        roles (sql/query *db*
+                (into query-sql (conj coll offset per_page))
+                {:builder-fn rs-set/as-unqualified-maps})
+        count-sql (str "select count(1) as c from role " where)
+        total     (:c (first (sql/query *db*
+                               (into count-sql coll))))]
+    [roles total]))
+
+(defn get-role-menus [id]
+  (sql/query *db*
+    ["select * from menu where id in (select menu_id from role_menu where role_id = ? )" id]
     {:builder-fn rs-set/as-unqualified-maps}))

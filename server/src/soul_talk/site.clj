@@ -2,6 +2,7 @@
   (:require [compojure.api.sweet :refer :all]
             [compojure.api.meta :refer [restructure-param]]
             [soul-talk.middleware :as m]
+            [soul-talk.site-info.routes :as site-info]
             [soul-talk.app-key.routes :as app-key]
             [soul-talk.data-dic.routes :as data-dic]
             [soul-talk.auth.routes :as auth]
@@ -27,14 +28,15 @@
     (api
       site-config
       (context "" []
+        site-info/site-routes
         auth/login-routes
-        data-dic/private-routes
-        app-key/private-routes
+        data-dic/site-routes
+        app-key/site-routes
         user/private-routes
-        series/private-routes
+        series/site-routes
         tag/private-routes
-        article/private-routes
-        collect-link/private-routes
-        collect-site/private-routes)
+        article/site-routes
+        collect-link/site-routes
+        collect-site/site-routes)
       )))
 
