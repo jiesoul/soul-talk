@@ -51,6 +51,10 @@
   (run-events-admin [[:set-breadcrumb ["面板"]]
                      [:set-active-page :dash]]))
 
+(defroute "/site-info/:id" [id]
+  (run-events-admin [[:site-info/load id]
+                     [:set-active-page "site-info"]]))
+
 (defroute "/users/password" []
   (run-events-admin [[:set-breadcrumb ["个人管理" "修改密码"]]
                      [:set-active-page :users-password]]))
@@ -104,7 +108,7 @@
                      [:set-active-page :articles-view]]))
 
 (defroute "*" []
-  (run-events-admin [[:set-breadcrumb [""]]
+  (run-events-admin [[:set-breadcrumb ["未找到页面"]]
                [:set-active-page :default]]))
 
 (secretary/set-config! :prefix "#")

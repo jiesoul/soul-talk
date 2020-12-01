@@ -3,6 +3,7 @@
 
 (defonce login-user-key "login-user")
 (defonce login-token-key "login-token")
+(defonce site-info "site-info")
 
 (defn set-item!
   [key val]

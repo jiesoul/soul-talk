@@ -20,6 +20,7 @@
 ;; 初始化方法
 (defn init! []
   (dispatch-sync [:initialize-db])
+  (dispatch-sync [:site-info/load 1])
   (when (logged-in?) (dispatch [:run-login-events]))
   (load-interceptors!)
   (hook-browser-navigation!)

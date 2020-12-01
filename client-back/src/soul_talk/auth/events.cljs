@@ -18,9 +18,9 @@
 ;; 处理login ok
 (reg-event-fx
   :login-ok
-  (fn [{:keys [db]} [_ {:keys [user token]}]]
+  (fn [{:keys [db]} [_ {:keys [user token menus]}]]
     (let [login-events (:login-events db)]
-      {:db               (assoc db :user user :login-token token)
+      {:db               (assoc db :user user :login-token token :menus menus)
        :dispatch-n      (list
                            (if login-events
                              [:run-login-events]
@@ -48,7 +48,7 @@
   (fn [_ _]
     {:dispatch-n       (list
                          [:navigate-to "#/login"]
-                         [:set-active-page :login])
+                         [:site-info/load 1])
      :set-user!        nil
      :set-login-token! nil
      :db               db/default-db}))
@@ -62,7 +62,6 @@
             :ajax-map {:params {:user_id id}}
             :success-event        [:logout-ok]}}))
 
-;;
 (reg-event-db
   :add-login-event
   (fn [db [_ event]]

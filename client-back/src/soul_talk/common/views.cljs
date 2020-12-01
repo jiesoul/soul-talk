@@ -7,75 +7,11 @@
             ["react-highlight.js" :as hljs]
             [soul-talk.routes :refer [navigate!]]))
 
-(defn nav []
-  (r/with-let [active-page (rf/subscribe [:active-page])]
-    [:> antd/Menu {:className         "home-nav"
-                   :mode              "horizontal"
-                   :default-select-keys ["home"]
-                   :selected-keys     [(key->js @active-page)]}
-     [:> antd/Menu.Item {:key "home" :on-click #(navigate! "#/")} "首页"]]))
-
 (defn logo []
-  [:div.logo
-   [:h1
-    "不过如此"]])
-
-(defn home-row-col [component]
-  [:> antd/Row {:justify "center" :align "middle"}
-   [:> antd/Col {:xs 24 :sm 24 :md 24 :lg 24}
-    component]])
-
-(defn header [nav]
-  [:> antd/Layout.Header {:className "site-layout-header"}
-   [:> antd/Row {:justify "left"}
-    [:> antd/Col {:xs 24 :sm 24 :md 8 :lg 8}
-     [logo]]
-    [:> antd/Col {:xs 24 :sm 24 :md 16 :lg 16}
-     [nav]]]])
-
-(defn footer []
-  [:> antd/Layout.Footer {:className "site-layout-footer"}
-   [home-row-col
-    [:section
-     [:h4
-      "Made with By "
-      [:a
-       {:type   "link"
-        :href   "https://ant.design"
-        :target "_blank"}
-       "Ant Design"]
-      " and JIESOUL "]]]])
-
-(defn home-layout [main]
-  [:> antd/Layout
-   [header nav]
-   [:> antd/Layout.Content {:className "site-layout-content"}
-    main]
-   [footer]])
-
-(defn sidebar [active-page]
-  (r/with-let [active-page (rf/subscribe [:active-page])]
-    [:> antd/Layout.Sider {:className "site-layout-sidebar"}
-     [:> antd/Menu {:mode              "inline"
-                    :style {:height "100%" :borderRight 0}
-                    :default-select-keys ["dash"]
-                    :open-keys ["base" "user" "article"]
-                    :selected-keys [(key->js @active-page)]}
-
-      [:> antd/Menu.Item {:key      "dash"
-                          :icon (r/as-element [:> antd-icons/DashboardOutlined])
-                          :on-click #(navigate! "#/dash")} "数据面板"]
-
-      [:> antd/Menu.SubMenu {:key   "article" :title "文章管理"}
-       [:> antd/Menu.Item {:key      "articles" :on-click #(navigate! "#/articles")} "文章"]]
-      [:> antd/Menu.SubMenu {:key   "base"
-                             :title "基础数据"}
-       [:> antd/Menu.Item {:key "series" :on-click #(navigate! "#/series")} "系列管理"]
-       [:> antd/Menu.Item {:key "tag" :on-click #(navigate! "#/tags")} "标签管理"]
-       [:> antd/Menu.Item {:key "data-dic" :on-click #(navigate! "#/data-dices")} "数据字典"]
-       [:> antd/Menu.Item {:key "app-key" :on-click #(navigate! "#/app-keys")} "APP Key管理"]]
-
-      ]]))
+  (let [site-info (rf/subscribe [:site-info])]
+    [:div.logo
+     [:h1
+      (:name @site-info)]]))
 
 (defn manager-breadcrumb []
   (r/with-let [items (rf/subscribe [:breadcrumb])]
@@ -101,6 +37,66 @@
                          :on-click #(rf/dispatch [:logout @user])
                          :icon     (r/as-element [:> antd-icons/LoginOutlined])}
       "退出登录"]]))
+
+(defn header [nav]
+  [:> antd/Layout.Header {:className "site-layout-header"}
+   [:> antd/Row {:justify "left"}
+    [:> antd/Col {:xs 24 :sm 24 :md 8 :lg 8}
+     [logo]]
+    [:> antd/Col {:xs 24 :sm 24 :md 16 :lg 16}
+     [nav]]]])
+
+(defn home-row-col [component]
+  [:> antd/Row {:justify "center" :align "middle"}
+   [:> antd/Col {:xs 24 :sm 24 :md 24 :lg 24}
+    component]])
+
+(defn footer []
+  (let [site-info (rf/subscribe [:site-info])]
+    [:> antd/Layout.Footer {:className "site-layout-footer"}
+     [home-row-col
+      [:section
+       [:h4
+        "Made with By "
+        [:a
+         {:type   "link"
+          :href   "https://ant.design"
+          :target "_blank"}
+         "Ant Design"]
+        " and  " (:author @site-info)]]]]))
+
+(defn sidebar []
+  (r/with-let [active-page (rf/subscribe [:active-page])
+               menus (rf/subscribe [:menus])]
+    (fn []
+      [:> antd/Layout.Sider {:className "site-layout-sidebar"}
+       [:> antd/Menu {:mode                "inline"
+                      :style               {:height "100%" :borderRight 0}
+                      :default-select-keys ["10"]
+                      :open-keys           ["base" "user" "article"]
+                      :selected-keys       [(key->js @active-page)]}
+
+        [:> antd/Menu.Item {:key      "dash"
+                            :icon     (r/as-element [:> antd-icons/DashboardOutlined])
+                            :on-click #(navigate! "#/dash")} "数据面板"]
+
+        [:> antd/Menu.SubMenu {:key "article" :title "文章管理"}
+         [:> antd/Menu.Item {:key "articles" :on-click #(navigate! "#/articles")} "文章"]]
+        [:> antd/Menu.SubMenu {:key   "base"
+                               :title "基础数据"}
+         [:> antd/Menu.Item {:key "series" :on-click #(navigate! "#/series")} "系列管理"]
+         [:> antd/Menu.Item {:key "tag" :on-click #(navigate! "#/tags")} "标签管理"]
+         [:> antd/Menu.Item {:key "data-dic" :on-click #(navigate! "#/data-dices")} "数据字典"]
+         [:> antd/Menu.Item {:key "app-key" :on-click #(navigate! "#/app-keys")} "APP Key管理"]
+
+         [:> antd/Menu.Item {:key "site-info" :on-click #(navigate! "#/site-info/1")} "网站基础信息"]
+
+         [:> antd/Menu.Item {:key "menu" :on-click #(navigate! "#/menus")} "菜单管理"]
+         ]
+
+        ]])))
+
+
 
 (defn manager-header-dropdown []
   (r/with-let [user (rf/subscribe [:user])]

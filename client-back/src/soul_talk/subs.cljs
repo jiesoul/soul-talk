@@ -1,6 +1,7 @@
 (ns soul-talk.subs
   (:require [re-frame.core :refer [reg-sub]]
             [soul-talk.common.effects :refer [query]]
+            [soul-talk.site-info.subs]
             [soul-talk.auth.subs]
             [soul-talk.app-key.subs]
             [soul-talk.collect-link.subs]

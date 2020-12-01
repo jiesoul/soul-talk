@@ -2,7 +2,7 @@
   (:require [reagent.core :as r]
             [re-frame.core :as rf :refer [subscribe dispatch]]
             [soul-talk.routes :refer (navigate!)]
-            [soul-talk.common.views :as c :refer [logo home-layout manager-layout header]]
+            [soul-talk.common.views :as c :refer [logo manager-layout header]]
             [soul-talk.utils :as du :refer [to-date]]
             [soul-talk.common.md-editor :refer [editor]]
             [antd :refer [Col Row Layout Button Divider Form Input Table Typography Spin Card]]
