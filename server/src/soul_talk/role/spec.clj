@@ -9,6 +9,5 @@
 
 (def update-role
   (ds/spec {:name :role/update
-            :spec {:id spec/id
-                   :name spec/non-empty-string?
+            :spec {:name spec/non-empty-string?
                    (ds/opt :note) (ds/maybe spec/non-empty-string?)}}))

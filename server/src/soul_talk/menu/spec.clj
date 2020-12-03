@@ -11,8 +11,7 @@
 
 (def update-menu
   (ds/spec {:name :menu/update
-            :spec {:id spec/id
-                   :name spec/non-empty-string?
+            :spec {:name spec/non-empty-string?
                    (ds/opt :url) (ds/maybe spec/uri-string?)
                    :pid int?
                    (ds/opt :note) (ds/maybe spec/non-empty-string?)}}))

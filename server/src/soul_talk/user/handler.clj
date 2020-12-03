@@ -41,16 +41,26 @@
         (utils/bad-request "新密码不能和旧密码一致"))
       (utils/bad-request "新密码确认密码不一致"))))
 
-(defn get-user-profile [id]
+(defn get-user-by-id [id]
   (if-let [user (user-db/find-by-id id)]
     (utils/ok {:user (assoc user :password nil)})
     (utils/bad-request "未找到用户")))
 
-(defn save-user-profile! [id {:keys [username image] :as params}]
+(defn update-user! [id {:keys [username image] :as params}]
   (if-let [user (user-db/find-by-id id)]
     (let [user-profile (user-db/save-user-profile! (assoc user :name username))]
       (utils/ok "保存成功"))
     (utils/bad-request "未找到用户信息")))
+
+(defn delete-user! [id]
+  (if (= id 1)
+    (utils/bad-request "超级用户不允许删除")
+    (let [rs (user-db/delete-user! id)]
+      (utils/ok "删除成功"))))
+
+(defn get-user-roles [id]
+  (let [user-roles (user-db/get-user-roles id)]
+    (utils/ok {:user-roles user-roles})))
 
 
 

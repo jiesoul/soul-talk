@@ -2,7 +2,8 @@
   (:require [soul-talk.role.db :as role-db]
             [soul-talk.pagination :as p]
             [soul-talk.role.spec :as spec]
-            [soul-talk.utils :as utils]))
+            [soul-talk.utils :as utils]
+            [taoensso.timbre :as log]))
 
 (def create-role spec/create-role)
 (def update-role spec/update-role)
@@ -29,9 +30,14 @@
                :params params})))
 
 (defn get-role [id]
-  (let [role (role-db/get-role id)]
+  (let [role (role-db/get-role-by-id id)]
     (utils/ok {:role role})))
 
 (defn get-role-menus [id]
-  (let [menus (role-db/get-role-menus id)]
-    (utils/ok {:menus menus})))
+  (let [role-menus (role-db/get-role-menus-by-role-id id)]
+    (utils/ok {:role-menus role-menus})))
+
+(defn get-role-menus-by-ids [ids]
+  (let [role-menus (role-db/get-role-menus-by-ids ids)]
+    (log/debug "===== ids:" ids)
+    (utils/ok {:role-menus role-menus})))

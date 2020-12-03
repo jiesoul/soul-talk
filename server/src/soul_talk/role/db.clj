@@ -12,8 +12,18 @@
 (defn delete-role! [id]
   (sql/delete! *db* :role ["id = ?" id]))
 
-(defn get-role [id]
-  (sql/get-by-id *db* :role id))
+(defn get-role-by-id [id]
+  (sql/get-by-id *db* :role id {:builder-fn rs-set/as-unqualified-maps}))
+
+(defn get-role-menus-by-role-id [id]
+  (sql/query *db*
+    ["select * from role_menu where role_id = ? " id]
+    {:builder-fn rs-set/as-unqualified-maps}))
+
+(defn get-roles-by-ids [ids]
+  (sql/query *db*
+    ["select * from role where id = any(?)" ids]
+    {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn get-roles-by-user-id [user-id]
   (sql/query *db*
@@ -38,7 +48,8 @@
                                (into count-sql coll))))]
     [roles total]))
 
-(defn get-role-menus [id]
+(defn get-role-menus-by-ids [ids]
   (sql/query *db*
-    ["select * from menu where id in (select menu_id from role_menu where role_id = ? )" id]
+    ["select * from role_menu where role_id = any(?)" (int-array ids)]
     {:builder-fn rs-set/as-unqualified-maps}))
+

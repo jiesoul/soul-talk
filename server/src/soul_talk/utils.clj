@@ -67,3 +67,11 @@
 
 (defn parse-header [request]
   (-> request))
+
+
+(defn make-tree
+  ([coll] (let [root {:id 0 :name "根目录"}]
+            (assoc root :children (make-tree root coll))))
+  ([root coll]
+   (for [x coll :when (= (:pid x) (:id root))]
+     (assoc x :children (make-tree x coll)))))

@@ -99,12 +99,3 @@
   (subs
     (reduce #(str %1 "," (str "'" %2 "'")) "" coll) 1))
 
-
-(defn gen-sql-str [query-key query-sign])
-
-(defn gen-where [{:keys [sql-str query-coll] :as sql-query} params-map query-key query-sign]
-  (if (contains? params-map query-key)
-    {:sql-str  (gen-sql-str sql-str query-key)
-     :query-coll (into query-coll (:query-key params-map))}
-
-    sql-query))

@@ -11,8 +11,8 @@
   (let [menu (menu-db/save-menu! menu)]
     (utils/ok {:menu menu})))
 
-(defn update-menu! [menu]
-  (let [menu (menu-db/update-menu! menu)]
+(defn update-menu! [id menu]
+  (let [menu (menu-db/update-menu! (assoc menu :id id))]
     (utils/ok {:menu menu})))
 
 (defn delete-menu! [id]
@@ -27,3 +27,11 @@
     (utils/ok {:menus menus
                :pagination pagination
                :params params})))
+
+(defn get-menu-by-id [id]
+  (let [menu (menu-db/get-menu id)]
+    (utils/ok {:menu menu})))
+
+(defn get-menus-by-ids [ids]
+  (let [menus (menu-db/get-menus-by-ids ids)]
+    (utils/ok {:menus menus})))

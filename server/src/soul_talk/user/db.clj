@@ -57,3 +57,11 @@
                     (into [count-sql] coll))))]
     [users total]))
 
+(defn delete-user! [id]
+  (sql/delete! *db* :users ["id = ?" id]))
+
+(defn get-user-roles [id]
+  (sql/query *db*
+    ["select * from user_role where user_id = ? " id]
+    {:builder-fn rs-set/as-unqualified-maps}))
+

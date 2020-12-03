@@ -24,6 +24,11 @@
 (defn get-menu [id]
   (sql/get-by-id *db* :menu id))
 
+(defn get-menus-by-ids [ids]
+  (sql/query *db*
+    ["select * from menu where id = any(?)" (int-array ids)]
+    {:builder-fn rs-set/as-unqualified-maps}))
+
 (defn gen-where [{:keys [name]}]
   (let [[where-str coll] [(str " where 1=1 ") []]
         [where-str coll] (if name
@@ -41,3 +46,4 @@
         total     (:c (first (sql/query *db*
                                (into count-sql coll))))]
     [menus total]))
+

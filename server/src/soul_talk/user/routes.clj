@@ -22,7 +22,7 @@
       :return Result
       :path-params [id :- int?]
       :summary "查看个人信息"
-      (handler/get-user-profile id))
+      (handler/get-user-by-id id))
     ))
 
 (def private-routes
@@ -34,20 +34,41 @@
       :summary "查看所有用户"
       (handler/load-users-page req))
 
-    (PATCH "/:id/password" []
-      :auth-login #{"admin"}
-      :return Result
+    (context "/:id" []
       :path-params [id :- int?]
-      :body [update-password handler/update-password]
-      :summary "更改用户密码"
-      (handler/update-password! id update-password))
 
-    (PATCH "/:id/profile" []
-      :auth-login #{"admin"}
-      :path-params [id :- int?]
-      :body [user-profile handler/profile-user]
-      :return Result
-      :summary "修改用户信息"
-      (handler/save-user-profile! id user-profile))))
+      (GET "/" []
+        :summary "获取个人信息"
+        :auth-login #{"admin"}
+        :return Result
+        (handler/get-user-by-id id))
+
+      (PATCH "/" []
+        :summary "修改用户信息"
+        :auth-login #{"admin"}
+        :body [user-profile handler/profile-user]
+        :return Result
+        (handler/update-user! id user-profile))
+
+      (PATCH "/:id/password" []
+        :auth-login #{"admin"}
+        :return Result
+        :body [update-password handler/update-password]
+        :summary "更改用户密码"
+        (handler/update-password! id update-password))
+
+      (DELETE "/" []
+        :summary "删除用户"
+        :auth-login #{"admin"}
+        :return Result
+        (handler/delete-user! id))
+
+      (GET "/roles" []
+        :summary "获取用户角色"
+        :auth-login #{"admin"}
+        :return Result
+        (handler/get-user-roles id))
+
+      )))
 
 

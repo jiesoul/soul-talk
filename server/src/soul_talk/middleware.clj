@@ -3,6 +3,7 @@
             [soul-talk.utils :as utils]
             [ring.middleware.flash :refer [wrap-flash]]
             [muuntaja.core :as m]
+            [muuntaja.middleware :as mw]
             [buddy.auth.accessrules :refer [wrap-access-rules restrict]]
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
@@ -136,9 +137,8 @@
   (-> ((:middleware defaults) handler)
     (wrap-cors :access-control-allow-origin [#".*"]
       :access-control-allow-methods [:get :post :put :delete :options])
-    cm/wrap-format
-    wrap-flash
-    wrap-multipart-params
     wrap-defaults
     wrap-internal-error
+    mw/wrap-format-response
+    wrap-multipart-params
     ))

@@ -21,32 +21,42 @@
       :body [role role/create-role]
       (role/save-role! role))
 
-    (PATCH "/" []
-      :summary "更新角色"
-      :auth-login #{"admin"}
-      :body [role role/update-role]
-      (role/update-role! role))
-
-    (DELETE "/:id" []
-      :summary "删除角色"
-      :auth-login #{"admin"}
-      :path-params [id :- int?]
-      (role/delete-role! id))
-
-    (GET "/:id" []
-      :summary "获取角色"
-      :auth-login #{"admin"}
-      :path-params [id :- int?]
-      (role/get-role id))
-
     (GET "/" req
       :summary "条件查询"
       :auth-login #{"admin"}
       (role/load-roles-page req))
 
-    (GET "/:id/menus" []
-      :summary "获取角色权限菜单"
+    (GET "/menus" []
+      :query-params [ids :- string?]
       :auth-login #{"admin"}
+      (role/get-role-menus-by-ids ids))
+
+    (context "/:id" []
       :path-params [id :- int?]
-      (role/get-role-menus id))
+
+      (GET "/" []
+        :summary "获取角色"
+        :auth-login #{"admin"}
+        :path-params [id :- int?]
+        (role/get-role id))
+
+      (PATCH "/" []
+        :summary "更新角色"
+        :auth-login #{"admin"}
+        :body [role role/update-role]
+        (role/update-role! role))
+
+      (DELETE "/" []
+        :summary "删除角色"
+        :auth-login #{"admin"}
+        :path-params [id :- int?]
+        (role/delete-role! id))
+
+
+      (GET "/menus" []
+        :summary "获取角色权限菜单"
+        :auth-login #{"admin"}
+        :path-params [id :- int?]
+        (role/get-role-menus id)))
+
     ))
