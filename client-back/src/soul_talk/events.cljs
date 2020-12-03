@@ -3,6 +3,10 @@
             [soul-talk.db :refer [default-db]]
             [soul-talk.common.local-storage :as storage]
             [soul-talk.site-info.events]
+            [soul-talk.auth.events]
+            [soul-talk.user.events]
+            [soul-talk.role.events]
+            [soul-talk.menu.events]
             [soul-talk.app-key.events]
             [soul-talk.collect-link.events]
             [soul-talk.collect-site.events]
@@ -10,21 +14,17 @@
             [soul-talk.data-dic.events]
             [soul-talk.dash.events]
             [soul-talk.article.events]
-            [soul-talk.auth.events]
             [soul-talk.tag.events]
-            [soul-talk.user.events]))
+            ))
 
 ;; 初始化
 (reg-event-fx
   :initialize-db
-  [(inject-cofx :local-store storage/login-user-key)
-   (inject-cofx :local-store storage/login-token-key)]
+  [(inject-cofx :local-store storage/login-user-key)]
   (fn [cofx _]
     (let [user (get-in cofx [:local-store storage/login-user-key])
-          login-token (get-in cofx [:local-store storage/login-token-key])
           db (:db cofx)]
-      {:db (merge db (assoc default-db :user (js->clj user :keywordize-keys true)
-                                       :login-token login-token))})))
+      {:db (merge db (assoc default-db :user (js->clj user :keywordize-keys true)))})))
 
 ;; 设置当前页
 (reg-event-db

@@ -2,10 +2,14 @@
   (:require [reagent.core :as r]
             [reagent.dom :as rd]
             [re-frame.core :as rf]
-            [antd :as antd :refer [Modal Menu Row Col Layout Footer]]
-            ["@ant-design/icons" :as antd-icons]
+            [antd :as antd :refer [Breadcrumb Modal Menu Row Col Layout Footer]]
+            ["@ant-design/icons" :refer [UserOutlined EditOutlined LoginOutlined DashboardOutlined]]
             ["react-highlight.js" :as hljs]
-            [soul-talk.routes :refer [navigate!]]))
+            [soul-talk.routes :refer [navigate!]]
+            [soul-talk.utils :as utils]))
+
+
+
 
 (defn logo []
   (let [site-info (rf/subscribe [:site-info])]
@@ -14,46 +18,48 @@
       (:name @site-info)]]))
 
 (defn manager-breadcrumb []
-  (r/with-let [items (rf/subscribe [:breadcrumb])]
-    [:> antd/Breadcrumb {:className "site-breadcrumb"}
-     (for [item @items]
-       ^{:key item}
-       [:> antd/Breadcrumb.Item item])]))
+  (let [items (rf/subscribe [:breadcrumb])]
+    (fn []
+      [:> Breadcrumb {:className "site-breadcrumb"}
+       (for [item @items]
+         ^{:key item}
+         [:> Breadcrumb.Item item])])))
 
 (defn manager-user-nav []
-  (r/with-let [user (rf/subscribe [:user])]
-    [:> antd/Menu
-     [:> antd/Menu.Item {:key      "user-profile"
-                         :icon     (r/as-element [:> antd-icons/UserOutlined])
-                         :on-click #(navigate! "#/user/profile")}
-      "个人信息"]
-     [:> antd/Menu.Item {:key      "change-pass"
-                         :icon     (r/as-element [:> antd-icons/EditOutlined])
-                         :on-click #(navigate! "#/user/password")}
+  (let [user (rf/subscribe [:user])]
+    (fn []
+      [:> Menu
+       [:> Menu.Item {:key      "user-profile"
+                      :icon     (r/as-element [:> UserOutlined])
+                      :on-click #(navigate! "#/user/profile")}
+        "个人信息"]
+       [:> Menu.Item {:key      "change-pass"
+                      :icon     (r/as-element [:> EditOutlined])
+                      :on-click #(navigate! "#/user/password")}
 
-      "密码修改"]
-     [:> antd/Menu.Divider]
-     [:> antd/Menu.Item {:key      "cancel"
-                         :on-click #(rf/dispatch [:logout @user])
-                         :icon     (r/as-element [:> antd-icons/LoginOutlined])}
-      "退出登录"]]))
+        "密码修改"]
+       [:> Menu.Divider]
+       [:> Menu.Item {:key      "cancel"
+                      :on-click #(rf/dispatch [:logout @user])
+                      :icon     (r/as-element [:> LoginOutlined])}
+        "退出登录"]])))
 
 (defn header [nav]
-  [:> antd/Layout.Header {:className "site-layout-header"}
-   [:> antd/Row {:justify "left"}
-    [:> antd/Col {:xs 24 :sm 24 :md 8 :lg 8}
+  [:> Layout.Header {:className "site-layout-header"}
+   [:> Row {:justify "left"}
+    [:> Col {:xs 24 :sm 24 :md 8 :lg 8}
      [logo]]
-    [:> antd/Col {:xs 24 :sm 24 :md 16 :lg 16}
+    [:> Col {:xs 24 :sm 24 :md 16 :lg 16}
      [nav]]]])
 
 (defn home-row-col [component]
-  [:> antd/Row {:justify "center" :align "middle"}
-   [:> antd/Col {:xs 24 :sm 24 :md 24 :lg 24}
+  [:> Row {:justify "center" :align "middle"}
+   [:> Col {:xs 24 :sm 24 :md 24 :lg 24}
     component]])
 
 (defn footer []
   (let [site-info (rf/subscribe [:site-info])]
-    [:> antd/Layout.Footer {:className "site-layout-footer"}
+    [:> Layout.Footer {:className "site-layout-footer"}
      [home-row-col
       [:section
        [:h4
@@ -65,38 +71,42 @@
          "Ant Design"]
         " and  " (:author @site-info)]]]]))
 
-(defn sidebar []
-  (r/with-let [active-page (rf/subscribe [:active-page])
-               menus (rf/subscribe [:menus])]
+(def ^:dynamic *open-keys* (r/atom ["10"]))
+(def ^:dynamic *selected-keys* (r/atom ["10"]))
+
+(defn menu-click!
+  [item]
+  (let [item (js->clj item :keywordize-keys true)]
+    (js/console.log "item: " item)
+    (reset! *open-keys* (:keyPath item))
+    (reset! *selected-keys* (:key item))))
+
+(defn make-menu
+  [menus]
+  (doall
+    (for [menu menus]
+      (let [{:keys [id name url pid children]} menu]
+        (if (empty? children)
+          [:> Menu.Item {:key     id
+                         :on-click #(navigate! (str "#" url))} name]
+          [:> Menu.SubMenu {:key id :title name}
+           (make-menu children)])))))
+
+(defn menu []
+  (let [user (rf/subscribe [:user])
+        menus (:menus @user)
+        menus-tree (utils/make-tree menus)]
     (fn []
-      [:> antd/Layout.Sider {:className "site-layout-sidebar"}
-       [:> antd/Menu {:mode                "inline"
-                      :style               {:height "100%" :borderRight 0}
-                      :default-select-keys ["10"]
-                      :open-keys           ["base" "user" "article"]
-                      :selected-keys       [(key->js @active-page)]}
+      [:> Menu {:mode              "inline"
+                :style             {:height "100%" :borderRight 0}
+                :on-click          menu-click!
+                :onOpenChange      (fn [item]
+                                     (reset! *selected-keys* item)
+                                     (reset! *open-keys* item))
+                :open-keys         @*open-keys*
+                :selected-keys     @*selected-keys*}
 
-        [:> antd/Menu.Item {:key      "dash"
-                            :icon     (r/as-element [:> antd-icons/DashboardOutlined])
-                            :on-click #(navigate! "#/dash")} "数据面板"]
-
-        [:> antd/Menu.SubMenu {:key "article" :title "文章管理"}
-         [:> antd/Menu.Item {:key "articles" :on-click #(navigate! "#/articles")} "文章"]]
-        [:> antd/Menu.SubMenu {:key   "base"
-                               :title "基础数据"}
-         [:> antd/Menu.Item {:key "series" :on-click #(navigate! "#/series")} "系列管理"]
-         [:> antd/Menu.Item {:key "tag" :on-click #(navigate! "#/tags")} "标签管理"]
-         [:> antd/Menu.Item {:key "data-dic" :on-click #(navigate! "#/data-dices")} "数据字典"]
-         [:> antd/Menu.Item {:key "app-key" :on-click #(navigate! "#/app-keys")} "APP Key管理"]
-
-         [:> antd/Menu.Item {:key "site-info" :on-click #(navigate! "#/site-info/1")} "网站基础信息"]
-
-         [:> antd/Menu.Item {:key "menu" :on-click #(navigate! "#/menus")} "菜单管理"]
-         ]
-
-        ]])))
-
-
+       (make-menu (:children menus-tree))])))
 
 (defn manager-header-dropdown []
   (r/with-let [user (rf/subscribe [:user])]
@@ -104,14 +114,15 @@
      [:> antd/Dropdown {:overlay (r/as-element [manager-user-nav])}
       [:a {:className "ant-dropdown-link"
            :href      "#"}
-       [:> antd-icons/UserOutlined]
+       [:> UserOutlined]
        "  " (:name @user)]]]))
 
 (defn manager-layout [main]
   [:> antd/Layout
    [header manager-header-dropdown]
    [:> antd/Layout
-    [sidebar]
+    [:> Layout.Sider {:className "site-layout-sidebar"}
+     [menu]]
     [:> antd/Layout {:style {:padding "0 24px 24px"}}
      [manager-breadcrumb]
      [:> antd/Layout.Content {:className "site-layout-content"}

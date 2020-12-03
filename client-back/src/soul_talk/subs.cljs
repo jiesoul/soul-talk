@@ -3,13 +3,15 @@
             [soul-talk.common.effects :refer [query]]
             [soul-talk.site-info.subs]
             [soul-talk.auth.subs]
+            [soul-talk.user.subs]
+            [soul-talk.role.subs]
+            [soul-talk.menu.subs]
             [soul-talk.app-key.subs]
             [soul-talk.collect-link.subs]
             [soul-talk.collect-site.subs]
             [soul-talk.series.subs]
             [soul-talk.data-dic.subs]
             [soul-talk.dash.subs]
-            [soul-talk.user.subs]
             [soul-talk.tag.subs]
             [soul-talk.article.subs]))
 

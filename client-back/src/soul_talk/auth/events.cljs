@@ -18,15 +18,13 @@
 ;; 处理login ok
 (reg-event-fx
   :login-ok
-  (fn [{:keys [db]} [_ {:keys [user token menus]}]]
+  (fn [{:keys [db]} [_ {:keys [user] :as resp}]]
     (let [login-events (:login-events db)]
-      {:db               (assoc db :user user :login-token token :menus menus)
-       :dispatch-n      (list
-                           (if login-events
-                             [:run-login-events]
-                             [:navigate-to "#/dash"]))
-       :set-user!        user
-       :set-login-token! token})))
+      {:db               (assoc db :user user)
+       :dispatch-n       (list
+                           [:navigate-to "#/dash"]
+                           [:run-login-events])
+       :set-user!        user})))
 
 (reg-event-db
   :login-error

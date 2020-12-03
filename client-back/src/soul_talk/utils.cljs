@@ -21,3 +21,14 @@
 (defn to-time [date]
   (str (.toDateString (js/Date. date))))
 
+(defn coll-to-in-str [coll]
+  (subs
+    (reduce #(str %1 "," (str "'" %2 "'")) "" coll) 1))
+
+(defn make-tree
+  ([coll] (let [root {:id 0 :name "根目录"}]
+            (assoc root :children (make-tree root coll))))
+  ([root coll]
+   (for [x coll :when (= (:pid x) (:id root))]
+     (assoc x :children (make-tree x coll)))))
+

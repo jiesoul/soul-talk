@@ -53,7 +53,7 @@
 
 (defroute "/site-info/:id" [id]
   (run-events-admin [[:site-info/load id]
-                     [:set-active-page "site-info"]]))
+                     [:set-active-page :site-info]]))
 
 (defroute "/users/password" []
   (run-events-admin [[:set-breadcrumb ["个人管理" "修改密码"]]

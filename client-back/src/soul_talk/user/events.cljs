@@ -14,6 +14,20 @@
   (fn []
     (storage/remove-item! storage/login-user-key)))
 
+(reg-event-fx
+  :users/load-roles-ok
+  (fn [{:keys [db]} [_ {:keys [user-roles]}]]
+    (let [role-ids (map :role_id user-roles)]
+      {:db         (assoc-in db [:user :user-roles] user-roles)
+       :dispatch-n (list [:roles/load-menus role-ids])})))
+
+(reg-event-fx
+  :users/load-roles
+  (fn [_ [_ id]]
+    {:http {:method        GET
+            :url           (str site-uri "/users/" id "/roles")
+            :success-event [:users/load-roles-ok]}}))
+
 (reg-event-db
   :users/load-all-ok
   (fn [db [_ {:keys [users]}]]
@@ -24,8 +38,7 @@
   (fn [_ _]
     {:http {:method        GET
             :url           (str site-uri "/users")
-            :success-event [:users/load-all-ok]
-            :error-event   [:set-error "保存用户失败"]}}))
+            :success-event [:users/load-all-ok]}}))
 
 (reg-event-fx
   :users/password
@@ -37,8 +50,7 @@
                                      :pass-old     pass-old
                                      :pass-new     pass-new
                                      :pass-confirm pass-confirm}}
-            :success-event [:set-success "保存用户成功"]
-            :error-event   [:set-error]}}))
+            :success-event [:set-success "保存用户成功"]}}))
 
 (reg-event-fx
   :save-user-profile-ok

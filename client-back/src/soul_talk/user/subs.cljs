@@ -9,3 +9,5 @@
 (reg-sub :csrf-token query)
 
 (reg-sub :users query)
+
+(reg-sub :user-roles query)

@@ -1,6 +1,7 @@
 (ns soul-talk.common.effects
   (:require [re-frame.core :as rf :refer [dispatch reg-fx reg-event-fx reg-event-db]]
-            [accountant.core :as accountant]))
+            [accountant.core :as accountant]
+            [ajax.core :as ajax]))
 
 (reg-event-fx
   :ajax-error
@@ -28,15 +29,15 @@
             ajax-map {}}}]
    (dispatch [:set-loading])
    (method url (merge
-                {:handler       (fn [response]
-                                  (when success-event
-                                    (dispatch (if ignore-response-body
-                                                success-event
-                                                (conj success-event response))))
-                                  (dispatch [:unset-loading]))
-                 :error-handler (fn [resp]
-                                  (dispatch (conj error-event resp))
-                                  (dispatch [:unset-loading]))}
+                 {:handler         (fn [response]
+                                     (when success-event
+                                       (dispatch (if ignore-response-body
+                                                   success-event
+                                                   (conj success-event response))))
+                                     (dispatch [:unset-loading]))
+                  :error-handler   (fn [resp]
+                                     (dispatch (conj error-event resp))
+                                     (dispatch [:unset-loading]))}
                 ajax-map))))
 
 (reg-fx
