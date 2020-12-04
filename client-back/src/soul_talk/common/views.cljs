@@ -8,8 +8,9 @@
             [soul-talk.routes :refer [navigate!]]
             [soul-talk.utils :as utils]))
 
-
-
+(def validate-messages {:required "${label} 必须的"
+                        :types {:email "${label} 非法邮件格式"
+                                :url "${label} 非法地址"}})
 
 (defn logo []
   (let [site-info (rf/subscribe [:site-info])]
@@ -31,11 +32,11 @@
       [:> Menu
        [:> Menu.Item {:key      "user-profile"
                       :icon     (r/as-element [:> UserOutlined])
-                      :on-click #(navigate! "#/user/profile")}
+                      :on-click #(navigate! "#/users/profile")}
         "个人信息"]
        [:> Menu.Item {:key      "change-pass"
                       :icon     (r/as-element [:> EditOutlined])
-                      :on-click #(navigate! "#/user/password")}
+                      :on-click #(navigate! "#/users/password")}
 
         "密码修改"]
        [:> Menu.Divider]
@@ -77,7 +78,6 @@
 (defn menu-click!
   [item]
   (let [item (js->clj item :keywordize-keys true)]
-    (js/console.log "item: " item)
     (reset! *open-keys* (:keyPath item))
     (reset! *selected-keys* (:key item))))
 

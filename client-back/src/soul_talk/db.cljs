@@ -2,7 +2,6 @@
 
 (def default-db
   {:active-page :login
-   :login-events []
-   :login-token nil})
+   :login-events []})
 
 (goog-define site-uri "http://localhost:3000")

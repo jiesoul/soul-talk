@@ -4,6 +4,7 @@
             [soul-talk.routes :refer [logged-in? navigate!]]
             [soul-talk.common.views :as c]
             [soul-talk.dash.views :as dash]
+            [soul-talk.site-info.views :as site-info]
             [soul-talk.auth.views :as auth]
             [soul-talk.user.views :as users]
             [soul-talk.article.views :as article]
@@ -31,6 +32,12 @@
 (defmethod pages :dash [_ _]
   (admin dash/dash-page))
 
+(defmethod pages :site-info [_ _]
+  (admin site-info/edit-form))
+
+(defmethod pages :data-dices [_ _]
+  (admin data-dic/query-page))
+
 ;; user
 (defmethod pages :users [_ _]
   (admin users/users-page))
@@ -48,8 +55,7 @@
 (defmethod pages :app-keys [_ _]
   (admin app-key/query-page))
 
-(defmethod pages :data-dices [_ _]
-  (admin data-dic/query-page))
+
 
 (defmethod pages :app-keys [_ _]
   (admin app-key/query-page))

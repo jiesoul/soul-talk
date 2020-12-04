@@ -5,32 +5,46 @@
             [soul-talk.db :refer [site-uri]]))
 
 (reg-event-db
-  :data-dices/load-all-ok
-  (fn [db [_ {:keys [data-dices pagination]}]]
-    (assoc db :data-dices data-dices :pagination pagination)))
+  :data-dices/set-params
+  (fn [db [_ key value]]
+    (assoc-in db [:data-dices/query-params key] value)))
+
+(reg-event-db
+  :data-dices/clean-query-params
+  (fn [db _]
+    (dissoc db :data-dices/query-params)))
+
+(reg-event-db
+  :data-dices/load-page-ok
+  (fn [db [_ {:keys [data-dices pagination query-params]}]]
+    (assoc db :data-dices data-dices :pagination pagination :data-dices/query-params query-params)))
 
 (reg-event-fx
-  :data-dices/load-all
+  :data-dices/load-page
   (fn [_ params]
     {:http {:method        GET
             :url           (str site-uri "/data-dices")
             :ajax-map      {:params params}
-            :success-event [:data-dices/load-all-ok]}}))
+            :success-event [:data-dices/load-page-ok]}}))
+
+
+(reg-event-db
+  :data-dices/set-attr
+  (fn [db [_ key value]]
+    (assoc-in db [:data-dic key] value)))
 
 (reg-event-db
   :data-dices/add-ok
   (fn [db [_ {:keys [data-dic]}]]
-    (assoc db :success "add a data-dic ok")))
+    (assoc db :success "保存成功" :data-dic data-dic)))
 
 (reg-event-fx
   :data-dices/add
-  (fn [_ [_ {:keys [name] :as data-dic}]]
-    (if (str/blank? name)
-      {:dispatch [:set-error "名称不能为空"]}
-      {:http {:method        POST
-              :url           (str site-uri "/data-dices")
-              :ajax-map      {:params data-dic}
-              :success-event [:data-dices/add-ok]}})))
+  (fn [_ [_ data-dic]]
+    {:http {:method        POST
+            :url           (str site-uri "/data-dices")
+            :ajax-map      {:params data-dic}
+            :success-event [:data-dices/add-ok]}}))
 
 (reg-event-db
   :data-dices/delete-ok

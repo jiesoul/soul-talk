@@ -48,12 +48,17 @@
 
 ;; 后台管理
 (defroute "/dash" []
-  (run-events-admin [[:set-breadcrumb ["面板"]]
+  (run-events-admin [[:set-breadcrumb ["统计面板"]]
                      [:set-active-page :dash]]))
 
 (defroute "/site-info/:id" [id]
   (run-events-admin [[:site-info/load id]
+                     [:set-breadcrumb ["网站信息设置"]]
                      [:set-active-page :site-info]]))
+
+(defroute "/data-dices" []
+  (run-events-admin [[:set-breadcrumb ["数据字典管理"]]
+                     [:set-active-page :data-dices]]))
 
 (defroute "/users/password" []
   (run-events-admin [[:set-breadcrumb ["个人管理" "修改密码"]]
@@ -68,10 +73,7 @@
                      [:users/load-all]
                      [:set-active-page :users]]))
 
-(defroute "/data-dices" []
-  (run-events-admin [[:data-dices/load-all]
-                     [:set-breadcrumb ["数据字典管理"]]
-                     [:set-active-page :data-dices]]))
+
 
 (defroute "/tags" []
   (run-events-admin [[:tags/load-all]

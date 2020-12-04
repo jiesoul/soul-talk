@@ -27,9 +27,14 @@
             :success-event [:site-info/load-ok]}}))
 
 (rf/reg-event-db
+  :site-info/set-attr
+  (fn [db [_ key value]]
+    (assoc-in db [:site-info key] value)))
+
+(rf/reg-event-db
   :site-info/update-ok
   (fn [db [_ {:keys [site-info]}]]
-    (assoc db :site-info site-info)))
+    (assoc db :success "保存成功" :site-info site-info)))
 
 (rf/reg-event-fx
   :site-info/update
@@ -37,4 +42,4 @@
     {:http {:method        PATCH
             :url           (str site-uri "/site-info")
             :ajax-map      {:params site-info}
-            :success-event [:series/update-ok]}}))
+            :success-event [:site-info/update-ok]}}))

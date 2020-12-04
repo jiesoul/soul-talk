@@ -4,40 +4,61 @@
             ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
-            [soul-talk.utils :as du]))
+            [soul-talk.utils :as utils]))
 
 (def ^:dynamic *visible* (r/atom false))
 
 (defn edit-form []
-  (let [user (subscribe [:user])
-        ori-data-dic (subscribe [:data-dic])
-        update-data-dic (-> @ori-data-dic
-                     (update :name #(or % ""))
-                     (update :create_by #(or % (:id @user)))
-                     r/atom)
-        name (r/cursor update-data-dic [:name])]
+  (let [user-id  (:id @(subscribe [:user]))
+        data-dic (subscribe [:data-dic])
+        id (:id @data-dic)]
     (fn []
       [:> Modal {:visible    @*visible*
-                 :title      "add a data-dic"
-                 :okText     "Create"
-                 :cancelText "Cancel"
+                 :title      (str (if id "编辑" "添加") "数据字典")
+                 :okText     "保存"
+                 :cancelText "退出"
                  :onCancel   #(do
                                 (dispatch [:data-dices/clean-data-dic])
                                 (reset! *visible* false))
-                 :onOk       #(do
-                                (dispatch [:data-dices/add @update-data-dic]))}
-       [:> Form {:name "add_data-dic_form"}
-        [:> Form.Item {:title "name"
-                       :label "name"
-                       :required true
-                       :rules [{:require true :message "please enter name"}]
+                 :onOk       #(let [data-dic @data-dic]
+                                (js/console.log "data-dic: " data-dic)
+                                (assoc data-dic :update_by user-id)
+                                (if id
+                                  (dispatch [:data-dices/update data-dic])
+                                  (dispatch [:data-dices/add (assoc data-dic :create_by user-id)])))}
+       [:> Form {:name "add-data-dic-form"
+                 :initial-values @data-dic
+                 :validate-messages c/validate-messages
+                 :labelCol {:span 8}
+                 :wrapperCol {:span 8}}
+        [:> Form.Item {:name "id"
+                       :label "id"
+                       :rules [{:required true}]
                        :on-change #(let [value (-> % .-target .-value)]
-                                     (reset! name value))}
-         [:> Input]]]])))
+                                     (dispatch [:data-dices/set-attr :id value]))}
+         [:> Input ]]
+        [:> Form.Item {:name "name"
+                       :label "名称"
+                       :rules [{:required true}]
+                       :on-change #(let [value (-> % .-target .-value)]
+                                     (dispatch [:data-dices/set-attr :name value]))}
+         [:> Input]]
+        [:> Form.Item {:name "pid"
+                       :label "父id"
+                       :rules [{:required true}]
+                       :on-change #(let [value (-> % .-target .-value)]
+                                     (dispatch [:data-dices/set-attr :pid value]))}
+         [:> Input ]]
+        [:> Form.Item {:name "note"
+                       :label "备注"
+                       :on-change #(let [value (-> % .-target .-value)]
+                                     (dispatch [:data-dices/set-attr :note value]))}
+         [:> Input ]]
+        ]])))
 
 (defn query-form []
   (let [pagination (subscribe [:pagination])
-        params (r/atom nil)
+        params (subscribe [:data-dices/query-params])
         name   (r/cursor params [:name])]
     (fn []
       [:div
@@ -55,23 +76,27 @@
           [:div
            [:> Button {:type     "primary"
                        :htmlType "submit"
-                       :on-click #(dispatch [:data-dices/load-all (merge @params @pagination)])}
+                       :on-click #(dispatch [:data-dices/load-page (merge @params @pagination)])}
             "search"]
            [:> Button {:type     "dashed" :style {:margin "0 8px"}
                        :on-click #(reset! *visible* true)}
             "new"]]]]]
-       [edit-form]])))
+       ])))
 
 (def list-columns
-  [{:title "名称" :dataIndex "name", :key "name", :align "center"}
+  [{:title "ID" :dataIndex "id", :key "id", :align "center"}
+   {:title "名称" :dataIndex "name", :key "name", :align "center"}
+   {:title "父ID" :dataIndex "pid", :key "pid", :align "center"}
+   {:title "备注" :dataIndex "note", :key "note", :align "center"}
    {:title  "创建时间" :dataIndex "create_at" :key "create_at" :align "center"
     :render (fn [_ article]
               (let [article (js->clj article :keywordize-keys true)]
-                (du/to-date-time (:create_at article))))}
+                (utils/to-date-time (:create_at article))))}
+   {:title "创建人" :dataIndex "create_by", :key "create_by", :align "center"}
    {:title  "更新时间" :dataIndex "update_at" :key "update_at" :align "center"
     :render (fn [_ article]
               (let [article (js->clj article :keywordize-keys true)]
-                (du/to-date-time (:update_at article))))}
+                (utils/to-date-time (:update_at article))))}
    {:title  "操作" :dataIndex "actions" :key "actions" :align "center"
     :render (fn [_ article]
               (r/as-element
@@ -89,7 +114,7 @@
                                                #(js/console.log "cancel"))))}]])))}])
 
 (defn list-table []
-  (r/with-let [data-dices (subscribe [:data-dices])]
+  (let [data-dices (subscribe [:data-dices])]
     (fn []
       [:div.search-result-list
        [:> Table {:dataSource (clj->js @data-dices)
@@ -102,4 +127,5 @@
   [c/manager-layout
    [:div
     [query-form]
+    [edit-form]
     [list-table]]])

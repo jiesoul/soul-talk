@@ -1,1 +1,1 @@
-drop table if exists articles_series;
+drop table if exists article_series;

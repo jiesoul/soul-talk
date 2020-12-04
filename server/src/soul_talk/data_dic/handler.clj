@@ -17,8 +17,9 @@
     (utils/ok {:data-dic data-dic})))
 
 (defn update-data-dic [{:keys [id] :as data-dic}]
-  (let [data-dic (db/update-data-dic (assoc data-dic :update_at (l/local-date-time)))]
-    (utils/ok "更新成功")))
+  (let [rs (db/update-data-dic (assoc data-dic :update_at (l/local-date-time)))
+        data-dic (db/get-data-dic-by-id id)]
+    (utils/ok {:data-dic data-dic})))
 
 (defn delete-data-dic-by-id [id]
   (db/delete-data-dic-by-id id)

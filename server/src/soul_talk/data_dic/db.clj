@@ -4,7 +4,7 @@
             [next.jdbc.sql :as sql]))
 
 (defn get-data-dic-all []
-  (sql/query *db* ["select * from data_dices"]))
+  (sql/query *db* ["select * from data_dic"]))
 
 (defn save-data-dic [data-dic]
   (sql/insert! *db* :data_dic data-dic))
@@ -22,7 +22,7 @@
   (sql/delete! *db* :data_dic ["pid = ?" pid]))
 
 (defn load-data-dices-by-pid [pid]
-  (sql/query *db* ["select * from data_dices where pid = ?" pid]))
+  (sql/query *db* ["select * from data_dic where pid = ?" pid]))
 
 (defn gen-where [{:keys [name pid]}]
   (let [sql-str " where name like ? "
@@ -33,14 +33,14 @@
 
 (defn load-data-dic-page [{:keys [offset per_page]} params]
   (let [where (gen-where params)
-        sql-str (apply str "select * from data_dices" (first where) " offset ? limit ?")
+        sql-str (apply str "select * from data_dic" (first where) " offset ? limit ?")
         coll (conj (second where) offset per_page)]
     (sql/query *db*
       (into [sql-str] coll))))
 
 (defn count-data-dic-page [params]
   (let [where (gen-where params)
-        sql-str (str "select count(1) as c from data_dices" (first where))]
+        sql-str (str "select count(1) as c from data_dic" (first where))]
     (:c
      (first
        (sql/query *db* (into [sql-str] (second where)))))))

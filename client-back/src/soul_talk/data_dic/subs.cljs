@@ -5,3 +5,5 @@
 (reg-sub :data-dices query)
 
 (reg-sub :data-dic query)
+
+(reg-sub :data-dices/query-params query)

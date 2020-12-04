@@ -136,7 +136,7 @@
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
     (wrap-cors :access-control-allow-origin [#".*"]
-      :access-control-allow-methods [:get :post :put :delete :options])
+      :access-control-allow-methods [:get :post :put :delete :patch :headers :options])
     wrap-defaults
     wrap-internal-error
     mw/wrap-format-response

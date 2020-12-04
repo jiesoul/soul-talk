@@ -24,7 +24,7 @@
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn get-article-all []
-  (sql/query *db* ["select * from articles order by create_at desc"] {:builder-fn rs-set/as-unqualified-maps}))
+  (sql/query *db* ["select * from article order by create_at desc"] {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn gen-where [{:keys [title publish]}]
   (let [where-str (str "where title like ?")
@@ -35,11 +35,11 @@
 
 (defn load-articles-page [{:keys [offset per-page]} params]
   (let [[where coll] (gen-where params)
-        query-str (str "select * from articles " where " order by create_at desc offset ? limit ?")
+        query-str (str "select * from article " where " order by create_at desc offset ? limit ?")
         articles (sql/query *db*
                    (into [query-str] (conj coll offset per-page))
                    {:builder-fn rs-set/as-unqualified-maps})
-        count-str (str "select count(1) as c from articles " where )
+        count-str (str "select count(1) as c from article " where )
         total (:c
                 (first
                   (sql/query *db*
@@ -58,7 +58,7 @@
 
 (defn get-article-publish [id]
   (sql/query *db*
-    ["select * from articles where publish = 1 and id = ?
+    ["select * from article where publish = 1 and id = ?
               order by create_at desc " id]
     {:builder-fn rs-set/as-unqualified-maps}))
 
@@ -71,13 +71,13 @@
                 from
                   (select date_part('year', create_at) as year,
                     date_part('month', create_at) as month
-                    from articles where publish = 1) t
+                    from article where publish = 1) t
                 group by year,month"]
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn get-article-archives-year-month [year month]
   (sql/query *db*
-    ["select * from articles where publish = 1
+    ["select * from article where publish = 1
       and date_part('year', create_at) = ?
       and date_part('month', create_at) = ?
       order by create_at desc"
@@ -99,7 +99,7 @@
 
 (defn get-article-tags-by-article-id [article-id]
   (sql/query *db*
-    ["select * from articles_tags where article_id = ?" article-id]
+    ["select * from article_tag where article_id = ?" article-id]
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn delete-article-tag-by-article-id [article-id]
@@ -125,7 +125,7 @@
 
 (defn get-article-series-by-article-id [article-id]
   (sql/query *db*
-    ["select * from articles_series where article_id = ?" article-id]
+    ["select * from article_series where article_id = ?" article-id]
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn delete-article-series-by-article-id [article-id]
@@ -148,12 +148,12 @@
 
 (defn get-comments-by-articleId [article-id]
   (sql/query *db*
-    ["select * from comments where article_id = ? order by create_at desc" article-id]
+    ["select * from comment where article_id = ? order by create_at desc" article-id]
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn get-comments-by-reply-id [reply-id]
   (sql/query *db*
-    ["select 8 from comments where reply_id = ? order by create_at desc"]
+    ["select 8 from comment where reply_id = ? order by create_at desc"]
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn gen-where-comments [{:keys [article_id body create_by_name create_by_email]}]
@@ -174,11 +174,11 @@
 
 (defn load-articles-comments-page [{:keys [per_page offset]} params]
   (let [[where coll] (gen-where-comments params)
-        query-str (str "select * from articles_comments " where " offset ? limit ?")
+        query-str (str "select * from article_comment " where " offset ? limit ?")
         comments (sql/query *db*
                    (into [query-str] (conj coll offset per_page))
                    {:builder-fn rs-set/as-unqualified-maps})
-        count-str (str "select count(1) as c from articles_comments " where)
+        count-str (str "select count(1) as c from article_comment " where)
         total (:c
                 (first
                   (sql/query *db*
