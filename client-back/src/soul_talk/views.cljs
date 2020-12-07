@@ -11,6 +11,7 @@
             [soul-talk.tag.views :as tag]
             [soul-talk.app-key.views :as app-key]
             [soul-talk.data-dic.views :as data-dic]
+            [soul-talk.menu.views :as menu]
             [soul-talk.collect-link.views :as collect-link]
             [soul-talk.collect-site.views :as collect-site]
             [soul-talk.series.views :as series]
@@ -37,6 +38,9 @@
 
 (defmethod pages :data-dices [_ _]
   (admin data-dic/query-page))
+
+(defmethod pages :menus [_ _]
+  (admin menu/query-page))
 
 ;; user
 (defmethod pages :users [_ _]

@@ -60,6 +60,12 @@
   (run-events-admin [[:set-breadcrumb ["数据字典管理"]]
                      [:set-active-page :data-dices]]))
 
+
+(defroute "/menus" []
+  (run-events-admin [[:set-breadcrumb ["菜单管理"]]
+                     [:set-active-page :menus]]))
+
+
 (defroute "/users/password" []
   (run-events-admin [[:set-breadcrumb ["个人管理" "修改密码"]]
                      [:set-active-page :users-password]]))

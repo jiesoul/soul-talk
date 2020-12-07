@@ -3,74 +3,123 @@
             [antd :refer [Row Col Form Input Button Divider Table Modal]]
             ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
             [reagent.core :as r]
-            [re-frame.core :refer [subscribe dispatch]]
+            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [soul-talk.utils :as utils]))
 
-(def ^:dynamic *visible* (r/atom false))
+(def ^:dynamic *edit-visible* (r/atom false))
+(def ^:dynamic *add-visible* (r/atom false))
 
-(defn edit-form []
+
+(defn add-form []
   (let [user-id  (:id @(subscribe [:user]))
-        data-dic (subscribe [:data-dic])
-        id (:id @data-dic)]
+        data-dic (subscribe [:data-dic])]
     (fn []
-      [:> Modal {:visible    @*visible*
-                 :title      (str (if id "编辑" "添加") "数据字典")
+      [:> Modal {:visible    @*add-visible*
+                 :title      "添加数据字典"
                  :okText     "保存"
                  :cancelText "退出"
-                 :onCancel   #(do
-                                (dispatch [:data-dices/clean-data-dic])
-                                (reset! *visible* false))
-                 :onOk       #(let [data-dic @data-dic]
-                                (js/console.log "data-dic: " data-dic)
-                                (assoc data-dic :update_by user-id)
-                                (if id
-                                  (dispatch [:data-dices/update data-dic])
-                                  (dispatch [:data-dices/add (assoc data-dic :create_by user-id)])))}
-       [:> Form {:name "add-data-dic-form"
-                 :initial-values @data-dic
+                 :onCancel   #(reset! *add-visible* false)
+                 :onOk #(let [data-dic @data-dic]
+                          (assoc data-dic :update_by user-id)
+                          (dispatch [:data-dices/add (assoc data-dic :create_by user-id)]))}
+       [:> Form {:name              "add-data-dic-form"
                  :validate-messages c/validate-messages
-                 :labelCol {:span 8}
-                 :wrapperCol {:span 8}}
-        [:> Form.Item {:name "id"
-                       :label "id"
-                       :rules [{:required true}]
+                 :labelCol          {:span 8}
+                 :wrapperCol        {:span 8}}
+        [:> Form.Item {:name      "id"
+                       :label     "id"
+                       :rules     [{:required true}]
                        :on-change #(let [value (-> % .-target .-value)]
                                      (dispatch [:data-dices/set-attr :id value]))}
-         [:> Input ]]
-        [:> Form.Item {:name "name"
-                       :label "名称"
-                       :rules [{:required true}]
+         [:> Input]]
+        [:> Form.Item {:name      "name"
+                       :label     "名称"
+                       :rules     [{:required true}]
                        :on-change #(let [value (-> % .-target .-value)]
                                      (dispatch [:data-dices/set-attr :name value]))}
          [:> Input]]
-        [:> Form.Item {:name "pid"
-                       :label "父id"
-                       :rules [{:required true}]
+        [:> Form.Item {:name      "pid"
+                       :label     "父id"
+                       :rules     [{:required true}]
                        :on-change #(let [value (-> % .-target .-value)]
                                      (dispatch [:data-dices/set-attr :pid value]))}
-         [:> Input ]]
-        [:> Form.Item {:name "note"
-                       :label "备注"
+         [:> Input]]
+        [:> Form.Item {:name      "note"
+                       :label     "备注"
                        :on-change #(let [value (-> % .-target .-value)]
                                      (dispatch [:data-dices/set-attr :note value]))}
-         [:> Input ]]
+         [:> Input]]
         ]])))
+
+(defn edit-form []
+  (let [user-id  (:id @(subscribe [:user]))
+        data-dic (subscribe [:data-dic])]
+    (fn []
+      (if @data-dic
+        [:> Modal {:visible    @*edit-visible*
+                   :title      "编辑数据字典"
+                   :okText     "保存"
+                   :cancelText "退出"
+                   :onCancel   #(reset! *edit-visible* false)
+                               :onOk #(let [data-dic @data-dic]
+                                        (assoc data-dic :update_by user-id)
+                                        (dispatch [:data-dices/update data-dic]))}
+         [:> Form {:name              "add-data-dic-form"
+                   :initial-values    @data-dic
+                   :validate-messages c/validate-messages
+                   :labelCol          {:span 8}
+                   :wrapperCol        {:span 8}}
+          [:> Form.Item {:name      "id"
+                         :label     "id"
+                         :rules     [{:required true}]}
+           [:> Input {:disabled true}]]
+          [:> Form.Item {:name      "name"
+                         :label     "名称"
+                         :rules     [{:required true}]
+                         :on-change #(let [value (-> % .-target .-value)]
+                                       (dispatch [:data-dices/set-attr :name value]))}
+           [:> Input]]
+          [:> Form.Item {:name      "pid"
+                         :label     "父id"
+                         :rules     [{:required true}]
+                         :on-change #(let [value (-> % .-target .-value)]
+                                       (dispatch [:data-dices/set-attr :pid value]))}
+           [:> Input]]
+          [:> Form.Item {:name      "note"
+                         :label     "备注"
+                         :on-change #(let [value (-> % .-target .-value)]
+                                       (dispatch [:data-dices/set-attr :note value]))}
+           [:> Input]]
+          ]]))))
+
+
 
 (defn query-form []
   (let [pagination (subscribe [:pagination])
-        params (subscribe [:data-dices/query-params])
-        name   (r/cursor params [:name])]
+        params (subscribe [:data-dices/query-params])]
     (fn []
       [:div
-       [:> Form {:title     ""
-                 :className "advanced-search-form"}
+       [:> Form {:name  "query-form"
+                 :className "advanced-search-form"
+                 :initial-values    @params}
         [:> Row {:gutter 24}
          [:> Col {:span 8}
+          [:> Form.Item {:name "id"
+                         :label "id"
+                         :on-change #(dispatch [:data-dices/set-query-params :id (-> % .-target .-value)])}
+           [:> Input]]]
+         [:> Col {:span 8}
           [:> Form.Item {:name  "name"
-                         :label "name"}
-           [:> Input {:placeholder "name"
-                      :value       @name
-                      :on-blur     #(reset! name (-> % .-target .-value))}]]]]
+                         :label "name"
+                         :on-change #(dispatch [:data-dices/set-query-params :name (-> % .-target .-value)])}
+           [:> Input]]]
+         [:> Col {:span 8}
+          [:> Form.Item {:name "pid"
+                         :label "父id"
+                         :on-change #(dispatch [:data-dices/set-query-params :pid (-> % .-target .-value)])}
+           [:> Input]]]
+         ]
+
         [:> Row
          [:> Col {:span 24 :style {:text-align "right"}}
           [:div
@@ -79,7 +128,7 @@
                        :on-click #(dispatch [:data-dices/load-page (merge @params @pagination)])}
             "search"]
            [:> Button {:type     "dashed" :style {:margin "0 8px"}
-                       :on-click #(reset! *visible* true)}
+                       :on-click #(reset! *add-visible* true)}
             "new"]]]]]
        ])))
 
@@ -102,9 +151,17 @@
               (r/as-element
                 (let [{:keys [id]} (js->clj article :keywordize-keys true)]
                   [:div
+                   [:> Button {:type "primary"
+                               :icon (r/as-element [:> EditOutlined])
+                               :size "small"
+                               :on-click (fn []
+                                           (dispatch [:data-dices/load-data-dic id])
+                                           (reset! *edit-visible* true))}]
+
                    [:> Button {:type     "danger"
                                :icon     (r/as-element [:> DeleteOutlined])
                                :size     "small"
+                               :style {:margin "0 8px"}
                                :on-click (fn []
                                            (r/as-element
                                              (c/show-confirm
@@ -126,6 +183,7 @@
   []
   [c/manager-layout
    [:div
+    [add-form]
     [query-form]
     [edit-form]
     [list-table]]])
