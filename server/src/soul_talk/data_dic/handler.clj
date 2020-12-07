@@ -12,18 +12,25 @@
   (let [data-dices (db/get-data-dic-all)]
     (utils/ok "加载成功" {:data-dices data-dices})))
 
-(defn save-data-dic [data-dic]
-  (let [data-dic (db/save-data-dic data-dic)]
-    (utils/ok {:data-dic data-dic})))
+(defn save-data-dic [{:keys [id pid] :as data-dic}]
+  (if (= id pid)
+    (utils/bad-request "id pid 不能相同")
+    (if-let [dd (db/get-data-dic-by-id id)]
+      (utils/bad-request (str "id: " id " 已经存在"))
+      (let [data-dic (db/save-data-dic data-dic)]
+        (utils/ok {:data-dic data-dic})))))
 
 (defn update-data-dic [{:keys [id] :as data-dic}]
-  (let [rs (db/update-data-dic (assoc data-dic :update_at (l/local-date-time)))
+  (let [_ (db/update-data-dic (assoc data-dic :update_at (l/local-date-time)))
         data-dic (db/get-data-dic-by-id id)]
     (utils/ok {:data-dic data-dic})))
 
 (defn delete-data-dic-by-id [id]
-  (db/delete-data-dic-by-id id)
-  (utils/ok "删除成功"))
+  (let [data-dices (db/get-data-dices-by-pid id)]
+    (if (empty? data-dices)
+      (do (db/delete-data-dic-by-id id)
+          (utils/ok "删除成功"))
+      (utils/bad-request "请先删除子类。"))))
 
 (defn load-data-dic-page [req]
   (let [params (:params req)
