@@ -1,7 +1,8 @@
 (ns soul-talk.menu.db
   (:require [soul-talk.database.db :refer [*db*]]
             [next.jdbc.result-set :as rs-set]
-            [next.jdbc.sql :as sql]))
+            [next.jdbc.sql :as sql]
+            [clojure.string :as str]))
 
 (defn get-menu-by-role-id [role-ids]
   (sql/query *db*
@@ -29,21 +30,28 @@
     ["select * from menu where id = any(?)" (int-array ids)]
     {:builder-fn rs-set/as-unqualified-maps}))
 
-(defn gen-where [{:keys [name]}]
+(defn gen-where [{:keys [id name pid]}]
   (let [[where-str coll] [(str " where 1=1 ") []]
-        [where-str coll] (if name
+        [where-str coll] (if (str/blank? id)
                            [where-str coll]
-                           [(str where-str " and name like ?") (conj coll (str "%" name "%"))])]
+                           [(str where-str " and id = ? ") (conj coll id)])
+        [where-str coll] (if (str/blank? pid)
+                           [where-str coll]
+                           [(str where-str " and pid = ? ") (conj coll pid)])
+        [where-str coll] (if (str/blank? name)
+                           [where-str coll]
+                           [(str where-str " and name like ? ")
+                            (conj coll (str "%" name "%"))])]
     [where-str coll]))
 
 (defn load-menus-page [{:keys [offset per_page]} params]
   (let [[where coll] (gen-where params)
         query-sql (str "select * from menu " where " offset ? limit ?")
         menus (sql/query *db*
-                (into query-sql (conj coll offset per_page))
+                (into [query-sql] (conj coll offset per_page))
                 {:builder-fn rs-set/as-unqualified-maps})
         count-sql (str "select count(1) as c from menu " where)
         total     (:c (first (sql/query *db*
-                               (into count-sql coll))))]
+                               (into [count-sql] coll))))]
     [menus total]))
 

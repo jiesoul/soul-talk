@@ -31,8 +31,8 @@
         pagination (p/create-total pagination total)]
     (utils/ok "获取成功" {:app-keys keys
                          :pagination pagination
-                         :query-str params})))
+                         :query-params params})))
 
 (defn query-app-key [req]
   (let [query-str (:query-params req)]
-    (utils/ok {:query-str query-str})))
+    (utils/ok {:query-params query-str})))

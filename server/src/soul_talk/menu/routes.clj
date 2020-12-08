@@ -1,7 +1,7 @@
 (ns soul-talk.menu.routes
   (:require [soul-talk.menu.handler :as menu]
             [compojure.api.sweet :refer :all]
-            [compojure.api.meta :refer [restructure-params]]
+            [compojure.api.meta :refer [restructure-param]]
             [soul-talk.middleware :as m]))
 
 (defmethod restructure-param :auth-app-key
@@ -27,7 +27,7 @@
       (menu/load-menus-page req))
 
     (context "/:id" []
-      :path-params [id :- int?]
+      :path-params [id :- string?]
 
       (GET "/" []
         :summary "获取菜单"

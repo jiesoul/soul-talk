@@ -4,14 +4,16 @@
 
 (def create-menu
   (ds/spec {:name :menu/create
-            :spec {:name spec/non-empty-string?
-                   (ds/opt :url) (ds/maybe spec/uri-string?)
-                   :pid int?
+            :spec {:id spec/non-empty-string?
+                   :name spec/non-empty-string?
+                   (ds/opt :url) (ds/maybe string?)
+                   :pid spec/non-empty-string?
                    (ds/opt :note) (ds/maybe spec/non-empty-string?)}}))
 
 (def update-menu
   (ds/spec {:name :menu/update
-            :spec {:name spec/non-empty-string?
-                   (ds/opt :url) (ds/maybe spec/uri-string?)
-                   :pid int?
+            :spec {:id spec/non-empty-string?
+                   :name spec/non-empty-string?
+                   (ds/opt :url) (ds/maybe string?)
+                   :pid spec/non-empty-string?
                    (ds/opt :note) (ds/maybe spec/non-empty-string?)}}))

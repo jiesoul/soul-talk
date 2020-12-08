@@ -32,7 +32,7 @@
         pagination (p/create-total pagination total)]
     (utils/ok "获取成功" {:collect-links collect-links
                       :pagination pagination
-                      :query-str params})))
+                      :query-params params})))
 
 (defn update-collect-link [collect-link]
   (let [collect-link (db/update-collect-link (assoc collect-link :update_at (l/local-date-time)))]

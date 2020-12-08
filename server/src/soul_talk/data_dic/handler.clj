@@ -40,7 +40,7 @@
         pagination (p/create-total pagination totals)]
     (utils/ok {:data-dices data-dices
                :pagination pagination
-               :query-str params})))
+               :query-params params})))
 
 (defn load-data-dices-by-pid [pid]
   (let [data-dices (db/load-data-dices-by-pid pid)]

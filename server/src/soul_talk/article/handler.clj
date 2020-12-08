@@ -21,7 +21,7 @@
         pagination (p/create-total pagination total)]
     (utils/ok  {:pagination pagination
                 :articles   articles
-                :query-str params})))
+                :query-params params})))
 
 (defn load-articles-publish-page [req]
   (let [pagination (p/create req)
@@ -30,7 +30,7 @@
         pagination (p/create-total pagination total)]
     (utils/ok {:articles   articles
                :pagination pagination
-               :query-str params})))
+               :query-params params})))
 
 (defn get-article [article-id]
   (let [article (article-db/get-article-by-id article-id)]

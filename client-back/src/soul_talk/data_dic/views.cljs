@@ -9,7 +9,6 @@
 (def ^:dynamic *edit-visible* (r/atom false))
 (def ^:dynamic *add-visible* (r/atom false))
 
-
 (defn add-form []
   (let [user-id  (:id @(subscribe [:user]))
         data-dic (subscribe [:data-dic])]
@@ -18,12 +17,15 @@
                  :title      "添加数据字典"
                  :okText     "保存"
                  :cancelText "退出"
-                 :onCancel   #(reset! *add-visible* false)
-                 :onOk #(let [data-dic @data-dic]
-                          (assoc data-dic :update_by user-id)
-                          (dispatch [:data-dices/add (assoc data-dic :create_by user-id)]))}
+                 :onCancel   #(do
+                                (dispatch [:data-dices/clean-data-dic])
+                                (reset! *add-visible* false))
+                 :onOk       #(let [data-dic @data-dic]
+                                (assoc data-dic :update_by user-id)
+                                (dispatch [:data-dices/add (assoc data-dic :create_by user-id)]))}
        [:> Form {:name              "add-data-dic-form"
                  :validate-messages c/validate-messages
+                 :initial-values @data-dic
                  :labelCol          {:span 8}
                  :wrapperCol        {:span 8}}
         [:> Form.Item {:name      "id"
@@ -92,16 +94,14 @@
            [:> Input]]
           ]]))))
 
-
-
 (defn query-form []
   (let [pagination (subscribe [:pagination])
         params (subscribe [:data-dices/query-params])]
+    (js/console.log "====" params)
     (fn []
       [:div
        [:> Form {:name  "query-form"
-                 :className "advanced-search-form"
-                 :initial-values    @params}
+                 :className "advanced-search-form"}
         [:> Row {:gutter 24}
          [:> Col {:span 8}
           [:> Form.Item {:name "id"
@@ -110,7 +110,7 @@
            [:> Input]]]
          [:> Col {:span 8}
           [:> Form.Item {:name  "name"
-                         :label "name"
+                         :label "名称"
                          :on-change #(dispatch [:data-dices/set-query-params :name (-> % .-target .-value)])}
            [:> Input]]]
          [:> Col {:span 8}

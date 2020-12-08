@@ -1,11 +1,9 @@
 (ns soul-talk.menu.subs
-  (:require [re-frame.core :as rf]
+  (:require [re-frame.core :as rf :refer [reg-sub]]
             [soul-talk.common.effects :refer [query]]))
 
-(rf/reg-sub :menus query)
+(reg-sub :menus query)
 
-(rf/reg-sub :menu query)
+(reg-sub :menu query)
 
-(rf/reg-sub :menus/query-params)
-
-(rf/reg-sub :menus/pagination)
+(reg-sub :menus/query-params query)

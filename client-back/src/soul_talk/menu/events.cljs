@@ -29,11 +29,11 @@
 (reg-event-db
   :menus/load-page-ok
   (fn [db [_ {:keys [menus pagination query-params]}]]
-    (assoc db :menus menus :menus/pagination pagination :menus/query-params query-params)))
+    (assoc db :menus menus :pagination pagination :menus/query-params query-params)))
 
 (reg-event-fx
   :menus/load-page
-  (fn [_ params]
+  (fn [_ [_ params]]
     {:http {:method        GET
             :url           (str site-uri "/menus")
             :ajax-map      {:params params}
@@ -50,7 +50,6 @@
     {:http {:method GET
             :url (str site-uri "/menus/" id)
             :success-event [:menus/load-menu-ok]}}))
-
 
 (reg-event-db
   :menus/set-attr
@@ -97,3 +96,8 @@
     {:http {:method  DELETE
             :url (str site-uri "/menus/" id)
             :success-event [:menus/delete-ok id]}}))
+
+(reg-event-db
+  :menus/clean
+  (fn [db _]
+    (dissoc db :menus :menus/query-params :menu)))

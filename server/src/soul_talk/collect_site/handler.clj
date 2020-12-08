@@ -37,11 +37,11 @@
         pagination (p/create-total pagination total)]
     (utils/ok "获取成功" {:collect-sites keys
                       :pagination pagination
-                      :query-str query-params})))
+                      :query-params query-params})))
 
 (defn query-collect-site [req]
   (let [query-str (:query-params req)]
-    (utils/ok {:query-str query-str})))
+    (utils/ok {:query-params query-str})))
 
 
 (defn save-collect-site-tag! [collect-site-tag]

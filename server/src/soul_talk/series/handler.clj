@@ -15,7 +15,7 @@
         pagination (p/create-total pagination total)]
     (utils/ok {:series series
                :pagination pagination
-               :query-str params})))
+               :query-params params})))
 
 (defn save-series [series]
   (let [now (l/local-date-time)

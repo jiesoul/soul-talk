@@ -58,11 +58,12 @@
 
 (defroute "/data-dices" []
   (run-events-admin [[:set-breadcrumb ["数据字典管理"]]
+                     [:data-dices/clean]
                      [:set-active-page :data-dices]]))
-
 
 (defroute "/menus" []
   (run-events-admin [[:set-breadcrumb ["菜单管理"]]
+                     [:menus/clean]
                      [:set-active-page :menus]]))
 
 

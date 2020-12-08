@@ -13,7 +13,7 @@
         pagination (p/create-total pagination (second tags))]
     (utils/ok {:tags (first tags)
                :pagination pagination
-               :query-str params})))
+               :query-params params})))
 
 (defn save-tag! [{:keys [name] :as tag}]
   (if-let [t (tag-db/get-tag-by-name name)]

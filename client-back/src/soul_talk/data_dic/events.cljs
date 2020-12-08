@@ -21,7 +21,7 @@
 
 (reg-event-fx
   :data-dices/load-page
-  (fn [_ params]
+  (fn [_ [_ params]]
     {:http {:method        GET
             :url           (str site-uri "/data-dices")
             :ajax-map      {:params params}
@@ -85,4 +85,14 @@
     {:http {:method  DELETE
             :url (str site-uri "/data-dices/" id)
             :success-event [:data-dices/delete-ok id]}}))
+
+(reg-event-db
+  :data-dices/clean-data-dic
+  (fn [db _]
+    (dissoc db :data-dic)))
+
+(reg-event-db
+  :data-dices/clean
+  (fn [db _]
+    (dissoc db :data-dices :data-dices/query-params :data-dic)))
 

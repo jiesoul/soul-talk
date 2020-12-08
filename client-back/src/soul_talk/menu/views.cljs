@@ -9,19 +9,19 @@
 (def ^:dynamic *edit-visible* (r/atom false))
 (def ^:dynamic *add-visible* (r/atom false))
 
-
 (defn add-form []
   (let [user-id  (:id @(subscribe [:user]))
         menu (subscribe [:menu])]
     (fn []
       [:> Modal {:visible    @*add-visible*
-                 :title      "添加数据字典"
+                 :title      "添加菜单"
                  :okText     "保存"
                  :cancelText "退出"
-                 :onCancel   #(reset! *add-visible* false)
-                 :onOk #(let [menu @menu]
-                          (assoc menu :update_by user-id)
-                          (dispatch [:menus/add (assoc menu :create_by user-id)]))}
+                 :onCancel   #(do
+                                (reset! *add-visible* false))
+                 :onOk       #(let [menu @menu]
+                                (assoc menu :update_by user-id)
+                                (dispatch [:menus/add (assoc menu :create_by user-id)]))}
        [:> Form {:name              "add-menu-form"
                  :validate-messages c/validate-messages
                  :labelCol          {:span 8}
@@ -35,6 +35,11 @@
         [:> Form.Item {:name      "name"
                        :label     "名称"
                        :rules     [{:required true}]
+                       :on-change #(let [value (-> % .-target .-value)]
+                                     (dispatch [:menus/set-attr :name value]))}
+         [:> Input]]
+        [:> Form.Item {:name      "url"
+                       :label     "地址"
                        :on-change #(let [value (-> % .-target .-value)]
                                      (dispatch [:menus/set-attr :name value]))}
          [:> Input]]
@@ -79,6 +84,11 @@
                          :on-change #(let [value (-> % .-target .-value)]
                                        (dispatch [:menus/set-attr :name value]))}
            [:> Input]]
+          [:> Form.Item {:name      "url"
+                         :label     "地址"
+                         :on-change #(let [value (-> % .-target .-value)]
+                                       (dispatch [:menus/set-attr :name value]))}
+           [:> Input]]
           [:> Form.Item {:name      "pid"
                          :label     "父id"
                          :rules     [{:required true}]
@@ -92,49 +102,44 @@
            [:> Input]]
           ]]))))
 
-
-
 (defn query-form []
-  (let [pagination (subscribe [:menus/pagination])
-        params (subscribe [:menus/query-params])]
+  (let [pagination (subscribe [:pagination])
+        query-params (subscribe [:menus/query-params])]
     (fn []
-      [:div
-       [:> Form {:name  "query-form"
-                 :className "advanced-search-form"
-                 }
-        [:> Row {:gutter 24}
-         [:> Col {:span 8}
-          [:> Form.Item {:name "id"
-                         :label "id"
-                         :on-change #(dispatch [:menus/set-query-params :id (-> % .-target .-value)])}
-           [:> Input]]]
-         [:> Col {:span 8}
-          [:> Form.Item {:name  "name"
-                         :label "name"
-                         :on-change #(dispatch [:menus/set-query-params :name (-> % .-target .-value)])}
-           [:> Input]]]
-         [:> Col {:span 8}
-          [:> Form.Item {:name "pid"
-                         :label "父id"
-                         :on-change #(dispatch [:menus/set-query-params :pid (-> % .-target .-value)])}
-           [:> Input]]]
-         ]
-
-        [:> Row
-         [:> Col {:span 24 :style {:text-align "right"}}
-          [:div
-           [:> Button {:type     "primary"
-                       :htmlType "submit"
-                       :on-click #(dispatch [:menus/load-page (merge @params @pagination)])}
-            "search"]
-           [:> Button {:type     "dashed" :style {:margin "0 8px"}
-                       :on-click #(reset! *add-visible* true)}
-            "new"]]]]]
-       ])))
+      [:> Form {:name      "query-form"
+                :className "advanced-search-form"}
+       [:> Row {:gutter 24}
+        [:> Col {:span 8}
+         [:> Form.Item {:name      "id"
+                        :label     "id"
+                        :on-change #(dispatch [:menus/set-query-params :id (-> % .-target .-value)])}
+          [:> Input]]]
+        [:> Col {:span 8}
+         [:> Form.Item {:name      "name"
+                        :label     "name"
+                        :on-change #(dispatch [:menus/set-query-params :name (-> % .-target .-value)])}
+          [:> Input]]]
+        [:> Col {:span 8}
+         [:> Form.Item {:name      "pid"
+                        :label     "父id"
+                        :on-change #(dispatch [:menus/set-query-params :pid (-> % .-target .-value)])}
+          [:> Input]]]]
+       [:> Row
+        [:> Col {:span 24 :style {:text-align "right"}}
+         [:div
+          [:> Button {:type     "primary"
+                      :htmlType "submit"
+                      :on-click #(dispatch [:menus/load-page @query-params])}
+           "search"]
+          [:> Button {:type     "dashed" :style {:margin "0 8px"}
+                      :on-click #(reset! *add-visible* true)}
+           "new"]]]]]
+      )))
 
 (def list-columns
   [{:title "ID" :dataIndex "id", :key "id", :align "center"}
    {:title "名称" :dataIndex "name", :key "name", :align "center"}
+   {:title "地址" :dataIndex "url", :key "url", :align "center"}
    {:title "父ID" :dataIndex "pid", :key "pid", :align "center"}
    {:title "备注" :dataIndex "note", :key "note", :align "center"}
    {:title  "操作" :dataIndex "actions" :key "actions" :align "center"

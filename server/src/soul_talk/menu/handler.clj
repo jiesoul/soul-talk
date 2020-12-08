@@ -26,7 +26,7 @@
         pagination (p/create-total pagination total)]
     (utils/ok {:menus menus
                :pagination pagination
-               :params params})))
+               :query-params params})))
 
 (defn get-menu-by-id [id]
   (let [menu (menu-db/get-menu id)]

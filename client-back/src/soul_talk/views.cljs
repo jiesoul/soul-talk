@@ -59,11 +59,6 @@
 (defmethod pages :app-keys [_ _]
   (admin app-key/query-page))
 
-
-
-(defmethod pages :app-keys [_ _]
-  (admin app-key/query-page))
-
 (defmethod pages :series [_ _]
   (admin series/query-page))
 
