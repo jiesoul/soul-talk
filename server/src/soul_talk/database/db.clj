@@ -4,7 +4,8 @@
             [next.jdbc.connection :as connection]
             [next.jdbc.result-set :as rs]
             [soul-talk.config :refer [conf]]
-            [taoensso.timbre :as log])
+            [taoensso.timbre :as log]
+            [next.jdbc :as jdbc])
   (:import (java.sql Date Timestamp PreparedStatement)
            (com.zaxxer.hikari HikariDataSource)
            (java.time Instant LocalDate LocalDateTime)))
@@ -45,11 +46,11 @@
   (connect! conf))
 
 (defn- new-connection! [conf]
-  (log/info "conf: " conf)
   (let [uri (get conf :database-url)]
-    (log/info "creating a connection to Hikari:" uri)
-    (connection/->pool HikariDataSource
-      (assoc default-datasource-options :jdbcUrl uri))))
+    (jdbc/with-options
+      (connection/->pool HikariDataSource
+        (assoc default-datasource-options :jdbcUrl uri))
+      {:builder-fn rs/as-unqualified-maps})))
 
 
 (defstate ^:dynamic *db*

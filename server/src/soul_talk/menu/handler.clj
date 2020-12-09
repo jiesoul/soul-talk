@@ -2,17 +2,20 @@
   (:require [soul-talk.menu.db :as menu-db]
             [soul-talk.pagination :as p]
             [soul-talk.menu.spec :as spec]
-            [soul-talk.utils :as utils]))
+            [soul-talk.utils :as utils]
+            [java-time.local :as l]))
 
 (def create-menu spec/create-menu)
 (def update-menu spec/update-menu)
 
 (defn save-menu! [menu]
-  (let [menu (menu-db/save-menu! menu)]
+  (let [now (l/local-date-time)
+        menu (menu-db/save-menu! (assoc menu :create_at now :update_at now))]
     (utils/ok {:menu menu})))
 
-(defn update-menu! [id menu]
-  (let [menu (menu-db/update-menu! (assoc menu :id id))]
+(defn update-menu! [menu]
+  (let [now (l/local-date-time)
+        menu (menu-db/update-menu! (assoc menu :update_at now))]
     (utils/ok {:menu menu})))
 
 (defn delete-menu! [id]

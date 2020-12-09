@@ -11,12 +11,12 @@
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn save-menu! [menu]
-  (sql/insert! *db* :menu menu {:builder-fn rs-set/as-unqualified-maps}))
+  (sql/insert! *db* :menu menu))
 
 (defn update-menu! [menu]
   (sql/update! *db*
     :menu
-    (select-keys menu [:name :pid :url :note])
+    menu
     [" id = ? " (:id menu)]))
 
 (defn delete-menu! [id]
@@ -34,10 +34,10 @@
   (let [[where-str coll] [(str " where 1=1 ") []]
         [where-str coll] (if (str/blank? id)
                            [where-str coll]
-                           [(str where-str " and id = ? ") (conj coll id)])
+                           [(str where-str " and id = ? ") (conj coll (Integer/parseInt id))])
         [where-str coll] (if (str/blank? pid)
                            [where-str coll]
-                           [(str where-str " and pid = ? ") (conj coll pid)])
+                           [(str where-str " and pid = ? ") (conj coll (Integer/parseInt pid))])
         [where-str coll] (if (str/blank? name)
                            [where-str coll]
                            [(str where-str " and name like ? ")
@@ -48,8 +48,7 @@
   (let [[where coll] (gen-where params)
         query-sql (str "select * from menu " where " offset ? limit ?")
         menus (sql/query *db*
-                (into [query-sql] (conj coll offset per_page))
-                {:builder-fn rs-set/as-unqualified-maps})
+                (into [query-sql] (conj coll offset per_page)))
         count-sql (str "select count(1) as c from menu " where)
         total     (:c (first (sql/query *db*
                                (into [count-sql] coll))))]

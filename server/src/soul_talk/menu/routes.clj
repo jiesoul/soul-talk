@@ -21,30 +21,28 @@
       :body [menu menu/create-menu]
       (menu/save-menu! menu))
 
+    (PATCH "/" []
+      :summary "更新菜单"
+      :auth-login #{"admin"}
+      :body [menu menu/update-menu]
+      (menu/update-menu! menu))
+
     (GET "/" req
       :summary "条件查询"
       :auth-login #{"admin"}
       (menu/load-menus-page req))
 
     (context "/:id" []
-      :path-params [id :- string?]
+      :path-params [id :- int?]
 
       (GET "/" []
         :summary "获取菜单"
         :auth-login #{"admin"}
         (menu/get-menu-by-id id))
 
-      (PATCH "/" []
-        :summary "更新菜单"
-        :auth-login #{"admin"}
-        :body [menu menu/update-menu]
-        (menu/update-menu! id menu))
-
       (DELETE "/" []
         :summary "删除菜单"
         :auth-login #{"admin"}
-        (menu/delete-menu! id))
-
-      )
+        (menu/delete-menu! id)))
 
     ))

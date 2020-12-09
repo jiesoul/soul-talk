@@ -27,8 +27,12 @@
 
 (defn gen-where [{:keys [name pid id]}]
   (let [[sql-str coll] [(str " where name like ? ") [(str "%" name "%")]]
-        [sql-str coll] (if (str/blank? pid) [sql-str coll] [(str sql-str " and pid = ?") (conj coll pid)])
-        [sql-str coll] (if (str/blank? id) [sql-str coll] [(str sql-str " and id = ?") (conj coll id)])]
+        [sql-str coll] (if (str/blank? pid)
+                         [sql-str coll]
+                         [(str sql-str " and pid = ?") (conj coll pid)])
+        [sql-str coll] (if (str/blank? id)
+                         [sql-str coll]
+                         [(str sql-str " and id = ?") (conj coll id)])]
     [sql-str coll]))
 
 (defn load-data-dic-page [{:keys [offset per_page]} params]

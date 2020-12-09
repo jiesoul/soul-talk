@@ -4,7 +4,8 @@
             ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [soul-talk.utils :as utils]))
+            [soul-talk.utils :as utils]
+            [taoensso.timbre :as log]))
 
 (def ^:dynamic *edit-visible* (r/atom false))
 (def ^:dynamic *add-visible* (r/atom false))
@@ -104,10 +105,12 @@
 
 (defn query-form []
   (let [pagination (subscribe [:pagination])
-        query-params (subscribe [:menus/query-params])]
+        query-params (subscribe [:menus/query-params])
+        this (r/current-component)]
     (fn []
-      [:> Form {:name      "query-form"
-                :className "advanced-search-form"}
+      [:> Form {:name           "query-form"
+                :className      "advanced-search-form"
+                :initial-values @query-params}
        [:> Row {:gutter 24}
         [:> Col {:span 8}
          [:> Form.Item {:name      "id"
@@ -129,11 +132,24 @@
          [:div
           [:> Button {:type     "primary"
                       :htmlType "submit"
+                      :size     "small"
+                      :style    {:margin "0 8px"}
+                      :on-click #(let []
+                                   (js/console.log "this: " this)
+                                   (js/console.log "this props: " (r/props this))
+                                   (js/console.log "this children: " (r/children this)))}
+           "重置"]
+          [:> Button {:type     "primary"
+                      :htmlType "submit"
+                      :size     "small"
+                      :style    {:margin "0 8px"}
                       :on-click #(dispatch [:menus/load-page @query-params])}
-           "search"]
-          [:> Button {:type     "dashed" :style {:margin "0 8px"}
+           "搜索"]
+          [:> Button {:type     "dashed"
+                      :style    {:margin "0 8px"}
+                      :size     "small"
                       :on-click #(reset! *add-visible* true)}
-           "new"]]]]]
+           "新增"]]]]]
       )))
 
 (def list-columns
