@@ -119,51 +119,51 @@
 (defn query-form []
   (let [query-params (subscribe [:menus/query-params])
         this (r/current-component)
-        props (r/props this)]
+        children (r/children this)]
     (fn []
-      (js/console.log "query-form reload++++++++++ query-param: " @query-params)
-      [:> Form {:name           "query-form"
-                :className      "advanced-search-form"}
-       [:> Row {:gutter 24}
-        [:> Col {:span 8}
-         [:> Form.Item {:name      "id"
-                        :label     "id"
-                        :on-change #(dispatch [:menus/set-query-params :id (-> % .-target .-value)])}
-          [:> Input {:value (:id @query-params)}]]]
-        [:div (:id @query-params)]
-        [:> Col {:span 8}
-         [:> Form.Item {:name      "name"
-                        :label     "name"
-                        :on-change #(dispatch [:menus/set-query-params :name (-> % .-target .-value)])}
-          [:> Input {:value (:name @query-params)}]]]
-        [:> Col {:span 8}
-         [:> Form.Item {:name      "pid"
-                        :label     "父id"
-                        :on-change #(dispatch [:menus/set-query-params :pid (-> % .-target .-value)])}
-          [:> Input {:value (:pid @query-params)}]]]]
-       [:> Row
-        [:> Col {:span 24 :style {:text-align "right"}}
-         [:div
-          [:> Button {:type     "primary"
-                      :htmlType "submit"
-                      :style    {:margin "0 8px"}
-                      :on-click (fn [e]
-                                  (dispatch [:menus/clean-query-params])
-                                  (let []
-                                    (js/console.log "===e: " e)
-                                    (js/console.log "====this: " this)))}
-           "重置"]
-          [:> Button {:type     "primary"
-                      :htmlType "submit"
-                      :style    {:margin "0 8px"}
-                      :on-click #(dispatch [:menus/load-page @query-params])}
-           "搜索"]
-          [:> Button {:type     "dashed"
-                      :style    {:margin "0 8px"}
-                      :on-click (fn []
-                                  (dispatch [:menus/clean-menu])
-                                  (reset! *add-visible* true))}
-           "新增"]]]]]))
+      (let [{:keys [id name pid]} @query-params]
+        (js/console.log "query-form reload++++++++++ query-param: " @query-params)
+        [:> Form {:name      "query-form"
+                  :className "advanced-search-form"}
+         [:> Row {:gutter 24}
+          [:> Col {:span 8}
+           [:> Form.Item {:name      "id"
+                          :label     "id"
+                          :on-change #(dispatch [:menus/set-query-params :id (-> % .-target .-value)])}
+            [:input {:value (:id @query-params)}]]]
+          [:> Col {:span 8}
+           [:> Form.Item {:name      "name"
+                          :label     "name"
+                          :on-change #(dispatch [:menus/set-query-params :name (-> % .-target .-value)])}
+            [:input {:value (:name @query-params)}]]]
+          [:> Col {:span 8}
+           [:> Form.Item {:name      "pid"
+                          :label     "父id"
+                          :on-change #(dispatch [:menus/set-query-params :pid (-> % .-target .-value)])}
+            [:input {:value (:pid @query-params)}]]]]
+         [:> Row
+          [:> Col {:span 24 :style {:text-align "right"}}
+           [:div
+            [:> Button {:type     "primary"
+                        :htmlType "reset"
+                        :style    {:margin "0 8px"}
+                        :on-click (fn [e]
+                                    (dispatch [:menus/clean-query-params])
+                                    (let []
+                                      (js/console.log "===e: " children)
+                                      (js/console.log "====this: " (-> this))))}
+             "重置"]
+            [:> Button {:type     "primary"
+                        :htmlType "submit"
+                        :style    {:margin "0 8px"}
+                        :on-click #(dispatch [:menus/load-page @query-params])}
+             "搜索"]
+            [:> Button {:type     "dashed"
+                        :style    {:margin "0 8px"}
+                        :on-click (fn []
+                                    (dispatch [:menus/clean-menu])
+                                    (reset! *add-visible* true))}
+             "新增"]]]]])))
   )
 
 (def list-columns
