@@ -1,5 +1,5 @@
 (ns soul-talk.log
-  (:require [taoensso.timbre :as timbre]
+  (:require [clojure.tools.logging :as timbre]
             [cheshire.core :as json]))
 
 (defn- json-output [{:keys [level msg_ instant]}]
@@ -7,6 +7,3 @@
     (json/generate-string {:timestamp instant
                            :level level
                            :event event})))
-
-(defn init! []
-  (timbre/merge-config! {:output-fn json-output}))

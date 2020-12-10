@@ -2,7 +2,7 @@
   (:require [buddy.auth.backends.token :refer [token-backend]]
             [soul-talk.app-key.db :as db]
             [soul-talk.utils :as utils]
-            [taoensso.timbre :as log]
+            [clojure.tools.logging :as log]
             [soul-talk.pagination :as p]
             [soul-talk.app-key.spec :as spec]))
 

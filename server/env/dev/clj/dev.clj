@@ -8,11 +8,9 @@
             [mount-up.core :as mu]
             [soul-talk.database.my-migrations :as my-migrations]
             [com.jakemccrary.test-refresh :as test-refresh]
-            [taoensso.timbre :as log]))
+            [clojure.tools.logging :as log]))
 
 (mu/on-upndown :info mu/log :before)
-
-;(log/set-level! :debug)
 
 (def test-refresh test-refresh/run-in-repl)
 

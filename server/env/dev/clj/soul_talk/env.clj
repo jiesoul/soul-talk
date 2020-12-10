@@ -1,5 +1,5 @@
 (ns soul-talk.env
-  (:require [taoensso.timbre :as log]
+  (:require [clojure.tools.logging :as log]
             [soul-talk.dev-middleware :refer [wrap-dev]]
             [mount.core :refer [args defstate]]
             [cprop.core :refer [load-config]]

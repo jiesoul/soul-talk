@@ -4,7 +4,7 @@
             [soul-talk.handler :refer :all]
             [soul-talk.helper :refer [user parse-body]]
             [soul-talk.helper :as h]
-            [taoensso.timbre :as log]))
+            [clojure.tools.logging :as log]))
 
 
 (deftest user-api-test

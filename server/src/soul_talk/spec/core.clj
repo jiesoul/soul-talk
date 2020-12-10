@@ -13,6 +13,12 @@
 (s/def ::id int?)
 (s/def ::description string?)
 (s/def ::amount pos-int?)
+(s/def ::delivery inst?)
+(s/def ::tags (s/coll-of keyword? :into #{}))
+(s/def ::item (s/keys :req-un [::description ::tags ::amount]))
+(s/def ::items (s/map-of ::id ::item))
+(s/def ::location (s/tuple double? double?))
+(s/def ::order (s/keys :req-un [::id ::items ::delivery ::location]))
 
 (s/def ::page int?)
 (s/def ::pre-page int?)
@@ -21,7 +27,7 @@
 (def id
   (st/spec {:spec        pos-int?
             :type        :long
-            :description "user id"
+            :description "id"
             :reason "id 必须为非负整数！"}))
 
 (def result
@@ -42,7 +48,7 @@
 (def Result
   (ds/spec {:name :core/Result
             :spec {:result           result
-                   (ds/opt :message) message
+                   (ds/opt :message) (ds/maybe message)
                    (ds/opt :data)    (ds/maybe data)}}))
 
 (def page (st/spec {:spec int?

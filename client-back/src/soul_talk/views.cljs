@@ -24,10 +24,10 @@
 (defmethod pages :login [_ _] [auth/login-page])
 
 (defn admin [page]
-  (r/with-let [user (subscribe [:user])]
+  (let [user (subscribe [:user])]
     (if @user
       [page]
-      (navigate! "#/login"))))
+      [auth/login-page])))
 
 ;;面板
 (defmethod pages :dash [_ _]
@@ -79,11 +79,12 @@
 
 ;; 根据配置加载不同页面
 (defn main-page []
-  (r/with-let [ready? (subscribe [:initialised?])
+  (let [ready? (subscribe [:initialised?])
                active-page (subscribe [:active-page])]
     (when @ready?
       (fn []
-        (c/success-message)
-        (c/error-message)
-        (c/loading-modal)
-        (pages @active-page nil)))))
+        [:div
+         [c/success-message]
+         [c/error-message]
+         [c/loading-modal]
+         (pages @active-page)]))))

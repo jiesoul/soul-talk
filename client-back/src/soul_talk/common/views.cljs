@@ -109,7 +109,7 @@
        (make-menu (:children menus-tree))])))
 
 (defn manager-header-dropdown []
-  (r/with-let [user (rf/subscribe [:user])]
+  (let [user (rf/subscribe [:user])]
     [:div {:style {:text-align "right"}}
      [:> antd/Dropdown {:overlay (r/as-element [manager-user-nav])}
       [:a {:className "ant-dropdown-link"
@@ -130,7 +130,7 @@
    [footer]])
 
 (defn page-nav [handler]
-  (r/with-let
+  (let
     [pagination (rf/subscribe [:pagination])
      prev-page (r/cursor pagination [:previous])
      next-page (r/cursor pagination [:next])
@@ -204,33 +204,13 @@
       (antd/message.error @error)
       (rf/dispatch [:clean-error]))))
 
-
-(defn form-modal [title content visible success-fn cancel-fn]
-  [:> antd/Modal
-   {:title    title
-    :visible  visible
-    :onOk     success-fn
-    :onCancel cancel-fn}
-   content])
-
-(defn show-modal
+(defn modal
   [modal-option content]
-  [:> Modal modal-option
+  [:> Modal
+   (merge {:okText     "保存"
+           :cancelText "退出"}
+     modal-option)
    content])
-
-(defn validation-modal [title errors]
-  [:> antd/Modal {:is-open (boolean @errors)}
-   [:> antd/ModalHeader title]
-   [:> antd/ModalBody
-    [:ul
-     (doall
-       (for [[_ error] @errors]
-         ^{:key error}
-         [:li error]))]]
-   [:> antd/ModalFooter
-    [:button.btn.btn-sm.btn-danger
-     {:on-click #(reset! errors nil)}
-     "Close"]]])
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]

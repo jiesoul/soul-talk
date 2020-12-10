@@ -13,53 +13,55 @@
    [:> antd/Menu.Item "登录"]])
 
 (defn layout [children]
+  )
+
+(defn login-form []
+  (let [login-data (r/atom {:email    ""
+                            :password ""})
+        email      (r/cursor login-data [:email])
+        password   (r/cursor login-data [:password])]
+    (fn []
+      [:> antd/Row {:align   "middle"
+                    :justify "space-around"}
+       [:> antd/Col
+        [:> antd/Form {:name          "login"
+                       :initialValues {:remember true}
+                       :style         {:textAlign "center"}
+                       :labelCol      {:span 8}
+                       :wrapperCol    {:span 16}}
+         [:> antd/Form.Item {:label "邮箱" :name "email" :rules [{:required true
+                                                                :message  "请输入Email"}]}
+          [:> antd/Input {:id          "email"
+                          :prefix      (r/as-element [:> antd-icons/UserOutlined])
+                          :type        :text
+                          :name        "email"
+                          :placeholder "请输入Email"
+                          :required    true
+                          :auto-focus  true
+                          :on-change   #(reset! email (-> % .-target .-value))}]]
+         [:> antd/Form.Item {:label "密码" :name "Password" :rules [{:required true
+                                                                   :message  "请输入密码"}]}
+          [:> antd/Input.Password {:id          "password"
+                                   :prefix      (r/as-element [:> antd-icons/LockOutlined])
+                                   :name        "password"
+                                   :placeholder "请输入密码"
+                                   :required    true
+                                   :on-change   #(reset! password (-> % .-target .-value))}]]
+         [:> antd/Form.Item {:offset 8 :span 16 :align "right"}
+          [:> antd/Button {:type     "primary"
+                           :htmlType "submit"
+                           :on-click #(dispatch [:login @login-data])}
+           "登陆"]]]]])))
+
+(defn login-page []
   [:> antd/Layout
    [header nav]
    [:> antd/Layout.Content {:className "site-layout-content"}
-    children]
+    [login-form]]
    [footer]])
 
-(defn login-page []
-  (r/with-let [login-data (r/atom {:email    ""
-                                   :password ""})
-               email      (r/cursor login-data [:email])
-               password   (r/cursor login-data [:password])]
-    (fn []
-      [layout
-       [:> antd/Row {:align   "middle"
-                     :justify "space-around"}
-        [:> antd/Col
-         [:> antd/Form {:name          "login"
-                        :initialValues {:remember true}
-                        :style         {:textAlign "center"}
-                        :labelCol      {:span 8}
-                        :wrapperCol    {:span 16}}
-          [:> antd/Form.Item {:label "邮箱" :name "email" :rules [{:required true
-                                                                  :message  "请输入Email"}]}
-           [:> antd/Input {:id          "email"
-                           :prefix      (r/as-element [:> antd-icons/UserOutlined])
-                           :type        :text
-                           :name        "email"
-                           :placeholder "请输入Email"
-                           :required    true
-                           :auto-focus  true
-                           :on-change   #(reset! email (-> % .-target .-value))}]]
-          [:> antd/Form.Item {:label "密码" :name "Password" :rules [{:required true
-                                                                          :message  "请输入密码"}]}
-           [:> antd/Input.Password {:id          "password"
-                                    :prefix      (r/as-element [:> antd-icons/LockOutlined])
-                                    :name        "password"
-                                    :placeholder "请输入密码"
-                                    :required    true
-                                    :on-change   #(reset! password (-> % .-target .-value))}]]
-          [:> antd/Form.Item {:offset 8 :span 16 :align "right"}
-           [:> antd/Button {:type     "primary"
-                            :htmlType "submit"
-                            :on-click #(dispatch [:login @login-data])}
-            "登陆"]]]]]])))
-
 (defn register-page []
-  (r/with-let
+  (let
     [reg-data (r/atom nil)
      error (subscribe [:error])
      email (r/cursor reg-data [:email])

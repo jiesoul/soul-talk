@@ -2,7 +2,7 @@
   (:require [soul-talk.utils :as utils]
             [soul-talk.site-info.db :as db]
             [soul-talk.site-info.spec :as spec]
-            [taoensso.timbre :as log]))
+            [clojure.tools.logging :as log]))
 
 (def update-site-info spec/update-site-info)
 

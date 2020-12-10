@@ -24,6 +24,7 @@
 (reg-event-db
   :menus/clean-query-params
   (fn [db _]
+    (js/console.log "clean query params")
     (dissoc db :menus/query-params)))
 
 (reg-event-db
@@ -50,6 +51,11 @@
     {:http {:method GET
             :url (str site-uri "/menus/" id)
             :success-event [:menus/load-menu-ok]}}))
+
+(reg-event-db
+  :menus/clean-menu
+  (fn [db _]
+    (dissoc db :menu)))
 
 (reg-event-db
   :menus/set-attr

@@ -3,7 +3,7 @@
             [soul-talk.helper :as h]
             [soul-talk.handler :refer :all]
             [ring.mock.request :as mock]
-            [taoensso.timbre :as log]))
+            [clojure.tools.logging :as log]))
 
 (deftest login-test
   (testing "login"

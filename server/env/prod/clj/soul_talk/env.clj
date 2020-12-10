@@ -1,5 +1,5 @@
 (ns soul-talk.env
-  (:require [taoensso.timbre :as log]
+  (:require [clojure.tools.logging :as log]
             [mount.core :refer [args defstate]]
             [cprop.core :refer [load-config]]
             [cprop.source :as source]))

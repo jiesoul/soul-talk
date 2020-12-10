@@ -1,7 +1,7 @@
 (ns soul-talk.article.routes-test
   (:require [clojure.test :refer :all]
             [soul-talk.helper :as h]
-            [taoensso.timbre :as log]))
+            [clojure.tools.logging :as log]))
 
 (defn site-uri [uri & opt]
   (apply str "/articles" uri opt))

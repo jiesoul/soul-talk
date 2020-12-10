@@ -10,147 +10,161 @@
 (def ^:dynamic *edit-visible* (r/atom false))
 (def ^:dynamic *add-visible* (r/atom false))
 
-(defn add-form []
-  (let [user-id  (:id @(subscribe [:user]))
-        menu (subscribe [:menu])]
+(defn edit-input []
+  [:<>
+   [:> Form.Item {:name      "name"
+                  :label     "名称"
+                  :rules     [{:required true}]
+                  :on-change #(let [value (-> % .-target .-value)]
+                                (dispatch [:menus/set-attr :name value]))}
+    [:> Input]]
+   [:> Form.Item {:name      "url"
+                  :label     "地址"
+                  :on-change #(let [value (-> % .-target .-value)]
+                                (dispatch [:menus/set-attr :name value]))}
+    [:> Input]]
+   [:> Form.Item {:name      "pid"
+                  :label     "父id"
+                  :rules     [{:required true}]
+                  :on-change #(let [value (-> % .-target .-value)]
+                                (dispatch [:menus/set-attr :pid value]))}
+    [:> Input]]
+   [:> Form.Item {:name      "note"
+                  :label     "备注"
+                  :on-change #(let [value (-> % .-target .-value)]
+                                (dispatch [:menus/set-attr :note value]))}
+    [:> Input]]
+
+   ])
+
+(defn menu-form []
+  (let [menu (subscribe [:menu])]
     (fn []
-      [:> Modal {:visible    @*add-visible*
-                 :title      "添加菜单"
+      [:> Form {:name              "add-menu-form"
+                :validate-messages c/validate-messages
+                :labelCol          {:span 8}
+                :wrapperCol        {:span 8}
+                :initial-values    @menu
+                :preserve false}
+       [:> Form.Item {:name      "id"
+                      :label     "id"
+                      :rules     [{:required true}]
+                      :on-change #(let [value (-> % .-target .-value)]
+                                    (dispatch [:menus/set-attr :id value]))}
+        [:> Input]]
+       [:> Form.Item {:name      "name"
+                      :label     "名称"
+                      :rules     [{:required true}]
+                      :on-change #(let [value (-> % .-target .-value)]
+                                    (dispatch [:menus/set-attr :name value]))}
+        [:> Input]]
+       [:> Form.Item {:name      "url"
+                      :label     "地址"
+                      :on-change #(let [value (-> % .-target .-value)]
+                                    (dispatch [:menus/set-attr :name value]))}
+        [:> Input]]
+       [:> Form.Item {:name      "pid"
+                      :label     "父id"
+                      :rules     [{:required true}]
+                      :on-change #(let [value (-> % .-target .-value)]
+                                    (dispatch [:menus/set-attr :pid value]))}
+        [:> Input]]
+       [:> Form.Item {:name      "note"
+                      :label     "备注"
+                      :on-change #(let [value (-> % .-target .-value)]
+                                    (dispatch [:menus/set-attr :note value]))}
+        [:> Input]]])))
+
+(defn add-form [menu user]
+  (fn [menu user]
+    (let [user-id (:id @user)
+          this (r/current-component)]
+      [c/modal {:visible  @*add-visible*
+                :title    "添加菜单"
+                :onCancel (fn [e props]
+                            (js/console.log "========" e )
+                            (js/console.log "----------" this )
+                            (do
+                                   (dispatch [:menus/clean-menu])
+                                   (reset! *add-visible* false)))
+                :onOk     #(let [menu @menu]
+                             (assoc menu :update_by user-id)
+                             (dispatch [:menus/add (assoc menu :create_by user-id)]))}
+       [menu-form menu]
+       ])))
+
+(defn edit-form [menu user]
+  (let [user-id  (:id @user)]
+    (if @menu
+      [:> Modal {:visible    @*edit-visible*
+                 :title      "编辑数据字典"
                  :okText     "保存"
                  :cancelText "退出"
-                 :onCancel   #(do
-                                (reset! *add-visible* false))
+                 :onCancel   #(reset! *edit-visible* false)
                  :onOk       #(let [menu @menu]
                                 (assoc menu :update_by user-id)
-                                (dispatch [:menus/add (assoc menu :create_by user-id)]))}
+                                (dispatch [:menus/update menu]))}
        [:> Form {:name              "add-menu-form"
+                 :initial-values    @menu
                  :validate-messages c/validate-messages
                  :labelCol          {:span 8}
                  :wrapperCol        {:span 8}}
-        [:> Form.Item {:name      "id"
-                       :label     "id"
-                       :rules     [{:required true}]
-                       :on-change #(let [value (-> % .-target .-value)]
-                                     (dispatch [:menus/set-attr :id value]))}
-         [:> Input]]
-        [:> Form.Item {:name      "name"
-                       :label     "名称"
-                       :rules     [{:required true}]
-                       :on-change #(let [value (-> % .-target .-value)]
-                                     (dispatch [:menus/set-attr :name value]))}
-         [:> Input]]
-        [:> Form.Item {:name      "url"
-                       :label     "地址"
-                       :on-change #(let [value (-> % .-target .-value)]
-                                     (dispatch [:menus/set-attr :name value]))}
-         [:> Input]]
-        [:> Form.Item {:name      "pid"
-                       :label     "父id"
-                       :rules     [{:required true}]
-                       :on-change #(let [value (-> % .-target .-value)]
-                                     (dispatch [:menus/set-attr :pid value]))}
-         [:> Input]]
-        [:> Form.Item {:name      "note"
-                       :label     "备注"
-                       :on-change #(let [value (-> % .-target .-value)]
-                                     (dispatch [:menus/set-attr :note value]))}
-         [:> Input]]
+        [:> Form.Item {:name  "id"
+                       :label "id"
+                       :rules [{:required true}]}
+         [:> Input {:read-only true}]]
+        [edit-input]
         ]])))
 
-(defn edit-form []
-  (let [user-id  (:id @(subscribe [:user]))
-        menu (subscribe [:menu])]
-    (fn []
-      (if @menu
-        [:> Modal {:visible    @*edit-visible*
-                   :title      "编辑数据字典"
-                   :okText     "保存"
-                   :cancelText "退出"
-                   :onCancel   #(reset! *edit-visible* false)
-                   :onOk #(let [menu @menu]
-                            (assoc menu :update_by user-id)
-                            (dispatch [:menus/update menu]))}
-         [:> Form {:name              "add-menu-form"
-                   :initial-values    @menu
-                   :validate-messages c/validate-messages
-                   :labelCol          {:span 8}
-                   :wrapperCol        {:span 8}}
-          [:> Form.Item {:name      "id"
-                         :label     "id"
-                         :rules     [{:required true}]}
-           [:> Input {:disabled true}]]
-          [:> Form.Item {:name      "name"
-                         :label     "名称"
-                         :rules     [{:required true}]
-                         :on-change #(let [value (-> % .-target .-value)]
-                                       (dispatch [:menus/set-attr :name value]))}
-           [:> Input]]
-          [:> Form.Item {:name      "url"
-                         :label     "地址"
-                         :on-change #(let [value (-> % .-target .-value)]
-                                       (dispatch [:menus/set-attr :name value]))}
-           [:> Input]]
-          [:> Form.Item {:name      "pid"
-                         :label     "父id"
-                         :rules     [{:required true}]
-                         :on-change #(let [value (-> % .-target .-value)]
-                                       (dispatch [:menus/set-attr :pid value]))}
-           [:> Input]]
-          [:> Form.Item {:name      "note"
-                         :label     "备注"
-                         :on-change #(let [value (-> % .-target .-value)]
-                                       (dispatch [:menus/set-attr :note value]))}
-           [:> Input]]
-          ]]))))
-
 (defn query-form []
-  (let [pagination (subscribe [:pagination])
-        query-params (subscribe [:menus/query-params])
-        this (r/current-component)]
+  (let [query-params (subscribe [:menus/query-params])
+        this (r/current-component)
+        props (r/props this)]
     (fn []
+      (js/console.log "query-form reload++++++++++ query-param: " @query-params)
       [:> Form {:name           "query-form"
-                :className      "advanced-search-form"
-                :initial-values @query-params}
+                :className      "advanced-search-form"}
        [:> Row {:gutter 24}
         [:> Col {:span 8}
          [:> Form.Item {:name      "id"
                         :label     "id"
                         :on-change #(dispatch [:menus/set-query-params :id (-> % .-target .-value)])}
-          [:> Input]]]
+          [:> Input {:value (:id @query-params)}]]]
+        [:div (:id @query-params)]
         [:> Col {:span 8}
          [:> Form.Item {:name      "name"
                         :label     "name"
                         :on-change #(dispatch [:menus/set-query-params :name (-> % .-target .-value)])}
-          [:> Input]]]
+          [:> Input {:value (:name @query-params)}]]]
         [:> Col {:span 8}
          [:> Form.Item {:name      "pid"
                         :label     "父id"
                         :on-change #(dispatch [:menus/set-query-params :pid (-> % .-target .-value)])}
-          [:> Input]]]]
+          [:> Input {:value (:pid @query-params)}]]]]
        [:> Row
         [:> Col {:span 24 :style {:text-align "right"}}
          [:div
           [:> Button {:type     "primary"
                       :htmlType "submit"
-                      :size     "small"
                       :style    {:margin "0 8px"}
-                      :on-click #(let []
-                                   (js/console.log "this: " this)
-                                   (js/console.log "this props: " (r/props this))
-                                   (js/console.log "this children: " (r/children this)))}
+                      :on-click (fn [e]
+                                  (dispatch [:menus/clean-query-params])
+                                  (let []
+                                    (js/console.log "===e: " e)
+                                    (js/console.log "====this: " this)))}
            "重置"]
           [:> Button {:type     "primary"
                       :htmlType "submit"
-                      :size     "small"
                       :style    {:margin "0 8px"}
                       :on-click #(dispatch [:menus/load-page @query-params])}
            "搜索"]
           [:> Button {:type     "dashed"
                       :style    {:margin "0 8px"}
-                      :size     "small"
-                      :on-click #(reset! *add-visible* true)}
-           "新增"]]]]]
-      )))
+                      :on-click (fn []
+                                  (dispatch [:menus/clean-menu])
+                                  (reset! *add-visible* true))}
+           "新增"]]]]]))
+  )
 
 (def list-columns
   [{:title "ID" :dataIndex "id", :key "id", :align "center"}
@@ -182,20 +196,23 @@
                                                #(dispatch [:menus/delete id])
                                                #(js/console.log "cancel"))))}]])))}])
 
-(defn list-table []
-  (let [menus (subscribe [:menus])]
-    (fn []
-      [:div.search-result-list
-       [:> Table {:dataSource (clj->js @menus)
-                  :columns    (clj->js list-columns)
-                  :row-key    "id"
-                  :bordered   true}]])))
+(defn list-table [menus]
+  (fn [menus]
+    [:div.search-result-list
+     [:> Table {:dataSource (clj->js @menus)
+                :columns    (clj->js list-columns)
+                :row-key    "id"
+                :bordered   true}]]))
 
 (defn query-page
   []
-  [c/manager-layout
-   [:div
-    [add-form]
-    [query-form]
-    [edit-form]
-    [list-table]]])
+  (let [user (subscribe [:user])
+        query-params (subscribe [:menus/query-params])
+        menus (subscribe [:menus])
+        menu (subscribe [:menu])]
+    [c/manager-layout
+     [:div
+      [add-form menu user]
+      [query-form query-params]
+      [edit-form menu user]
+      [list-table menus]]]))

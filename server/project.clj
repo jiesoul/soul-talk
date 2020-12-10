@@ -7,6 +7,7 @@
                  [org.clojure/spec.alpha "0.2.187"]
                  [org.clojure/tools.cli "0.3.1"]
                  [org.clojure/tools.namespace "0.3.1"]
+
                  [clojure.java-time "0.3.2"]
 
                  ;; web api
@@ -28,7 +29,6 @@
                  [com.zaxxer/HikariCP "3.4.5"]
                  [ragtime "0.8.0"]
                  [toucan "1.15.0"]
-                 [honeysql "1.0.444"]
 
                  ;; Auth validation
                  [buddy "2.0.0"]
@@ -39,8 +39,8 @@
                  [tolitius/mount-up "0.1.1" :exclusions [ch.qos.logback/logback-classic]]
 
                  ;; 日志
-                 [com.taoensso/timbre "5.1.0"]
-                 [com.fzakaria/slf4j-timbre "0.3.20"]
+                 [org.clojure/tools.logging "1.1.0"]
+                 [ch.qos.logback/logback-classic "1.2.3"]
 
                  ;; formats clojure.spec error messages
                  [expound "0.7.1"]

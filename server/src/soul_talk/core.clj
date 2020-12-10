@@ -7,10 +7,8 @@
             [clojure.tools.cli :refer [parse-opts]]
             [cprop.core :refer [load-config]]
             [soul-talk.database.my-migrations :as migrations]
-            [taoensso.timbre :as log])
+            [clojure.tools.logging :as log])
   (:gen-class))
-
-
 
 (def cli-options
   [["-p" "--port PORT" "Port number"

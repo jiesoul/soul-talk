@@ -10,7 +10,7 @@
             [ring.middleware.defaults :as ring-defaults]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.cors :refer [wrap-cors]]
-            [taoensso.timbre :as log]
+            [clojure.tools.logging :as log]
             [soul-talk.env :refer [defaults]]
             [cognitect.transit :as transit]
             [compojure.api.middleware :as cm]
@@ -20,8 +20,6 @@
             [ring.util.http-response :as resp]
             [soul-talk.app-key.handler :as app-key])
   (:import [java.time Instant]))
-
-
 
 ;; 错误处理
 (defn exception-handler [f type]
@@ -38,7 +36,17 @@
                     :clojure.spec.alpha/problems
                     (map :reason)
                     (apply str))]
-      (f (if (nil? message) "请求参数错误" message)))))
+      (f (if (nil? message) "请求参数验证错误" message)))))
+
+(defn request-parsing-handler [f type]
+  (fn [^Exception e data req]
+    (utils/log-error e data req type)
+    (let [message (some->> data
+                    :problems
+                    :clojure.spec.alpha/problems
+                    (map :reason)
+                    (apply str))]
+      (f (if (nil? message) "请求参数处理错误" message)))))
 
 (defn response-validation-handler [f type]
   (fn [^Exception e data resp]
@@ -55,7 +63,7 @@
   {:handlers {::calm                   (exception-handler utils/enhance-your-calm :calm)
               java.sql.SQLException    (exception-handler utils/internal-server-error :sql)
               ::ex/request-validation  (request-validation-handler utils/bad-request :request)
-              ::ex/request-parsing     (ex/with-logging ex/request-parsing-handler :error)
+              ::ex/request-parsing     (request-parsing-handler utils/bad-request :request)
               ::ex/response-validation (response-validation-handler utils/bad-request :response)
               ::ex/default             (exception-handler utils/internal-server-error :unknown)}})
 

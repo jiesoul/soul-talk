@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [soul-talk.helper :as h]
             [soul-talk.tag.routes :refer :all]
-            [taoensso.timbre :as log]))
+            [clojure.tools.logging :as log]))
 
 (def context "/tags")
 (def ^:dynamic *test-tag* (atom {:name "test-tag"}))

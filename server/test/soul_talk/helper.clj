@@ -4,7 +4,7 @@
             [cheshire.core :as cheshire]
             [ring.mock.request :as mock]
             [soul-talk.utils :as utils]
-            [taoensso.timbre :as log]
+            [clojure.tools.logging :as log]
             [clojure.string :as s]))
 
 (defn start-states [f]
