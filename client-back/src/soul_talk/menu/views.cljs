@@ -1,6 +1,6 @@
 (ns soul-talk.menu.views
   (:require [soul-talk.common.views :as c]
-            [antd :refer [Row Col Form Input Button Divider Table Modal]]
+            [antd :as antd :refer [Row Col Form Input Button Divider Table Modal]]
             ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
@@ -119,7 +119,9 @@
 (defn query-form []
   (let [query-params (subscribe [:menus/query-params])
         this (r/current-component)
-        children (r/children this)]
+        children (r/children this)
+        form         (fn []
+                       (js/Form.userForm))]
     (fn []
       (let [{:keys [id name pid]} @query-params]
         (js/console.log "query-form reload++++++++++ query-param: " @query-params)
@@ -143,14 +145,14 @@
             [:input {:value (:pid @query-params)}]]]]
          [:> Row
           [:> Col {:span 24 :style {:text-align "right"}}
-           [:div
+           [:> Form.Item
             [:> Button {:type     "primary"
                         :htmlType "reset"
                         :style    {:margin "0 8px"}
-                        :on-click (fn [e]
+                        :on-click #(do
                                     (dispatch [:menus/clean-query-params])
-                                    (let []
-                                      (js/console.log "===e: " children)
+                                    (let [form (-> % .-props)]
+                                      (js/console.log "===Form: "form)
                                       (js/console.log "====this: " (-> this))))}
              "重置"]
             [:> Button {:type     "primary"

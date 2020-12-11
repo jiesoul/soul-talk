@@ -2,6 +2,7 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.routes :refer [logged-in? navigate!]]
+            [soul-talk.common.styles :as styles]
             [soul-talk.common.views :as c]
             [soul-talk.dash.views :as dash]
             [soul-talk.site-info.views :as site-info]
@@ -15,19 +16,20 @@
             [soul-talk.collect-link.views :as collect-link]
             [soul-talk.collect-site.views :as collect-site]
             [soul-talk.series.views :as series]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            ["@material-ui/core" :as mui]))
 
 ;;多重方法  响应对应的页面
 (defmulti pages (fn [page _] page))
 
 ;;页面
-(defmethod pages :login [_ _] [auth/login-page])
+(defmethod pages :login [_ _] [auth/sign-in])
 
 (defn admin [page]
   (let [user (subscribe [:user])]
     (if @user
       [page]
-      [auth/login-page])))
+      [auth/sign-in])))
 
 ;;面板
 (defmethod pages :dash [_ _]
@@ -83,8 +85,11 @@
                active-page (subscribe [:active-page])]
     (when @ready?
       (fn []
-        [:div
-         [c/success-message]
-         [c/error-message]
-         [c/loading-modal]
-         (pages @active-page)]))))
+        [:<>
+         [:> mui/CssBaseline]
+         [:> mui/MuiThemeProvider {:theme styles/custom-theme}
+          [:div
+           [c/success-message]
+           [c/error-message]
+           [c/loading-modal]
+           (pages @active-page)]]]))))

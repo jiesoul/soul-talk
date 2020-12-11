@@ -20,6 +20,15 @@ body {
     height: auto;
 }
 
+.login-root {
+    height: 100vh;
+}
+
+.login-image {
+    background-size:     cover;
+    background: url(https://source.unsplash.com/random) no-repeat;
+}
+
 .site-layout-header h1 {
     height: auto;
     font-weight: bold;

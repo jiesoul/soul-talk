@@ -5,12 +5,27 @@
             [antd :as antd :refer [Breadcrumb Modal Menu Row Col Layout Footer]]
             ["@ant-design/icons" :refer [UserOutlined EditOutlined LoginOutlined DashboardOutlined]]
             ["react-highlight.js" :as hljs]
+            ["@material-ui/core" :as mui]
             [soul-talk.routes :refer [navigate!]]
             [soul-talk.utils :as utils]))
 
 (def validate-messages {:required "${label} 必须的"
                         :types {:email "${label} 非法邮件格式"
                                 :url "${label} 非法地址"}})
+
+(def drawer-width 240)
+
+(defn copyright []
+  (let [year (.getFullYear (js/Date.))]
+    [:> mui/Typography {:variant "body2"
+                        :color   "textSecondary"
+                        :align   "center"}
+     "Copyright ©"
+     [:> mui/Link {:color "inherit"
+                   :href  "https://www.jiesoul.com/"}
+      "jiesoul"]
+     (str " " year ".")
+     ]))
 
 (defn logo []
   (let [site-info (rf/subscribe [:site-info])]
@@ -116,6 +131,8 @@
            :href      "#"}
        [:> UserOutlined]
        "  " (:name @user)]]]))
+
+(defn layout [])
 
 (defn manager-layout [main]
   [:> antd/Layout
