@@ -23,13 +23,13 @@
 (defmulti pages (fn [page _] page))
 
 ;;页面
-(defmethod pages :login [_ _] [auth/sign-in])
+(defmethod pages :login [_ _] [auth/login-page])
 
 (defn admin [page]
   (let [user (subscribe [:user])]
     (if @user
       [page]
-      [auth/sign-in])))
+      [auth/login-page])))
 
 ;;面板
 (defmethod pages :dash [_ _]

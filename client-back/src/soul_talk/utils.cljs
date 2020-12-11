@@ -32,3 +32,8 @@
    (for [x coll :when (= (:pid x) (:id root))]
      (assoc x :children (make-tree x coll)))))
 
+(defn event-value
+  [^js/Event e]
+  (let [^js/HTMLInputElement el (.-target e)]
+    (.-value el)))
+

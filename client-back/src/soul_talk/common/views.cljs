@@ -1,19 +1,54 @@
 (ns soul-talk.common.views
   (:require [reagent.core :as r]
             [reagent.dom :as rd]
+            [reagent.impl.template :as rtpl]
             [re-frame.core :as rf]
             [antd :as antd :refer [Breadcrumb Modal Menu Row Col Layout Footer]]
             ["@ant-design/icons" :refer [UserOutlined EditOutlined LoginOutlined DashboardOutlined]]
             ["react-highlight.js" :as hljs]
             ["@material-ui/core" :as mui]
+            ["@material-ui/core/colors" :as mui-colors]
+            ["@material-ui/icons" :as mui-icons]
             [soul-talk.routes :refer [navigate!]]
-            [soul-talk.utils :as utils]))
+            [soul-talk.utils :as utils]
+            [soul-talk.common.styles :as styles]))
 
 (def validate-messages {:required "${label} 必须的"
                         :types {:email "${label} 非法邮件格式"
                                 :url "${label} 非法地址"}})
 
-(def drawer-width 240)
+(def ^:private input-component
+  (r/reactify-component
+    (fn [props]
+      [:input (-> props
+                (assoc :ref (:inputRef props))
+                (dissoc :inputRef))])))
+
+(def ^:private textarea-component
+  (r/reactify-component
+    (fn [props]
+      [:textarea (-> props
+                   (assoc :ref (:inputRef props))
+                   (dissoc :inputRef))])))
+
+(defn text-field [props & children]
+  (let [props (-> props
+                (assoc-in [:InputProps :inputComponent] (cond
+                                                          (and (:multiline props) (:rows props) (not (:maxRows props)))
+                                                          textarea-component
+
+                                                          ;; FIXME: Autosize multiline field is broken.
+                                                          (:multiline props)
+                                                          nil
+
+                                                          ;; Select doesn't require cursor fix so default can be used.
+                                                          (:select props)
+                                                          nil
+
+                                                          :else
+                                                          input-component))
+                rtpl/convert-prop-value)]
+    (apply r/create-element mui/TextField props (map r/as-element children))))
 
 (defn copyright []
   (let [year (.getFullYear (js/Date.))]
@@ -26,6 +61,52 @@
       "jiesoul"]
      (str " " year ".")
      ]))
+
+(def ^:dynamic *open* (r/atom true))
+(defn handle-drawer-open []
+  (reset! *open* true))
+
+(defn handle-drawer-close []
+  (reset! *open* false))
+
+(defn layout [{:keys [classes] :as props} component]
+  [:div {:class-name (.-root classes)}
+   [:> mui/CssBaseline]
+   [:> mui/AppBar {:position   "absolute"
+                   :class-name (.-appBar classes)}
+    [:> mui/Toolbar {:class-name (.-toolbar classes)}
+     [:> mui/IconButton {:edge       "start"
+                         :color      "inherit"
+                         :aria-label "open drawer"
+                         :on-click   #()
+                         :class-name ""}
+
+      ]]
+    [:> mui/Typography {:component  "h1"
+                        :variant    "h6"
+                        :color      "inherit"
+                        :no-wrap    true
+                        :class-name (.-title classes)}
+     "Dashboard"]
+    [:> mui/IconButton {:color "inherit"}
+     [:> mui/Badge {:badge-content 4
+                    :color         "secondary"}
+      ]]]
+
+   [:> mui/Drawer {:variant "permanent"
+                   :open    "open"}
+    [:div
+     [:> mui/IconButton {:on-click #()}]]
+    [:> mui/Divider]]
+
+   [:main {:class-name (.-content classes)}
+    [:div {:class-name (.-appBarSpacer classes)}]
+    [:> mui/Container {:max-width  "lg"
+                       :class-name (.-container classes)}
+
+     [:> mui/Box {:pt 4}
+      [copyright]]]]
+   ])
 
 (defn logo []
   (let [site-info (rf/subscribe [:site-info])]
@@ -131,8 +212,6 @@
            :href      "#"}
        [:> UserOutlined]
        "  " (:name @user)]]]))
-
-(defn layout [])
 
 (defn manager-layout [main]
   [:> antd/Layout

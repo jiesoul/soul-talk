@@ -12,6 +12,8 @@
             [soul-talk.subs]
             [soul-talk.views]))
 
+(set! *warn-on-infer* true)
+
 ;; 挂载页面组件
 (defn mount-component []
   (rd/render [#'soul-talk.views/main-page]
