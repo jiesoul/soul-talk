@@ -72,35 +72,29 @@
 (defn layout [{:keys [classes] :as props} component]
   [:div {:class-name (.-root classes)}
    [:> mui/CssBaseline]
-   [:> mui/AppBar {:position   "absolute"
+   [:> mui/AppBar {:position   "fixed"
                    :class-name (.-appBar classes)}
-    [:> mui/Toolbar {:class-name (.-toolbar classes)}
-     [:> mui/IconButton {:edge       "start"
-                         :color      "inherit"
-                         :aria-label "open drawer"
-                         :on-click   #()
-                         :class-name ""}
-
-      ]]
-    [:> mui/Typography {:component  "h1"
-                        :variant    "h6"
-                        :color      "inherit"
-                        :no-wrap    true
-                        :class-name (.-title classes)}
-     "Dashboard"]
-    [:> mui/IconButton {:color "inherit"}
-     [:> mui/Badge {:badge-content 4
-                    :color         "secondary"}
-      ]]]
+    [:> mui/Toolbar
+     [:> mui/Typography {:variant    "h6"
+                         :no-wrap    true}
+      "Dashboard"]]]
 
    [:> mui/Drawer {:variant "permanent"
-                   :open    "open"}
-    [:div
-     [:> mui/IconButton {:on-click #()}]]
+                   :class-name (.-drawer classes)
+                   :classes {:paper (.-drawerPaper classes)}}
+    [:> mui/Toolbar ]
+    [:div {:class-name (.-drawerContainer classes)}
+     [:> mui/List
+      [:> mui/ListItem {:button true
+                        :key    "Inbox"}
+       [:> mui/ListItemText {:primary "Inbox"}]]]]
+
     [:> mui/Divider]]
 
    [:main {:class-name (.-content classes)}
-    [:div {:class-name (.-appBarSpacer classes)}]
+    [:> mui/Toolbar ]
+    [:> mui/Typography {:paragraph true}
+     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"]
     [:> mui/Container {:max-width  "lg"
                        :class-name (.-container classes)}
 
