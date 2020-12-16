@@ -10,9 +10,8 @@
 
 (def custom-theme
   (createMuiTheme
-    #js {:palette #js {:primary #js {:main (gobj/get (.-blue ^js/Mui.Colors mui-colors) 100)}}}))
-
-
+    #js {:palette #js {:primary #js {:main (gobj/get (.-purple ^js/Mui.Colors mui-colors) 100)}
+                       :secondary #js {:main (gobj/get (.-green mui-colors) 100)}}}))
 
 (def drawer-width 240)
 
@@ -47,6 +46,29 @@
                               :flexDirection "column"}
        :fixedHeight      #js {:height 240}
        })
+
+(defn tree-item-styles [^js/Mui.Theme theme]
+  #js {:root #js {:color (-> theme .-palette .-text .-secondary)
+                  "&:hover > $content" #js {:backgroundColor (-> theme .-palette .-action .-hover)}
+                  "&:focus > $content, &$selected > $content" {:backgroundColor ""}}
+       :content #js {:color (-> theme .-palette .-text .-secondary)
+                     :borderTopRightRadius (.spacing theme 2)
+                     :borderBottomRightRadius (.spacing theme 2)
+                     :paddingRight (.spacing theme 2)
+                     :fontWeight (-> theme .-typography .-fontWeightMedium)
+                     "$expanded > &" #js {:fontWeight (-> theme .-typography .-fontWeightRegular)}}
+       :group #js {:marginLeft 0
+                   "& $content" #js {:paddingLeft (.spacing theme 2)}}
+       :expanded {}
+       :selected {}
+       :label #js {:fontWeight "inherit"
+                   :color "inherit"}
+       :labelRoot #js {:display "flex"
+                       :alignItems "center"
+                       :padding (.spacing theme 0.5 0)}
+       :labelIcon #js {:marginRight (.spacing theme 1)}
+       :labelText #js {:fontWeight "inherit"
+                       :flexGrow 1}})
 
 (defn with-custom-styles [component styles]
   [:> ((withStyles styles)

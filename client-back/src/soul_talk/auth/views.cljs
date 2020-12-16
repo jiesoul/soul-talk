@@ -30,8 +30,6 @@
         login-user (r/atom {:email "" :password ""})
         email (r/cursor login-user [:email])
         password (r/cursor login-user [:password])]
-    (js/console.log "classes: " classes)
-    (js/console.log "classes root: " (.-classes classes))
     [:> mui/Grid {:container  true
                   :component  "main"
                   :class-name (.-root classes)}
@@ -50,13 +48,10 @@
 
       [:div {:class-name (.-paper classes)}
        [:> mui/Avatar {:class-name (.-avatar classes)}
-        ]
+        [:> mui-icons/Home]]
        [:> mui/Typography {:component "h1"
                            :variant   "h4"}
         (:name @site-info)]
-       [:> mui/Typography {:component "h1"
-                           :variant   "h5"}
-        "登 录"]
        [:form {:class-name (.-form classes)}
         [:> mui/TextField {:variant       "outlined"
                            :margin        "normal"

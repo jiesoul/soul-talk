@@ -9,6 +9,7 @@
             ["@material-ui/core" :as mui]
             ["@material-ui/core/colors" :as mui-colors]
             ["@material-ui/icons" :as mui-icons]
+            ["@material-ui/lab" :refer [TreeView TreeItem]]
             [soul-talk.routes :refer [navigate!]]
             [soul-talk.utils :as utils]
             [soul-talk.common.styles :as styles]))
@@ -50,6 +51,18 @@
                 rtpl/convert-prop-value)]
     (apply r/create-element mui/TextField props (map r/as-element children))))
 
+(defn copyright [{:keys [classes] :as props}]
+  (let [year (.getFullYear (js/Date.))
+        site-info (rf/subscribe [:site-info])]
+    [:> mui/Typography {:variant "body2"
+                        :color   "textSecondary"
+                        :align   "center"}
+     "Copyright ©"
+     [:> mui/Link {:color "inherit"
+                   :href  "https://www.jiesoul.com/"}
+      (:author @site-info)]
+     (str " " year ".")]))
+
 (defn nav [{:keys [classes]}]
   (let [site-info (rf/subscribe [:site-info])]
     [:<>
@@ -62,45 +75,63 @@
                            :no-wrap   true}
         (:name @site-info)]]]]))
 
+(def ^:dynamic *menu-open?* (r/atom true))
+
 (defn make-menu-list
   [{:keys [classes] :as props} menus]
   (doall
     (for [menu menus]
       (let [{:keys [id name url pid children]} menu]
+        (js/console.log "children: " children)
         (if (empty? children)
           [:> mui/ListItem {:button true
-                            :on-click #(navigate! (str "#" url))
-                            :class-name #(if (zero? pid) "" (.-nested classes))} name
-           [:> mui/ListItemText name]]
-          [:> mui/Collapse {:in "open" :timeout "auto" :unmountOnExit true}
-           [:> mui/List {:component "div" :disablePadding true}
-            (make-menu-list props children)]])))))
+                            :key id
+                            :on-click #(navigate! (str "#" url))}
+           [:> mui/ListItemText {:key name} name]]
+          [:<>
+           [:> mui/ListItem {:button   true
+                             :key      id
+                             :class-name (.-nested classes)}
+            [:> mui/ListItemText {:key name} name]]
+           [:> mui/Collapse {:in *menu-open?* :timeout "auto" :unmountOnExit true}
+            [:> mui/List {:component "div" :disablePadding true}
+             (make-menu-list props children)]]])))))
 
 (defn menu-list [{:keys [classes] :as props}]
   (let [user (rf/subscribe [:user])
         menus (:menus @user)
         menus-tree (utils/make-tree menus)]
-    (fn []
-      [:> mui/List {:component "nav"
-                    :aria-labelledby "nested-list-subheader"
-                    :class-name (.-root classes)
-                    :subheader (r/as-element [:> mui/ListSubheader {:component "div"
-                                                                    :id "nested-list-subheader"}
-                                              "菜单列表"])}
+    (js/console.log "menu-tree: " menus-tree)
+    [:> mui/List {:component       "nav"
+                  :aria-labelledby "nested-list-subheader"
+                  :class-name      (.-menu classes)
+                  :subheader       (r/as-element [:> mui/ListSubheader {:component "div"
+                                                                        :id        "nested-list-subheader"}
+                                                  "菜单列表"])}
 
-       (make-menu-list props (:children menus-tree))])))
+     (make-menu-list props (:children menus-tree))]))
 
-(defn copyright []
-  (let [year (.getFullYear (js/Date.))]
-    [:> mui/Typography {:variant "body2"
-                        :color   "textSecondary"
-                        :align   "center"}
-     "Copyright ©"
-     [:> mui/Link {:color "inherit"
-                   :href  "https://www.jiesoul.com/"}
-      "jiesoul"]
-     (str " " year ".")
-     ]))
+(defn tree-item [{:keys [classes] :as props}]
+  [:> TreeItem {:label (r/as-element
+                         [:div {:class-name (.-labelRoot classes)}
+                          [:> mui/LabelIcon {:color "inherit"
+                                             :class-name (.-labelIcon classes)}]
+                          [:> mui/Typography {:variant "body2"
+                                              :class-name (.-labelText classes)}
+                           ]])
+                :classes #js {:root (.-root classes)
+                              :content (.-content classes)
+                              :expanded (.-expanded classes)
+                              :selected (.-selected classes)
+                              :group (.-group classes)
+                              :label (.-label classes)}}])
+
+(defn tree-view [{:keys [classes] :as props}]
+  [:> TreeView 
+   ])
+
+(defn styled-tree-view []
+  (styles/with-custom-styles tree-view styles/tree-item-styles))
 
 (def ^:dynamic *open* (r/atom true))
 (defn handle-drawer-open []
@@ -110,30 +141,28 @@
   (reset! *open* false))
 
 (defn layout [{:keys [classes] :as props} component]
-  (let [site-info (rf/subscribe [:site-info])]
-    (fn []
-      [:div {:class-name (.-root classes)}
-        [nav props]
+  [:div {:class-name (.-root classes)}
+   [nav props]
 
-       [:> mui/Drawer {:variant    "permanent"
-                       :class-name (.-drawer classes)
-                       :classes    {:paper (.-drawerPaper classes)}}
-        [:> mui/Toolbar]
-        [:div {:class-name (.-drawerContainer classes)}
-         [menu-list props]]
+   [:> mui/Drawer {:variant    "permanent"
+                   :class-name (.-drawer classes)
+                   :classes    {:paper (.-drawerPaper classes)}}
+    [:> mui/Toolbar]
+    [:div {:class-name (.-drawerContainer classes)}
+     ]
 
-        [:> mui/Divider]]
+    [:> mui/Divider]]
 
-       [:main {:class-name (.-content classes)}
-        [:> mui/Toolbar]
-        [:> mui/Typography {:paragraph true}
-         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"]
-        [:> mui/Container {:max-width  "lg"
-                           :class-name (.-container classes)}
+   [:main {:class-name (.-content classes)}
+    [:> mui/Toolbar]
+    [:> mui/Typography {:paragraph true}
+     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"]
+    [:> mui/Container {:max-width  "lg"
+                       :class-name (.-container classes)}
 
-         [:> mui/Box {:pt 4}
-          [copyright]]]]
-       ])))
+     [:> mui/Box {:pt 4}
+      [copyright]]]]
+   ])
 
 (defn logo []
   (let [site-info (rf/subscribe [:site-info])]

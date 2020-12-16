@@ -8,5 +8,5 @@
  :clean-outputs   true
  :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true
                    "soul_talk.db.site_url"               "http://localhost:3000/"}
- :preloads        [day8.re-frame-10x.preload devtools.preload]
+ :preloads        [re-frisk.preload devtools.preload]
  }
