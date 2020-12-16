@@ -5,11 +5,25 @@
             [soul-talk.common.styles :as styles]
             [goog.object :as gobj]
             ["@material-ui/core" :as mui]
-            ["@material-ui/core/styles" :refer [createMuiTheme withStyles makeStyles]]
-            ["@material-ui/core/colors" :as mui-colors]
             ["@material-ui/icons" :as mui-icons]
             [soul-talk.common.views :as c])
   (:import goog.History))
+
+(defn login-styles [^js/Mui.Theme theme]
+  #js {:root      #js {:height "100vh"}
+       :image     #js {:backgroundImage    "url(https://source.unsplash.com/random)"
+                       :backgroundRepeat   "no-repeat"
+                       :backgroundSize "cover"
+                       :backgroundPosition "center"}
+       :paper     #js {:margin        (.spacing theme 8 4)
+                       :display       "flex"
+                       :flexDirection "column"
+                       :alignItems    "center"}
+       :avatar    #js {:margin (.spacing theme 1)
+                       :backgroundColor (.-secondary theme)}
+       :form      #js {:width     "100%"
+                       :marginTop (.spacing theme 1)}
+       :submit    #js {:margin (.spacing theme 3 0 2)}})
 
 (defn form [{:keys [classes] :as props}]
   (let [site-info (subscribe [:site-info])
@@ -78,7 +92,7 @@
          [c/copyright]]]]]]))
 
 (defn login-page []
-  (styles/sign-in form))
+  (styles/with-custom-styles form login-styles))
 
 
 
