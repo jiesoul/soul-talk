@@ -29,16 +29,17 @@
   (let [site-info (subscribe [:site-info])
         login-user (r/atom {:email "" :password ""})
         email (r/cursor login-user [:email])
-        password (r/cursor login-user [:password])]
+        password (r/cursor login-user [:password])
+        classes (login-styles styles/custom-theme)]
     [:> mui/Grid {:container  true
                   :component  "main"
-                  :class-name (.-root classes)}
+                  :style (.-root classes)}
      [:> mui/CssBaseline]
      [:> mui/Grid {:item       true
                    :xs         false
                    :sm         4
                    :md         7
-                   :class-name (.-image classes)}]
+                   :style (.-image classes)}]
      [:> mui/Grid {:item      true
                    :xs        12
                    :sm        8
@@ -46,13 +47,13 @@
                    :component mui/Paper
                    :square    true}
 
-      [:div {:class-name (.-paper classes)}
-       [:> mui/Avatar {:class-name (.-avatar classes)}
+      [:div {:style (.-paper classes)}
+       [:> mui/Avatar {:style (.-avatar classes)}
         [:> mui-icons/Home]]
        [:> mui/Typography {:component "h1"
                            :variant   "h4"}
         (:name @site-info)]
-       [:form {:class-name (.-form classes)}
+       [:form {:style (.-form classes)}
         [:> mui/TextField {:variant       "outlined"
                            :margin        "normal"
                            :required      true
@@ -77,7 +78,7 @@
                         :full-width true
                         :variant    "contained"
                         :color      "primary"
-                        :class-name (.-submit classes)
+                        :style (.-submit classes)
                         :on-click   #(dispatch [:login @login-user])}
          "登录"]
         [:> mui/Grid {:container true}
@@ -87,7 +88,7 @@
          [c/copyright]]]]]]))
 
 (defn login-page []
-  (styles/with-custom-styles form login-styles))
+  [form])
 
 
 

@@ -64,99 +64,93 @@
       (:author @site-info)]
      (str " " year ".")]))
 
-(defn nav [{:keys [classes]}]
+(def ^:dynamic *anchor-el* (r/atom nil))
+
+(defn user-popover [{:keys [classes]}]
+  (let [user (rf/subscribe [:user])
+        handle-popover-open (fn [event]
+                              (reset! *anchor-el* (.-currentTarget event)))
+        handle-popover-close (fn []
+                               (reset! *anchor-el* nil))
+        open (not (nil? @*anchor-el*))]
+    [:div
+     [:> mui/Typography {:aria-owns      #(if open "mouse-over-popover" js/undefined)
+                         :aria-haspopup  "true"
+                         :color          "inherit"
+                         :on-mouse-enter #(handle-popover-open %)}
+      (:name @user)]
+     [:> mui/Popover {:id                    "mouse-over-popover"
+                      :class-name            (.-popover classes)
+                      :classes               {:paper (.-paper classes)}
+                      :anchor-el             @*anchor-el*
+                      :open                  open
+                      :anchor-origin         {:vertical   "bottom"
+                                              :horizontal "left"}
+                      :transform-origin      {:vertical   "top"
+                                              :horizontal "left"}
+                      :on-close              #(handle-popover-close)
+                      :disable-restore-focus true}
+      [:div
+       [:div
+        [:> mui/ListItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]]
+       [:> mui/MenuItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]
+       [:> mui/MenuItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]]]]))
+
+(defn nav [{:keys [classes] :as props}]
   (let [site-info (rf/subscribe [:site-info])]
-    [:<>
-     [:> mui/CssBaseline]
-     [:> mui/AppBar {:position   "fixed"
-                     :class-name (.-appBar classes)}
-      [:> mui/Toolbar
-       [:> mui/Typography {:component "h1"
-                           :variant   "h6"
-                           :no-wrap   true}
-        (:name @site-info)]]]]))
+    (fn []
+      [:> mui/AppBar {:position   "fixed"
+                      :class-name (.-appBar classes)}
+       [:> mui/Toolbar
+        [:> mui/IconButton {:edge       "start"
+                            :class-name (.-menuButton classes)
+                            :color      "inherit"
+                            :aria-label "menu"}
+         [:> mui-icons/Menu]]
+        [:> mui/Typography {:component  "h1"
+                            :variant    "h6"
+                            :no-wrap    true
+                            :class-name (.-title classes)}
+         (:name @site-info)]
+        (user-popover props)
+        ]])))
 
-(def ^:dynamic *menu-open?* (r/atom true))
-
-(defn make-menu-list
-  [{:keys [classes] :as props} menus]
+(defn menu-tree-items [{:keys [classes color bgColor] :as props} menus]
   (doall
     (for [menu menus]
-      (let [{:keys [id children name pid]} menu]
-        [:<>
-         ^{:key menu}
-         [:> mui/ListItem {:button     true
-                           :class-name (if (zero? pid) "" (.-nested classes))}
-          [:> mui/ListItemText name]
-          (when-not (empty? children)
-            [:> mui-icons/ExpandMore])]
-         (if-not (empty? children)
-           ^{:key (str id "-children")}
-           [:> mui/Collapse {:in            true
-                             :timeout       "auto"
-                             :unmountOnExit true}
-            ^{:key (str id "-list")}
-            [:> mui/List {:component      "div"
-                          :disablePadding true}
-             (make-menu-list props children)]])
-         ]))))
+      (let [children (:children menu)]
+        ^{:key menu}
+        [:> TreeItem
+         {:nodeId  (:id menu)
+          :label   (r/as-element
+                     [:div {:class-name (.-treeItemLabelRoot classes)}
+                      [:> mui/Typography {:variant    "inherit"
+                                          :class-name (.-treeItemLabelText classes)}
+                       [:> mui/MenuItem
+                        (if (empty? children)
+                          {:on-click #(navigate! (str "#" (:url menu)))})
+                        (:name menu)]]])
+          :style   {"--tree-view-color"    color
+                    "--tree-view-bg-color" bgColor}
+          :classes {:root     (.-treeItemRoot classes)
+                    :content  (.-treeItemContent classes)
+                    :expanded (.-treeItemExpanded classes)
+                    :selected (.-treeItemSelected classes)
+                    :group    (.-treeItemGroup classes)
+                    :label    (.-treeItemLabel classes)}}
+         (when-not (empty? children)
+           (menu-tree-items props children))]))))
 
-(defn menu-list [{:keys [classes] :as props}]
+(defn menu-tree-view [{:keys [classes] :as props}]
   (let [user (rf/subscribe [:user])
         menus (:menus @user)
         menus-tree (utils/make-tree menus)]
-    [:> mui/List {:component       "nav"
-                  :aria-labelledby "nested-list-subheader"
-                  :class-name      (.-root classes)
-                  :subheader       (r/as-element
-                                     [:> mui/ListSubheader
-                                      {:component "div"
-                                       :id        "nested-list-subheader"}
-                                      "菜单列表"])}
-     (make-menu-list props (:children menus-tree))
-     ]))
-
-(defn styled-menu-list []
-  (styles/with-custom-styles menu-list styles/menu-tree-item-styles))
-
-(defn menu-tree-item [{:keys [classes color bgColor] :as props}]
-  (js/console.log "menu-tree-item-props: " props)
-  [:> TreeItem
-   {:label (r/as-element
-             [:div {:class-name (.-labelRoot classes)}
-              [:> mui/Typography {:variant "body2"
-                                  :class-name (.-classes classes)}
-               name]])
-    :style {"--tree-view-color" color
-            "--tree-view-bg-color" bgColor}
-    :classes {:root (.-root classes)
-              :content (.-content classes)
-              :expanded (.-expanded classes)
-              :selected (.-selected classes)
-              :group (.-group classes)
-              :label (.-label classes)}}])
-
-(defn styled-menu-tree-item [props]
-  (styles/with-custom-styles menu-tree-item styles/menu-tree-item-styles))
-
-(defn menu-tree-view [{:keys [classes] :as props}]
-  [:> TreeView {:class-name (.-root classes)
-                :default-expanded ["3"]
-                :default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
-                :default-expand-icon (r/as-element [:> mui-icons/ArrowRight])
-                :default-end-icon (r/as-element [:div {:style {:width 24}}])}
-   [styled-menu-tree-item {:node-id 1
-                           :label-text "test"}]
-   [styled-menu-tree-item {:node-id 2
-                           :label-text "test2"}]
-   [styled-menu-tree-item {:node-id 3
-                           :label-text "tes3"}]
-   [styled-menu-tree-item {:node-id 4
-                           :label-text "test4"}]
-   ])
-
-(defn styled-menu-tree-view []
-  (styles/with-custom-styles menu-tree-view styles/menu-tree-view-styles))
+    [:> TreeView {:class-name            (.-treeRoot classes)
+                  :default-expanded      ["3"]
+                  :default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
+                  :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
+                  :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
+     (menu-tree-items props (:children menus-tree))]))
 
 (def ^:dynamic *open* (r/atom true))
 (defn handle-drawer-open []
@@ -165,27 +159,32 @@
 (defn handle-drawer-close []
   (reset! *open* false))
 
-(defn layout [{:keys [classes] :as props} component]
+(defn breadcrumbs [{:keys [classes]}]
+  (let [items (rf/subscribe [:breadcrumb])]
+    [:> mui/Grid {:container true}
+     [:> mui/Breadcrumbs {:aria-label "breadcrumb"}
+      (for [item @items]
+        ^{:key item}
+        [:span {:color "textPrimary"} item])]]))
+
+(defn layout [{:keys [classes] :as props} children]
   [:div {:class-name (.-root classes)}
    [nav props]
-
    [:> mui/Drawer {:variant    "permanent"
                    :class-name (.-drawer classes)
                    :classes    {:paper (.-drawerPaper classes)}}
     [:> mui/Toolbar]
-    [:div {:class-name (.-drawerContainer classes)}
-     [styled-menu-tree-view]]]
-
+    [:div {:class-name (.-drawerContent classes)}
+     [menu-tree-view props]]]
    [:main {:class-name (.-content classes)}
-    [:> mui/Toolbar]
-    [:> mui/Typography {:paragraph true}
-     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"]
+    [:div {:class-name (.-appBarSpacer classes)}]
     [:> mui/Container {:max-width  "lg"
                        :class-name (.-container classes)}
-
+     (breadcrumbs props)
+     [:> mui/Grid {:container true}
+      children]
      [:> mui/Box {:pt 4}
-      [copyright]]]]
-   ])
+      [copyright]]]]])
 
 (defn logo []
   (let [site-info (rf/subscribe [:site-info])]

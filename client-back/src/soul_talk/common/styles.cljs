@@ -10,22 +10,15 @@
 
 (def custom-theme
   (createMuiTheme
-    #js {:palette #js {:primary #js {:main (gobj/get (.-purple ^js/Mui.Colors mui-colors) 100)}
-                       :secondary #js {:main (gobj/get (.-green mui-colors) 100)}}}))
+    #js {:palette #js {:primary #js {:main (gobj/get (.-purple ^js/Mui.Colors mui-colors) 500)}
+                       :secondary #js {:main "#11cb5f"}}}))
 
 (def drawer-width 240)
 
 (defn main-styles [^js/Mui.Theme theme]
   #js {:root             #js {:display "flex"}
-       :nested           #js {:paddingLeft (.spacing theme 4)
-                              }
-       :drawer           #js {:width      drawer-width
-                              :flexShrink 0}
-       :drawerPaper      #js {:width drawer-width}
-       :drawerContent    #js {:height "auto"}
-       :content          #js {:flexGrow 1
-                              :height   "100vh"
-                              :overflow "auto"}
+       :color "#1a73e8"
+       :bgColor "#e8f0fe"
 
        :toolbar          #js {:paddingRight 24}
        :toolbarIcon      #js {:display        "flex"
@@ -34,11 +27,56 @@
                               :padding        "0 8px"}
        :appBar           #js {:zIndex (+ 1 (-> theme .-zIndex .-drawer))}
        :appBarShift      #js {:marginLeft drawer-width}
+       :appBarSpacer     (-> theme .-mixins .-toolbar)
+       :popover #js {:pointerEvents "none"}
+
+       :drawer           #js {:width      drawer-width
+                              :flexShrink 0}
+       :drawerPaper      #js {:width drawer-width}
+       :drawerContent    #js {:height "auto"}
+
+       :listRoot #js {:width    "100%"
+                      :maxWidth drawer-width
+                      :flexGrow 1
+                      :backgroundColor (-> theme .-palette .-background .-paper)}
+       :listNested #js {:paddingLeft (.spacing theme 4)}
+
+       :treeViewRoot #js {:width "100%"
+                          :maxWidth drawer-width
+                          :height "auto"
+                          :backgroundColor (-> theme .-palette .-background .-paper)}
+       :treeItemRoot #js {:color (-> theme .-palette .-text .-secondary)
+                          "&:hover > $content" #js {:backgroundColor (-> theme .-palette .-action .-hover)}
+                          "&:focus > $content, &$selected > $content" #js {:backgroundColor "var(--tree-view-bg-color)"
+                                                                           :color "var(--tree-view-color)"}
+                          "&:focus > $content $label, &:hover > $content $label, &$selected > $content $label" #js {:backgroundColor "transparent"}}
+       :treeItemContent #js {:color (-> theme .-palette .-text .-secondary)
+                             :borderTopRightRadius (.spacing theme 2)
+                             :borderBottomRightRadius (.spacing theme 2)
+                             :paddingRight (.spacing theme 2)
+                             :fontWeight (-> theme .-typography .-fontWeightMedium)
+                             "$expanded > &" #js {:fontWeight (-> theme .-typography .-fontWeightRegular)}}
+       :treeItemGroup #js {:marginLeft 0
+                           "& $content" #js {:paddingLeft (.spacing theme 2)}}
+       :treeItemExpanded #js {}
+       :treeItemSelected #js {}
+       :treeItemLabel #js {:fontWeight "inherit"
+                           :color "inherit"}
+       :treeItemLabelRoot #js {:display "flex"
+                               :alignItems "center"
+                               :padding (.spacing theme 0.5 0)}
+       :treeItemLabelIcon #js {:marginRight (.spacing theme 1)}
+       :treeItemLabelText #js {:fontWeight "inherit"
+                               :flexGrow 1}
+
+       :content          #js {:flexGrow 1
+                              :height   "100vh"
+                              :overflow "auto"}
+
        :menuButton       #js {:marginRight 36}
        :menuButtonHidden #js {:display "none"}
        :title            #js {:flexGrow 1}
 
-       :appBarSpacer     (-> theme .-mixins .-toolbar)
 
        :container        #js {:padding       (.spacing theme 3)
                               :display       "flex"
@@ -46,41 +84,6 @@
                               :flexDirection "column"}
        :fixedHeight      #js {:height 240}
        })
-
-(defn menu-styles [^js/Mui.Theme theme]
-  #js {:root #js {:width    "100%"
-              :maxWidth drawer-width
-              :backgroundColor (-> theme .-palette .-background .-paper)}
-       :nested #js {:paddingLeft (.spacing theme 4)}})
-
-(defn menu-tree-view-styles [^js/Mui.Theme theme]
-  #js {:root #js {:width "100%"
-                  :maxWidth drawer-width
-                  :height "auto"
-                  :backgroundColor (-> theme .-palette .-background .-paper)}})
-
-(defn menu-tree-item-styles [^js/Mui.Theme theme]
-  #js {:root #js {:color (-> theme .-palette .-text .-secondary)
-                  "&:hover > $content" #js {:backgroundColor (-> theme .-palette .-action .-hover)}
-                  "&:focus > $content, &$selected > $content" #js {:backgroundColor ""}}
-       :content #js {:color (-> theme .-palette .-text .-secondary)
-                     :borderTopRightRadius (.spacing theme 2)
-                     :borderBottomRightRadius (.spacing theme 2)
-                     :paddingRight (.spacing theme 2)
-                     :fontWeight (-> theme .-typography .-fontWeightMedium)
-                     "$expanded > &" #js {:fontWeight (-> theme .-typography .-fontWeightRegular)}}
-       :group #js {:marginLeft 0
-                   "& $content" #js {:paddingLeft (.spacing theme 2)}}
-       :expanded #js {}
-       :selected #js {}
-       :label #js {:fontWeight "inherit"
-                   :color "inherit"}
-       :labelRoot #js {:display "flex"
-                       :alignItems "center"
-                       :padding (.spacing theme 0.5 0)}
-       :labelIcon #js {:marginRight (.spacing theme 1)}
-       :labelText #js {:fontWeight "inherit"
-                       :flexGrow 1}})
 
 (defn with-custom-styles [component styles]
   [:> ((withStyles styles)
