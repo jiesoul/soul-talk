@@ -26,7 +26,7 @@
     (reduce #(str %1 "," (str "'" %2 "'")) "" coll) 1))
 
 (defn make-tree
-  ([coll] (let [root {:id 0 :name "根目录"}]
+  ([coll] (let [root {:id 0 :name "root"}]
             (assoc root :children (make-tree root coll))))
   ([root coll]
    (for [x coll :when (= (:pid x) (:id root))]

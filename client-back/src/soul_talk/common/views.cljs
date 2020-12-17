@@ -34,20 +34,21 @@
 
 (defn text-field [props & children]
   (let [props (-> props
-                (assoc-in [:InputProps :inputComponent] (cond
-                                                          (and (:multiline props) (:rows props) (not (:maxRows props)))
-                                                          textarea-component
+                (assoc-in [:InputProps :inputComponent]
+                  (cond
+                    (and (:multiline props) (:rows props) (not (:maxRows props)))
+                    textarea-component
 
-                                                          ;; FIXME: Autosize multiline field is broken.
-                                                          (:multiline props)
-                                                          nil
+                    ;; FIXME: Autosize multiline field is broken.
+                    (:multiline props)
+                    nil
 
-                                                          ;; Select doesn't require cursor fix so default can be used.
-                                                          (:select props)
-                                                          nil
+                    ;; Select doesn't require cursor fix so default can be used.
+                    (:select props)
+                    nil
 
-                                                          :else
-                                                          input-component))
+                    :else
+                    input-component))
                 rtpl/convert-prop-value)]
     (apply r/create-element mui/TextField props (map r/as-element children))))
 
@@ -81,57 +82,81 @@
   [{:keys [classes] :as props} menus]
   (doall
     (for [menu menus]
-      (let [{:keys [id name url pid children]} menu]
-        (js/console.log "children: " children)
-        (if (empty? children)
-          [:> mui/ListItem {:button true
-                            :key id
-                            :on-click #(navigate! (str "#" url))}
-           [:> mui/ListItemText {:key name} name]]
-          [:<>
-           [:> mui/ListItem {:button   true
-                             :key      id
-                             :class-name (.-nested classes)}
-            [:> mui/ListItemText {:key name} name]]
-           [:> mui/Collapse {:in *menu-open?* :timeout "auto" :unmountOnExit true}
-            [:> mui/List {:component "div" :disablePadding true}
-             (make-menu-list props children)]]])))))
+      (let [{:keys [id children name pid]} menu]
+        [:<>
+         ^{:key menu}
+         [:> mui/ListItem {:button     true
+                           :class-name (if (zero? pid) "" (.-nested classes))}
+          [:> mui/ListItemText name]
+          (when-not (empty? children)
+            [:> mui-icons/ExpandMore])]
+         (if-not (empty? children)
+           ^{:key (str id "-children")}
+           [:> mui/Collapse {:in            true
+                             :timeout       "auto"
+                             :unmountOnExit true}
+            ^{:key (str id "-list")}
+            [:> mui/List {:component      "div"
+                          :disablePadding true}
+             (make-menu-list props children)]])
+         ]))))
 
 (defn menu-list [{:keys [classes] :as props}]
   (let [user (rf/subscribe [:user])
         menus (:menus @user)
         menus-tree (utils/make-tree menus)]
-    (js/console.log "menu-tree: " menus-tree)
     [:> mui/List {:component       "nav"
                   :aria-labelledby "nested-list-subheader"
-                  :class-name      (.-menu classes)
-                  :subheader       (r/as-element [:> mui/ListSubheader {:component "div"
-                                                                        :id        "nested-list-subheader"}
-                                                  "菜单列表"])}
+                  :class-name      (.-root classes)
+                  :subheader       (r/as-element
+                                     [:> mui/ListSubheader
+                                      {:component "div"
+                                       :id        "nested-list-subheader"}
+                                      "菜单列表"])}
+     (make-menu-list props (:children menus-tree))
+     ]))
 
-     (make-menu-list props (:children menus-tree))]))
+(defn styled-menu-list []
+  (styles/with-custom-styles menu-list styles/menu-tree-item-styles))
 
-(defn tree-item [{:keys [classes] :as props}]
-  [:> TreeItem {:label (r/as-element
-                         [:div {:class-name (.-labelRoot classes)}
-                          [:> mui/LabelIcon {:color "inherit"
-                                             :class-name (.-labelIcon classes)}]
-                          [:> mui/Typography {:variant "body2"
-                                              :class-name (.-labelText classes)}
-                           ]])
-                :classes #js {:root (.-root classes)
-                              :content (.-content classes)
-                              :expanded (.-expanded classes)
-                              :selected (.-selected classes)
-                              :group (.-group classes)
-                              :label (.-label classes)}}])
+(defn menu-tree-item [{:keys [classes color bgColor] :as props}]
+  (js/console.log "menu-tree-item-props: " props)
+  [:> TreeItem
+   {:label (r/as-element
+             [:div {:class-name (.-labelRoot classes)}
+              [:> mui/Typography {:variant "body2"
+                                  :class-name (.-classes classes)}
+               name]])
+    :style {"--tree-view-color" color
+            "--tree-view-bg-color" bgColor}
+    :classes {:root (.-root classes)
+              :content (.-content classes)
+              :expanded (.-expanded classes)
+              :selected (.-selected classes)
+              :group (.-group classes)
+              :label (.-label classes)}}])
 
-(defn tree-view [{:keys [classes] :as props}]
-  [:> TreeView 
+(defn styled-menu-tree-item [props]
+  (styles/with-custom-styles menu-tree-item styles/menu-tree-item-styles))
+
+(defn menu-tree-view [{:keys [classes] :as props}]
+  [:> TreeView {:class-name (.-root classes)
+                :default-expanded ["3"]
+                :default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
+                :default-expand-icon (r/as-element [:> mui-icons/ArrowRight])
+                :default-end-icon (r/as-element [:div {:style {:width 24}}])}
+   [styled-menu-tree-item {:node-id 1
+                           :label-text "test"}]
+   [styled-menu-tree-item {:node-id 2
+                           :label-text "test2"}]
+   [styled-menu-tree-item {:node-id 3
+                           :label-text "tes3"}]
+   [styled-menu-tree-item {:node-id 4
+                           :label-text "test4"}]
    ])
 
-(defn styled-tree-view []
-  (styles/with-custom-styles tree-view styles/tree-item-styles))
+(defn styled-menu-tree-view []
+  (styles/with-custom-styles menu-tree-view styles/menu-tree-view-styles))
 
 (def ^:dynamic *open* (r/atom true))
 (defn handle-drawer-open []
@@ -149,9 +174,7 @@
                    :classes    {:paper (.-drawerPaper classes)}}
     [:> mui/Toolbar]
     [:div {:class-name (.-drawerContainer classes)}
-     ]
-
-    [:> mui/Divider]]
+     [styled-menu-tree-view]]]
 
    [:main {:class-name (.-content classes)}
     [:> mui/Toolbar]
@@ -386,4 +409,3 @@
          [:div
           {:dangerouslySetInnerHTML
            {:__html (.makeHtml md-parser (str content))}}])})))
-

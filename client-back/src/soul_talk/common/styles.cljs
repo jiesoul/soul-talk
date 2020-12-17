@@ -47,10 +47,22 @@
        :fixedHeight      #js {:height 240}
        })
 
-(defn tree-item-styles [^js/Mui.Theme theme]
+(defn menu-styles [^js/Mui.Theme theme]
+  #js {:root #js {:width    "100%"
+              :maxWidth drawer-width
+              :backgroundColor (-> theme .-palette .-background .-paper)}
+       :nested #js {:paddingLeft (.spacing theme 4)}})
+
+(defn menu-tree-view-styles [^js/Mui.Theme theme]
+  #js {:root #js {:width "100%"
+                  :maxWidth drawer-width
+                  :height "auto"
+                  :backgroundColor (-> theme .-palette .-background .-paper)}})
+
+(defn menu-tree-item-styles [^js/Mui.Theme theme]
   #js {:root #js {:color (-> theme .-palette .-text .-secondary)
                   "&:hover > $content" #js {:backgroundColor (-> theme .-palette .-action .-hover)}
-                  "&:focus > $content, &$selected > $content" {:backgroundColor ""}}
+                  "&:focus > $content, &$selected > $content" #js {:backgroundColor ""}}
        :content #js {:color (-> theme .-palette .-text .-secondary)
                      :borderTopRightRadius (.spacing theme 2)
                      :borderBottomRightRadius (.spacing theme 2)
@@ -59,8 +71,8 @@
                      "$expanded > &" #js {:fontWeight (-> theme .-typography .-fontWeightRegular)}}
        :group #js {:marginLeft 0
                    "& $content" #js {:paddingLeft (.spacing theme 2)}}
-       :expanded {}
-       :selected {}
+       :expanded #js {}
+       :selected #js {}
        :label #js {:fontWeight "inherit"
                    :color "inherit"}
        :labelRoot #js {:display "flex"
