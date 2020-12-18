@@ -34,16 +34,16 @@
 
 ;;面板
 (defmethod pages :dash [_ _]
-  (admin dash/dash-page))
+  (admin dash/home))
 
 (defmethod pages :site-info [_ _]
   (admin site-info/home))
 
 (defmethod pages :data-dices [_ _]
-  (admin data-dic/query-page))
+  (admin data-dic/home))
 
 (defmethod pages :menus [_ _]
-  (admin menu/query-page))
+  (admin menu/home))
 
 ;; user
 (defmethod pages :users [_ _]
@@ -57,17 +57,17 @@
 
 ;; tag
 (defmethod pages :tags [_ _]
-  (admin tag/query-page))
+  (admin tag/home))
 
 (defmethod pages :app-keys [_ _]
-  (admin app-key/query-page))
+  (admin app-key/home))
 
 (defmethod pages :series [_ _]
-  (admin series/query-page))
+  (admin series/home))
 
 ;; article
 (defmethod pages :articles [_ _]
-  (admin article/query-page))
+  (admin article/home))
 
 (defmethod pages :articles-add [_ _]
   (admin article/add-article-page))
@@ -77,8 +77,7 @@
 
 
 ;; default
-(defmethod pages :default [_ _] (c/manager-layout
-                                  [:div "页面未找到,请检查地址"]))
+(defmethod pages :default [_ _] (dash/home))
 
 ;; 根据配置加载不同页面
 (defn main-page []
@@ -90,7 +89,7 @@
          [:> mui/CssBaseline]
          [:> mui/MuiThemeProvider {:theme styles/custom-theme}
           [:div
+           (styles/with-custom-styles c/lading-backdrop styles/backdrop-styles)
            [c/success-message]
            [c/error-message]
-           [c/loading-modal]
            (pages @active-page)]]]))))

@@ -7,3 +7,5 @@
 (reg-sub :menu query)
 
 (reg-sub :menus/query-params query)
+
+(reg-sub :menus/selected query)

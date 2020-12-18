@@ -107,3 +107,8 @@
   :menus/clean
   (fn [db _]
     (dissoc db :menus :menus/query-params :menu)))
+
+(reg-event-db
+  :menus/select
+  (fn [db [_ menu]]
+    (assoc db :menus/selected menu)))

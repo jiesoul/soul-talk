@@ -119,6 +119,15 @@
          :fixedHeight       #js {:height 240}
          }))
 
+(defn backdrop-styles [^js/Mui.Theme theme]
+  #js {:backdrop #js {:zIndex (+ 1 (-> theme .-zIndex .-drawer))
+                      :color "#fff"}})
+
+
+(defn alert-styles [^js/Mui.Theme theme]
+  #js {:root #js {:width "100%"
+                  "& > * + *" #js {:marginTop (.spacing theme)}}})
+
 (defn with-custom-styles [component styles]
   [:> ((withStyles styles)
        (r/reactify-component component))])

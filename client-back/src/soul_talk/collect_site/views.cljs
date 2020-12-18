@@ -4,7 +4,8 @@
             [antd :refer [Row Col Form Input Button Divider Table Modal]]
             ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
             [re-frame.core :refer [subscribe dispatch]]
-            [soul-talk.utils :as du]))
+            [soul-talk.utils :as du]
+            [soul-talk.common.styles :as styles]))
 
 (def ^:dynamic *visible* (r/atom false))
 
@@ -103,3 +104,6 @@
    [:div
     [query-form]
     [list-table]]])
+
+(defn home []
+  (styles/main query-page))

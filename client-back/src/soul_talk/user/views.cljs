@@ -2,7 +2,8 @@
   (:require [soul-talk.common.views :refer [manager-layout]]
             [reagent.core :as r]
             [re-frame.core :as rf]
-            [antd :as antd]))
+            [antd :as antd]
+            [soul-talk.common.styles :as styles]))
 
 (defn users-page []
   (fn []
@@ -110,3 +111,6 @@
                                     :padding    "24px 0 20px 0"}}
     children]
    copyright])
+
+(defn home []
+  (styles/main user-layout))

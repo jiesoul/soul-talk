@@ -6,7 +6,8 @@
             [soul-talk.utils :as du :refer [to-date]]
             [soul-talk.common.md-editor :refer [editor]]
             [antd :refer [Col Row Layout Button Divider Form Input Table Typography Spin Card]]
-            ["@ant-design/icons" :refer [EditOutlined DeleteOutlined]]))
+            ["@ant-design/icons" :refer [EditOutlined DeleteOutlined]]
+            [soul-talk.common.styles :as styles]))
 
 (def list-columns
   [{:title "标题" :dataIndex "title", :key "title", :align "center"}
@@ -96,6 +97,9 @@
    [:<>
     [query-form]
     [query-list]]])
+
+(defn home []
+  (styles/main query-page))
 
 (defn edit-menu []
   (r/with-let [article (rf/subscribe [:editing-article])]

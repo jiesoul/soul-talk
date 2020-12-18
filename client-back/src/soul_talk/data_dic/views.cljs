@@ -4,7 +4,8 @@
             ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [soul-talk.utils :as utils]))
+            [soul-talk.utils :as utils]
+            [soul-talk.common.styles :as styles]))
 
 (def ^:dynamic *edit-visible* (r/atom false))
 (def ^:dynamic *add-visible* (r/atom false))
@@ -179,11 +180,14 @@
                   :row-key    "id"
                   :bordered   true}]])))
 
-(defn query-page
-  []
-  [c/manager-layout
+(defn query-page [props]
+  [c/layout props
    [:div
     [add-form]
     [query-form]
     [edit-form]
-    [list-table]]])
+    [list-table]
+    ]])
+
+(defn home []
+  (styles/main query-page))

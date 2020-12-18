@@ -9,8 +9,7 @@
 
 (defn edit-form [{:keys [classes] :as props}]
   (let [site-info (rf/subscribe [:site-info])]
-    (fn []
-      (c/layout props
+    [c/layout props
         (let [{:keys [id name logo author description]} @site-info]
           [:div {:class-name (.-root classes)
                  :style      {:text-align "center"}}
@@ -26,36 +25,43 @@
                                :value      name
                                :on-change  #(rf/dispatch [:site-info/set-attr :name (-> % .-target .-value)])}]
             [:> mui/TextField {:name       "logo"
+                               :id         "logo"
                                :label      "网站图标"
                                :margin     "normal"
                                :variant    "outlined"
                                :full-width true
-                               :value logo
+                               :value      logo
                                :on-change  #(rf/dispatch [:site-info/set-attr :logo (-> % .-target .-value)])}]
             [:> mui/TextField {:name       "description"
+                               :id         "description"
                                :label      "简介"
                                :margin     "normal"
                                :variant    "outlined"
                                :full-width true
-                               :value description
+                               :value      description
                                :on-change  #(rf/dispatch [:site-info/set-attr :description (-> % .-target .-value)])}]
             [:> mui/TextField {:name       "author"
+                               :id         "author"
                                :label      "作者"
                                :variant    "outlined"
                                :margin     "normal"
                                :full-width true
-                               :value author
+                               :value      author
                                :rules      [{:required true}]
                                :on-change  #(rf/dispatch [:site-info/set-attr :author (-> % .-target .-value)])}]
-            [:div {:style {:margin     "normal"}}
-             [:> mui/Button {:type "reset"
+            [:div {:style {:margin "normal"}}
+             [:> mui/Button {:type     "reset"
+                             :color    "secondary"
+                             :variant  "contained"
                              :on-click #(js/console.log "object: " %)}
               "重置"]
              [:> mui/Button {:type     "button"
+                             :variant  "contained"
+                             :color    "primary"
                              :style    {:margin "0 8px"}
                              :on-click #(rf/dispatch [:site-info/update @site-info])}
               "保存"]]
-            ]])))))
+            ]])]))
 
 (defn home []
   (styles/main edit-form))

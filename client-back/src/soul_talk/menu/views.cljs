@@ -5,7 +5,8 @@
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [soul-talk.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [soul-talk.common.styles :as styles]))
 
 (def ^:dynamic *edit-visible* (r/atom false))
 (def ^:dynamic *add-visible* (r/atom false))
@@ -207,14 +208,17 @@
                 :bordered   true}]]))
 
 (defn query-page
-  []
+  [props]
   (let [user (subscribe [:user])
         query-params (subscribe [:menus/query-params])
         menus (subscribe [:menus])
         menu (subscribe [:menu])]
-    [c/manager-layout
+    [c/layout props
      [:div
       [add-form menu user]
       [query-form query-params]
       [edit-form menu user]
       [list-table menus]]]))
+
+(defn home []
+  (styles/main query-page))

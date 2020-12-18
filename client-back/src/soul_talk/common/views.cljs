@@ -9,7 +9,7 @@
             ["@material-ui/core" :as mui]
             ["@material-ui/core/colors" :as mui-colors]
             ["@material-ui/icons" :as mui-icons]
-            ["@material-ui/lab" :refer [TreeView TreeItem]]
+            ["@material-ui/lab" :refer [TreeView TreeItem Alert]]
             [soul-talk.routes :refer [navigate!]]
             [soul-talk.utils :as utils]
             [soul-talk.common.styles :as styles]
@@ -53,6 +53,30 @@
                 rtpl/convert-prop-value)]
     (apply r/create-element mui/TextField props (map r/as-element children))))
 
+(defn lading-backdrop [{:keys [classes]}]
+  (let [lading? (rf/subscribe [:loading?])]
+    (fn []
+      (when @lading?
+        [:> mui/Backdrop {:class-name (.-backdrop classes)
+                          :open @lading?}
+         [:> mui/CircularProgress {:color "inherit"}]]))))
+
+(defn success-alert [{:keys [classes]}]
+  (let [success (rf/subscribe [:success])]
+    (js/console.log "success: " @success)
+    (when @success
+      [:div {:class-name (.-root classes)}
+       [:> Alert {:severity "success"}
+        @success]])))
+
+(defn success-snackbars [{:keys [classes]}]
+  (let [success (rf/subscribe [:success])]
+    (when @success
+      [:> mui/Snackbar {:anchor-origin {:vertical   "top"
+                                        :horizontal "center"}
+                        :open          (nil? @success)
+                        :message @success
+                        :key @success}])))
 
 (def ^:dynamic *drawer-open* (r/atom true))
 (def ^:dynamic *anchor-el* (r/atom nil))
@@ -75,8 +99,7 @@
      [:> mui/Typography {:aria-owns      #(if open "mouse-over-popover" js/undefined)
                          :aria-haspopup  "true"
                          :color          "inherit"
-                         :on-mouse-enter #(handle-popover-open %)
-                         :on-mouse-leave #(handle-popover-close)}
+                         :on-mouse-enter #(handle-popover-open %)}
       (:name @user)]
      [:> mui/Popover {:id                    "mouse-over-popover"
                       :class-name            (.-popover classes)
@@ -89,11 +112,12 @@
                                               :horizontal "left"}
                       :on-close              #(handle-popover-close)
                       :disable-restore-focus true}
-      [:div
-       [:div
-        [:> mui/ListItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]]
-       [:> mui/MenuItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]
-       [:> mui/MenuItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]]]]))
+      [:> mui/Paper
+       [:> mui/ClickAwayListener {:on-click-away #(handle-popover-close)}
+        [:> mui/MenuList {:auto-focus-item open}
+         [:> mui/MenuItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]
+         [:> mui/MenuItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]
+         [:> mui/MenuItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]]]]]]))
 
 (defn app-bar [{:keys [classes] :as props}]
   (let [site-info (rf/subscribe [:site-info])
@@ -117,15 +141,18 @@
       (let [{:keys [children id pid url]} menu]
         ^{:key menu}
         [:> TreeItem
-         {:nodeId  (:id menu)
+         {:nodeId  (str id)
           :label   (r/as-element
-                     [:div {:class-name (.-treeItemLabelRoot classes)}
-                      [:> mui/Typography {:variant    "inherit"
-                                          :class-name (.-treeItemLabelText classes)}
-                       [:> mui/Button
-                        (if (empty? children)
-                          {:on-click #(navigate! (str "#" url))})
-                        (:name menu)]]])
+                     (let []
+                       [:div {:class-name (.-treeItemLabelRoot classes)}
+                        [:> mui/Typography {:variant    "inherit"
+                                            :class-name (.-treeItemLabelText classes)}
+                         [:> mui/Button
+                          (if (empty? children)
+                            {:on-click #(do
+                                          (rf/dispatch [:menus/select menu])
+                                          (navigate! (str "#" url)))})
+                          (:name menu)]]]))
           :style   {"--tree-view-color"    color
                     "--tree-view-bg-color" bgColor}
           :classes {:root     (.-treeItemRoot classes)
@@ -140,13 +167,17 @@
 (defn menu-tree-view [{:keys [classes] :as props}]
   (let [user (rf/subscribe [:user])
         menus (:menus @user)
-        menus-tree (utils/make-tree menus)]
-    [:> TreeView {:class-name            (.-treeRoot classes)
-                  :default-expanded      ["3"]
-                  :default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
-                  :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
-                  :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
-     (menu-tree-items props (:children menus-tree))]))
+        menus-tree (utils/make-tree menus)
+        {:keys [id pid]} @(rf/subscribe [:menus/selected])]
+    (fn []
+      (js/console.log "====id: " id " pid: " pid)
+      [:> TreeView {:class-name            (.-treeRoot classes)
+                    :default-selected      [(str id)]
+                    :default-expanded      [(str pid)]
+                    :default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
+                    :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
+                    :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
+       (menu-tree-items props (:children menus-tree))])))
 
 (defn drawer [{:keys [classes] :as props}]
   (let [drawer-paper (.-drawerPaper classes)]
@@ -197,6 +228,13 @@
      children]
     [:> mui/Box {:pt 4}
      [copyright]]]])
+
+(defn default-page [props]
+  [layout props
+   [:div "页面未找到，请检查链接！"]])
+
+(defn default []
+  (styles/main default-page))
 
 (defn logo []
   (let [site-info (rf/subscribe [:site-info])]

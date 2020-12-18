@@ -8,5 +8,5 @@
   [c/layout props
    [:div "ssssssaasfasfasfasf"]])
 
-(defn dash-page []
+(defn home []
   (styles/main dash))
