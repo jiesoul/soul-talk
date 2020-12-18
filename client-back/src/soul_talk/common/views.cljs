@@ -12,7 +12,8 @@
             ["@material-ui/lab" :refer [TreeView TreeItem]]
             [soul-talk.routes :refer [navigate!]]
             [soul-talk.utils :as utils]
-            [soul-talk.common.styles :as styles]))
+            [soul-talk.common.styles :as styles]
+            [react :as react]))
 
 (def validate-messages {:required "${label} 必须的"
                         :types {:email "${label} 非法邮件格式"
@@ -52,19 +53,16 @@
                 rtpl/convert-prop-value)]
     (apply r/create-element mui/TextField props (map r/as-element children))))
 
-(defn copyright [{:keys [classes] :as props}]
-  (let [year (.getFullYear (js/Date.))
-        site-info (rf/subscribe [:site-info])]
-    [:> mui/Typography {:variant "body2"
-                        :color   "textSecondary"
-                        :align   "center"}
-     "Copyright ©"
-     [:> mui/Link {:color "inherit"
-                   :href  "https://www.jiesoul.com/"}
-      (:author @site-info)]
-     (str " " year ".")]))
 
+(def ^:dynamic *drawer-open* (r/atom true))
 (def ^:dynamic *anchor-el* (r/atom nil))
+
+(defn handle-drawer-open
+  []
+  (reset! *drawer-open* true))
+(defn handle-drawer-close
+  []
+  (reset! *drawer-open* false))
 
 (defn user-popover [{:keys [classes]}]
   (let [user (rf/subscribe [:user])
@@ -77,7 +75,8 @@
      [:> mui/Typography {:aria-owns      #(if open "mouse-over-popover" js/undefined)
                          :aria-haspopup  "true"
                          :color          "inherit"
-                         :on-mouse-enter #(handle-popover-open %)}
+                         :on-mouse-enter #(handle-popover-open %)
+                         :on-mouse-leave #(handle-popover-close)}
       (:name @user)]
      [:> mui/Popover {:id                    "mouse-over-popover"
                       :class-name            (.-popover classes)
@@ -96,29 +95,26 @@
        [:> mui/MenuItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]
        [:> mui/MenuItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]]]]))
 
-(defn nav [{:keys [classes] :as props}]
-  (let [site-info (rf/subscribe [:site-info])]
-    (fn []
-      [:> mui/AppBar {:position   "fixed"
-                      :class-name (.-appBar classes)}
-       [:> mui/Toolbar
-        [:> mui/IconButton {:edge       "start"
-                            :class-name (.-menuButton classes)
-                            :color      "inherit"
-                            :aria-label "menu"}
-         [:> mui-icons/Menu]]
-        [:> mui/Typography {:component  "h1"
-                            :variant    "h6"
-                            :no-wrap    true
-                            :class-name (.-title classes)}
-         (:name @site-info)]
-        (user-popover props)
-        ]])))
+(defn app-bar [{:keys [classes] :as props}]
+  (let [site-info (rf/subscribe [:site-info])
+        app-bar-class (.-appBar classes)
+        menu-button-class (.-menuButton classes)]
+    [:> mui/AppBar {:position   "fixed"
+                    :class-name app-bar-class}
+     [:> mui/Toolbar
+      [:> mui/Typography {:component  "h1"
+                          :variant    "h6"
+                          :no-wrap    true
+                          :color "inherit"
+                          :class-name (.-title classes)}
+       (:name @site-info)]
+      (user-popover props)
+      ]]))
 
 (defn menu-tree-items [{:keys [classes color bgColor] :as props} menus]
   (doall
     (for [menu menus]
-      (let [children (:children menu)]
+      (let [{:keys [children id pid url]} menu]
         ^{:key menu}
         [:> TreeItem
          {:nodeId  (:id menu)
@@ -126,9 +122,9 @@
                      [:div {:class-name (.-treeItemLabelRoot classes)}
                       [:> mui/Typography {:variant    "inherit"
                                           :class-name (.-treeItemLabelText classes)}
-                       [:> mui/MenuItem
+                       [:> mui/Button
                         (if (empty? children)
-                          {:on-click #(navigate! (str "#" (:url menu)))})
+                          {:on-click #(navigate! (str "#" url))})
                         (:name menu)]]])
           :style   {"--tree-view-color"    color
                     "--tree-view-bg-color" bgColor}
@@ -152,39 +148,55 @@
                   :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
      (menu-tree-items props (:children menus-tree))]))
 
-(def ^:dynamic *open* (r/atom true))
-(defn handle-drawer-open []
-  (reset! *open* true))
+(defn drawer [{:keys [classes] :as props}]
+  (let [drawer-paper (.-drawerPaper classes)]
+    [:> mui/Drawer
+     {:variant "permanent"
+      :class-name (.-drawer classes)
+      :classes {:paper drawer-paper}}
+     [:> mui/Toolbar]
+     [:div
+      {:class-name (.-drawerContainer classes)}
 
-(defn handle-drawer-close []
-  (reset! *open* false))
+      [:> mui/Divider]
+      [menu-tree-view props]]]))
 
 (defn breadcrumbs [{:keys [classes]}]
   (let [items (rf/subscribe [:breadcrumb])]
     [:> mui/Grid {:container true}
-     [:> mui/Breadcrumbs {:aria-label "breadcrumb"}
+     [:> mui/Breadcrumbs {:aria-label "breadcrumb"
+                          :class-name (.-breadcrumb classes)}
       (for [item @items]
         ^{:key item}
-        [:span {:color "textPrimary"} item])]]))
+        [:> mui/Typography {:color "textPrimary"} item])]]))
 
-(defn layout [{:keys [classes] :as props} children]
+(defn copyright [{:keys [classes] :as props}]
+  (let [year (.getFullYear (js/Date.))
+        site-info (rf/subscribe [:site-info])]
+    [:div
+     [:> mui/Typography {:variant "body2"
+                         :color   "textSecondary"
+                         :align   "center"}
+      "Copyright ©"
+      [:> mui/Link {:color "inherit"
+                    :href  "https://www.jiesoul.com/"}
+       (:author @site-info)]
+      (str " " year ".")]]))
+
+(defn layout [{:keys [classes] :as props} & children]
   [:div {:class-name (.-root classes)}
-   [nav props]
-   [:> mui/Drawer {:variant    "permanent"
-                   :class-name (.-drawer classes)
-                   :classes    {:paper (.-drawerPaper classes)}}
+   [:> mui/CssBaseline ]
+   [app-bar props]
+   [drawer props]
+   [:main {:class-name (.-mainContainer classes)}
     [:> mui/Toolbar]
-    [:div {:class-name (.-drawerContent classes)}
-     [menu-tree-view props]]]
-   [:main {:class-name (.-content classes)}
-    [:div {:class-name (.-appBarSpacer classes)}]
+    [breadcrumbs props]
+    [:> mui/Divider]
     [:> mui/Container {:max-width  "lg"
-                       :class-name (.-container classes)}
-     (breadcrumbs props)
-     [:> mui/Grid {:container true}
-      children]
-     [:> mui/Box {:pt 4}
-      [copyright]]]]])
+                       :class-name (.-mainContent classes)}
+     children]
+    [:> mui/Box {:pt 4}
+     [copyright]]]])
 
 (defn logo []
   (let [site-info (rf/subscribe [:site-info])]

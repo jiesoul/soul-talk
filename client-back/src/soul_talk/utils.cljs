@@ -1,6 +1,7 @@
 (ns soul-talk.utils
   (:require [cljs-time.format :as cf :refer [parse unparse formatter formatters]]
-            [cljs-time.coerce :as tc]))
+            [cljs-time.coerce :as tc]
+            [reagent.core :as r]))
 
 (def custom-formatter-date-time (formatter "yyyy-MM-dd HH:mm:ss"))
 (def custom-formatter-date (formatter "yyyy-MM-dd"))
@@ -36,4 +37,20 @@
   [^js/Event e]
   (let [^js/HTMLInputElement el (.-target e)]
     (.-value el)))
+
+(defn catch []
+  (defn error-boundary [comp]
+    (r/create-class
+      {:constructor (fn [this props]
+                      (set! (.-state this) #js {:error nil}))
+       :component-did-catch (fn [this e info])
+       :get-derived-state-from-error (fn [error] #js {:error error})
+       :render (fn [this]
+                 (r/as-element
+                   (if-let [error (.. this -state -error)]
+                     [:div
+                      "发生错误"
+                      [:button {:on-click #(.state this #js {:error nil})}
+                       "重试"]]
+                     comp)))})))
 

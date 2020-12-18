@@ -17,7 +17,8 @@
             [soul-talk.collect-site.views :as collect-site]
             [soul-talk.series.views :as series]
             [clojure.string :as str]
-            ["@material-ui/core" :as mui]))
+            ["@material-ui/core" :as mui]
+            [soul-talk.utils :as utils]))
 
 ;;多重方法  响应对应的页面
 (defmulti pages (fn [page _] page))
@@ -36,7 +37,7 @@
   (admin dash/dash-page))
 
 (defmethod pages :site-info [_ _]
-  (admin site-info/edit-form))
+  (admin site-info/home))
 
 (defmethod pages :data-dices [_ _]
   (admin data-dic/query-page))

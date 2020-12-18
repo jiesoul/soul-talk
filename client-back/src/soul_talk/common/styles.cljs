@@ -13,77 +13,111 @@
     #js {:palette #js {:primary #js {:main (gobj/get (.-purple ^js/Mui.Colors mui-colors) 500)}
                        :secondary #js {:main "#11cb5f"}}}))
 
-(def drawer-width 240)
+(def drawer-width 200)
+(def app-bar-height 64)
 
 (defn main-styles [^js/Mui.Theme theme]
-  #js {:root             #js {:display "flex"}
-       :color "#1a73e8"
-       :bgColor "#e8f0fe"
+  (let [transitions (.-transitions theme)
+        breakpoints (.-breakpoints theme)]
+    #js {:root              #js {:display "flex"}
+         :color             "#1a73e8"
+         :bgColor           "#e8f0fe"
 
-       :toolbar          #js {:paddingRight 24}
-       :toolbarIcon      #js {:display        "flex"
-                              :alignItems     "flex-end"
-                              :justifyContent "flex-end"
-                              :padding        "0 8px"}
-       :appBar           #js {:zIndex (+ 1 (-> theme .-zIndex .-drawer))}
-       :appBarShift      #js {:marginLeft drawer-width}
-       :appBarSpacer     (-> theme .-mixins .-toolbar)
-       :popover #js {:pointerEvents "none"}
+         :toolbar           #js {:paddingRight 24}
+         :toolbarIcon       #js {:display        "flex"
+                                 :alignItems     "flex-end"
+                                 :justifyContent "flex-end"
+                                 :padding        "0 8px"}
 
-       :drawer           #js {:width      drawer-width
-                              :flexShrink 0}
-       :drawerPaper      #js {:width drawer-width}
-       :drawerContent    #js {:height "auto"}
-
-       :listRoot #js {:width    "100%"
-                      :maxWidth drawer-width
-                      :flexGrow 1
-                      :backgroundColor (-> theme .-palette .-background .-paper)}
-       :listNested #js {:paddingLeft (.spacing theme 4)}
-
-       :treeViewRoot #js {:width "100%"
-                          :maxWidth drawer-width
-                          :height "auto"
-                          :backgroundColor (-> theme .-palette .-background .-paper)}
-       :treeItemRoot #js {:color (-> theme .-palette .-text .-secondary)
-                          "&:hover > $content" #js {:backgroundColor (-> theme .-palette .-action .-hover)}
-                          "&:focus > $content, &$selected > $content" #js {:backgroundColor "var(--tree-view-bg-color)"
-                                                                           :color "var(--tree-view-color)"}
-                          "&:focus > $content $label, &:hover > $content $label, &$selected > $content $label" #js {:backgroundColor "transparent"}}
-       :treeItemContent #js {:color (-> theme .-palette .-text .-secondary)
-                             :borderTopRightRadius (.spacing theme 2)
-                             :borderBottomRightRadius (.spacing theme 2)
-                             :paddingRight (.spacing theme 2)
-                             :fontWeight (-> theme .-typography .-fontWeightMedium)
-                             "$expanded > &" #js {:fontWeight (-> theme .-typography .-fontWeightRegular)}}
-       :treeItemGroup #js {:marginLeft 0
-                           "& $content" #js {:paddingLeft (.spacing theme 2)}}
-       :treeItemExpanded #js {}
-       :treeItemSelected #js {}
-       :treeItemLabel #js {:fontWeight "inherit"
-                           :color "inherit"}
-       :treeItemLabelRoot #js {:display "flex"
-                               :alignItems "center"
-                               :padding (.spacing theme 0.5 0)}
-       :treeItemLabelIcon #js {:marginRight (.spacing theme 1)}
-       :treeItemLabelText #js {:fontWeight "inherit"
-                               :flexGrow 1}
-
-       :content          #js {:flexGrow 1
-                              :height   "100vh"
-                              :overflow "auto"}
-
-       :menuButton       #js {:marginRight 36}
-       :menuButtonHidden #js {:display "none"}
-       :title            #js {:flexGrow 1}
+         :appBar            #js {:zIndex (+ 1 (-> theme .-zIndex .-drawer))}
+         :appBarShift       #js {:marginLeft drawer-width
+                                 :transition (.create
+                                               transitions
+                                               #js ["width" "margin"]
+                                               #js {:easing   (-> transitions .-easing .-sharp)
+                                                    :duration (-> transitions .-duration .-enteringScreen)})}
+         :menuButton        #js {:marginRight 36}
+         :menuButtonHidden  #js {:display "none"}
 
 
-       :container        #js {:padding       (.spacing theme 3)
-                              :display       "flex"
-                              :overflow      "auto"
-                              :flexDirection "column"}
-       :fixedHeight      #js {:height 240}
-       })
+         :title             #js {:flexGrow 1}
+
+         :popover           #js {:pointerEvents "none"}
+
+         :drawer            #js {:width      drawer-width
+                                 :flexShrink 0}
+         :drawerPaper       #js {:width drawer-width}
+
+         :drawerPaperClose  #js {:overflowX                  "hidden"
+                                 :width                      (.spacing theme 7)
+                                 :transition                 (.create
+                                                               transitions
+                                                               #js ["width"]
+                                                               #js {:easing   (-> transitions .-easing .-sharp)
+                                                                    :duration (-> transitions .-duration .-leavingScreen)})
+                                 "@media (min-width: 600px)" #js {:width (.spacing theme 9)}}
+
+         :drawerContainer   #js {:overflow "auto"}
+
+         :appBarSpacer      (-> theme .-mixins .-toolbar)
+
+         :drawerContent     #js {:height "auto"}
+
+         :listRoot          #js {:width           "100%"
+                                 :maxWidth        drawer-width
+                                 :flexGrow        1
+                                 :backgroundColor (-> theme .-palette .-background .-paper)}
+         :listNested        #js {:paddingLeft (.spacing theme 4)}
+
+         :treeViewRoot      #js {:width           "100%"
+                                 :maxWidth        drawer-width
+                                 :height          "auto"
+                                 :backgroundColor (-> theme .-palette .-background .-paper)}
+         :treeItemRoot      #js {:color                                                                               (-> theme .-palette .-text .-secondary)
+                                 "&:hover > $content"                                                                 #js {:backgroundColor (-> theme .-palette .-action .-hover)}
+                                 "&:focus > $content, &$selected > $content"                                          #js {:backgroundColor "var(--tree-view-bg-color)"
+                                                                                                                           :color           "var(--tree-view-color)"}
+                                 "&:focus > $content $label, &:hover > $content $label, &$selected > $content $label" #js {:backgroundColor "transparent"}}
+         :treeItemContent   #js {:color                   (-> theme .-palette .-text .-secondary)
+                                 :borderTopRightRadius    (.spacing theme 2)
+                                 :borderBottomRightRadius (.spacing theme 2)
+                                 :paddingRight            (.spacing theme 2)
+                                 :fontWeight              (-> theme .-typography .-fontWeightMedium)
+                                 "$expanded > &"          #js {:fontWeight (-> theme .-typography .-fontWeightRegular)}}
+         :treeItemGroup     #js {:marginLeft  0
+                                 "& $content" #js {:paddingLeft (.spacing theme 2)}}
+         :treeItemExpanded  #js {}
+         :treeItemSelected  #js {}
+         :treeItemLabel     #js {:fontWeight "inherit"
+                                 :color      "inherit"}
+         :treeItemLabelRoot #js {:display    "flex"
+                                 :alignItems "center"
+                                 :padding    (.spacing theme 0.5 0)}
+         :treeItemLabelIcon #js {:marginRight (.spacing theme 1)}
+         :treeItemLabelText #js {:fontWeight "inherit"
+                                 :flexGrow   1}
+
+         :mainContainer     #js {:padding (.spacing theme 1)
+                                 :flexGrow 1
+                                 :height   "100vh"}
+
+         :footer #js {:margin-bottom "1px"}
+
+         :breadcrumb        #js {:font-weight "1"}
+
+         :content           #js {:flexGrow 1
+                                 :padding  (.spacing theme 3)
+                                 :overflow "auto"}
+
+         :container         #js {:paddingTop    (.spacing theme 4)
+                                 :paddingBottom (.spacing theme 4)}
+
+         :paper             #js {:padding       (.spacing theme 2)
+                                 :display       "flex"
+                                 :overflow      "auto"
+                                 :flexDirection "column"}
+         :fixedHeight       #js {:height 240}
+         }))
 
 (defn with-custom-styles [component styles]
   [:> ((withStyles styles)
