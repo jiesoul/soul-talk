@@ -1,5 +1,6 @@
 (ns soul-talk.common.styles
   (:require ["@material-ui/core" :as mui]
+            ["@material-ui/core/locale" :as locale :refer [zhCN]]
             ["@material-ui/core/styles" :as mui-styles :refer [createMuiTheme withStyles makeStyles]]
             ["@material-ui/core/colors" :as mui-colors]
             ["@material-ui/icons" :as mui-icons]
@@ -10,7 +11,8 @@
 
 (def custom-theme
   (createMuiTheme
-    #js {:palette #js {:primary #js {:main (gobj/get (.-blue ^js/Mui.Colors mui-colors) 500)}}}))
+    #js {:palette #js {:primary #js {:main (gobj/get (.-blue ^js/Mui.Colors mui-colors) 500)}}}
+    zhCN))
 
 (def drawer-width 200)
 (def app-bar-height 64)
@@ -105,7 +107,7 @@
          :breadcrumb        #js {:font-weight "1"}
 
          :content           #js {:flexGrow 1
-                                 :padding  (.spacing theme 3)
+                                 :padding  (.spacing theme 1)
                                  :overflow "auto"}
 
          :container         #js {:paddingTop    (.spacing theme 4)
@@ -128,6 +130,21 @@
 (defn snackbar-styles [^js/Mui.Theme theme]
   #js {:root #js {:width "100%"
                   "& > * + *" #js {:marginTop (.spacing theme)}}})
+
+(defn form-styles [^js/Mui.Theme theme]
+  #js {:root #js {"& .MuiTextField-root" #js {:margin (.spacing theme 1)
+                                              :width "25ch"}}
+       :paper #js {:padding (.spacing theme 1)}})
+
+(defn table-styles [^js/Mui.Theme theme]
+  #js {:paper #js {:padding (.spacing theme 1)
+                   :margin-top "5px"}
+       :table #js {:minWidth "100%"}
+       :container #js {:maxHeight "440"}
+       :head  #js {:backgroundColor (-> theme .-palette .-primary)
+                   :color           (-> theme .-palette .-common .-white)}
+       :body  #js {:fontSize 14}
+       :row   #js {"&:nth-of-type(odd)" #js {:backgroundColor (-> theme .-palette .-action .-hover)}}})
 
 (defn with-custom-styles [component styles]
   [:> ((withStyles styles)

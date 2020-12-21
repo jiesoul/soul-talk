@@ -18,6 +18,7 @@
             [soul-talk.series.views :as series]
             [clojure.string :as str]
             ["@material-ui/core" :as mui]
+            ["@material-ui/core/styles" :refer [ThemeProvider]]
             [soul-talk.utils :as utils]))
 
 ;;多重方法  响应对应的页面
@@ -87,7 +88,7 @@
       (fn []
         [:<>
          [:> mui/CssBaseline]
-         [:> mui/MuiThemeProvider {:theme styles/custom-theme}
+         [:> ThemeProvider {:theme styles/custom-theme}
           [:div
            (styles/with-custom-styles c/lading-backdrop styles/backdrop-styles)
            (styles/with-custom-styles c/success-snackbars styles/success-snackbar-styles)

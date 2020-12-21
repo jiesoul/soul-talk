@@ -35,9 +35,8 @@
 (defn load-data-dic-page [req]
   (let [params (:params req)
         pagination (p/create req)
-        data-dices (db/load-data-dic-page pagination params)
-        totals (db/count-data-dic-page params)
-        pagination (p/create-total pagination totals)]
+        [data-dices total] (db/load-data-dic-page pagination params)
+        pagination (p/create-total pagination total)]
     (utils/ok {:data-dices data-dices
                :pagination pagination
                :query-params params})))

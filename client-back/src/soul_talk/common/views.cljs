@@ -187,7 +187,6 @@
         menus-tree (utils/make-tree menus)
         {:keys [id pid]} @(rf/subscribe [:menus/selected])]
     (fn []
-      (js/console.log "====id: " id " pid: " pid)
       [:> TreeView {:class-name            (.-treeRoot classes)
                     :default-selected      [(str id)]
                     :default-expanded      [(str pid)]
@@ -210,13 +209,14 @@
       [menu-tree-view props]]]))
 
 (defn breadcrumbs [{:keys [classes]}]
-  (let [items (rf/subscribe [:breadcrumb])]
-    [:> mui/Grid {:container true}
-     [:> mui/Breadcrumbs {:aria-label "breadcrumb"
-                          :class-name (.-breadcrumb classes)}
-      (for [item @items]
-        ^{:key item}
-        [:> mui/Typography {:color "textPrimary"} item])]]))
+  (let [{:keys [name pid]} @(rf/subscribe [:menus/selected])
+        menus (:menus @(rf/subscribe [:user]))
+        parent (first (filter #(= pid (:id %)) menus))]
+    [:> mui/Breadcrumbs {:aria-label "breadcrumb"
+                         :class-name (.-breadcrumb classes)}
+     (if parent
+       [:> mui/Typography {:color "inherit"} (:name parent)])
+     [:> mui/Typography {:color "textPrimary"} name]]))
 
 (defn copyright [{:keys [classes] :as props}]
   (let [year (.getFullYear (js/Date.))
@@ -240,8 +240,7 @@
     [:> mui/Toolbar]
     [breadcrumbs props]
     [:> mui/Divider]
-    [:> mui/Container {:max-width  "lg"
-                       :class-name (.-mainContent classes)}
+    [:div
      children]
     [:> mui/Box {:pt 4}
      [copyright]]]])

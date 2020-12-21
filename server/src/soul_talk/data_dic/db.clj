@@ -36,19 +36,12 @@
     [sql-str coll]))
 
 (defn load-data-dic-page [{:keys [offset per_page]} params]
-  (let [where (gen-where params)
-        sql-str (apply str "select * from data_dic" (first where) " offset ? limit ?")
-        coll (conj (second where) offset per_page)]
-    (sql/query *db*
-      (into [sql-str] coll)
-      {:builder-fn rs-set/as-unqualified-maps})))
-
-(defn count-data-dic-page [params]
-  (let [where (gen-where params)
-        sql-str (str "select count(1) as c from data_dic" (first where))]
-    (:c
-     (first
-       (sql/query *db* (into [sql-str] (second where)))))))
+  (let [[where coll] (gen-where params)
+        sql-str (apply str "select * from data_dic " where " offset ? limit ?")
+        data-dices (sql/query *db* (into [sql-str] (conj coll offset per_page)))
+        count-str (str "select count(1) as c from data_dic " where)
+        total (:c (first (sql/query *db* (into [count-str] coll))))]
+    [data-dices total]))
 
 (defn get-data-dic-by-id [id]
   (sql/get-by-id *db* :data_dic id {:builder-fn rs-set/as-unqualified-maps}))

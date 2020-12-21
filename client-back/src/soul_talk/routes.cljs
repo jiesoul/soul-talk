@@ -53,7 +53,7 @@
 
 (defroute "/site-info/:id" [id]
   (run-events-admin [[:site-info/load id]
-                     [:set-breadcrumb ["网站信息设置"]]
+                     [:set-breadcrumb ["基础信息" "网站信息"]]
                      [:set-active-page :site-info]]))
 
 (defroute "/data-dices" []
