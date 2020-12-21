@@ -90,6 +90,6 @@
          [:> mui/MuiThemeProvider {:theme styles/custom-theme}
           [:div
            (styles/with-custom-styles c/lading-backdrop styles/backdrop-styles)
-           [c/success-message]
-           [c/error-message]
+           (styles/with-custom-styles c/success-snackbars styles/success-snackbar-styles)
+           (styles/with-custom-styles c/error-snackbars styles/snackbar-styles)
            (pages @active-page)]]]))))

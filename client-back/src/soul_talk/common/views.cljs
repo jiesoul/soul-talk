@@ -61,22 +61,39 @@
                           :open @lading?}
          [:> mui/CircularProgress {:color "inherit"}]]))))
 
-(defn success-alert [{:keys [classes]}]
-  (let [success (rf/subscribe [:success])]
-    (js/console.log "success: " @success)
-    (when @success
-      [:div {:class-name (.-root classes)}
-       [:> Alert {:severity "success"}
-        @success]])))
-
 (defn success-snackbars [{:keys [classes]}]
   (let [success (rf/subscribe [:success])]
     (when @success
+      (println "success: " @success)
       [:> mui/Snackbar {:anchor-origin {:vertical   "top"
                                         :horizontal "center"}
-                        :open          (nil? @success)
+                        :class-name (.-root classes)
+                        :open          true
                         :message @success
-                        :key @success}])))
+                        :key "success"
+                        :auto-hide-Duration 3000
+                        :on-close #(rf/dispatch [:clean-success])
+                        :action (r/as-element [:> mui/IconButton {:size "small"
+                                                                  :aria-label "close"
+                                                                  :color "inherit"
+                                                                  :on-click #(rf/dispatch [:clean-success])}
+                                               [:> mui-icons/Close {:font-size "small"}]])}])))
+
+(defn error-snackbars [{:keys [classes]}]
+  (let [error (rf/subscribe [:error])]
+    (when @error
+      [:> mui/Snackbar {:anchor-origin {:vertical   "top"
+                                        :horizontal "center"}
+                        :open          true
+                        :message @error
+                        :key "success"
+                        :auto-hide-Duration 5000
+                        :on-close #(rf/dispatch [:clean-error])
+                        :action (r/as-element [:> mui/IconButton {:size "small"
+                                                                  :aria-label "close"
+                                                                  :color "inherit"
+                                                                  :on-click #(rf/dispatch [:clean-error])}
+                                               [:> mui-icons/Close {:font-size "small"}]])}])))
 
 (def ^:dynamic *drawer-open* (r/atom true))
 (def ^:dynamic *anchor-el* (r/atom nil))

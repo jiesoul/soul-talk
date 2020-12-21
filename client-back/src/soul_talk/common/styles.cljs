@@ -10,8 +10,7 @@
 
 (def custom-theme
   (createMuiTheme
-    #js {:palette #js {:primary #js {:main (gobj/get (.-purple ^js/Mui.Colors mui-colors) 500)}
-                       :secondary #js {:main "#11cb5f"}}}))
+    #js {:palette #js {:primary #js {:main (gobj/get (.-blue ^js/Mui.Colors mui-colors) 500)}}}))
 
 (def drawer-width 200)
 (def app-bar-height 64)
@@ -123,8 +122,10 @@
   #js {:backdrop #js {:zIndex (+ 1 (-> theme .-zIndex .-drawer))
                       :color "#fff"}})
 
+(defn success-snackbar-styles [^js/Mui.Theme theme]
+  #js {:root #js {:backgroundColor (.-green mui-colors)}})
 
-(defn alert-styles [^js/Mui.Theme theme]
+(defn snackbar-styles [^js/Mui.Theme theme]
   #js {:root #js {:width "100%"
                   "& > * + *" #js {:marginTop (.spacing theme)}}})
 
