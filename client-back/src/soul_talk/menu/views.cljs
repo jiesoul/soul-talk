@@ -6,13 +6,15 @@
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [soul-talk.utils :as utils]
             [taoensso.timbre :as log]
-            [soul-talk.common.styles :as styles]))
+            [soul-talk.common.styles :as styles]
+            ["@material-ui/core" :as mui]
+            ["@material-ui/icons" :as mui-icons]))
 
 (def ^:dynamic *edit-visible* (r/atom false))
 (def ^:dynamic *add-visible* (r/atom false))
 
 (defn edit-input []
-  [:<>
+  [:form
    [:> Form.Item {:name      "name"
                   :label     "名称"
                   :rules     [{:required true}]
@@ -76,26 +78,26 @@
                                     (dispatch [:menus/set-attr :note value]))}
         [:> Input]]])))
 
-(defn add-form [menu user]
-  (fn [menu user]
-    (let [user-id (:id @user)
-          this (r/current-component)]
-      [c/modal {:visible  @*add-visible*
-                :title    "添加菜单"
-                :onCancel (fn [e props]
-                            (js/console.log "========" e )
-                            (js/console.log "----------" this )
-                            (do
-                                   (dispatch [:menus/clean-menu])
-                                   (reset! *add-visible* false)))
-                :onOk     #(let [menu @menu]
-                             (assoc menu :update_by user-id)
-                             (dispatch [:menus/add (assoc menu :create_by user-id)]))}
-       [menu-form menu]
-       ])))
+(defn add-form []
+  (let [menu (subscribe [:menu])
+        user (subscribe [:user])
+        user-id (:id @user)]
+    [c/modal {:visible  @*add-visible*
+              :title    "添加菜单"
+              :onCancel (fn [e props]
+                          (do
+                            (dispatch [:menus/clean-menu])
+                            (reset! *add-visible* false)))
+              :onOk     #(let [menu @menu]
+                           (assoc menu :update_by user-id)
+                           (dispatch [:menus/add (assoc menu :create_by user-id)]))}
+     [menu-form menu]
+     ]))
 
-(defn edit-form [menu user]
-  (let [user-id  (:id @user)]
+(defn edit-form [{:keys [classes]}]
+  (let [menu (subscribe [:menu])
+        user (subscribe [:user])
+        user-id  (:id @user)]
     (if @menu
       [:> Modal {:visible    @*edit-visible*
                  :title      "编辑数据字典"
@@ -117,56 +119,45 @@
         [edit-input]
         ]])))
 
-(defn query-form []
+(defn query-form [{:keys [classes]}]
   (let [query-params (subscribe [:menus/query-params])
-        this (r/current-component)
-        children (r/children this)
-        form         (fn []
-                       (js/Form.userForm))]
+        {:keys [id name pid]} @query-params]
     (fn []
-      (let [{:keys [id name pid]} @query-params]
-        (js/console.log "query-form reload++++++++++ query-param: " @query-params)
-        [:> Form {:name      "query-form"
-                  :className "advanced-search-form"}
-         [:> Row {:gutter 24}
-          [:> Col {:span 8}
-           [:> Form.Item {:name      "id"
-                          :label     "id"
-                          :on-change #(dispatch [:menus/set-query-params :id (-> % .-target .-value)])}
-            [:input {:value (:id @query-params)}]]]
-          [:> Col {:span 8}
-           [:> Form.Item {:name      "name"
-                          :label     "name"
-                          :on-change #(dispatch [:menus/set-query-params :name (-> % .-target .-value)])}
-            [:input {:value (:name @query-params)}]]]
-          [:> Col {:span 8}
-           [:> Form.Item {:name      "pid"
-                          :label     "父id"
-                          :on-change #(dispatch [:menus/set-query-params :pid (-> % .-target .-value)])}
-            [:input {:value (:pid @query-params)}]]]]
-         [:> Row
-          [:> Col {:span 24 :style {:text-align "right"}}
-           [:> Form.Item
-            [:> Button {:type     "primary"
-                        :htmlType "reset"
-                        :style    {:margin "0 8px"}
-                        :on-click #(do
-                                    (dispatch [:menus/clean-query-params])
-                                    (let [form (-> % .-props)]
-                                      (js/console.log "===Form: "form)
-                                      (js/console.log "====this: " (-> this))))}
-             "重置"]
-            [:> Button {:type     "primary"
-                        :htmlType "submit"
-                        :style    {:margin "0 8px"}
-                        :on-click #(dispatch [:menus/load-page @query-params])}
-             "搜索"]
-            [:> Button {:type     "dashed"
-                        :style    {:margin "0 8px"}
-                        :on-click (fn []
-                                    (dispatch [:menus/clean-menu])
-                                    (reset! *add-visible* true))}
-             "新增"]]]]])))
+      [:> mui/Paper {:class-name (.-paper classes)}
+       [:form {:name       "query-form"
+               :class-name (.-root classes)}
+        [:div
+         [:> mui/TextField {:name      "id"
+                            :label     "id"
+                            :value id
+                            :on-change #(dispatch [:menus/set-query-params :id (-> % .-target .-value)])}]
+         [:> mui/TextField {:name      "name"
+                            :label     "name"
+                            :value name
+                            :on-change #(dispatch [:menus/set-query-params :name (-> % .-target .-value)])}]
+         [:> mui/TextField {:name      "pid"
+                            :label     "父id"
+                            :value pid
+                            :on-change #(dispatch [:menus/set-query-params :pid (-> % .-target .-value)])}]]
+        [:div {:class-name (.-buttons classes)}
+         [:> mui/Button {:color    "primary"
+                         :size     "small"
+                         :variant  "outlined"
+                         :type "reset"
+                         :on-click #(dispatch [:menus/clean-query-params])}
+          "重置"]
+         [:> mui/Button {:variant  "outlined"
+                         :size     "small"
+                         :color    "primary"
+                         :on-click #(dispatch [:menus/load-page @query-params])}
+          "搜索"]
+         [:> mui/Button {:color    "default"
+                         :size     "small"
+                         :variant  "outlined"
+                         :on-click (fn []
+                                     (dispatch [:menus/clean-menu])
+                                     (reset! *add-visible* true))}
+          "新增"]]]]))
   )
 
 (def list-columns
@@ -177,48 +168,67 @@
    {:title "备注" :dataIndex "note", :key "note", :align "center"}
    {:title  "操作" :dataIndex "actions" :key "actions" :align "center"
     :render (fn [_ article]
-              (r/as-element
-                (let [{:keys [id]} (js->clj article :keywordize-keys true)]
-                  [:div
-                   [:> Button {:type "primary"
-                               :icon (r/as-element [:> EditOutlined])
-                               :size "small"
-                               :on-click (fn []
-                                           (dispatch [:menus/load-menu id])
-                                           (reset! *edit-visible* true))}]
 
-                   [:> Button {:type     "danger"
-                               :icon     (r/as-element [:> DeleteOutlined])
-                               :size     "small"
-                               :style {:margin "0 8px"}
-                               :on-click (fn []
-                                           (r/as-element
-                                             (c/show-confirm
-                                               "删除"
-                                               (str "你确认要删除吗？")
-                                               #(dispatch [:menus/delete id])
-                                               #(js/console.log "cancel"))))}]])))}])
+              )}])
 
-(defn list-table [menus]
-  (fn [menus]
-    [:div.search-result-list
-     [:> Table {:dataSource (clj->js @menus)
-                :columns    (clj->js list-columns)
-                :row-key    "id"
-                :bordered   true}]]))
+(defn list-table [{:keys [classes]}]
+  (let [menus (subscribe [:menus])]
+    [:> mui/TableContainer {:class-name (.-paper classes)
+                            :component  mui/Paper}
+     [:> mui/Table {:class-name (.-table classes)
+                    :aria-label "list-table"
+                    :size "small"}
+      [:> mui/TableHead {:class-name (.-head classes)}
+       [:> mui/TableRow {:class-name (.-head classes)}
+        [:> mui/TableCell {:align "center"}"ID"]
+        [:> mui/TableCell {:align "center"} "名称"]
+        [:> mui/TableCell {:align "center"} "地址"]
+        [:> mui/TableCell {:align "center"} "PID"]
+        [:> mui/TableCell {:align "center"} "备注"]
+        [:> mui/TableCell {:align "center"} "操作"]
+        ]]
+      [:> mui/TableBody {:class-name (.-body classes)}
+       (doall
+         (for [{:keys [id name pid url note] :as menu} @menus]
+           ^{:key menu}
+           [:> mui/TableRow {:class-name (.-row classes)}
+            [:> mui/TableCell {:align "center"} id]
+            [:> mui/TableCell {:align "center"} name]
+            [:> mui/TableCell {:align "center"} url]
+            [:> mui/TableCell {:align "center"} pid]
+            [:> mui/TableCell {:align "center"} note]
+            [:> mui/TableCell {:align "center"}
+             [:div
+              [:> mui/IconButton {:type     "primary"
+                                  :size     "small"
+                                  :on-click (fn []
+                                              (dispatch [:menus/load-menu id])
+                                              (reset! *edit-visible* true))}
+               [:> mui-icons/Edit]]
+
+              [:> mui/IconButton {:type     "danger"
+                                  :size     "small"
+                                  :style    {:margin "0 8px"}
+                                  :on-click (fn []
+                                              (r/as-element
+                                                (c/show-confirm
+                                                  "删除"
+                                                  (str "你确认要删除吗？")
+                                                  #(dispatch [:menus/delete id])
+                                                  #(js/console.log "cancel"))))}
+               [:> mui-icons/Delete]]]]
+            ]))]
+      ]]))
 
 (defn query-page
   [props]
-  (let [user (subscribe [:user])
-        query-params (subscribe [:menus/query-params])
-        menus (subscribe [:menus])
-        menu (subscribe [:menu])]
-    [c/layout props
-     [:div
-      [add-form menu user]
-      [query-form query-params]
-      [edit-form menu user]
-      [list-table menus]]]))
+  [c/layout props
+   [:<>
+    (styles/styled-form add-form)
+    (styles/styled-form query-form)
+    (styles/styled-form edit-form)
+    (styles/styled-table list-table)
+    ]])
 
 (defn home []
   (styles/main query-page))

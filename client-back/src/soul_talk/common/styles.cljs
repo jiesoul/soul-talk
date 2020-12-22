@@ -134,14 +134,17 @@
 (defn form-styles [^js/Mui.Theme theme]
   #js {:root #js {"& .MuiTextField-root" #js {:margin (.spacing theme 1)
                                               :width "25ch"}}
+       :buttons #js {"& > *" #js {:margin (.spacing theme 1)}
+                     :textAlign "right"}
        :paper #js {:padding (.spacing theme 1)}})
 
 (defn table-styles [^js/Mui.Theme theme]
   #js {:paper #js {:padding (.spacing theme 1)
                    :margin-top "5px"}
-       :table #js {:minWidth "100%"}
+       :table #js {:minWidth "100%"
+                   :minHeight "600px"}
        :container #js {:maxHeight "440"}
-       :head  #js {:backgroundColor (-> theme .-palette .-primary)
+       :head  #js {:backgroundColor (-> theme .-palette .-common .-blue)
                    :color           (-> theme .-palette .-common .-white)}
        :body  #js {:fontSize 14}
        :row   #js {"&:nth-of-type(odd)" #js {:backgroundColor (-> theme .-palette .-action .-hover)}}})
@@ -152,3 +155,9 @@
 
 (defn main [component]
   (with-custom-styles component main-styles))
+
+(defn styled-form [form]
+  (with-custom-styles form form-styles))
+
+(defn styled-table [table]
+  (with-custom-styles table table-styles))
