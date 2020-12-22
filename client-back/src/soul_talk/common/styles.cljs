@@ -131,6 +131,12 @@
   #js {:root #js {:width "100%"
                   "& > * + *" #js {:marginTop (.spacing theme)}}})
 
+(defn edit-form-styles [^js/Mui.Theme theme]
+  #js {:root #js {"& .MuiTextField-root" #js {:margin (.spacing theme 1)}}
+       :buttons #js {"& > *" #js {:margin (.spacing theme 1)}
+                     :textAlign "right"}
+       :paper #js {:padding (.spacing theme 1)}})
+
 (defn form-styles [^js/Mui.Theme theme]
   #js {:root #js {"& .MuiTextField-root" #js {:margin (.spacing theme 1)
                                               :width "25ch"}}
@@ -139,14 +145,12 @@
        :paper #js {:padding (.spacing theme 1)}})
 
 (defn table-styles [^js/Mui.Theme theme]
-  #js {:paper #js {:padding (.spacing theme 1)
+  #js {:paper #js {:padding (.spacing theme 0.5)
                    :margin-top "5px"}
-       :table #js {:minWidth "100%"
-                   :minHeight "600px"}
-       :container #js {:maxHeight "440"}
+       :table #js {:minWidth "100%"}
        :head  #js {:backgroundColor (-> theme .-palette .-common .-blue)
-                   :color           (-> theme .-palette .-common .-white)}
-       :body  #js {:fontSize 14}
+                   :color           (-> theme .-palette .-common .-black)}
+       :body  #js {:fontSize 10}
        :row   #js {"&:nth-of-type(odd)" #js {:backgroundColor (-> theme .-palette .-action .-hover)}}})
 
 (defn with-custom-styles [component styles]
@@ -155,6 +159,9 @@
 
 (defn main [component]
   (with-custom-styles component main-styles))
+
+(defn styled-edit-form [form]
+  (with-custom-styles form edit-form-styles))
 
 (defn styled-form [form]
   (with-custom-styles form form-styles))

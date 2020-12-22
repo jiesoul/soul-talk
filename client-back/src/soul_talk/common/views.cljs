@@ -245,12 +245,32 @@
     [:> mui/Box {:pt 4}
      [copyright]]]])
 
+(defn dialog [{:keys [open title description on-close on-ok]}]
+  [:> mui/Dialog {:open open
+                  :on-close on-close
+                  :aria-labelledby "alert-dialog-title"
+                  :aria-describedby "alert-dialog-description"}
+   [:> mui/DialogTitle {:id "alert-dialog-title"} title]
+   [:> mui/DialogContent
+    [:> mui/DialogContentText {:id "alert-dialog-description"}
+     (if description description "确认吗？")]]
+   [:> mui/DialogActions
+    [:> mui/Button {:on-click on-close :color "default"} "取消"]
+    [:> mui/Button {:on-click on-ok :color "primary"} "确认"]]])
+
 (defn default-page [props]
   [layout props
    [:div "页面未找到，请检查链接！"]])
 
 (defn default []
   (styles/main default-page))
+
+(defn table-page [opt]
+  [:> mui/TablePagination (merge {:rows-per-page-options   [10, 20, 100]
+                                  :component               "div"
+                                  :color                   "primary"
+                                  :variant                 "outlined"}
+                            opt)])
 
 (defn logo []
   (let [site-info (rf/subscribe [:site-info])]

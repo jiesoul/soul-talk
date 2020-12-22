@@ -51,12 +51,13 @@
                                :on-change  #(rf/dispatch [:site-info/set-attr :author (-> % .-target .-value)])}]
             [:div {:style {:margin "normal"}}
              [:> mui/Button {:type     "reset"
-                             :color    "secondary"
-                             :variant  "contained"
-                             :on-click #(js/console.log "object: " %)}
+                             :color    "default"
+                             :size "small"
+                             :variant  "outlined"}
               "重置"]
-             [:> mui/Button {:type     "button"
-                             :variant  "contained"
+             [:> mui/Button {:type     "reset"
+                             :variant  "outlined"
+                             :size "small"
                              :color    "primary"
                              :style    {:margin "0 8px"}
                              :on-click #(rf/dispatch [:site-info/update @site-info])}

@@ -151,74 +151,72 @@
                          :color    "primary"
                          :on-click #(dispatch [:menus/load-page @query-params])}
           "搜索"]
-         [:> mui/Button {:color    "default"
+         [:> mui/Button {:color    "secondary"
                          :size     "small"
                          :variant  "outlined"
                          :on-click (fn []
                                      (dispatch [:menus/clean-menu])
                                      (reset! *add-visible* true))}
-          "新增"]]]]))
-  )
-
-(def list-columns
-  [{:title "ID" :dataIndex "id", :key "id", :align "center"}
-   {:title "名称" :dataIndex "name", :key "name", :align "center"}
-   {:title "地址" :dataIndex "url", :key "url", :align "center"}
-   {:title "父ID" :dataIndex "pid", :key "pid", :align "center"}
-   {:title "备注" :dataIndex "note", :key "note", :align "center"}
-   {:title  "操作" :dataIndex "actions" :key "actions" :align "center"
-    :render (fn [_ article]
-
-              )}])
+          "新增"]]]])))
 
 (defn list-table [{:keys [classes]}]
-  (let [menus (subscribe [:menus])]
-    [:> mui/TableContainer {:class-name (.-paper classes)
-                            :component  mui/Paper}
-     [:> mui/Table {:class-name (.-table classes)
-                    :aria-label "list-table"
-                    :size "small"}
-      [:> mui/TableHead {:class-name (.-head classes)}
-       [:> mui/TableRow {:class-name (.-head classes)}
-        [:> mui/TableCell {:align "center"}"ID"]
-        [:> mui/TableCell {:align "center"} "名称"]
-        [:> mui/TableCell {:align "center"} "地址"]
-        [:> mui/TableCell {:align "center"} "PID"]
-        [:> mui/TableCell {:align "center"} "备注"]
-        [:> mui/TableCell {:align "center"} "操作"]
-        ]]
-      [:> mui/TableBody {:class-name (.-body classes)}
-       (doall
-         (for [{:keys [id name pid url note] :as menu} @menus]
-           ^{:key menu}
-           [:> mui/TableRow {:class-name (.-row classes)}
-            [:> mui/TableCell {:align "center"} id]
-            [:> mui/TableCell {:align "center"} name]
-            [:> mui/TableCell {:align "center"} url]
-            [:> mui/TableCell {:align "center"} pid]
-            [:> mui/TableCell {:align "center"} note]
-            [:> mui/TableCell {:align "center"}
-             [:div
-              [:> mui/IconButton {:type     "primary"
-                                  :size     "small"
-                                  :on-click (fn []
-                                              (dispatch [:menus/load-menu id])
-                                              (reset! *edit-visible* true))}
-               [:> mui-icons/Edit]]
+  (let [menus (subscribe [:menus])
+        pagination (subscribe [:pagination])]
+    (fn []
+      (let [{:keys [per_page page total total_pages]} @pagination]
+        [:> mui/Paper
+         [:> mui/TableContainer {:class-name (.-paper classes)
+                                 :component  mui/Paper}
+          [:> mui/Table {:class-name    (.-table classes)
+                         :sticky-header true
+                         :aria-label    "list-table"
+                         :size          "small"}
+           [:> mui/TableHead {:class-name (.-head classes)}
+            [:> mui/TableRow {:class-name (.-head classes)}
+             [:> mui/TableCell {:align "center"} "ID"]
+             [:> mui/TableCell {:align "center"} "名称"]
+             [:> mui/TableCell {:align "center"} "地址"]
+             [:> mui/TableCell {:align "center"} "PID"]
+             [:> mui/TableCell {:align "center"} "备注"]
+             [:> mui/TableCell {:align "center"} "操作"]
+             ]]
+           [:> mui/TableBody {:class-name (.-body classes)}
+            (doall
+              (for [{:keys [id name pid url note] :as menu} @menus]
+                ^{:key menu}
+                [:> mui/TableRow {:class-name (.-row classes)}
+                 [:> mui/TableCell {:align "center"} id]
+                 [:> mui/TableCell {:align "center"} name]
+                 [:> mui/TableCell {:align "center"} url]
+                 [:> mui/TableCell {:align "center"} pid]
+                 [:> mui/TableCell {:align "center"} note]
+                 [:> mui/TableCell {:align "center"}
+                  [:div
+                   [:> mui/IconButton {:color    "primary"
+                                       :size     "small"
+                                       :on-click (fn []
+                                                   (dispatch [:menus/load-menu id])
+                                                   (reset! *edit-visible* true))}
+                    [:> mui-icons/Edit]]
 
-              [:> mui/IconButton {:type     "danger"
-                                  :size     "small"
-                                  :style    {:margin "0 8px"}
-                                  :on-click (fn []
-                                              (r/as-element
-                                                (c/show-confirm
-                                                  "删除"
-                                                  (str "你确认要删除吗？")
-                                                  #(dispatch [:menus/delete id])
-                                                  #(js/console.log "cancel"))))}
-               [:> mui-icons/Delete]]]]
-            ]))]
-      ]]))
+                   [:> mui/IconButton {:color    "secondary"
+                                       :size     "small"
+                                       :style    {:margin "0 8px"}
+                                       :on-click (fn []
+                                                   (r/as-element
+                                                     (c/show-confirm
+                                                       "删除"
+                                                       (str "你确认要删除吗？")
+                                                       #(dispatch [:menus/delete id])
+                                                       #(js/console.log "cancel"))))}
+                    [:> mui-icons/Delete]]]]
+                 ]))]]
+          (if @menus
+            [c/table-page {:count                   total
+                           :rows-per-page           per_page
+                           :page                    (dec page)
+                           :on-change-page          #()
+                           :on-change-rows-per-page #()}])]]))))
 
 (defn query-page
   [props]
