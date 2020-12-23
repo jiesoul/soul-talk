@@ -13,6 +13,7 @@
             [soul-talk.app-key.views :as app-key]
             [soul-talk.data-dic.views :as data-dic]
             [soul-talk.menu.views :as menu]
+            [soul-talk.role.views :as role]
             [soul-talk.collect-link.views :as collect-link]
             [soul-talk.collect-site.views :as collect-site]
             [soul-talk.series.views :as series]
@@ -45,6 +46,9 @@
 
 (defmethod pages :menus [_ _]
   (admin menu/home))
+
+(defmethod pages :roles [_ _]
+  (admin role/home))
 
 ;; user
 (defmethod pages :users [_ _]

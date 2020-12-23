@@ -41,11 +41,10 @@
   (let [[where coll] (gen-where params)
         query-sql (str "select * from role " where " offset ? limit ?")
         roles (sql/query *db*
-                (into query-sql (conj coll offset per_page))
-                {:builder-fn rs-set/as-unqualified-maps})
+                (into [query-sql] (conj coll offset per_page)))
         count-sql (str "select count(1) as c from role " where)
         total     (:c (first (sql/query *db*
-                               (into count-sql coll))))]
+                               (into [count-sql] coll))))]
     [roles total]))
 
 (defn get-role-menus-by-ids [ids]

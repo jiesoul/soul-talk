@@ -1,7 +1,7 @@
 (ns soul-talk.role.routes
   (:require [soul-talk.role.handler :as role]
             [compojure.api.sweet :refer :all]
-            [compojure.api.meta :refer [restructure-params]]
+            [compojure.api.meta :refer [restructure-param]]
             [soul-talk.middleware :as m]))
 
 (defmethod restructure-param :auth-app-key

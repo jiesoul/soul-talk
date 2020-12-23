@@ -13,10 +13,6 @@
 
 (def ^:dynamic *add-visible* (r/atom false))
 
-(defn menu-form []
-
-  )
-
 (defn add-form [{:keys [classes]}]
   (let [menu    (subscribe [:menu])
         user    (subscribe [:user])
@@ -181,59 +177,58 @@
 
 (defn list-table [{:keys [classes]}]
   (let [menus (subscribe [:menus])
-        pagination (subscribe [:pagination])]
+        pagination (subscribe [:pagination])
+        query-params (subscribe [:menus/query-params])]
     (fn []
-      (let [{:keys [per_page page total total_pages]} @pagination]
-        [:> mui/Paper
-         [:> mui/TableContainer {:class-name (.-paper classes)
-                                 :component  mui/Paper}
-          [:> mui/Table {:class-name    (.-table classes)
-                         :sticky-header true
-                         :aria-label    "list-table"
-                         :size          "small"}
-           [:> mui/TableHead {:class-name (.-head classes)}
-            [:> mui/TableRow {:class-name (.-head classes)}
-             [:> mui/TableCell {:align "center"} "ID"]
-             [:> mui/TableCell {:align "center"} "名称"]
-             [:> mui/TableCell {:align "center"} "地址"]
-             [:> mui/TableCell {:align "center"} "PID"]
-             [:> mui/TableCell {:align "center"} "备注"]
-             [:> mui/TableCell {:align "center"} "操作"]
-             ]]
-           [:> mui/TableBody {:class-name (.-body classes)}
-            (doall
-              (for [{:keys [id name pid url note] :as menu} @menus]
-                ^{:key menu}
-                [:> mui/TableRow {:class-name (.-row classes)}
-                 [:> mui/TableCell {:align "center"} id]
-                 [:> mui/TableCell {:align "center"} name]
-                 [:> mui/TableCell {:align "center"} url]
-                 [:> mui/TableCell {:align "center"} pid]
-                 [:> mui/TableCell {:align "center"} note]
-                 [:> mui/TableCell {:align "center"}
-                  [:div
-                   [:> mui/IconButton {:color    "primary"
-                                       :size     "small"
-                                       :on-click (fn []
-                                                   (dispatch [:menus/load-menu id])
-                                                   (reset! *edit-visible* true))}
-                    [:> mui-icons/Edit]]
+      (let [{:keys [per_page page total offset]} @pagination]
+        (println "pagination: " pagination)
+        [:> mui/TableContainer {:class-name (.-paper classes)
+                                :component  mui/Paper}
+         [:> mui/Table {:class-name    (.-table classes)
+                        :sticky-header true
+                        :aria-label    "list-table"
+                        :size          "small"}
+          [:> mui/TableHead {:class-name (.-head classes)}
+           [:> mui/TableRow {:class-name (.-head classes)}
+            [:> mui/TableCell {:align "center"} "序号"]
+            [:> mui/TableCell {:align "center"} "ID"]
+            [:> mui/TableCell {:align "center"} "名称"]
+            [:> mui/TableCell {:align "center"} "地址"]
+            [:> mui/TableCell {:align "center"} "PID"]
+            [:> mui/TableCell {:align "center"} "备注"]
+            [:> mui/TableCell {:align "center"} "操作"]
+            ]]
+          [:> mui/TableBody {:class-name (.-body classes)}
+           (doall
+             (for [{:keys [index id name pid url note] :as menu} (map #(assoc %1 :index %2) @menus (range offset (+ offset per_page)))]
+               ^{:key menu}
+               [:> mui/TableRow {:class-name (.-row classes)
+                                 :tab-index index}
+                [:> mui/TableCell {:align "center"} (inc index)]
+                [:> mui/TableCell {:align "center"} id]
+                [:> mui/TableCell {:align "center"} name]
+                [:> mui/TableCell {:align "center"} url]
+                [:> mui/TableCell {:align "center"} pid]
+                [:> mui/TableCell {:align "center"} note]
+                [:> mui/TableCell {:align "center"}
+                 [:div
+                  [:> mui/IconButton {:color    "primary"
+                                      :size     "small"
+                                      :on-click (fn []
+                                                  (dispatch [:menus/load-menu id])
+                                                  (reset! *edit-visible* true))}
+                   [:> mui-icons/Edit]]
 
-                   [:> mui/IconButton {:color    "secondary"
-                                       :size     "small"
-                                       :style    {:margin "0 8px"}
-                                       :on-click (fn []
-                                                   (do
-                                                     (reset! *delete-dialog-open* true)
-                                                     (reset! *delete-id* id)))}
-                    [:> mui-icons/Delete]]]]
-                 ]))]]
-          (if @menus
-            [c/table-page {:count                   total
-                           :rows-per-page           per_page
-                           :page                    (dec page)
-                           :on-change-page          #()
-                           :on-change-rows-per-page #()}])]]))))
+                  [:> mui/IconButton {:color    "secondary"
+                                      :size     "small"
+                                      :style    {:margin "0 8px"}
+                                      :on-click (fn []
+                                                  (do
+                                                    (reset! *delete-dialog-open* true)
+                                                    (reset! *delete-id* id)))}
+                   [:> mui-icons/Delete]]]]]))]]
+         (if @menus
+           [c/table-page :menus/load-page (merge @query-params @pagination) ])]))))
 
 (defn query-page
   [props]

@@ -120,6 +120,12 @@
          :fixedHeight       #js {:height 240}
          }))
 
+(defn popover-styles [theme]
+  #js {:paper #js {:border "1px solid #d3d4d5"}
+       :root #js {"&:focus" #js {:backgroundColor (-> theme .-palette .-primary .-main)
+                                 "& .MuiListItemIcon-root, & .MuiListItemText-primary"
+                                                  #js {:color (-> theme .-palette .-common .-white)}}}})
+
 (defn backdrop-styles [^js/Mui.Theme theme]
   #js {:backdrop #js {:zIndex (+ 1 (-> theme .-zIndex .-drawer))
                       :color "#fff"}})
@@ -132,10 +138,10 @@
                   "& > * + *" #js {:marginTop (.spacing theme)}}})
 
 (defn edit-form-styles [^js/Mui.Theme theme]
-  #js {:root #js {"& .MuiTextField-root" #js {:margin (.spacing theme 1)}}
+  #js {:root #js {"& .MuiTextField-root" #js {:padding (.spacing theme 0.5)}}
        :buttons #js {"& > *" #js {:margin (.spacing theme 1)}
                      :textAlign "right"}
-       :paper #js {:padding (.spacing theme 1)}})
+       :paper #js {:padding (.spacing theme 2)}})
 
 (defn form-styles [^js/Mui.Theme theme]
   #js {:root #js {"& .MuiTextField-root" #js {:margin (.spacing theme 1)

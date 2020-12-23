@@ -6,6 +6,7 @@
             [soul-talk.app-key.routes :as app-key]
             [soul-talk.data-dic.routes :as data-dic]
             [soul-talk.menu.routes :as menu]
+            [soul-talk.role.routes :as role]
             [soul-talk.auth.routes :as auth]
             [soul-talk.user.routes :as user]
             [soul-talk.series.routes :as series]
@@ -33,6 +34,7 @@
         auth/login-routes
         data-dic/site-routes
         menu/site-routes
+        role/site-routes
         app-key/site-routes
         user/private-routes
         series/site-routes

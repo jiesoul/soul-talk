@@ -64,7 +64,6 @@
 (defn success-snackbars [{:keys [classes]}]
   (let [success (rf/subscribe [:success])]
     (when @success
-      (println "success: " @success)
       [:> mui/Snackbar {:anchor-origin {:vertical   "top"
                                         :horizontal "center"}
                         :class-name (.-root classes)
@@ -84,30 +83,17 @@
     (when @error
       [:> mui/Snackbar {:anchor-origin {:vertical   "top"
                                         :horizontal "center"}
+                        :class-name (.-root classes)
                         :open          true
                         :message @error
-                        :key "success"
-                        :auto-hide-Duration 5000
+                        :key "error"
+                        :auto-hide-Duration 3000
                         :on-close #(rf/dispatch [:clean-error])
                         :action (r/as-element [:> mui/IconButton {:size "small"
                                                                   :aria-label "close"
                                                                   :color "inherit"
                                                                   :on-click #(rf/dispatch [:clean-error])}
                                                [:> mui-icons/Close {:font-size "small"}]])}])))
-
-(defn form-dialog [{:keys [open title  on-cancel on-ok]} & children]
-  [:> mui/Dialog {:open            open
-                  :aria-labelledby "form-dialog"
-                  :on-close        on-cancel}
-   [:> mui/DialogTitle {:id "add-form-dialog"} title]
-   [:> mui/DialogContent
-    children]
-   [:> mui/DialogActions
-    [:> mui/Button {:on-click on-cancel
-                    :color    "default"} "退出"]
-    [:> mui/Button {:on-click on-ok
-                    :color    "primary"} "保存"]]])
-
 
 (def ^:dynamic *drawer-open* (r/atom true))
 (def ^:dynamic *anchor-el* (r/atom nil))
@@ -119,6 +105,9 @@
   []
   (reset! *drawer-open* false))
 
+(def user-popover-menus [{:url "#/users/profile" :text "个人信息" :icon mui-icons/Home}
+                         {:url "#/users/password" :text "修改密码" :icon mui-icons/Send}])
+
 (defn user-popover [{:keys [classes]}]
   (let [user (rf/subscribe [:user])
         handle-popover-open (fn [event]
@@ -126,29 +115,36 @@
         handle-popover-close (fn []
                                (reset! *anchor-el* nil))
         open (not (nil? @*anchor-el*))]
-    [:div
-     [:> mui/Typography {:aria-owns      #(if open "mouse-over-popover" js/undefined)
-                         :aria-haspopup  "true"
-                         :color          "inherit"
-                         :on-mouse-enter #(handle-popover-open %)}
-      (:name @user)]
-     [:> mui/Popover {:id                    "mouse-over-popover"
-                      :class-name            (.-popover classes)
-                      :classes               {:paper (.-paper classes)}
-                      :anchor-el             @*anchor-el*
-                      :open                  open
-                      :anchor-origin         {:vertical   "bottom"
-                                              :horizontal "left"}
-                      :transform-origin      {:vertical   "top"
-                                              :horizontal "left"}
-                      :on-close              #(handle-popover-close)
-                      :disable-restore-focus true}
-      [:> mui/Paper
-       [:> mui/ClickAwayListener {:on-click-away #(handle-popover-close)}
-        [:> mui/MenuList {:auto-focus-item open}
-         [:> mui/MenuItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]
-         [:> mui/MenuItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]
-         [:> mui/MenuItem {:on-click #(navigate! (str "#/users/profile"))} "个人信息"]]]]]]))
+    (if @user
+      [:div
+       [:> mui/Button {:aria-controls "user-menu"
+                       :aria-haspopup "true"
+                       :color         "default"
+                       :start-color (r/as-element [:> mui-icons/AccountCircle ])
+                       :on-click      #(handle-popover-open %)}
+        (:name @user)]
+       [:> mui/Menu {:id                    "user-menu"
+                     :class-name            (.-paper classes)
+                     :elevation             0
+                     :get-content-anchor-el nil
+                     :anchor-el             @*anchor-el*
+                     :keep-mounted          true
+                     :open                  open
+                     :on-close              handle-popover-close
+                     :anchor-origin         {:vertical   "bottom"
+                                             :horizontal "left"}
+                     :transform-origin      {:vertical   "top"
+                                             :horizontal "left"}}
+        (doall
+          (for [{:keys [url icon text]} user-popover-menus]
+            [:> mui/MenuItem {:class-name (.-root classes)
+                              :on-click   #(navigate! url)}
+             [:> mui/ListItemIcon
+              [:> icon {:font-size "small"}]]
+             [:> mui/ListItemText {:primary text}]]))]])))
+
+(defn styled-user-popover []
+  (styles/with-custom-styles user-popover styles/popover-styles))
 
 (defn app-bar [{:keys [classes] :as props}]
   (let [site-info (rf/subscribe [:site-info])
@@ -163,7 +159,7 @@
                           :color "inherit"
                           :class-name (.-title classes)}
        (:name @site-info)]
-      (user-popover props)
+      (styled-user-popover)
       ]]))
 
 (defn menu-tree-items [{:keys [classes color bgColor] :as props} menus]
@@ -259,13 +255,24 @@
     [:> mui/Box {:pt 4}
      [copyright]]]])
 
-(defn dialog [{:keys [open title cancel-text ok-text on-close on-ok]} & children]
-  [:> mui/Dialog {:open open
-                  :on-close on-close
-                  :aria-labelledby "alert-dialog-title"
-                  :aria-describedby "alert-dialog-description"}
-   [:> mui/DialogTitle {:id "alert-dialog-title"} title]
-   [:> mui/DialogContent
+(defn dialog [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
+  [:> mui/Dialog {:aria-labelledby        "alert-dialog-title"
+                  :aria-describedby       "alert-dialog-description"
+                  :disable-backdrop-click true
+                  :style                  {:min-width "200px"}
+                  :open                   open}
+   [:> mui/DialogTitle {:id                 "alert-dialog-title"
+                        :disable-typography true
+                        :style              {:margin  0
+                                             :padding "5px"}}
+    [:> mui/Typography {:variant "h6"} title]
+    [:> mui/IconButton {:aria-label "close"
+                        :on-click   on-close
+                        :style      {:position "absolute"
+                                     :right    "5px"
+                                     :top      "1px"}}
+     [:> mui-icons/Close]]]
+   [:> mui/DialogContent {:dividers true}
     children]
    [:> mui/DialogActions
     [:> mui/Button {:on-click on-close :color "default"} (if cancel-text cancel-text "取消")]
@@ -278,12 +285,21 @@
 (defn default []
   (styles/main default-page))
 
-(defn table-page [opt]
-  [:> mui/TablePagination (merge {:rows-per-page-options   [10, 15, 100]
-                                  :component               "div"
-                                  :color                   "primary"
-                                  :variant                 "outlined"}
-                            opt)])
+(defn table-page [event {:keys [total per_page page] :as params}]
+  [:> mui/TablePagination {:rows-per-page-options   [10, 15, 100]
+                           :component               "div"
+                           :color                   "primary"
+                           :variant                 "outlined"
+                           :count                   total
+                           :rows-per-page           per_page
+                           :page                    (dec page)
+                           :on-change-page          (fn [_ page]
+                                                      (rf/dispatch [event
+                                                                    (assoc params :page (inc page))]))
+                           :on-change-rows-per-page (fn [e]
+                                                      (let [value (-> e .-target .-value)]
+                                                        (rf/dispatch [event
+                                                                      (assoc params :per_page value)])))}])
 
 (defn logo []
   (let [site-info (rf/subscribe [:site-info])]

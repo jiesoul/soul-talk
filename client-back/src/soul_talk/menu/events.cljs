@@ -12,7 +12,7 @@
 (rf/reg-event-fx
   :menus/load-menus
   (fn [_ [_ ids]]
-    {:http {:method get
+    {:http {:method GET
             :url (str site-uri "/menus?ids=" ids)
             :success-event [:menus/load-menus-ok]}}))
 

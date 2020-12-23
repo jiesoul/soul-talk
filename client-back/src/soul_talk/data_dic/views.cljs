@@ -22,42 +22,35 @@
   (let [user-id  (:id @(subscribe [:user]))
         data-dic (subscribe [:data-dic])]
     (fn []
-      [:> mui/Dialog {:open         @*add-visible*
-                      :aria-labelledby "add-form-dialog"
-                      :on-close        #(handle-close)}
-       [:> mui/DialogTitle {:id "add-form-dialog"} "添加数据字典"]
-       [:> mui/DialogContent
-        [:form {:name "add-data-dic-form"}
-         [:> mui/TextField {:name      "id"
-                            :label     "id"
-                            :full-width true
-                            :rules     [{:required true}]
-                            :on-change #(let [value (-> % .-target .-value)]
+      [c/dialog {:open         @*add-visible*
+                      :title "添加数据字典"
+                      :on-close        #(handle-close)
+                      :on-ok #(dispatch [:data-dices/add (assoc @data-dic :create_by user-id
+                                                                          :update_by user-id)])}
+       [:form {:name "add-data-dic-form"}
+        [:> mui/TextField {:name       "id"
+                           :label      "id"
+                           :full-width true
+                           :rules      [{:required true}]
+                           :on-change  #(let [value (-> % .-target .-value)]
                                           (dispatch [:data-dices/set-attr :id value]))}]
-         [:> mui/TextField {:name      "name"
-                            :label     "名称"
-                            :full-width true
-                            :rules     [{:required true}]
-                            :on-change #(let [value (-> % .-target .-value)]
+        [:> mui/TextField {:name       "name"
+                           :label      "名称"
+                           :full-width true
+                           :rules      [{:required true}]
+                           :on-change  #(let [value (-> % .-target .-value)]
                                           (dispatch [:data-dices/set-attr :name value]))}]
-         [:> mui/TextField {:name      "pid"
-                            :label     "父id"
-                            :full-width true
-                            :rules     [{:required true}]
-                            :on-change #(let [value (-> % .-target .-value)]
+        [:> mui/TextField {:name       "pid"
+                           :label      "父id"
+                           :full-width true
+                           :rules      [{:required true}]
+                           :on-change  #(let [value (-> % .-target .-value)]
                                           (dispatch [:data-dices/set-attr :pid value]))}]
-         [:> mui/TextField {:name      "note"
-                            :label     "备注"
-                            :full-width true
-                            :on-change #(let [value (-> % .-target .-value)]
-                                          (dispatch [:data-dices/set-attr :note value]))}]]]
-       [:> mui/DialogActions
-        [:> mui/Button {:on-click #(handle-close)
-                        :color    "default"} "退出"]
-        [:> mui/Button {:on-click #(dispatch [:data-dices/add (assoc @data-dic :create_by user-id
-                                                                               :update_by user-id)])
-                        :color    "primary"} "保存"]]]
-      )))
+        [:> mui/TextField {:name       "note"
+                           :label      "备注"
+                           :full-width true
+                           :on-change  #(let [value (-> % .-target .-value)]
+                                          (dispatch [:data-dices/set-attr :note value]))}]]])))
 
 (defn edit-form [{:keys [classes]}]
   (let [user-id  (:id @(subscribe [:user]))
@@ -65,52 +58,45 @@
     (fn []
       (if @data-dic
         (let [{:keys [id name pid note]} @data-dic]
-          [:> mui/Dialog {:open            @*edit-visible*
-                          :aria-labelledby "add-form-dialog"
-                          :on-close        #(handle-close)}
-           [:> mui/DialogTitle {:id "add-form-dialog"} "添加数据字典"]
-           [:> mui/DialogContent
-            [:form {:name       "add-data-dic-form"
-                    :class-name (.-root classes)}
-             [:> mui/TextField {:id            "id"
-                                :name          "id"
-                                :label         "id"
-                                :required      true
-                                :full-width    true
-                                :variant       "outlined"
-                                :default-value id
-                                :on-change     #(let [value (-> % .-target .-value)]
-                                                  (dispatch [:data-dices/set-attr :id value]))}]
-             [:> mui/TextField {:name       "name"
-                                :label      "名称"
-                                :full-width true
-                                :variant    "outlined"
-                                :value      name
-                                :rules      [{:required true}]
-                                :on-change  #(let [value (-> % .-target .-value)]
-                                               (dispatch [:data-dices/set-attr :name value]))}]
-             [:> mui/TextField {:name       "pid"
-                                :label      "父id"
-                                :full-width true
-                                :variant    "outlined"
-                                :value      pid
-                                :rules      [{:required true}]
-                                :on-change  #(let [value (-> % .-target .-value)]
-                                               (dispatch [:data-dices/set-attr :pid value]))}]
-             [:> mui/TextField {:name       "note"
-                                :label      "备注"
-                                :variant    "outlined"
-                                :value      note
-                                :full-width true
-                                :on-change  #(let [value (-> % .-target .-value)]
-                                               (dispatch [:data-dices/set-attr :note value]))}]]]
-           [:> mui/DialogActions
-            [:> mui/Button {:on-click #(reset! *edit-visible* false)
-                            :color    "default"} "退出"]
-            [:> mui/Button {:on-click #(dispatch [:data-dices/update (assoc @data-dic :update_by user-id)])
-                            :color    "primary"} "保存"]]]
-          ))
-      )))
+          [c/dialog {:open            @*edit-visible*
+                     :title "添加数据字典"
+                     :aria-labelledby "add-form-dialog"
+                     :on-close        #(reset! *edit-visible* false)
+                     :on-ok #(dispatch [:data-dices/update (assoc @data-dic :update_by user-id)])}
+           [:form {:name       "add-data-dic-form"
+                   :class-name (.-root classes)}
+            [:> mui/TextField {:id            "id"
+                               :name          "id"
+                               :label         "id"
+                               :required      true
+                               :full-width    true
+                               :variant       "outlined"
+                               :default-value id
+                               :on-change     #(let [value (-> % .-target .-value)]
+                                                 (dispatch [:data-dices/set-attr :id value]))}]
+            [:> mui/TextField {:name       "name"
+                               :label      "名称"
+                               :full-width true
+                               :variant    "outlined"
+                               :value      name
+                               :rules      [{:required true}]
+                               :on-change  #(let [value (-> % .-target .-value)]
+                                              (dispatch [:data-dices/set-attr :name value]))}]
+            [:> mui/TextField {:name       "pid"
+                               :label      "父id"
+                               :full-width true
+                               :variant    "outlined"
+                               :value      pid
+                               :rules      [{:required true}]
+                               :on-change  #(let [value (-> % .-target .-value)]
+                                              (dispatch [:data-dices/set-attr :pid value]))}]
+            [:> mui/TextField {:name       "note"
+                               :label      "备注"
+                               :variant    "outlined"
+                               :value      note
+                               :full-width true
+                               :on-change  #(let [value (-> % .-target .-value)]
+                                              (dispatch [:data-dices/set-attr :note value]))}]]])))))
 
 (def ^:dynamic *delete-id* (r/atom 0))
 
@@ -159,7 +145,8 @@
 
 (defn list-table [{:keys [classes]}]
   (let [data-dices (subscribe [:data-dices])
-        pagination (subscribe [:pagination])]
+        pagination (subscribe [:pagination])
+        query-params (subscribe [:data-dices/query-params])]
     (fn []
       (let [{:keys [per_page page total total_pages]} @pagination]
         [:> mui/Paper {:class-name (.-paper classes)}
@@ -207,11 +194,7 @@
                                                          (reset! *delete-id* id)))}
                     [:> mui-icons/Delete]]]]]))]]
           (if @data-dices
-            [c/table-page {:count                   total
-                           :page                    (dec page)
-                           :rows-per-page           per_page
-                           :on-change-page          #()
-                           :on-change-rows-per-page #()}])]]))))
+            [c/table-page :data-dices/load-page (merge @query-params @pagination)])]]))))
 
 (defn query-page [props]
   [c/layout props

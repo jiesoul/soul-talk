@@ -66,6 +66,10 @@
                      [:menus/clean]
                      [:set-active-page :menus]]))
 
+(defroute "/roles" []
+  (run-events-admin [[:roles/clean]
+                     [:set-active-page :roles]]))
+
 
 (defroute "/users/password" []
   (run-events-admin [[:set-breadcrumb ["个人管理" "修改密码"]]
