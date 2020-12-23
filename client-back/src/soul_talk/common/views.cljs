@@ -95,6 +95,20 @@
                                                                   :on-click #(rf/dispatch [:clean-error])}
                                                [:> mui-icons/Close {:font-size "small"}]])}])))
 
+(defn form-dialog [{:keys [open title  on-cancel on-ok]} & children]
+  [:> mui/Dialog {:open            open
+                  :aria-labelledby "form-dialog"
+                  :on-close        on-cancel}
+   [:> mui/DialogTitle {:id "add-form-dialog"} title]
+   [:> mui/DialogContent
+    children]
+   [:> mui/DialogActions
+    [:> mui/Button {:on-click on-cancel
+                    :color    "default"} "退出"]
+    [:> mui/Button {:on-click on-ok
+                    :color    "primary"} "保存"]]])
+
+
 (def ^:dynamic *drawer-open* (r/atom true))
 (def ^:dynamic *anchor-el* (r/atom nil))
 
@@ -245,18 +259,17 @@
     [:> mui/Box {:pt 4}
      [copyright]]]])
 
-(defn dialog [{:keys [open title description on-close on-ok]}]
+(defn dialog [{:keys [open title cancel-text ok-text on-close on-ok]} & children]
   [:> mui/Dialog {:open open
                   :on-close on-close
                   :aria-labelledby "alert-dialog-title"
                   :aria-describedby "alert-dialog-description"}
    [:> mui/DialogTitle {:id "alert-dialog-title"} title]
    [:> mui/DialogContent
-    [:> mui/DialogContentText {:id "alert-dialog-description"}
-     (if description description "确认吗？")]]
+    children]
    [:> mui/DialogActions
-    [:> mui/Button {:on-click on-close :color "default"} "取消"]
-    [:> mui/Button {:on-click on-ok :color "primary"} "确认"]]])
+    [:> mui/Button {:on-click on-close :color "default"} (if cancel-text cancel-text "取消")]
+    [:> mui/Button {:on-click on-ok :color "primary"} (if ok-text ok-text "保存")]]])
 
 (defn default-page [props]
   [layout props
@@ -266,7 +279,7 @@
   (styles/main default-page))
 
 (defn table-page [opt]
-  [:> mui/TablePagination (merge {:rows-per-page-options   [10, 20, 100]
+  [:> mui/TablePagination (merge {:rows-per-page-options   [10, 15, 100]
                                   :component               "div"
                                   :color                   "primary"
                                   :variant                 "outlined"}

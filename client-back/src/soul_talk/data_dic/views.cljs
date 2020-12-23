@@ -108,18 +108,20 @@
             [:> mui/Button {:on-click #(reset! *edit-visible* false)
                             :color    "default"} "退出"]
             [:> mui/Button {:on-click #(dispatch [:data-dices/update (assoc @data-dic :update_by user-id)])
-                            :color    "primary"} "保存"]]]))
+                            :color    "primary"} "保存"]]]
+          ))
       )))
 
 (def ^:dynamic *delete-id* (r/atom 0))
 
 (defn delete-dialog []
-  [c/dialog {:open @*delete-dialog-open*
-             :title       "删除数据字典"
-             :description "你确定要删除吗？"
-             :on-close    #(reset! *delete-dialog-open* false)
-             :on-ok       #(do (reset! *delete-dialog-open* false)
-                               (dispatch [:data-dices/delete @*delete-id*]))}])
+  [c/dialog {:open     @*delete-dialog-open*
+             :title    "删除数据字典"
+             :ok-text  "确认"
+             :on-close #(reset! *delete-dialog-open* false)
+             :on-ok    #(do (reset! *delete-dialog-open* false)
+                            (dispatch [:data-dices/delete @*delete-id*]))}
+   [:> mui/DialogContentText "你确定要删除吗？"]])
 
 (defn query-form [{:keys [classes] :as props}]
   (let [pagination (subscribe [:pagination])
