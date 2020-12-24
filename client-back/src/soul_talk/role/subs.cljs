@@ -10,6 +10,6 @@
 
 (reg-sub :roles/selected query)
 
-(reg-sub :roles/menus)
+(reg-sub :roles/menus query)
 
-(reg-sub :role-menus)
+(reg-sub :role-menus query)

@@ -70,9 +70,9 @@
   (run-events-admin [[:roles/clean]
                      [:set-active-page :roles]]))
 
-(defroute "/roles/:id/menus" [role-id]
-  (run-events-admin [[:roles/load-role role-id]
-                     [:roles/load-role-menus role-id]
+(defroute "/roles/:id/menus" [id]
+  (run-events-admin [[:roles/load-role id]
+                     [:roles/load-role-menus id]
                      [:menus/load-menus]
                      [:set-active-page :roles/menus]]))
 

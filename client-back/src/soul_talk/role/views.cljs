@@ -134,12 +134,12 @@
          [:> mui/TableRow {:class-name (.-head classes)}
           [:> mui/TableCell {:align "center"} "名称"]
           [:> mui/TableCell {:align "center"} "备注"]
-          [:> mui/TableCell {:align "center"} "管理菜单"]
+          [:> mui/TableCell {:align "center"} "菜单"]
           [:> mui/TableCell {:align "center"} "操作"]
           ]]
         [:> mui/TableBody {:class-name (.-body classes)}
          (doall
-           (for [{:keys [id name pid url note] :as role} @roles]
+           (for [{:keys [id name note] :as role} @roles]
              ^{:key role}
              [:> mui/TableRow {:class-name (.-row classes)}
               [:> mui/TableCell {:align "center"} name]
@@ -149,7 +149,7 @@
                 [:> mui/Button {:size     "small"
                                 :color    "primary"
                                 :on-click #(navigate! (str "/roles/" id "/menus"))}
-                 "管理菜单"]]]
+                 "明细"]]]
               [:> mui/TableCell {:align "center"}
                [:div
                 [:> mui/IconButton {:color    "primary"
@@ -187,17 +187,20 @@
 (defn menu-tree-items [{:keys [classes color bgColor] :as props} menus]
   (doall
     (for [menu menus]
-      (let [{:keys [children id pid url]} menu]
+      (let [{:keys [children id pid url name]} menu]
         ^{:key menu}
         [:> TreeItem
-         {:nodeId  (str id)
-          :label   (r/as-element
-                     (let []
-                       [:div
-                        [:> mui/Typography {:variant    "inherit"}
-                         (:name menu)]]))
-          :style   {"--tree-view-color"    color
-                    "--tree-view-bg-color" bgColor}
+         {:nodeId (str id)
+          :label  (r/as-element
+                    (let []
+                      [:div
+                       [:> mui/Checkbox]
+                       [:> mui/Typography {:variant "inherit"}
+                        name]]))
+          :on-label-click #(println %)
+          ;:icon (r/as-element [:> mui/Checkbox])
+          :style  {"--tree-view-color"    color
+                   "--tree-view-bg-color" bgColor}
           ;:classes {:root     (.-treeItemRoot classes)
           ;          :content  (.-treeItemContent classes)
           ;          :expanded (.-treeItemExpanded classes)
@@ -211,16 +214,18 @@
 (defn role-menus-form [{:keys [classes] :as props}]
   (let [role (subscribe [:role])
         role-menus (subscribe [:role-menus])
-        menus-tree (utils/make-tree @(subscribe [:menus]))]
+        menus (subscribe [:menus])]
     (fn []
-      [:> mui/Paper
-       [:form {:id "role-menus-form"}
-        [:> mui/Typography {:variant "inherit"}
-         (str "角色：" (:name @role))]]
-       [:> TreeView {:default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
-                     :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
-                     :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
-        (menu-tree-items props (:children menus-tree))]])))
+      (if @menus
+        [:> mui/Paper {:class-name (.-root classes)}
+         [:form {:id "role-menus-form"}
+          [:> mui/Typography {:variant "inherit"}
+           (str "角色：" (:name @role))]
+          [:> mui/Divider]
+          [:> TreeView {:default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
+                        :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
+                        :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
+           (menu-tree-items props (:children (utils/make-tree @menus)))]]]))))
 
 (defn menus-page
   [props]
