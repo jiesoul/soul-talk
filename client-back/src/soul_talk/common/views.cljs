@@ -141,7 +141,13 @@
                               :on-click   #(navigate! url)}
              [:> mui/ListItemIcon
               [:> icon {:font-size "small"}]]
-             [:> mui/ListItemText {:primary text}]]))]])))
+             [:> mui/ListItemText {:primary text}]]))
+        [:> mui/Divider]
+        [:> mui/MenuItem {:class-name (.-root classes)
+                          :on-click #(rf/dispatch [:logout])}
+         [:> mui/ListItemIcon
+          [:> mui-icons/ExitToApp {:font-size "small"}]]
+         [:> mui/ListItemText {:primary "退出"}]]]])))
 
 (defn styled-user-popover []
   (styles/with-custom-styles user-popover styles/popover-styles))
@@ -178,7 +184,7 @@
                           (if (empty? children)
                             {:on-click #(do
                                           (rf/dispatch [:menus/select menu])
-                                          (navigate! (str "#" url)))})
+                                          (navigate! url))})
                           (:name menu)]]]))
           :style   {"--tree-view-color"    color
                     "--tree-view-bg-color" bgColor}
@@ -203,7 +209,8 @@
                     :default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
                     :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
                     :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
-       (menu-tree-items props (:children menus-tree))])))
+       (menu-tree-items props (:children menus-tree))]
+      )))
 
 (defn drawer [{:keys [classes] :as props}]
   (let [drawer-paper (.-drawerPaper classes)]
@@ -321,11 +328,11 @@
       [:> Menu
        [:> Menu.Item {:key      "user-profile"
                       :icon     (r/as-element [:> UserOutlined])
-                      :on-click #(navigate! "#/users/profile")}
+                      :on-click #(navigate! "/users/profile")}
         "个人信息"]
        [:> Menu.Item {:key      "change-pass"
                       :icon     (r/as-element [:> EditOutlined])
-                      :on-click #(navigate! "#/users/password")}
+                      :on-click #(navigate! "/users/password")}
 
         "密码修改"]
        [:> Menu.Divider]

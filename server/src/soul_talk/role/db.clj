@@ -1,7 +1,8 @@
 (ns soul-talk.role.db
   (:require [soul-talk.database.db :refer [*db*]]
             [next.jdbc.result-set :as rs-set]
-            [next.jdbc.sql :as sql]))
+            [next.jdbc.sql :as sql]
+            [clojure.string :as str]))
 
 (defn save-role! [role]
   (sql/insert! *db* :role role {:builder-fn rs-set/as-unqualified-maps}))
@@ -17,8 +18,7 @@
 
 (defn get-role-menus-by-role-id [id]
   (sql/query *db*
-    ["select * from role_menu where role_id = ? " id]
-    {:builder-fn rs-set/as-unqualified-maps}))
+    ["select * from menu where id in (select menus_id from role_menu where role_id = ? )" id]))
 
 (defn get-roles-by-ids [ids]
   (sql/query *db*
@@ -32,7 +32,7 @@
 
 (defn gen-where [{:keys [name]}]
   (let [[where-str coll] [(str " where 1=1 ") []]
-        [where-str coll] (if name
+        [where-str coll] (if (str/blank? name)
                            [where-str coll]
                            [(str where-str " and name like ?") (conj coll (str "%" name "%"))])]
     [where-str coll]))
@@ -49,6 +49,5 @@
 
 (defn get-role-menus-by-ids [ids]
   (sql/query *db*
-    ["select * from role_menu where role_id = any(?)" (int-array ids)]
-    {:builder-fn rs-set/as-unqualified-maps}))
+    ["select * from role_menu where role_id = any(?)" (int-array ids)]))
 

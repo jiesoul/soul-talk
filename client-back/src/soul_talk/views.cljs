@@ -50,6 +50,9 @@
 (defmethod pages :roles [_ _]
   (admin role/home))
 
+(defmethod pages :roles/menus [_ _]
+  (admin role/menus))
+
 ;; user
 (defmethod pages :users [_ _]
   (admin users/users-page))

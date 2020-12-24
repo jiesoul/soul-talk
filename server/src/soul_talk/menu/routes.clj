@@ -27,6 +27,11 @@
       :body [menu menu/update-menu]
       (menu/update-menu! menu))
 
+    (GET "/all" []
+      :summary "所有菜单"
+      :auth-login #{"admin"}
+      (menu/load-menus-all))
+
     (GET "/" req
       :summary "条件查询"
       :auth-login #{"admin"}

@@ -38,3 +38,7 @@
 (defn get-menus-by-ids [ids]
   (let [menus (menu-db/get-menus-by-ids ids)]
     (utils/ok {:menus menus})))
+
+(defn load-menus-all []
+  (let [menus (menu-db/get-all)]
+    (utils/ok {:menus menus})))

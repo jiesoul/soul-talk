@@ -54,3 +54,7 @@
                                (into [count-sql] coll))))]
     [menus total]))
 
+(defn get-all []
+  (sql/query *db*
+    ["select * from menus"]))
+

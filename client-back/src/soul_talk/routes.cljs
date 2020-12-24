@@ -21,7 +21,7 @@
   (aset el "innerHTML" content))
 
 (defn navigate! [url]
-  (accountant/navigate! (context-url url)))
+  (accountant/navigate! (str "#" url)))
 
 (defn run-events
   [events]
@@ -69,6 +69,12 @@
 (defroute "/roles" []
   (run-events-admin [[:roles/clean]
                      [:set-active-page :roles]]))
+
+(defroute "/roles/:id/menus" [role-id]
+  (run-events-admin [[:roles/load-role role-id]
+                     [:roles/load-role-menus role-id]
+                     [:menus/load-menus]
+                     [:set-active-page :roles/menus]]))
 
 
 (defroute "/users/password" []

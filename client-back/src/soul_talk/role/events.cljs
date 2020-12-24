@@ -5,19 +5,19 @@
             [soul-talk.utils :as utils]))
 
 (rf/reg-event-fx
-  :roles/load-roles-ok
+  :roles/load-menus-ok
   (fn [{:keys [db]} [_ {:keys [role-roles]}]]
     (let [menu-ids (map :menu_id role-roles)]
       {:db         (assoc-in db [:user :role-roles] role-roles)
        :dispatch-n (list [:roles/load-roles menu-ids])})))
 
 (rf/reg-event-fx
-  :roles/load-roles
+  :roles/load-menus
   (fn [_ [_ ids]]
     {:http {:method        GET
-            :url           (str site-uri "/roles/roles")
+            :url           (str site-uri "/roles/menus")
             :ajax-map      {:params {:ids ids}}
-            :success-event [:roles/load-roles-ok]}}))
+            :success-event [:roles/load-menus-ok]}}))
 
 (rf/reg-event-db
   :roles/set-query-params
@@ -32,8 +32,8 @@
 
 (rf/reg-event-db
   :roles/load-page-ok
-  (fn [db [_ {:keys [roles pagination query-params]}]]
-    (assoc db :roles roles :pagination pagination :roles/query-params query-params)))
+  (fn [db [_ {:keys [roles pagination params]}]]
+    (assoc db :roles roles :pagination pagination :roles/query-params params)))
 
 (rf/reg-event-fx
   :roles/load-page
@@ -51,9 +51,22 @@
 (reg-event-fx
   :roles/load-role
   (fn [_ [_ id]]
+    (println "**********id: " id)
     {:http {:method GET
             :url (str site-uri "/roles/" id)
             :success-event [:roles/load-role-ok]}}))
+
+(reg-event-db
+  :roles/load-role-menus-ok
+  (fn [db [_ {:keys [role-menus]}]]
+    (assoc db :roles/role-menus role-menus)))
+
+(reg-event-fx
+  :roles/load-role-menus
+  (fn [_ [_ id]]
+    {:http {:method GET
+            :url (str site-uri "/roles/" id "/menus")
+            :success-event [:roles/load-role-menus-ok]}}))
 
 (reg-event-db
   :roles/clean-role

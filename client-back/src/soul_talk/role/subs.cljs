@@ -9,3 +9,7 @@
 (reg-sub :roles/query-params query)
 
 (reg-sub :roles/selected query)
+
+(reg-sub :roles/menus)
+
+(reg-sub :role-menus)
