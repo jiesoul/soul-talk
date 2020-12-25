@@ -14,6 +14,38 @@
     #js {:palette #js {:primary #js {:main (gobj/get (.-blue ^js/Mui.Colors mui-colors) 500)}}}
     zhCN))
 
+(defn theme-provider
+  [theme & children]
+  (into [theme-provider* {:theme theme}]
+    (map r/as-element children)))
+
+(defn- apply-hoc [hoc component]
+  (println "component: " component)
+  (println "hoc: " hoc)
+  (-> component
+    (r/reactify-component)
+    (hoc)
+    (r/adapt-react-class)))
+
+(defn with-styles
+  ([styles] (with-styles styles {}))
+  ([styles opts]
+   (let [hoc (mui-styles/withStyles styles opts)]
+     (partial apply-hoc hoc))))
+
+(defn with-custom-styled
+  [styles component opts]
+  (if opts
+    ((with-styles styles opts) component)
+    ((with-styles styles) component)))
+
+(defn styled [component styles]
+  ((mui-styles/styled component) styles))
+
+(defn with-custom-styles [component styles]
+  [:> ((withStyles styles)
+       (r/reactify-component component))])
+
 (def drawer-width 200)
 (def app-bar-height 64)
 
@@ -159,9 +191,7 @@
        :body  #js {:fontSize 10}
        :row   #js {"&:nth-of-type(odd)" #js {:backgroundColor (-> theme .-palette .-action .-hover)}}})
 
-(defn with-custom-styles [component styles]
-  [:> ((withStyles styles)
-       (r/reactify-component component))])
+
 
 (defn main [component]
   (with-custom-styles component main-styles))

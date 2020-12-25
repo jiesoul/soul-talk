@@ -51,7 +51,6 @@
 (reg-event-fx
   :roles/load-role
   (fn [_ [_ id]]
-    (println "**********id: " id)
     {:http {:method GET
             :url (str site-uri "/roles/" id)
             :success-event [:roles/load-role-ok]}}))

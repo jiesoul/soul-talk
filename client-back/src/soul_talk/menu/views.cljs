@@ -8,7 +8,8 @@
             [taoensso.timbre :as log]
             [soul-talk.common.styles :as styles]
             ["@material-ui/core" :as mui]
-            ["@material-ui/icons" :as mui-icons]))
+            ["@material-ui/icons" :as mui-icons]
+            [reagent-material-ui.core.app-bar :as app-bar]))
 
 
 (def ^:dynamic *add-visible* (r/atom false))

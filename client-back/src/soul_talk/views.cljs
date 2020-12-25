@@ -95,7 +95,7 @@
       (fn []
         [:<>
          [:> mui/CssBaseline]
-         [:> ThemeProvider {:theme styles/custom-theme}
+         [styles/theme-provider styles/custom-theme
           [:div
            (styles/with-custom-styles c/lading-backdrop styles/backdrop-styles)
            (styles/with-custom-styles c/success-snackbars styles/success-snackbar-styles)

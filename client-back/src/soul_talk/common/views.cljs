@@ -19,40 +19,6 @@
                         :types {:email "${label} 非法邮件格式"
                                 :url "${label} 非法地址"}})
 
-(def ^:private input-component
-  (r/reactify-component
-    (fn [props]
-      [:input (-> props
-                (assoc :ref (:inputRef props))
-                (dissoc :inputRef))])))
-
-(def ^:private textarea-component
-  (r/reactify-component
-    (fn [props]
-      [:textarea (-> props
-                   (assoc :ref (:inputRef props))
-                   (dissoc :inputRef))])))
-
-(defn text-field [props & children]
-  (let [props (-> props
-                (assoc-in [:InputProps :inputComponent]
-                  (cond
-                    (and (:multiline props) (:rows props) (not (:maxRows props)))
-                    textarea-component
-
-                    ;; FIXME: Autosize multiline field is broken.
-                    (:multiline props)
-                    nil
-
-                    ;; Select doesn't require cursor fix so default can be used.
-                    (:select props)
-                    nil
-
-                    :else
-                    input-component))
-                rtpl/convert-prop-value)]
-    (apply r/create-element mui/TextField props (map r/as-element children))))
-
 (defn lading-backdrop [{:keys [classes]}]
   (let [lading? (rf/subscribe [:loading?])]
     (fn []
@@ -262,12 +228,16 @@
     [:> mui/Box {:pt 4}
      [copyright]]]])
 
+(defn styled-layout [& component]
+  )
+
 (defn dialog [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
   [:> mui/Dialog {:aria-labelledby        "alert-dialog-title"
                   :aria-describedby       "alert-dialog-description"
                   :disable-backdrop-click true
                   :style                  {:min-width "200px"}
-                  :open                   open}
+                  :open                   open
+                  :key (str "dialog" (random-uuid))}
    [:> mui/DialogTitle {:id                 "alert-dialog-title"
                         :disable-typography true
                         :style              {:margin  0
