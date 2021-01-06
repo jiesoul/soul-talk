@@ -18,7 +18,7 @@
 
 (defn get-role-menus-by-role-id [id]
   (sql/query *db*
-    ["select * from menu where id in (select menu_id from role_menu where role_id = ? )" id]))
+    ["select menu_id from role_menu where role_id = ? " id]))
 
 (defn get-roles-by-ids [ids]
   (sql/query *db*

@@ -184,39 +184,40 @@
 (defn home []
   (styles/main query-page))
 
-(defn menu-tree-items [{:keys [classes color bgColor] :as props} menus]
+(defn menu-tree-items [{:keys [classes color bgColor menus checked-ids] :as props} ]
   (doall
     (for [menu menus]
       (let [{:keys [children id pid url name]} menu]
         ^{:key menu}
         [:> TreeItem
-         {:nodeId (str id)
-          :label  (r/as-element
-                    (let []
-                      [:div
-                       [:> mui/Checkbox]
-                       [:> mui/Typography {:variant "inherit"}
-                        name]]))
-          :on-label-click #(println %)
-          ;:icon (r/as-element [:> mui/Checkbox])
-          :style  {"--tree-view-color"    color
-                   "--tree-view-bg-color" bgColor}
-          ;:classes {:root     (.-treeItemRoot classes)
-          ;          :content  (.-treeItemContent classes)
-          ;          :expanded (.-treeItemExpanded classes)
-          ;          :selected (.-treeItemSelected classes)
-          ;          :group    (.-treeItemGroup classes)
-          ;          :label    (.-treeItemLabel classes)}
+         {:nodeId  (str id)
+          :label   (r/as-element
+                     (let []
+                       [:div
+                        [:> mui/Checkbox {:size      "small"
+                                          :checked   (if (some #(= % id) checked-ids) true false)
+                                          :on-change (fn [e]
+                                                       (println e))}]
+                        [:> mui/Typography {:variant "inherit"}
+                         name]]))
+          :style   {"--tree-view-color"    color
+                    "--tree-view-bg-color" bgColor}
+          :classes {:root     (.-treeItemRoot classes)
+                    :content  (.-treeItemContent classes)
+                    :expanded (.-treeItemExpanded classes)
+                    :selected (.-treeItemSelected classes)
+                    :group    (.-treeItemGroup classes)
+                    :label    (.-treeItemLabel classes)}
           }
          (when-not (empty? children)
-           (menu-tree-items props children))]))))
+           (menu-tree-items (assoc props :menus children :checked-ids checked-ids)))]))))
 
 (defn role-menus-form [{:keys [classes] :as props}]
   (let [role (subscribe [:role])
-        role-menus (subscribe [:role-menus])
+        role-menus (subscribe [:roles/role-menus])
         menus (subscribe [:menus])]
     (fn []
-      (if @menus
+      (if (and @menus @role-menus)
         [:> mui/Paper {:class-name (.-root classes)}
          [:form {:id "role-menus-form"}
           [:> mui/Typography {:variant "inherit"}
@@ -225,7 +226,7 @@
           [:> TreeView {:default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
                         :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
                         :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
-           (menu-tree-items props (:children (utils/make-tree @menus)))]]]))))
+           (menu-tree-items (assoc props :role @role :checked-ids (map :menu_id @role-menus) :menus (:children (utils/make-tree @menus))))]]]))))
 
 (defn menus-page
   [props]

@@ -71,8 +71,8 @@
   []
   (reset! *drawer-open* false))
 
-(def user-popover-menus [{:url "#/users/profile" :text "个人信息" :icon mui-icons/Home}
-                         {:url "#/users/password" :text "修改密码" :icon mui-icons/Send}])
+(def user-popover-menus [{:url "/users/profile" :text "个人信息" :icon mui-icons/Home}
+                         {:url "/users/password" :text "修改密码" :icon mui-icons/Send}])
 
 (defn user-popover [{:keys [classes]}]
   (let [user (rf/subscribe [:user])

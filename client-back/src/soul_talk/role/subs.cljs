@@ -12,4 +12,4 @@
 
 (reg-sub :roles/menus query)
 
-(reg-sub :role-menus query)
+(reg-sub :roles/role-menus query)
