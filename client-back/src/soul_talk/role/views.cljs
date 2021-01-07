@@ -190,24 +190,27 @@
       (let [{:keys [children id pid url name]} menu]
         ^{:key menu}
         [:> TreeItem
-         {:nodeId  (str id)
-          :label   (r/as-element
-                     (let []
-                       [:div
-                        [:> mui/Checkbox {:size      "small"
-                                          :checked   (if (some #(= % id) checked-ids) true false)
-                                          :on-change (fn [e]
-                                                       (println e))}]
-                        [:> mui/Typography {:variant "inherit"}
-                         name]]))
-          :style   {"--tree-view-color"    color
-                    "--tree-view-bg-color" bgColor}
-          :classes {:root     (.-treeItemRoot classes)
-                    :content  (.-treeItemContent classes)
-                    :expanded (.-treeItemExpanded classes)
-                    :selected (.-treeItemSelected classes)
-                    :group    (.-treeItemGroup classes)
-                    :label    (.-treeItemLabel classes)}
+         {:nodeId        (str id)
+          :label         (r/as-element
+                           (let []
+                             [:div
+                              [:> mui/Checkbox {:size      "small"
+                                                :checked   (if (some #(= % id) checked-ids) true false)
+                                                :on-change (fn [e]
+                                                             (println e))}]
+                              [:> mui/Typography {:variant "inherit"}
+                               name]]))
+          :icon          (r/as-element [:> mui/Checkbox])
+          :on-icon-click (fn [e]
+                           (println "点击图标"))
+          :style         {"--tree-view-color"    color
+                          "--tree-view-bg-color" bgColor}
+          :classes       {:root     (.-treeItemRoot classes)
+                          :content  (.-treeItemContent classes)
+                          :expanded (.-treeItemExpanded classes)
+                          :selected (.-treeItemSelected classes)
+                          :group    (.-treeItemGroup classes)
+                          :label    (.-treeItemLabel classes)}
           }
          (when-not (empty? children)
            (menu-tree-items (assoc props :menus children :checked-ids checked-ids)))]))))

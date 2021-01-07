@@ -6,6 +6,7 @@
             [goog.object :as gobj]
             ["@material-ui/core" :as mui]
             ["@material-ui/icons" :as mui-icons]
+            [rsuite :refer [Grid Row Col Button IconButton ButtonToolbar]]
             [soul-talk.common.views :as c])
   (:import goog.History))
 
@@ -31,61 +32,66 @@
         email (r/cursor login-user [:email])
         password (r/cursor login-user [:password])
         classes (login-styles styles/custom-theme)]
-    [:> mui/Grid {:container  true
+    [:> Grid {:container  true
                   :component  "main"
                   :style (.-root classes)}
      [:> mui/CssBaseline]
-     [:> mui/Grid {:item       true
-                   :xs         false
-                   :sm         4
-                   :md         7
-                   :style (.-image classes)}]
-     [:> mui/Grid {:item      true
-                   :xs        12
-                   :sm        8
-                   :md        5
-                   :component mui/Paper
-                   :square    true}
+     [:> Row {:style {:height "100vh"}}
+      [:> Col {:item  true
+                :xs    false
+                :sm    12
+                :md    12
+               :lg 12
+                :style (.-image classes)}]
+      [:> Col {:item      true
+                :xs        12
+                :sm        12
+                :md        12
+                :component mui/Paper
+                :square    true}
 
-      [:div {:style (.-paper classes)}
-       [:> mui/Avatar {:style (.-avatar classes)}
-        [:> mui-icons/Home]]
-       [:> mui/Typography {:component "h1"
-                           :variant   "h4"}
-        (:name @site-info)]
-       [:form {:style (.-form classes)}
-        [:> mui/TextField {:variant       "outlined"
-                           :margin        "normal"
-                           :required      true
-                           :full-width    true
-                           :id            "email"
-                           :name          "email"
-                           :label         "邮箱地址"
-                           :auto-complete "email"
-                           :auto-focus    true
-                           :on-change     #(reset! email (-> % .-target .-value))}]
-        [:> mui/TextField {:variant       "outlined"
-                           :margin        "normal"
-                           :required      true
-                           :full-width    true
-                           :label         "密码"
-                           :name          "password"
-                           :id            "password"
-                           :type          "password"
-                           :auto-complete "current-password"
-                           :on-change     #(reset! password (-> % .-target .-value))}]
-        [:> mui/Button {:type       "button"
-                        :full-width true
-                        :variant    "contained"
-                        :color      "primary"
-                        :style (.-submit classes)
-                        :on-click   #(dispatch [:login @login-user])}
-         "登录"]
-        [:> mui/Grid {:container true}
-         [:> mui/Grid {:item true
-                       :xs   true}]]
-        [:> mui/Box {:mt 5}
-         [c/copyright]]]]]]))
+       [:div {:style (.-paper classes)}
+        [:> mui/Avatar {:style (.-avatar classes)}
+         [:> mui-icons/Home]]
+        [:> mui/Typography {:component "h1"
+                            :variant   "h4"}
+         (:name @site-info)]
+        [:form {:style (.-form classes)}
+         [:> mui/TextField {:variant       "outlined"
+                            :margin        "normal"
+                            :required      true
+                            :full-width    true
+                            :id            "email"
+                            :name          "email"
+                            :label         "邮箱地址"
+                            :auto-complete "email"
+                            :auto-focus    true
+                            :on-change     #(reset! email (-> % .-target .-value))}]
+         [:> mui/TextField {:variant       "outlined"
+                            :margin        "normal"
+                            :required      true
+                            :full-width    true
+                            :label         "密码"
+                            :name          "password"
+                            :id            "password"
+                            :type          "password"
+                            :auto-complete "current-password"
+                            :on-change     #(reset! password (-> % .-target .-value))}]
+         [:> mui/Button {:type       "button"
+                         :full-width true
+                         :variant    "contained"
+                         :color      "primary"
+                         :style      (.-submit classes)
+                         :on-click   #(dispatch [:login @login-user])}
+          "登录"]
+         [:> ButtonToolbar
+          [:> Button {:appearance "primary"
+                      :color      "red"} "登录"]]
+         [:> mui/Grid {:container true}
+          [:> mui/Grid {:item true
+                        :xs   true}]]
+         [:> mui/Box {:mt 5}
+          [c/copyright]]]]]]]))
 
 (defn login-page []
   [form])

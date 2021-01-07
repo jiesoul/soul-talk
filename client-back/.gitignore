@@ -11,3 +11,4 @@ node_modules/
 client-back.iml
 yarn*
 .calva/
+resources/public/js/

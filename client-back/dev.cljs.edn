@@ -2,8 +2,9 @@
   :css-dirs ["resources/public/css"]}
 {:main            soul-talk.app
  :target          :bundle
- ;:output-dir "out/dev/"
- :bundle-cmd      {:none ["yarn.cmd" "webpack" "--mode=development" :output-to "-o" :final-output-to]}
+ :output-dir      "resources/public/js"
+ :output-to       "resources/public/js/main.js"
+ :bundle-cmd      {:none ["yarn.cmd" "webpack" "--mode=development" :output-to]}
  :aot-cache       false
  :clean-outputs   true
  :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true

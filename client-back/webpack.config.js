@@ -2,6 +2,14 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 
 module.exports = {
+    entry: [
+        "./src-js/theme.js",
+        "./resources/public/js/main.js"
+    ],
+    output: {
+        path:path.resolve(__dirname, "resources/public/js"),
+        filename: "index_bundle.js"
+    },
     plugins: [
         new MiniCssExtractPlugin({
             filename: "[name].css",
@@ -48,3 +56,4 @@ module.exports = {
         ]
     }
 };
+
