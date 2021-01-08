@@ -58,7 +58,8 @@
 (reg-event-db
   :roles/load-role-menus-ok
   (fn [db [_ {:keys [role-menus]}]]
-    (assoc db :roles/role-menus role-menus)))
+    (assoc db :roles/role-menus role-menus
+              :roles/role-menus-dialog-visible true)))
 
 (reg-event-fx
   :roles/load-role-menus
@@ -66,6 +67,11 @@
     {:http {:method GET
             :url (str site-uri "/roles/" id "/menus")
             :success-event [:roles/load-role-menus-ok]}}))
+
+(reg-event-db
+  :roles/set-role-menus-dialog-visible
+  (fn [db [_ status]]
+    (update db :roles/role-menus-dialog-visible status)))
 
 (reg-event-db
   :roles/clean-role

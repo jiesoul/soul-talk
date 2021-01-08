@@ -1,8 +1,6 @@
 (ns soul-talk.series.views
   (:require [soul-talk.common.views :as c]
             [reagent.core :as r]
-            [antd :refer [Row Col Form Input Button Divider Table Modal]]
-            ["@ant-design/icons" :refer [EditOutlined DeleteOutlined SearchOutlined]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [soul-talk.utils :as du]
             [soul-talk.common.styles :as styles]))

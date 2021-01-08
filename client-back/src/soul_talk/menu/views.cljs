@@ -1,11 +1,7 @@
 (ns soul-talk.menu.views
   (:require [soul-talk.common.views :as c]
-            [antd :as antd :refer [Row Col Form Input Button Divider Table Modal]]
-            ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [soul-talk.utils :as utils]
-            [taoensso.timbre :as log]
             [soul-talk.common.styles :as styles]
             ["@material-ui/core" :as mui]
             ["@material-ui/icons" :as mui-icons]))

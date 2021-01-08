@@ -50,9 +50,6 @@
 (defmethod pages :roles [_ _]
   (admin role/home))
 
-(defmethod pages :roles/menus [_ _]
-  (admin role/menus))
-
 ;; user
 (defmethod pages :users [_ _]
   (admin users/users-page))
@@ -73,15 +70,15 @@
 (defmethod pages :series [_ _]
   (admin series/home))
 
-;; article
-(defmethod pages :articles [_ _]
-  (admin article/home))
-
-(defmethod pages :articles-add [_ _]
-  (admin article/add-article-page))
-
-(defmethod pages :articles-edit [_ _]
-  (admin article/edit-article-page))
+;;; article
+;(defmethod pages :articles [_ _]
+;  (admin article/home))
+;
+;(defmethod pages :articles-add [_ _]
+;  (admin article/add-article-page))
+;
+;(defmethod pages :articles-edit [_ _]
+;  (admin article/edit-article-page))
 
 
 ;; default

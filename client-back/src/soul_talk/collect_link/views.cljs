@@ -1,8 +1,6 @@
 (ns soul-talk.collect-link.views
   (:require [soul-talk.common.views :as c]
             [reagent.core :as r]
-            [antd :refer [Row Col Form Input Button Divider Table Modal]]
-            ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.utils :as du]
             [soul-talk.common.styles :as styles]))
@@ -99,8 +97,8 @@
                   :bordered   true}]])))
 
 (defn query-page
-  []
-  [c/manager-layout
+  [props]
+  [c/layout props
    [:div
     [query-form]
     [list-table]]])

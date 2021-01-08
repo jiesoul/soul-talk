@@ -2,10 +2,10 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe]]
             [soul-talk.common.views :as c]
-            [antd :refer [Row Col Form Input Button Divider Table Modal]]
-            ["@ant-design/icons" :refer [EditOutlined DeleteOutlined]]
             [soul-talk.utils :as du]
-            [soul-talk.common.styles :as styles]))
+            [soul-talk.common.styles :as styles]
+            ["@material-ui/core" :refer [Modal Form Row Col Button Input Table]]
+            ["@material-ui/icons" :refer [DeleteOutlined]]))
 
 (def ^:dynamic *visible* (r/atom false))
 
@@ -77,7 +77,7 @@
                                :size     "small"
                                :on-click (fn []
                                            (r/as-element
-                                             (c/show-confirm
+                                             (c/dialog
                                                "删除"
                                                (str "你确认要删除吗？")
                                                #(dispatch [:app-keys/delete id])
@@ -91,8 +91,8 @@
                 :row-key "id"
                 :bordered true}]]))
 
-(defn query-page []
-  [c/manager-layout
+(defn query-page [props]
+  [c/layout props
    [:div
     [query-form]
     [query-list]]])

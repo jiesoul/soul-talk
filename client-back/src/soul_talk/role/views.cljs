@@ -3,7 +3,6 @@
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [soul-talk.utils :as utils]
-            [taoensso.timbre :as log]
             [soul-talk.common.styles :as styles]
             [soul-talk.routes :refer [navigate!]]
             ["@material-ui/core" :as mui]
@@ -85,6 +84,56 @@
                             (dispatch [:data-dices/delete @*delete-id*]))}
    [:> mui/DialogContentText "你确定要删除吗？"]])
 
+(def ^:dynamic *role-menus-visible* (r/atom false))
+(defn menu-tree-items [{:keys [classes color bgColor menus checked-ids] :as props} ]
+  (doall
+    (for [menu menus]
+      (let [{:keys [children id pid url name]} menu]
+        ^{:key menu}
+        [:> TreeItem
+         {:nodeId  (str id)
+          :label   (r/as-element
+                     (let []
+                       [:div
+                        [:> mui/Checkbox {:size      "small"
+                                          :checked   (if (some #(= % id) checked-ids) true false)
+                                          :on-change (fn [e]
+                                                       (println (-> e .-target)))}]
+                        [:> mui/Typography {:variant "inherit"}
+                         name]]))
+          :icon (r/as-element [:> mui/Checkbox])
+          :style   {"--tree-view-color"    color
+                    "--tree-view-bg-color" bgColor}
+          :classes {:root     (.-treeItemRoot classes)
+                    :content  (.-treeItemContent classes)
+                    :expanded (.-treeItemExpanded classes)
+                    :selected (.-treeItemSelected classes)
+                    :group    (.-treeItemGroup classes)
+                    :label    (.-treeItemLabel classes)}
+          }
+         (when-not (empty? children)
+           (menu-tree-items (assoc props :menus children :checked-ids checked-ids)))]))))
+
+(defn role-menus-form-dialog [{:keys [classes] :as props}]
+  (let [role (subscribe [:role])
+        role-menus (subscribe [:roles/role-menus])
+        open (subscribe [:roles/role-menus-dialog-visible])
+        menus (subscribe [:menus])]
+    (fn []
+      (if (and @menus @role-menus)
+        [c/dialog {:open     @open
+                   :title    (str "角色：" (:name @role))
+                   :on-close #(dispatch [:roles/set-role-menus-dialog-visible false])
+                   :on-ok    (fn [])}
+         [:> mui/Paper {:class-name (.-root classes)}
+          [:form {:id "role-menus-form"}
+           [:> mui/Divider]
+           [:> TreeView {:default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
+                         :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
+                         :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
+            (menu-tree-items (assoc props :role @role :checked-ids (map :menu_id @role-menus) :menus (:children (utils/make-tree @menus))))]]]]))))
+
+
 (defn query-form [{:keys [classes]}]
   (let [query-params (subscribe [:roles/query-params])
         {:keys [name]} @query-params]
@@ -148,7 +197,7 @@
                [:div
                 [:> mui/Button {:size     "small"
                                 :color    "primary"
-                                :on-click #(navigate! (str "/roles/" id "/menus"))}
+                                :on-click  #(dispatch [:roles/load-role-menus id])}
                  "明细"]]]
               [:> mui/TableCell {:align "center"}
                [:div
@@ -177,65 +226,10 @@
     (styles/styled-edit-form add-form)
     (styles/styled-edit-form edit-form)
     (styles/styled-edit-form delete-dialog)
+    (styles/styled-edit-form role-menus-form-dialog)
     (styles/styled-form query-form)
     (styles/styled-table list-table)
     ]])
 
 (defn home []
   (styles/main query-page))
-
-(defn menu-tree-items [{:keys [classes color bgColor menus checked-ids] :as props} ]
-  (doall
-    (for [menu menus]
-      (let [{:keys [children id pid url name]} menu]
-        ^{:key menu}
-        [:> TreeItem
-         {:nodeId        (str id)
-          :label         (r/as-element
-                           (let []
-                             [:div
-                              [:> mui/Checkbox {:size      "small"
-                                                :checked   (if (some #(= % id) checked-ids) true false)
-                                                :on-change (fn [e]
-                                                             (println e))}]
-                              [:> mui/Typography {:variant "inherit"}
-                               name]]))
-          :icon          (r/as-element [:> mui/Checkbox])
-          :on-icon-click (fn [e]
-                           (println "点击图标"))
-          :style         {"--tree-view-color"    color
-                          "--tree-view-bg-color" bgColor}
-          :classes       {:root     (.-treeItemRoot classes)
-                          :content  (.-treeItemContent classes)
-                          :expanded (.-treeItemExpanded classes)
-                          :selected (.-treeItemSelected classes)
-                          :group    (.-treeItemGroup classes)
-                          :label    (.-treeItemLabel classes)}
-          }
-         (when-not (empty? children)
-           (menu-tree-items (assoc props :menus children :checked-ids checked-ids)))]))))
-
-(defn role-menus-form [{:keys [classes] :as props}]
-  (let [role (subscribe [:role])
-        role-menus (subscribe [:roles/role-menus])
-        menus (subscribe [:menus])]
-    (fn []
-      (if (and @menus @role-menus)
-        [:> mui/Paper {:class-name (.-root classes)}
-         [:form {:id "role-menus-form"}
-          [:> mui/Typography {:variant "inherit"}
-           (str "角色：" (:name @role))]
-          [:> mui/Divider]
-          [:> TreeView {:default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
-                        :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
-                        :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
-           (menu-tree-items (assoc props :role @role :checked-ids (map :menu_id @role-menus) :menus (:children (utils/make-tree @menus))))]]]))))
-
-(defn menus-page
-  [props]
-  [c/layout props
-   [:<>
-    (styles/styled-edit-form role-menus-form)]])
-
-(defn menus []
-  (styles/main menus-page))

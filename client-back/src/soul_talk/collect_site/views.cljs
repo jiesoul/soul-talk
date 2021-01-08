@@ -1,11 +1,11 @@
 (ns soul-talk.collect-site.views
   (:require [soul-talk.common.views :as c]
             [reagent.core :as r]
-            [antd :refer [Row Col Form Input Button Divider Table Modal]]
-            ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.utils :as du]
-            [soul-talk.common.styles :as styles]))
+            [soul-talk.common.styles :as styles]
+            ["@material-ui/core" :refer [Modal Form Input Row Col Button Table]]
+            ["@material-ui/icons" :as mui-icons]))
 
 (def ^:dynamic *visible* (r/atom false))
 
@@ -79,11 +79,11 @@
                 (let [{:keys [id]} (js->clj article :keywordize-keys true)]
                   [:div
                    [:> Button {:type     "danger"
-                               :icon     (r/as-element [:> DeleteOutlined])
+                               :icon     (r/as-element [:> mui-icons/Delete])
                                :size     "small"
                                :on-click (fn []
                                            (r/as-element
-                                             (c/show-confirm
+                                             (c/dialog
                                                "删除"
                                                (str "你确认要删除吗？")
                                                #(dispatch [:collect-sites/delete id])
@@ -100,7 +100,7 @@
 
 (defn query-page
   []
-  [c/manager-layout
+  [c/layout
    [:div
     [query-form]
     [list-table]]])

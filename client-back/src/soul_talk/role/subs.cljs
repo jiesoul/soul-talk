@@ -13,3 +13,5 @@
 (reg-sub :roles/menus query)
 
 (reg-sub :roles/role-menus query)
+
+(reg-sub :roles/role-menus-dialog-visible query)

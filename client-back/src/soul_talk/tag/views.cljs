@@ -2,8 +2,6 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe]]
             [soul-talk.common.views :as c]
-            [antd :refer [Row Col Form Input Button Divider Table Modal]]
-            ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
             [soul-talk.utils :as du]
             [soul-talk.common.styles :as styles]))
 

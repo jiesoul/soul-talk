@@ -1,9 +1,9 @@
 (ns soul-talk.user.views
-  (:require [soul-talk.common.views :refer [manager-layout]]
-            [reagent.core :as r]
+  (:require [reagent.core :as r]
             [re-frame.core :as rf]
-            [antd :as antd]
-            [soul-talk.common.styles :as styles]))
+            [soul-talk.common.styles :as styles]
+            [soul-talk.common.views :as c]
+            ["@material-ui/core" :as mui]))
 
 (defn users-page []
   (fn []
@@ -37,54 +37,54 @@
                error (rf/subscribe [:error])]
     (fn []
       (if @user
-        [manager-layout
-         [:> antd/Layout.Content {:className "main" :align "center"}
-          [:> antd/Row
-           [:> antd/Col {:span 8 :offset 8}
-            [:> antd/Input {:id           "username"
+        [c/layout
+         [:> mui/Layout.Content {:className "main" :align "center"}
+          [:> mui/Row
+           [:> mui/Col {:span 8 :offset 8}
+            [:> mui/Input {:id           "username"
                             :disabled     true
                             :addon-before "用户名："
                             :value        (:name @pass-data)}]
-            [:> antd/Input.Password {:id           "old-pass"
+            [:> mui/Input.Password {:id           "old-pass"
                                      :name         "old-pass"
                                      :placeholder  "请输入旧密码"
                                      :addon-before "旧密码："
                                      :on-change    #(reset! pass-old (.-target.value %))}]
-            [:> antd/Input.Password {:id           "pass-new"
+            [:> mui/Input.Password {:id           "pass-new"
                                      :name         "pass-new"
                                      :placeholder  "请输入新密码"
                                      :addon-before "新密码："
                                      :on-change    #(reset! pass-new (.-target.value %))}]
-            [:> antd/Input.Password {:id           "pass-confirm"
+            [:> mui/Input.Password {:id           "pass-confirm"
                                      :name         "pass-confirm"
                                      :placeholder  "重复新密码"
                                      :addon-before "新密码："
                                      :on-change    #(reset! pass-confirm (.-target.value %))}]
             [:div
-             [:> antd/Button {:type     "primary"
+             [:> mui/Button {:type     "primary"
                               :on-click #(rf/dispatch [:change-pass @pass-data])}
               "保存"]]]]]]))))
 
 
-(defn user-profile-page []
+(defn user-profile-page [props]
   (r/with-let [user (rf/subscribe [:user])
                edited-user (r/atom @user)
                name (r/cursor edited-user [:name])
                error (rf/subscribe [:error])]
     (fn []
       (if @user
-        [manager-layout
-         [:> antd/Layout.Content
-          [:> antd/Row
-           [:> antd/Col {:span 8 :offset 8}
-            [:> antd/Input
+        [c/layout props
+         [:> mui/Layout.Content
+          [:> mui/Row
+           [:> mui/Col {:span 8 :offset 8}
+            [:> mui/Input
              {:id           "email"
               :addon-before "邮箱："
               :disabled     true
               :value        (:email @edited-user)
               :read-only    true}
              ]
-            [:> antd/Input
+            [:> mui/Input
              {:id           "name"
               :addon-before "名字："
               :defaultValue @name
@@ -93,21 +93,21 @@
             (when @error
               [:div.alert.alert-message @error])
             [:div {:style {:text-align "center"}}
-             [:> antd/Button
+             [:> mui/Button
               {:type     :submit
                :on-click #(rf/dispatch [:save-user-profile @edited-user])}
               "保存"]]]]]]))))
 
 
 (defn copyright []
-  [:> antd/Layout.Footer
+  [:> mui/Layout.Footer
    "Copyright "
-   [:> antd/Icon]
+   [:> mui/Icon]
    " 2019 "])
 
 (defn user-layout [children]
-  [:> antd/Layout {:title ""}
-   [:> antd/Layout.Content {:style {:min-height "100vh"
+  [:> mui/Layout {:title ""}
+   [:> mui/Layout.Content {:style {:min-height "100vh"
                                     :padding    "24px 0 20px 0"}}
     children]
    copyright])

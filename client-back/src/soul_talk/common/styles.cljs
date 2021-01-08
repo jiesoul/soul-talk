@@ -11,7 +11,10 @@
 
 (def custom-theme
   (createMuiTheme
-    #js {:palette #js {:primary #js {:main (gobj/get (.-blue ^js/Mui.Colors mui-colors) 500)}}}
+    #js {:palette #js {:primary #js {:main (gobj/get (.-blue ^js/Mui.Colors mui-colors) 500)}}
+         :typography #js {:fontSize 12}
+         :spacing 4
+         :props #js {:MuiButton #js {:size "small"}}}
     zhCN))
 
 (defn theme-provider

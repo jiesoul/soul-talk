@@ -1,6 +1,5 @@
 (ns soul-talk.data-dic.views
   (:require [soul-talk.common.views :as c]
-            ["@ant-design/icons" :as antd-icons :refer [EditOutlined DeleteOutlined]]
             ["@material-ui/core" :as mui]
             ["@material-ui/icons" :as mui-icons]
             [reagent.core :as r]

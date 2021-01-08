@@ -24,10 +24,10 @@ body {
 /*    height: 100vh;*/
 /*}*/
 
-/*.login-image {*/
-/*    background-size:     cover;*/
-/*    background: url(https://source.unsplash.com/random) no-repeat;*/
-/*}*/
+.login-image {
+    height: 100vh;
+    background: no-repeat center/cover url(https://source.unsplash.com/random) ;
+}
 
 .site-layout-header h1 {
     height: auto;
