@@ -3,7 +3,9 @@
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.utils :as du]
-            [soul-talk.common.styles :as styles]))
+            [soul-talk.common.styles :as styles]
+            ["@material-ui/core" :refer [Modal Form Input Row Col Button Table Divider]]
+            ["@material-ui/icons" :refer [SearchOutlined EditOutlined DeleteOutlined]]))
 
 (def ^:dynamic *visible* (r/atom false))
 
@@ -81,7 +83,7 @@
                                :size     "small"
                                :on-click (fn []
                                            (r/as-element
-                                             (c/show-confirm
+                                             (c/dialog
                                                "删除"
                                                (str "你确认要删除吗？")
                                                #(dispatch [:collect-links/delete id])

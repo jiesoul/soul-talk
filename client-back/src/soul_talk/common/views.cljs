@@ -83,7 +83,7 @@
        [:> mui/Button {:aria-controls "user-menu"
                        :aria-haspopup "true"
                        :color         "default"
-                       :start-color (r/as-element [:> mui-icons/AccountCircle ])
+                       :start-icon (r/as-element [:> mui-icons/AccountCircle ])
                        :on-click      #(handle-popover-open %)}
         (:name @user)]
        [:> mui/Menu {:id                    "user-menu"
@@ -99,7 +99,8 @@
                      :transform-origin      {:vertical   "top"
                                              :horizontal "left"}}
         (doall
-          (for [{:keys [url icon text]} user-popover-menus]
+          (for [{:keys [url icon text] :as user-menu} user-popover-menus]
+            ^{:key user-menu}
             [:> mui/MenuItem {:class-name (.-root classes)
                               :on-click   #(navigate! url)}
              [:> mui/ListItemIcon
@@ -224,9 +225,6 @@
      children]
     [:> mui/Box {:pt 4}
      [copyright]]]])
-
-(defn styled-layout [& component]
-  )
 
 (defn dialog [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
   [:> mui/Dialog {:aria-labelledby        "alert-dialog-title"

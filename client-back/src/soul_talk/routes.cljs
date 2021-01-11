@@ -67,15 +67,13 @@
                      [:set-active-page :menus]]))
 
 (defroute "/roles" []
-  (run-events-admin [[:roles/clean]
+  (run-events-admin [[:roles/init]
                      [:set-active-page :roles]]))
 
-(defroute "/roles/:id/menus" [id]
-  (run-events-admin [[:roles/load-role id]
-                     [:roles/load-role-menus id]
-                     [:menus/load-menus]
-                     [:set-active-page :roles/menus]]))
-
+(defroute "/users" []
+  (run-events-admin [[:set-breadcrumb ["用户"]]
+                     [:users/load-all]
+                     [:set-active-page :users]]))
 
 (defroute "/users/password" []
   (run-events-admin [[:set-breadcrumb ["个人管理" "修改密码"]]
@@ -84,13 +82,6 @@
 (defroute "/users/profile" []
   (run-events-admin [[:set-breadcrumb ["个人管理" "个人信息"]]
                      [:set-active-page :users-profile]]))
-
-(defroute "/users" []
-  (run-events-admin [[:set-breadcrumb ["用户"]]
-                     [:users/load-all]
-                     [:set-active-page :users]]))
-
-
 
 (defroute "/tags" []
   (run-events-admin [[:tags/load-all]

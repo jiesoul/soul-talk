@@ -3,7 +3,9 @@
             [re-frame.core :refer [dispatch subscribe]]
             [soul-talk.common.views :as c]
             [soul-talk.utils :as du]
-            [soul-talk.common.styles :as styles]))
+            [soul-talk.common.styles :as styles]
+            ["@material-ui/core" :refer [Modal Form Input Row Col Button Table Divider]]
+            ["@material-ui/icons" :refer [SearchOutlined EditOutlined DeleteOutlined]]))
 
 (def ^:dynamic *visible* (r/atom false))
 
@@ -81,7 +83,7 @@
                                :size     "small"
                                :on-click (fn []
                                            (r/as-element
-                                             (c/show-confirm
+                                             (c/dialog
                                                "删除"
                                                (str "你确认要删除吗？")
                                                #(dispatch [:tags/delete id])
@@ -96,8 +98,8 @@
                   :row-key    "id"
                   :bordered   true}]])))
 
-(defn query-page []
-  [c/manager-layout
+(defn query-page [props]
+  [c/layout props
    [:<>
     [query-form]
     [list-table]]])

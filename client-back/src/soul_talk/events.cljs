@@ -38,6 +38,11 @@
     {:navigate url}))
 
 (reg-event-db
+  :set-dialog-status
+  (fn [db [_ [key ^boolean? value]]]
+    (assoc db key value)))
+
+(reg-event-db
   :set-success
   (fn [db [_ message]]
     (assoc db :success message)))

@@ -3,7 +3,10 @@
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [soul-talk.utils :as du]
-            [soul-talk.common.styles :as styles]))
+            [soul-talk.common.styles :as styles]
+            ["@material-ui/core" :refer [Modal Form Input Row Col Button Table Divider]]
+            ["@material-ui/icons" :refer [SearchOutlined EditOutlined DeleteOutlined]]
+            ))
 
 (def ^:dynamic *visible* (r/atom false))
 
@@ -50,7 +53,6 @@
           [:> Form.Item {:name  "name"
                          :label "name"}
            [:> Input {:placeholder "name"
-                      :value       @name
                       :on-blur     #(reset! name (-> % .-target .-value))}]]]]
         [:> Row
          [:> Col {:span 24 :style {:text-align "right"}}
@@ -98,7 +100,7 @@
                                :alt "删除"
                                :on-click (fn []
                                            (r/as-element
-                                             (c/show-confirm
+                                             (c/dialog
                                                "删除"
                                                (str "你确认要删除吗？")
                                                #(dispatch [:series/delete id])
@@ -114,8 +116,8 @@
                   :bordered   true}]])))
 
 (defn query-page
-  []
-  [c/manager-layout
+  [props]
+  [c/layout props
    [:div
     [query-form]
     [list-table]]])
