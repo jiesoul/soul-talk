@@ -23,8 +23,6 @@
     (map r/as-element children)))
 
 (defn- apply-hoc [hoc component]
-  (println "component: " component)
-  (println "hoc: " hoc)
   (-> component
     (r/reactify-component)
     (hoc)
@@ -52,37 +50,42 @@
 (def drawer-width 200)
 (def app-bar-height 64)
 
-(defn main-styles [^js/Mui.Theme theme]
+(defn layout-styles [^js/Mui.Theme theme]
   (let [transitions (.-transitions theme)
         breakpoints (.-breakpoints theme)]
-    #js {:root              #js {:display "flex"}
-         :color             "#1a73e8"
-         :bgColor           "#e8f0fe"
-
-         :toolbar           #js {:paddingRight 24}
-         :toolbarIcon       #js {:display        "flex"
-                                 :alignItems     "flex-end"
-                                 :justifyContent "flex-end"
-                                 :padding        "0 8px"}
-
-         :appBar            #js {:zIndex (+ 1 (-> theme .-zIndex .-drawer))}
-         :appBarShift       #js {:marginLeft drawer-width
-                                 :transition (.create
-                                               transitions
-                                               #js ["width" "margin"]
-                                               #js {:easing   (-> transitions .-easing .-sharp)
-                                                    :duration (-> transitions .-duration .-enteringScreen)})}
+    #js {:root        #js {:display "flex"}
+         :toolbar     #js {:paddingRight 24}
+         :toolbarIcon #js {:display        "flex"
+                           :alignItems     "center"
+                           :justifyContent "flex-end"
+                           :padding        "0 8px"}
+         :appBar      #js {:zIndex (+ 1 (-> theme .-zIndex .-drawer))
+                           :transition (.create
+                                         transitions
+                                         #js ["width" "margin"]
+                                         #js {:easing   (-> transitions .-easing .-sharp)
+                                              :duration (-> transitions .-duration .-enteringScreen)})}
+         :appBarShift #js {:marginLeft drawer-width
+                           :transition (.create
+                                         transitions
+                                         #js ["width" "margin"]
+                                         #js {:easing   (-> transitions .-easing .-sharp)
+                                              :duration (-> transitions .-duration .-enteringScreen)})}
          :menuButton        #js {:marginRight 36}
          :menuButtonHidden  #js {:display "none"}
 
-
          :title             #js {:flexGrow 1}
-
-         :popover           #js {:pointerEvents "none"}
 
          :drawer            #js {:width      drawer-width
                                  :flexShrink 0}
-         :drawerPaper       #js {:width drawer-width}
+         :drawerPaper       #js {:position "relative"
+                                 :whitespace "nowrap"
+                                 :width drawer-width
+                                 :transition                 (.create
+                                                               transitions
+                                                               #js ["width"]
+                                                               #js {:easing   (-> transitions .-easing .-sharp)
+                                                                    :duration (-> transitions .-duration .-leavingScreen)})}
 
          :drawerPaperClose  #js {:overflowX                  "hidden"
                                  :width                      (.spacing theme 7)
@@ -92,10 +95,31 @@
                                                                #js {:easing   (-> transitions .-easing .-sharp)
                                                                     :duration (-> transitions .-duration .-leavingScreen)})
                                  "@media (min-width: 600px)" #js {:width (.spacing theme 9)}}
+         :appBarSpacer      (-> theme .-mixins .-toolbar)
+         :content           #js {:flexGrow 1
+                                 :padding  (.spacing theme 1)
+                                 :overflow "auto"}
+
+         :container         #js {:paddingTop    (.spacing theme 4)
+                                 :paddingBottom (.spacing theme 4)}
+         :paper             #js {:padding       (.spacing theme 2)
+                                 :display       "flex"
+                                 :overflow      "auto"
+                                 :flexDirection "column"}
+         :fixedHeight       #js {:height 240}
+
+         }))
+
+(defn main-styles [^js/Mui.Theme theme]
+  (let [transitions (.-transitions theme)
+        breakpoints (.-breakpoints theme)]
+    #js {:root              #js {:display "flex"}
+         :color             "#1a73e8"
+         :bgColor           "#e8f0fe"
+
+         :popover           #js {:pointerEvents "none"}
 
          :drawerContainer   #js {:overflow "auto"}
-
-         :appBarSpacer      (-> theme .-mixins .-toolbar)
 
          :drawerContent     #js {:height "auto"}
 
@@ -141,18 +165,6 @@
 
          :breadcrumb        #js {:font-weight "1"}
 
-         :content           #js {:flexGrow 1
-                                 :padding  (.spacing theme 1)
-                                 :overflow "auto"}
-
-         :container         #js {:paddingTop    (.spacing theme 4)
-                                 :paddingBottom (.spacing theme 4)}
-
-         :paper             #js {:padding       (.spacing theme 2)
-                                 :display       "flex"
-                                 :overflow      "auto"
-                                 :flexDirection "column"}
-         :fixedHeight       #js {:height 240}
          }))
 
 (defn popover-styles [theme]

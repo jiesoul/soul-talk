@@ -43,6 +43,11 @@
     (assoc db key value)))
 
 (reg-event-db
+  :set-drawer-status
+  (fn [db [_ value]]
+    (assoc db :drawer-status value)))
+
+(reg-event-db
   :set-success
   (fn [db [_ message]]
     (assoc db :success message)))

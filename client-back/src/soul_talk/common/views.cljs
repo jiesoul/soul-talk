@@ -16,16 +16,18 @@
                         :types {:email "${label} 非法邮件格式"
                                 :url "${label} 非法地址"}})
 
-(defn lading-backdrop [{:keys [classes]}]
-  (let [lading? (rf/subscribe [:loading?])]
+(defn lading-backdrop []
+  (let [classes (styles/backdrop-styles styles/custom-theme)
+        lading? (rf/subscribe [:loading?])]
     (fn []
       (when @lading?
         [:> mui/Backdrop {:class-name (.-backdrop classes)
                           :open @lading?}
          [:> mui/CircularProgress {:color "inherit"}]]))))
 
-(defn success-snackbars [{:keys [classes]}]
-  (let [success (rf/subscribe [:success])]
+(defn success-snackbars []
+  (let [classes (styles/success-snackbar-styles styles/custom-theme)
+        success (rf/subscribe [:success])]
     (when @success
       [:> mui/Snackbar {:anchor-origin {:vertical   "top"
                                         :horizontal "center"}
@@ -41,8 +43,9 @@
                                                                   :on-click #(rf/dispatch [:clean-success])}
                                                [:> mui-icons/Close {:font-size "small"}]])}])))
 
-(defn error-snackbars [{:keys [classes]}]
-  (let [error (rf/subscribe [:error])]
+(defn error-snackbars []
+  (let [classes (styles/snackbar-styles styles/custom-theme)
+        error (rf/subscribe [:error])]
     (when @error
       [:> mui/Snackbar {:anchor-origin {:vertical   "top"
                                         :horizontal "center"}
@@ -58,16 +61,8 @@
                                                                   :on-click #(rf/dispatch [:clean-error])}
                                                [:> mui-icons/Close {:font-size "small"}]])}])))
 
-(def ^:dynamic *drawer-open* (r/atom true))
+
 (def ^:dynamic *anchor-el* (r/atom nil))
-
-(defn handle-drawer-open
-  []
-  (reset! *drawer-open* true))
-(defn handle-drawer-close
-  []
-  (reset! *drawer-open* false))
-
 (def user-popover-menus [{:url "/users/profile" :text "个人信息" :icon mui-icons/Home}
                          {:url "/users/password" :text "修改密码" :icon mui-icons/Send}])
 
@@ -116,21 +111,27 @@
 (defn styled-user-popover []
   (styles/with-custom-styles user-popover styles/popover-styles))
 
-(defn app-bar [{:keys [classes] :as props}]
+(defn app-bar [{:keys [classes]}]
   (let [site-info (rf/subscribe [:site-info])
-        app-bar-class (.-appBar classes)
-        menu-button-class (.-menuButton classes)]
-    [:> mui/AppBar {:position   "fixed"
-                    :class-name app-bar-class}
-     [:> mui/Toolbar
-      [:> mui/Typography {:component  "h1"
-                          :variant    "h6"
-                          :no-wrap    true
-                          :color "inherit"
-                          :class-name (.-title classes)}
-       (:name @site-info)]
-      (styled-user-popover)
-      ]]))
+        drawer-status (rf/subscribe [:drawer-status])]
+    (fn []
+      [:> mui/AppBar {:position   "absolute"
+                      :class-name (str (.-appBar classes) " " (if @drawer-status (.-appBarShift classes)))}
+       [:> mui/Toolbar {:class-name (.-toolbar classes)}
+        [:> mui/IconButton {:edge       "start"
+                            :color      "inherit"
+                            :aria-label "open drawer"
+                            :on-click   #(rf/dispatch [:set-drawer-status true])
+                            :class-name (str (.-menuButton classes) " " (if @drawer-status (.-menuButtonHidden classes)))}
+         [:> mui-icons/Menu]]
+        [:> mui/Typography {:component  "h1"
+                            :variant    "h6"
+                            :no-wrap    true
+                            :color      "inherit"
+                            :class-name (.-title classes)}
+         (:name @site-info)]
+        (styled-user-popover)
+        ]])))
 
 (defn menu-tree-items [{:keys [classes color bgColor] :as props} menus]
   (doall
@@ -177,15 +178,16 @@
       )))
 
 (defn drawer [{:keys [classes] :as props}]
-  (let [drawer-paper (.-drawerPaper classes)]
-    [:> mui/Drawer
-     {:variant "permanent"
-      :class-name (.-drawer classes)
-      :classes {:paper drawer-paper}}
-     [:> mui/Toolbar]
+  (let [drawer-paper (.-drawerPaper classes)
+        drawer-status (rf/subscribe [:drawer-status])]
+    [:> mui/Drawer {:variant    "permanent"
+                    :class-name (.-drawer classes)
+                    :open       @drawer-status
+                    :classes    {:paper (str drawer-paper " " (if-not @drawer-status (.-drawerPaperClose classes)))}}
+     [:div {:class-name (.-toolbarIcon classes)}
+      [:> mui/IconButton {:on-click #(rf/dispatch [:set-drawer-status false])}
+       [:> mui-icons/ChevronLeft]]]
      [:div
-      {:class-name (.-drawerContainer classes)}
-
       [:> mui/Divider]
       [menu-tree-view props]]]))
 
@@ -199,32 +201,35 @@
        [:> mui/Typography {:color "inherit"} (:name parent)])
      [:> mui/Typography {:color "textPrimary"} name]]))
 
-(defn copyright [{:keys [classes] :as props}]
+(defn copyright []
   (let [year (.getFullYear (js/Date.))
         site-info (rf/subscribe [:site-info])]
-    [:div
-     [:> mui/Typography {:variant "body2"
-                         :color   "textSecondary"
-                         :align   "center"}
-      "Copyright ©"
-      [:> mui/Link {:color "inherit"
-                    :href  "https://www.jiesoul.com/"}
-       (:author @site-info)]
-      (str " " year ".")]]))
+    [:> mui/Typography {:variant "body2"
+                        :color   "textSecondary"
+                        :align   "center"}
+     "Copyright ©"
+     [:> mui/Link {:color "inherit"
+                   :href  "https://www.jiesoul.com/"
+                   :children (:name @site-info)}]
+     (str " " year ".")]))
 
-(defn layout [{:keys [classes] :as props} & children]
-  [:div {:class-name (.-root classes)}
-   [:> mui/CssBaseline ]
-   [app-bar props]
-   [drawer props]
-   [:main {:class-name (.-mainContainer classes)}
-    [:> mui/Toolbar]
-    [breadcrumbs props]
-    [:> mui/Divider]
-    [:div
-     children]
-    [:> mui/Box {:pt 4}
-     [copyright]]]])
+(defn layout [children]
+  (let [classes (styles/layout-styles styles/custom-theme)]
+    [:div {:class-name (.-root classes)}
+     [:> mui/CssBaseline]
+     [app-bar {:classes classes}]
+     [drawer {:classes classes}]
+     [:main {:class-name (.-content classes)}
+      [:div {:class-name (.-appBarSpacer classes)}]
+      [:> mui/Container {:max-width  "lg"
+                         :class-name (.-container classes)}
+       [:> mui/Toolbar]
+       [breadcrumbs {:classes classes}]
+       [:> mui/Divider]
+       [:div
+        children]
+       [:> mui/Box {:pt 4}
+        [copyright]]]]]))
 
 (defn dialog [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
   [:> mui/Dialog {:aria-labelledby        "alert-dialog-title"

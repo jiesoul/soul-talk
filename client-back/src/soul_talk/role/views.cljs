@@ -98,7 +98,6 @@
                                                        (println (-> e .-target)))}]
                         [:> mui/Typography {:variant "inherit"}
                          name]]))
-          :icon (r/as-element [:> mui/Checkbox])
           :style   {"--tree-view-color"    color
                     "--tree-view-bg-color" bgColor}
           :classes {:root     (.-treeItemRoot classes)

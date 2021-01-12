@@ -43,3 +43,5 @@
 (reg-sub :pagination query)
 
 (reg-sub :query-params query)
+
+(reg-sub :drawer-open query)

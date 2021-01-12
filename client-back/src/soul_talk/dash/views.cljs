@@ -13,9 +13,6 @@
 (defn chart-styles [theme]
   #js {:root #js {:backgroundColor "red"}})
 
-(defn dash [props]
-  [c/layout props
-   [((styles/with-styles chart-styles) chart)]])
-
 (defn home []
-  (styles/main dash))
+  [c/layout
+   [((styles/with-styles chart-styles) chart)]])

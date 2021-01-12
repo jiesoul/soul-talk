@@ -17,7 +17,6 @@
             [soul-talk.collect-link.views :as collect-link]
             [soul-talk.collect-site.views :as collect-site]
             [soul-talk.series.views :as series]
-            [clojure.string :as str]
             ["@material-ui/core" :as mui]
             ["@material-ui/core/styles" :refer [ThemeProvider]]
             [soul-talk.utils :as utils]))
@@ -94,7 +93,7 @@
          [:> mui/CssBaseline]
          [styles/theme-provider styles/custom-theme
           [:div
-           (styles/with-custom-styles c/lading-backdrop styles/backdrop-styles)
-           (styles/with-custom-styles c/success-snackbars styles/success-snackbar-styles)
-           (styles/with-custom-styles c/error-snackbars styles/snackbar-styles)
+           [c/lading-backdrop]
+           [c/success-snackbars]
+           [c/error-snackbars]
            (pages @active-page)]]]))))

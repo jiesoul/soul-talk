@@ -10,22 +10,27 @@
   (:import goog.History))
 
 (defn login-styles [^js/Mui.Theme theme]
-  #js {:root      #js {:height "100vh"}
-       :image     #js {:backgroundImage    "url(https://source.unsplash.com/random)"
-                       :backgroundRepeat   "no-repeat"
-                       :backgroundSize "cover"
-                       :backgroundPosition "center"}
-       :paper     #js {:margin        (.spacing theme 8 4)
-                       :display       "flex"
-                       :flexDirection "column"
-                       :alignItems    "center"}
-       :avatar    #js {:margin (.spacing theme 1)
-                       :backgroundColor (.-secondary theme)}
-       :form      #js {:width     "100%"
-                       :marginTop (.spacing theme 1)}
-       :submit    #js {:margin (.spacing theme 3 0 2)}})
+  #js {:root   #js {:height "100vh"}
+       :image  #js {:backgroundImage    "url(https://source.unsplash.com/random)"
+                    :backgroundRepeat   "no-repeat"
+                    :backgroundSize     "cover"
+                     ;:backgroundColor    (if (= "light" (-> theme .-palette .-type))
+                     ;                      (-> theme .-palette .-grey .-50)
+                     ;                      (-> theme .-palette .-grey .-900))
+                    :backgroundPosition "center"}
+       :paper  #js {:margin        (.spacing theme 8 4)
+                    :display       "flex"
+                    :flexDirection "column"
+                    :alignItems    "center"}
+       :avatar #js {:margin          (.spacing theme 1)
+                    :backgroundColor (.-secondary theme)}
+       :form   #js {:width     "100%"
+                    :marginTop (.spacing theme 1)}
+       :submit #js {:margin (.spacing theme 3 0 2)}
+       :footer #js {:padding   (.spacing theme 3 2)
+                    :marginTop "auto"}})
 
-(defn form [{:keys [classes] :as props}]
+(defn form []
   (let [site-info (subscribe [:site-info])
         login-user (r/atom {:email "" :password ""})
         email (r/cursor login-user [:email])
