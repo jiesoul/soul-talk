@@ -47,7 +47,7 @@
   [:> ((withStyles styles)
        (r/reactify-component component))])
 
-(def drawer-width 200)
+(def drawer-width "300px")
 (def app-bar-height 64)
 
 (defn layout-styles [^js/Mui.Theme theme]
@@ -77,8 +77,9 @@
          :title             #js {:flexGrow 1}
 
          :drawer            #js {:width      drawer-width
+                                 :min-width drawer-width
                                  :flexShrink 0}
-         :drawerPaper       #js {:position "relative"
+         :drawerPaper       #js {
                                  :whitespace "nowrap"
                                  :width drawer-width
                                  :transition                 (.create

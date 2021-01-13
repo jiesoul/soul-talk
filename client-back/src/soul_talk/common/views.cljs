@@ -115,20 +115,20 @@
   (let [site-info (rf/subscribe [:site-info])
         drawer-status (rf/subscribe [:drawer-status])]
     (fn []
-      [:> mui/AppBar {:position   "absolute"
-                      :class-name (str (.-appBar classes) " " (if @drawer-status (.-appBarShift classes)))}
-       [:> mui/Toolbar {:class-name (.-toolbar classes)}
+      [:> mui/AppBar {:position "absolute"
+                      :style    (.-appBar classes)}
+       [:> mui/Toolbar {:style (.-toolbar classes)}
         [:> mui/IconButton {:edge       "start"
                             :color      "inherit"
                             :aria-label "open drawer"
                             :on-click   #(rf/dispatch [:set-drawer-status true])
-                            :class-name (str (.-menuButton classes) " " (if @drawer-status (.-menuButtonHidden classes)))}
+                            :style      (.-menuButton classes)}
          [:> mui-icons/Menu]]
         [:> mui/Typography {:component  "h1"
                             :variant    "h6"
                             :no-wrap    true
                             :color      "inherit"
-                            :class-name (.-title classes)}
+                            :style (.-title classes)}
          (:name @site-info)]
         (styled-user-popover)
         ]])))
@@ -181,7 +181,7 @@
   (let [drawer-paper (.-drawerPaper classes)
         drawer-status (rf/subscribe [:drawer-status])]
     [:> mui/Drawer {:variant    "permanent"
-                    :class-name (.-drawer classes)
+                    :style (.-drawerPaper classes)
                     :open       @drawer-status
                     :classes    {:paper (str drawer-paper " " (if-not @drawer-status (.-drawerPaperClose classes)))}}
      [:div {:class-name (.-toolbarIcon classes)}
@@ -215,14 +215,14 @@
 
 (defn layout [children]
   (let [classes (styles/layout-styles styles/custom-theme)]
-    [:div {:class-name (.-root classes)}
+    [:div {:style (.-root classes)}
      [:> mui/CssBaseline]
      [app-bar {:classes classes}]
      [drawer {:classes classes}]
-     [:main {:class-name (.-content classes)}
-      [:div {:class-name (.-appBarSpacer classes)}]
+     [:main {:style (.-content classes)}
+      [:div {:style (.-appBarSpacer classes)}]
       [:> mui/Container {:max-width  "lg"
-                         :class-name (.-container classes)}
+                         :style (.-container classes)}
        [:> mui/Toolbar]
        [breadcrumbs {:classes classes}]
        [:> mui/Divider]

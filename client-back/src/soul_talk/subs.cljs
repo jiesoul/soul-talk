@@ -44,4 +44,4 @@
 
 (reg-sub :query-params query)
 
-(reg-sub :drawer-open query)
+(reg-sub :drawer-status query)
