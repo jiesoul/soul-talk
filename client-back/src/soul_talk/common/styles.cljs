@@ -28,26 +28,23 @@
     (hoc)
     (r/adapt-react-class)))
 
-(defn with-styles
+(defn- with-styles
   ([styles] (with-styles styles {}))
   ([styles opts]
-   (let [hoc (mui-styles/withStyles styles opts)]
+   (let [hoc (withStyles styles opts)]
      (partial apply-hoc hoc))))
 
 (defn with-custom-styled
-  [styles component opts]
+  [styles component & opts]
   (if opts
     ((with-styles styles opts) component)
     ((with-styles styles) component)))
 
-(defn styled [component styles]
-  ((mui-styles/styled component) styles))
-
-(defn with-custom-styles [component styles]
+(defn with-custom-styles [styles component]
   [:> ((withStyles styles)
        (r/reactify-component component))])
 
-(def drawer-width "300px")
+(def drawer-width "240px")
 (def app-bar-height 64)
 
 (defn layout-styles [^js/Mui.Theme theme]
@@ -77,7 +74,7 @@
          :title             #js {:flexGrow 1}
 
          :drawer            #js {:width      drawer-width
-                                 :min-width drawer-width
+                                 :minWidth drawer-width
                                  :flexShrink 0}
          :drawerPaper       #js {
                                  :whitespace "nowrap"
@@ -95,7 +92,7 @@
                                                                #js ["width"]
                                                                #js {:easing   (-> transitions .-easing .-sharp)
                                                                     :duration (-> transitions .-duration .-leavingScreen)})
-                                 "@media (min-width: 600px)" #js {:width (.spacing theme 9)}}
+                                 "@media (minWidth: 600px)" #js {:width (.spacing theme 9)}}
          :appBarSpacer      (-> theme .-mixins .-toolbar)
          :content           #js {:flexGrow 1
                                  :padding  (.spacing theme 1)
@@ -110,6 +107,9 @@
          :fixedHeight       #js {:height 240}
 
          }))
+
+(defn layout-styled [component]
+  (with-custom-styled layout-styles component))
 
 (defn main-styles [^js/Mui.Theme theme]
   (let [transitions (.-transitions theme)
@@ -210,13 +210,13 @@
 
 
 (defn main [component]
-  (with-custom-styles component main-styles))
+  (with-custom-styled component main-styles))
 
 (defn styled-edit-form [form]
-  (with-custom-styles form edit-form-styles))
+  (with-custom-styled form edit-form-styles))
 
 (defn styled-form [form]
-  (with-custom-styles form form-styles))
+  (with-custom-styled form form-styles))
 
 (defn styled-table [table]
-  (with-custom-styles table table-styles))
+  (with-custom-styled table table-styles))

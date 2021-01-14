@@ -90,7 +90,7 @@
                                                                #js ["width"]
                                                                #js {:easing   (-> transitions .-easing .-sharp)
                                                                     :duration (-> transitions .-duration .-leavingScreen)})
-                                 "@media (min-width: 600px)" #js {:width (.spacing theme 9)}}
+                                 "@media (minWidth: 600px)" #js {:width (.spacing theme 9)}}
 
          :drawerContainer   #js {:overflow "auto"}
 

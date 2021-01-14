@@ -14,6 +14,9 @@
 
 (set! *warn-on-infer* true)
 
+;(def functional-compiler (reagent.core/create-compiler {:function-components true}))
+;(r/set-default-compiler! functional-compiler)
+
 ;; 挂载页面组件
 (defn mount-component []
   (rd/render [#'soul-talk.views/main-page]
