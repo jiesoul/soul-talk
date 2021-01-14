@@ -43,7 +43,7 @@
                    :xs         false
                    :sm         4
                    :md         7
-                   :style (.-image classes)}]
+                   :class-name (.-image classes)}]
      [:> mui/Grid {:item      true
                    :xs        12
                    :sm        8
@@ -51,13 +51,13 @@
                    :component mui/Paper
                    :square    true}
 
-      [:div {:style (.-paper classes)}
+      [:div {:class-name (.-paper classes)}
        [:> mui/Avatar {:class-name (.-avatar classes)}
         [:> mui-icons/Home]]
        [:> mui/Typography {:component "h1"
                            :variant   "h4"}
         (:name @site-info)]
-       [:form {:style (.-form classes)}
+       [:form {:class-name (.-form classes)}
         [:> mui/TextField {:variant       "outlined"
                            :margin        "normal"
                            :required      true
