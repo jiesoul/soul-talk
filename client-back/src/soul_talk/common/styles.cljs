@@ -4,8 +4,15 @@
             ["@material-ui/core/styles" :as mui-styles :refer [createMuiTheme withStyles makeStyles]]
             ["@material-ui/core/colors" :as mui-colors]
             ["@material-ui/icons" :as mui-icons]
+            ["@chakra-ui/react" :refer [extendTheme]]
             [goog.object :as gobj]
             [reagent.core :as r]))
+
+(def colors {:brand {:900 "#1a365d"
+                     :800 "#153e75"
+                     :700 "#2a69ac"}})
+
+(def theme (extendTheme colors))
 
 (def ^:private theme-provider* (r/adapt-react-class mui-styles/MuiThemeProvider))
 
@@ -22,25 +29,7 @@
   (into [theme-provider* {:theme theme}]
     (map r/as-element children)))
 
-(defn- apply-hoc [hoc component]
-  (-> component
-    (r/reactify-component)
-    (hoc)
-    (r/adapt-react-class)))
-
-(defn- with-styles
-  ([styles] (with-styles styles {}))
-  ([styles opts]
-   (let [hoc (withStyles styles opts)]
-     (partial apply-hoc hoc))))
-
-(defn with-custom-styled
-  [styles component & opts]
-  (if opts
-    ((with-styles styles opts) component)
-    ((with-styles styles) component)))
-
-(defn with-custom-styles [styles component]
+(defn with-custom-styled [styles component]
   [:> ((withStyles styles)
        (r/reactify-component component))])
 
@@ -107,9 +96,6 @@
          :fixedHeight       #js {:height 240}
 
          }))
-
-(defn layout-styled [component]
-  (with-custom-styled layout-styles component))
 
 (defn main-styles [^js/Mui.Theme theme]
   (let [transitions (.-transitions theme)
@@ -210,13 +196,13 @@
 
 
 (defn main [component]
-  (with-custom-styled component main-styles))
+  (with-custom-styled main-styles component))
 
 (defn styled-edit-form [form]
-  (with-custom-styled form edit-form-styles))
+  (with-custom-styled edit-form-styles form))
 
 (defn styled-form [form]
-  (with-custom-styled form form-styles))
+  (with-custom-styled form-styles form))
 
 (defn styled-table [table]
-  (with-custom-styled table table-styles))
+  (with-custom-styled table-styles table))

@@ -2,7 +2,7 @@
   (:require [reagent.core :as r]
             ["@material-ui/core" :as mui]
             [soul-talk.common.views :as c]
-            [soul-talk.common.styles :as styles :refer [with-styles]]))
+            [soul-talk.common.styles :as styles]))
 
 (def button (styles/with-custom-styled  #js {:root #js {:backgroundColor "blue"}}
               mui/Button))
@@ -16,8 +16,7 @@
 
 (defn dash [props]
   [c/layout props
-   [:<>
-    (styles/with-custom-styled chart-styles chart)]])
+   [:div "ssss"]])
 
 (defn home []
-  (styles/layout-styled dash))
+  (styles/with-custom-styled styles/layout-styles dash))

@@ -6,6 +6,7 @@
             [goog.object :as gobj]
             ["@material-ui/core" :as mui]
             ["@material-ui/icons" :as mui-icons]
+            ["@chakra-ui/react" :refer [Grid GridItem]]
             [soul-talk.common.views :as c])
   (:import goog.History))
 
@@ -35,6 +36,7 @@
         login-user (r/atom {:email "" :password ""})
         email (r/cursor login-user [:email])
         password (r/cursor login-user [:password])]
+    (println "classes: " classes)
     [:> mui/Grid {:container  true
                   :component  "main"
                   :class-name (.-root classes)}
@@ -85,15 +87,11 @@
                         :class-name (.-submit classes)
                         :on-click   #(dispatch [:login @login-user])}
          "登录"]
-        [:> mui/Grid {:container true}
-         [:> mui/Grid {:item true
-                       :xs   true}]]
         [:> mui/Box {:mt 5}
          [c/copyright]]]]]]))
 
 (defn login-page []
-  (styles/with-custom-styles login-styles
-    form))
+  (styles/with-custom-styled login-styles form))
 
 
 
