@@ -52,11 +52,10 @@
                          :on-change  #(rf/dispatch [:site-info/set-attr :author (-> % .-target .-value)])}]
       [:div {:style      {:margin "normal"}
              :class-name (.-buttons classes)}
-       [:> mui/Button {:type     "submit"
+       [:> mui/Button {:type     "button"
                        :variant  "outlined"
                        :size     "small"
                        :color    "primary"
-                       :style    {:margin "0 8px"}
                        :on-click #(rf/dispatch [:site-info/update @site-info])}
         "保存"]]
       ]]))
@@ -67,4 +66,4 @@
     (styles/styled-edit-form edit-form)]])
 
 (defn home []
-  (styles/main edit-page))
+  (styles/styled-layout edit-page))

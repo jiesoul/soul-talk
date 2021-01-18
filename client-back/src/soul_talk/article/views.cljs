@@ -99,7 +99,7 @@
 ;    [query-list]]])
 ;
 ;(defn home []
-;  (styles/main query-page))
+;  (styles/styled-layout query-page))
 ;
 ;(defn edit-menu []
 ;  (r/with-let [article (rf/subscribe [:editing-article])]

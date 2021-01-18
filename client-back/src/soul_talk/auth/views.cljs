@@ -36,7 +36,6 @@
         login-user (r/atom {:email "" :password ""})
         email (r/cursor login-user [:email])
         password (r/cursor login-user [:password])]
-    (println "classes: " classes)
     [:> mui/Grid {:container  true
                   :component  "main"
                   :class-name (.-root classes)}

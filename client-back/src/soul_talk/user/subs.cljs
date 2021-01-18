@@ -11,3 +11,14 @@
 (reg-sub :users query)
 
 (reg-sub :user-roles query)
+
+(reg-sub :users/list query)
+(reg-sub :users/query-params query)
+(reg-sub :users/pagination query)
+(reg-sub :users/user query)
+(reg-sub :users/user-roles query)
+(reg-sub :users/roles-dialog-open query)
+(reg-sub :users/add-dialog-open query)
+(reg-sub :users/edit-dialog-open query)
+(reg-sub :users/delete-dialog-open query)
+(reg-sub :users/clean-query-params query)

@@ -6,7 +6,7 @@
 (def update-user
   (ds/spec {:name :user/update-user
             :spec {:email spec/email?
-                   :username spec/username?
+                   :name spec/username?
                    :password spec/password?
                    :image (ds/maybe spec/uri-string?)
                    :bio (ds/maybe spec/non-empty-string?)}
@@ -14,21 +14,21 @@
 
 (def update-password
   (ds/spec {:name :user/update-password
-            :spec {:oldPassword spec/password?
-                   :newPassword spec/password?
-                   :confirmPassword spec/password?}}))
+            :spec {:old-password spec/password?
+                   :new-password spec/password?
+                   :confirm-password spec/password?}}))
 
 (def user
   (ds/spec {:name :user/User
             :spec {:id             spec/id
                    :email          spec/email?
-                   :username       spec/username?
+                   :name       spec/username?
                    (ds/opt :image) spec/uri-string?
                    (ds/opt :bio)   spec/non-empty-string?}}))
 
 (def profile-user
   (ds/spec {:name :user/profile-user
-            :spec {:username spec/username?
+            :spec {:name spec/username?
                    (ds/opt :image) spec/uri-string?
                    (ds/opt :bio)   spec/non-empty-string?}}))
 

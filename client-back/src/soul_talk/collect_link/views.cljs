@@ -106,4 +106,4 @@
     [list-table]]])
 
 (defn home []
-  (styles/main query-page))
+  (styles/styled-layout query-page))

@@ -4,19 +4,16 @@
             [soul-talk.common.views :as c]
             [soul-talk.common.styles :as styles]))
 
-(def button (styles/with-custom-styled  #js {:root #js {:backgroundColor "blue"}}
-              mui/Button))
+(defn chart-styles [theme]
+  #js {:root #js {:backgroundColor "red"}})
 
 (defn chart [{:keys [classes] :as props}]
   [:div {:class-name (.-root classes)}
    "ssdasfasdfasdff"])
 
-(defn chart-styles [theme]
-  #js {:root #js {:backgroundColor "red"}})
-
 (defn dash [props]
   [c/layout props
-   [:div "ssss"]])
+   (styles/with-custom-styled chart-styles chart)])
 
 (defn home []
-  (styles/with-custom-styled styles/layout-styles dash))
+  (styles/styled-layout dash))

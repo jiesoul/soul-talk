@@ -25,38 +25,44 @@
          [:> mui/CircularProgress {:color "inherit"}]]))))
 
 (defn success-snackbars [{:keys [classes]}]
-  (let [success (rf/subscribe [:success])]
+  (let [success (rf/subscribe [:success])
+        on-close #(rf/dispatch [:clean-success])]
     (when @success
       [:> mui/Snackbar {:anchor-origin      {:vertical   "top"
                                              :horizontal "center"}
                         :class-name         (.-root classes)
                         :open               true
-                        :message            @success
                         :key                "success"
                         :auto-hide-Duration 3000
-                        :on-close           #(rf/dispatch [:clean-success])
+                        :on-close           on-close
                         :action             (r/as-element [:> mui/IconButton {:size       "small"
                                                                               :aria-label "close"
                                                                               :color      "inherit"
-                                                                              :on-click   #(rf/dispatch [:clean-success])}
-                                                           [:> mui-icons/Close {:font-size "small"}]])}])))
+                                                                              :on-click   on-close}
+                                                           [:> mui-icons/Close {:font-size "small"}]])}
+       [:> Alert {:on-close on-close
+                  :severity "success"}
+        @success]])))
 
 (defn error-snackbars [{:keys [classes]}]
-  (let [error (rf/subscribe [:error])]
+  (let [error (rf/subscribe [:error])
+        on-close #(rf/dispatch [:clean-error])]
     (when @error
       [:> mui/Snackbar {:anchor-origin {:vertical   "top"
                                         :horizontal "center"}
                         :class-name (.-root classes)
                         :open          true
-                        :message @error
                         :key "error"
                         :auto-hide-Duration 3000
-                        :on-close #(rf/dispatch [:clean-error])
+                        :on-close on-close
                         :action (r/as-element [:> mui/IconButton {:size "small"
                                                                   :aria-label "close"
                                                                   :color "inherit"
-                                                                  :on-click #(rf/dispatch [:clean-error])}
-                                               [:> mui-icons/Close {:font-size "small"}]])}])))
+                                                                  :on-click on-close}
+                                               [:> mui-icons/Close {:font-size "small"}]])}
+       [:> Alert {:on-close on-close
+                  :severity "error"}
+        @error]])))
 
 
 (def ^:dynamic *anchor-el* (r/atom nil))
@@ -90,14 +96,21 @@
                                              :horizontal "left"}
                      :transform-origin      {:vertical   "top"
                                              :horizontal "left"}}
-        (doall
-          (for [{:keys [url icon text] :as user-menu} user-popover-menus]
-            ^{:key user-menu}
-            [:> mui/MenuItem {:class-name (.-root classes)
-                              :on-click   #(navigate! url)}
-             [:> mui/ListItemIcon
-              [:> icon {:font-size "small"}]]
-             [:> mui/ListItemText {:primary text}]]))
+        [:> mui/MenuItem {:class-name (.-root classes)
+                          :on-click   #(do
+                                         (handle-popover-close)
+                                         (navigate! (str "/users/" (:id @user) "/password")))}
+         [:> mui/ListItemIcon
+          [:> mui-icons/Home {:font-size "small"}]]
+         [:> mui/ListItemText "修改密码"]]
+        [:> mui/MenuItem {:class-name (.-root classes)
+                          :on-click   #(do
+                                         (handle-popover-close)
+                                         (navigate! (str "/users/" (:id @user) "/profile")))}
+         [:> mui/ListItemIcon
+          [:> mui-icons/Send {:font-size "small"}]]
+         [:> mui/ListItemText "个人信息"]]
+
         [:> mui/Divider]
         [:> mui/MenuItem {:class-name (.-root classes)
                           :on-click #(rf/dispatch [:logout])}
@@ -109,15 +122,9 @@
   (let [site-info (rf/subscribe [:site-info])
         drawer-status (rf/subscribe [:drawer-status])]
     (fn []
-      [:> mui/AppBar {:position "absolute"
-                      :class-name    (.-appBar classes)}
+      [:> mui/AppBar {:position   "absolute"
+                      :class-name (.-appBar classes)}
        [:> mui/Toolbar {:class-name (.-toolbar classes)}
-        [:> mui/IconButton {:edge       "start"
-                            :color      "inherit"
-                            :aria-label "open drawer"
-                            :on-click   #(rf/dispatch [:set-drawer-status true])
-                            :class-name      (.-menuButton classes)}
-         [:> mui-icons/Menu]]
         [:> mui/Typography {:component  "h1"
                             :variant    "h6"
                             :no-wrap    true
@@ -178,54 +185,48 @@
                     :class-name (.-drawerPaper classes)
                     :open       @drawer-status
                     :classes    {:paper (str drawer-paper " " (if-not @drawer-status (.-drawerPaperClose classes)))}}
-     [:div {:class-name (.-toolbarIcon classes)}
-      [:> mui/IconButton {:on-click #(rf/dispatch [:set-drawer-status false])}
-       [:> mui-icons/ChevronLeft]]]
+     [:> mui/Toolbar {:class-name (.-toolbarIcon classes)}]
      [:div
       [:> mui/Divider]
       [menu-tree-view props]]]))
 
 (defn breadcrumbs [{:keys [classes]}]
-  (let [{:keys [name pid]} @(rf/subscribe [:menus/selected])
-        menus (:menus @(rf/subscribe [:user]))
-        parent (first (filter #(= pid (:id %)) menus))]
+  (let [[first second] @(rf/subscribe [:breadcrumb])]
     [:> mui/Breadcrumbs {:aria-label "breadcrumb"
                          :class-name (.-breadcrumb classes)}
-     (if parent
-       [:> mui/Typography {:color "inherit"} (:name parent)])
-     [:> mui/Typography {:color "textPrimary"} name]]))
+     [:> mui/Typography {:color (if second "inherit" "textPrimary")} first]
+     (if second [:> mui/Typography {:color "textPrimary"} second])]))
 
 (defn copyright []
   (let [year (.getFullYear (js/Date.))
-        site-info (rf/subscribe [:site-info])]
-    [:> mui/Typography {:variant "body2"
-                        :color   "textSecondary"
-                        :align   "center"}
-     "Copyright ©"
-     [:> mui/Link {:color "inherit"
-                   :href  "https://www.jiesoul.com/"
-                   :children (:name @site-info)}]
-     (str " " year ".")]))
+        site-info (rf/subscribe [:site-info])
+        name (:name @site-info)]
+    (if @site-info
+      [:> mui/Typography {:variant "body2"
+                          :color   "textSecondary"
+                          :align   "center"}
+       "Copyright ©"
+       [:> mui/Link {:color    "inherit"
+                     :href     "https://www.jiesoul.com/"
+                     :children (:name @site-info)}
+        (:name @site-info)]
+       (str " " year ".")])))
 
 (defn layout [{:keys [classes] :as props} & children]
-  (println "************" props)
   [:div {:class-name (.-root classes)}
    [:> mui/CssBaseline]
    [app-bar props]
    [drawer props]
    [:main {:class-name (.-content classes)}
     [:<>
-     [:div {:class-name (.-appBarSpacer classes)}]
+     [:> mui/Toolbar]
+     [breadcrumbs props]
+     [:> mui/Divider]
      [:> mui/Container {:max-width  "lg"
                         :class-name (.-container classes)}
-      [:> mui/Toolbar]
-      [breadcrumbs props]
-      [:> mui/Divider]
-      [:div
-       children]
+      children
       [:> mui/Box {:pt 4}
-       [copyright]
-       ]]]]])
+       [copyright]]]]]])
 
 (defn dialog [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
   [:> mui/Dialog {:aria-labelledby        "alert-dialog-title"
@@ -256,7 +257,7 @@
    [:div "页面未找到，请检查链接！"]])
 
 (defn default []
-  (styles/main default-page))
+  (styles/styled-layout default-page))
 
 (defn table-page [event {:keys [total per_page page] :as params}]
   [:> mui/TablePagination {:rows-per-page-options   [10, 15, 100]

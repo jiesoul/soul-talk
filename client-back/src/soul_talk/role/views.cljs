@@ -130,8 +130,7 @@
             (menu-tree-items (assoc props :role @role :checked-ids (map :menu_id @role-menus) :menus (:children (utils/make-tree @menus))))]]]]))))
 
 (defn query-form [{:keys [classes]}]
-  (let [query-params (subscribe [:roles/query-params])
-        {:keys [name]} @query-params]
+  (let [query-params (subscribe [:roles/query-params])]
     (fn []
       [:> mui/Paper {:class-name (.-paper classes)}
        [:form {:name       "query-form"
@@ -140,7 +139,6 @@
         [:div
          [:> mui/TextField {:name      "name"
                             :label     "名称"
-                            :value    name
                             :size "small"
                             :on-change #(dispatch [:roles/set-query-params :name (-> % .-target .-value)])}]]
         [:div {:class-name (.-buttons classes)}
@@ -230,4 +228,4 @@
     ]])
 
 (defn home []
-  (styles/main query-page))
+  (styles/styled-layout query-page))

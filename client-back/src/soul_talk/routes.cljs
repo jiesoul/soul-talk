@@ -44,7 +44,7 @@
 ;; 首页
 (defroute "/" []
   (run-events-admin
-    [[:set-active-page :dash]]))
+    [[:set-active-page :login]]))
 
 ;; 后台管理
 (defroute "/dash" []
@@ -71,16 +71,18 @@
                      [:set-active-page :roles]]))
 
 (defroute "/users" []
-  (run-events-admin [[:set-breadcrumb ["用户"]]
-                     [:users/load-all]
+  (run-events-admin [[:set-breadcrumb ["用户管理" "用户列表"]]
+                     [:users/init]
                      [:set-active-page :users]]))
 
-(defroute "/users/password" []
+(defroute "/users/:id/password" [id]
   (run-events-admin [[:set-breadcrumb ["个人管理" "修改密码"]]
+                     [:users/load-user id]
                      [:set-active-page :users-password]]))
 
-(defroute "/users/profile" []
+(defroute "/users/:id/profile" [id]
   (run-events-admin [[:set-breadcrumb ["个人管理" "个人信息"]]
+                     [:users/load-user id]
                      [:set-active-page :users-profile]]))
 
 (defroute "/tags" []

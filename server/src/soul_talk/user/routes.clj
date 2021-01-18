@@ -50,7 +50,7 @@
         :return Result
         (handler/update-user! id user-profile))
 
-      (PATCH "/:id/password" []
+      (PATCH "/password" []
         :auth-login #{"admin"}
         :return Result
         :body [update-password handler/update-password]

@@ -26,15 +26,16 @@
         [users total] (user-db/load-users-page pagination params)
         pagination (p/create-total pagination total)]
     (utils/ok {:users users
+               :query-params params
                :pagination pagination})))
 
-(defn update-password! [id {:keys [oldPassword newPassword confirmPassword] :as params}]
+(defn update-password! [id {:keys [old-password new-password confirm-password] :as params}]
   (let [user (user-db/find-by-id (long id))]
-    (if (= newPassword confirmPassword)
-      (if-not (= oldPassword newPassword)
-        (if (hashers/check oldPassword (:password user))
+    (if (= new-password confirm-password)
+      (if-not (= old-password new-password)
+        (if (hashers/check old-password (:password user))
           (let [user (-> user
-                       (assoc :password (hashers/encrypt newPassword))
+                       (assoc :password (hashers/encrypt new-password))
                        (user-db/update-pass!))]
             (utils/ok "密码修改成功"))
           (utils/bad-request "旧密码错误"))
@@ -46,9 +47,9 @@
     (utils/ok {:user (assoc user :password nil)})
     (utils/bad-request "未找到用户")))
 
-(defn update-user! [id {:keys [username image] :as params}]
+(defn update-user! [id {:keys [name image] :as params}]
   (if-let [user (user-db/find-by-id id)]
-    (let [user-profile (user-db/save-user-profile! (assoc user :name username))]
+    (let [user-profile (user-db/save-user-profile! (assoc user :name name))]
       (utils/ok "保存成功"))
     (utils/bad-request "未找到用户信息")))
 

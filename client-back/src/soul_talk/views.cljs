@@ -52,13 +52,13 @@
 
 ;; user
 (defmethod pages :users [_ _]
-  (admin users/users-page))
+  (admin users/home))
 
 (defmethod pages :users-password [_ _]
-  (admin users/change-pass-page))
+  (admin users/change-pass))
 
 (defmethod pages :users-profile [_ _]
-  (admin users/user-profile-page))
+  (admin users/user-profile))
 
 ;; tag
 (defmethod pages :tags [_ _]
@@ -82,7 +82,7 @@
 
 
 ;; default
-(defmethod pages :default [_ _] (dash/home))
+(defmethod pages :default [_ _] (admin dash/home))
 
 ;; 根据配置加载不同页面
 (defn main-page []
@@ -90,11 +90,11 @@
                active-page (subscribe [:active-page])]
     (when @ready?
       (fn []
-        [:<>
-         [:> mui/CssBaseline]
-         [styles/theme-provider styles/custom-theme
+        [styles/theme-provider styles/custom-theme
+         [:<>
+          [:> mui/CssBaseline]
           [:div
-           [c/lading-backdrop]
-           [c/success-snackbars]
-           [c/error-snackbars]
+           (styles/with-custom-styled styles/backdrop-styles c/lading-backdrop)
+           (styles/with-custom-styled styles/success-snackbar-styles c/success-snackbars)
+           (styles/with-custom-styled styles/success-snackbar-styles c/error-snackbars)
            (pages @active-page)]]]))))
