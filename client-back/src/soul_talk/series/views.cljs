@@ -4,15 +4,15 @@
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [soul-talk.utils :as du]
             [soul-talk.common.styles :as styles]
-            ["@material-ui/core" :refer [Modal Form Input Row Col Button Table Divider]]
-            ["@material-ui/icons" :refer [SearchOutlined EditOutlined DeleteOutlined]]
-            ))
+            ["@material-ui/core" :as mui :refer [Paper Button Divider TextField TableContainer]]
+            ["@material-ui/icons" :refer [Search Edit Delete]]
+            ["@material-ui/data-grid" :refer [DataGrid]]))
 
 (def ^:dynamic *visible* (r/atom false))
 
 (defn edit-form []
   (let [user (subscribe [:user])
-        ori-series (subscribe [:series])
+        ori-series (subscribe [:series/series])
         update-series (-> @ori-series
                      (update :name #(or % ""))
                      (update :create_by #(or % (:id @user)))
@@ -20,7 +20,7 @@
         id (r/cursor update-series [:id])
         name (r/cursor update-series [:name])]
     (fn []
-      [:> Modal {:visible    @*visible*
+      [c/dialog {:visible    @*visible*
                  :title      "添加系列"
                  :okText     "保存"
                  :cancelText "退出"
@@ -30,97 +30,94 @@
                  :onOk       #(if @id
                                 (dispatch [:series/add @update-series])
                                 (dispatch [:series/update @update-series]))}
-       [:> Form {:name "add_tag_form"}
-        [:> Form.Item {:title "name"
+       [:form {:name "add_tag_form"}
+        [:> TextField {:title "name"
                        :label "name"
                        :required true
                        :rules [{:require true :message "please enter name"}]
                        :on-change #(let [value (-> % .-target .-value)]
-                                     (reset! name value))}
-         [:> Input]]]])))
+                                     (reset! name value))}]]])))
 
-(defn query-form []
-  (let [pagination (subscribe [:pagination])
-        params (r/atom nil)
-        name   (r/cursor params [:name])]
-    (fn []
+(defn query-form [{:keys [classes]}]
+  (let [params (r/atom {})
+        name (r/cursor params [:name])]
+    [:> Paper {:class-name (.-paper classes)}
+     [:form {:title     ""
+             :class-name (.-root classes)}
       [:div
-       [edit-form]
-       [:> Form {:title     ""
-                 :className "advanced-search-form"}
-        [:> Row {:gutter 24}
-         [:> Col {:span 8}
-          [:> Form.Item {:name  "name"
-                         :label "name"}
-           [:> Input {:placeholder "name"
-                      :on-blur     #(reset! name (-> % .-target .-value))}]]]]
-        [:> Row
-         [:> Col {:span 24 :style {:text-align "right"}}
-          [:div
-           [:> Button {:type     "primary"
-                       :htmlType "submit"
-                       :size "middle"
-                       :icon (r/as-element [:> SearchOutlined])
-                       :on-click #(dispatch [:series/load-all (merge @params @pagination)])}
-            "查询"]
-           [:> Button {:type     "dashed"
-                       :size "middle"
-                       :style {:margin "0 8px"}
-                       :on-click #(reset! *visible* true)}
-            "新增"]]]]]])))
+       [:> TextField {:label       "名称"
+                      :placeholder "name"
+                      :on-blur     #(reset! name (-> % .-target .-value))}]]
+      [:div {:class-name (.-buttons classes)}
+       [:div
+        [:> Button {:variant  "outlined"
+                    :color    "primary"
+                    :size     "small"
+                    :on-click #(dispatch [:series/load-page @params])}
+         "查询"]
+        [:> Button {:variant  "outlined"
+                    :size     "small"
+                    :style    {:margin "0 8px"}
+                    :on-click #(dispatch [:series/set-add-dialog true])}
+         "新增"]]]]]))
 
-(def list-columns
-  [{:title "名称" :dataIndex "name", :key "name", :align "center"}
-   {:title "简介" :dataIndex "description" :key "description" :align "center"}
-   {:title  "创建时间" :dataIndex "create_at" :key "create_at" :align "center"
-    :render (fn [_ article]
-              (let [article (js->clj article :keywordize-keys true)]
-                (du/to-date-time (:create_at article))))}
-   {:title  "更新时间" :dataIndex "update_at" :key "update_at" :align "center"
-    :render (fn [_ article]
-              (let [article (js->clj article :keywordize-keys true)]
-                (du/to-date-time (:update_at article))))}
-   {:title  "操作" :dataIndex "actions" :key "actions" :align "center"
-    :render (fn [_ article]
-              (r/as-element
-                (let [{:keys [id]} (js->clj article :keywordize-keys true)]
-                  [:div
-                   [:> Button {:type "primary"
-                               :icon (r/as-element [:> EditOutlined])
-                               :size "small"
-                               :alt "修改"
-                               :on-click (fn []
-                                           (do
-                                             (dispatch [:series/load id])
-                                             (set! *visible* true)))}]
-                   [:> Divider {:type "vertical"}]
-                   [:> Button {:type     "danger"
-                               :icon     (r/as-element [:> DeleteOutlined])
-                               :size     "small"
-                               :alt "删除"
-                               :on-click (fn []
-                                           (r/as-element
-                                             (c/dialog
-                                               "删除"
-                                               (str "你确认要删除吗？")
-                                               #(dispatch [:series/delete id])
-                                               #(js/console.log "cancel"))))}]])))}])
-
-(defn list-table []
-  (let [series-list (subscribe [:series-list])]
-    (fn []
-      [:div.search-result-list
-       [:> Table {:dataSource (clj->js @series-list)
-                  :columns    (clj->js list-columns)
-                  :row-key    "id"
-                  :bordered   true}]])))
+(defn list-table [{:keys [classes]}]
+  (let [series-list (subscribe [:series/list])
+        query-params (subscribe [:series/query-params])
+        pagination (subscribe [:series/pagination])]
+    [:> mui/TableContainer {:class-name (.-paper classes)
+                            :component  mui/Paper}
+     [:> mui/Table {:sticky-header true
+                    :aria-label    "list-table"
+                    :size          "small"
+                    :class-name (.-table classes)}
+      [:> mui/TableHead {:class-name (.-head classes)}
+       [:> mui/TableRow {:class-name (.-head classes)}
+        [:> mui/TableCell {:align "center"} "序号"]
+        [:> mui/TableCell {:align "center"} "名称"]
+        [:> mui/TableCell {:align "center"} "简介"]
+        [:> mui/TableCell {:align "center"} "创建时间"]
+        [:> mui/TableCell {:align "center"} "更新时间"]
+        [:> mui/TableCell {:align "center"} "操作"]]]]
+     [:> mui/TableBody {:class-name (.-body classes)}
+      (doall
+        (for [{:keys [id name description create_at update_at] :as series} @series-list]
+          ^{:key series}
+          [:> mui/TableRow
+           [:> mui/TableCell {:align "center"} 1]
+           [:> mui/TableCell {:align "center"} name]
+           [:> mui/TableCell {:align "center"} description]
+           [:> mui/TableCell {:align "center"} (du/to-date-time create_at)]
+           [:> mui/TableCell {:align "center"} (du/to-date-time update_at)]
+           [:> mui/TableCell {:align "center"}
+            [:div
+             [:> mui/IconButton {:type     "primary"
+                                 :size     "small"
+                                 :alt      "修改"
+                                 :on-click (fn []
+                                             (do
+                                               (dispatch [:series/load id])
+                                               (set! *visible* true)))}
+              [:> Edit]]
+             [:> mui/Divider {:type "vertical"}]
+             [:> mui/IconButton {:type     "danger"
+                                 :size     "small"
+                                 :alt      "删除"
+                                 :on-click (fn []
+                                             (r/as-element
+                                               (c/dialog
+                                                 "删除"
+                                                 (str "你确认要删除吗？")
+                                                 #(dispatch [:series/delete id])
+                                                 #(js/console.log "cancel"))))}
+              [:> Delete]]]]]))]]))
 
 (defn query-page
   [props]
   [c/layout props
    [:div
-    [query-form]
-    [list-table]]])
+    (styles/styled-form query-form)
+    (styles/styled-table list-table)]])
 
 (defn home []
   (styles/styled-layout query-page))

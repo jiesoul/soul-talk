@@ -19,7 +19,6 @@
             [soul-talk.series.views :as series]
             ["@material-ui/core" :as mui]
             ["@material-ui/core/styles" :refer [ThemeProvider]]
-            ["@chakra-ui/react" :refer [ChakraProvider]]
             [soul-talk.utils :as utils]))
 
 ;;多重方法  响应对应的页面

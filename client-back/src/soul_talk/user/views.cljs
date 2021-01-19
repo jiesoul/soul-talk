@@ -286,8 +286,7 @@
           [:> mui/TableCell {:align "center"} "Email"]
           [:> mui/TableCell {:align "center"} "名称"]
           [:> mui/TableCell {:align "center"} "备注"]
-          [:> mui/TableCell {:align "center"} "操作"]
-          ]]
+          [:> mui/TableCell {:align "center"} "操作"]]]
         [:> mui/TableBody {:class-name (.-body classes)}
          (doall
            (for [{:keys [id email name note] :as user} @users]

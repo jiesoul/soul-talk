@@ -29,7 +29,6 @@
                          :size "small"
                          :full-width true
                          :required true
-                         :rules     [{:required true}]
                          :on-change #(let [value (-> % .-target .-value)]
                                        (dispatch [:menus/set-attr :id value]))}]
       [:> mui/TextField {:name      "name"
@@ -128,8 +127,7 @@
    [:> mui/DialogContentText "你确定要删除吗？"]])
 
 (defn query-form [{:keys [classes]}]
-  (let [query-params (subscribe [:menus/query-params])
-        {:keys [id name pid]} @query-params]
+  (let [query-params (subscribe [:menus/query-params])]
     (fn []
       [:> mui/Paper {:class-name (.-paper classes)}
        [:form {:name       "query-form"
@@ -138,17 +136,14 @@
         [:div
          [:> mui/TextField {:name      "id"
                             :label     "id"
-                            :value id
                             :size "small"
                             :on-change #(dispatch [:menus/set-query-params :id (-> % .-target .-value)])}]
          [:> mui/TextField {:name      "name"
                             :label     "name"
-                            :value name
                             :size "small"
                             :on-change #(dispatch [:menus/set-query-params :name (-> % .-target .-value)])}]
          [:> mui/TextField {:name      "pid"
                             :label     "父id"
-                            :value pid
                             :size "small"
                             :on-change #(dispatch [:menus/set-query-params :pid (-> % .-target .-value)])}]]
         [:div {:class-name (.-buttons classes)}

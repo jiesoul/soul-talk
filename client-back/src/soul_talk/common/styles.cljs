@@ -4,15 +4,12 @@
             ["@material-ui/core/styles" :as mui-styles :refer [createMuiTheme withStyles makeStyles]]
             ["@material-ui/core/colors" :as mui-colors]
             ["@material-ui/icons" :as mui-icons]
-            ["@chakra-ui/react" :refer [extendTheme]]
             [goog.object :as gobj]
             [reagent.core :as r]))
 
 (def colors {:brand {:900 "#1a365d"
                      :800 "#153e75"
                      :700 "#2a69ac"}})
-
-(def theme (extendTheme colors))
 
 (def ^:private theme-provider* (r/adapt-react-class mui-styles/MuiThemeProvider))
 
@@ -111,12 +108,17 @@
 
 (defn- table-styles [^js/Mui.Theme theme]
   #js {:paper #js {:padding (.spacing theme 0.5)
-                   :margin-top "5px"}
+                   :marginTop "5px"
+                   :height "auto"
+                   :minHeight "300px"
+                   :width "100%"}
        :table #js {:minWidth "100%"}
        :head  #js {:backgroundColor (-> theme .-palette .-common .-blue)
                    :color           (-> theme .-palette .-common .-black)}
        :body  #js {:fontSize 10}
-       :row   #js {"&:nth-of-type(odd)" #js {:backgroundColor (-> theme .-palette .-action .-hover)}}})
+       :row   #js {"&:nth-of-type(odd)" #js {:backgroundColor (-> theme .-palette .-action .-hover)}}
+       :dataGrid #js {:textAlign "center"
+                      :minHeight "300"} })
 
 (defn styled-layout [layout]
   (with-custom-styled layout-styles layout))

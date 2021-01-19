@@ -6,7 +6,6 @@
             [goog.object :as gobj]
             ["@material-ui/core" :as mui]
             ["@material-ui/icons" :as mui-icons]
-            ["@chakra-ui/react" :refer [Grid GridItem]]
             [soul-talk.common.views :as c])
   (:import goog.History))
 

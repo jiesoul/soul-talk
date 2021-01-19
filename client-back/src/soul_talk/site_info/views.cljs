@@ -20,7 +20,7 @@
                          :label      "网站名称"
                          :name       "name"
                          :id         "name"
-                         :value      name
+                         :default-value      name
                          :on-change  #(rf/dispatch [:site-info/set-attr :name (-> % .-target .-value)])}]
       [:> mui/TextField {:name       "logo"
                          :id         "logo"
@@ -29,7 +29,7 @@
                          :margin     "normal"
                          :variant    "outlined"
                          :full-width true
-                         :value      logo
+                         :default-value      logo
                          :on-change  #(rf/dispatch [:site-info/set-attr :logo (-> % .-target .-value)])}]
       [:> mui/TextField {:name       "description"
                          :id         "description"
@@ -38,7 +38,7 @@
                          :margin     "normal"
                          :variant    "outlined"
                          :full-width true
-                         :value      description
+                         :default-value      description
                          :on-change  #(rf/dispatch [:site-info/set-attr :description (-> % .-target .-value)])}]
       [:> mui/TextField {:name       "author"
                          :id         "author"
@@ -47,7 +47,7 @@
                          :size       "small"
                          :margin     "normal"
                          :full-width true
-                         :value      author
+                         :default-value      author
                          :rules      [{:required true}]
                          :on-change  #(rf/dispatch [:site-info/set-attr :author (-> % .-target .-value)])}]
       [:div {:style      {:margin "normal"}

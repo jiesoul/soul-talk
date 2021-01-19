@@ -5,24 +5,62 @@
             [clojure.string :as str]))
 
 (reg-event-db
+  :series/init
+  (fn [db _]
+    (-> db
+      (assoc :series/add-dialog false :series/update-dialog false :series/delete-dialog false)
+      (dissoc :series/list :series/pagination :series/query-params))))
+
+(reg-event-db
+  :series/set-add-dialog
+  (fn [db [_ value]]
+    (assoc-in db :series/add-dialog value)))
+
+(reg-event-db
+  :series/set-update-dialog
+  (fn [db [_ value]]
+    (assoc-in db :series/update-dialog value)))
+
+(reg-event-db
+  :series/set-delete-dialog
+  (fn [db [_ value]]
+    (assoc-in db :series/delete-dialog value)))
+
+(reg-event-db
   :series/load-all-ok
   (fn [db [_ {:keys [series pagination]}]]
-    (assoc db :series-list series :pagination pagination)))
+    (assoc db :series/list series :series/pagination pagination)))
 
 (reg-event-fx
   :series/load-all
   (fn [_ params]
-    (js/console.log "===== query params: " params)
     {:http {:method        GET
             :url           (str site-uri "/series")
             :ajax-map      {:params params}
             :success-event [:series/load-all-ok]}}))
 
 (reg-event-db
+  :series/load-page-ok
+  (fn [db [_ {:keys [series query-params pagination]}]]
+    (assoc db :series/list series
+              :series/query-params query-params
+              :series/pagination pagination)))
+
+(reg-event-fx
+  :series/load-page
+  (fn [_ params]
+    (println "params: " params)
+    {:http {:method GET
+            :url (str site-uri "/series")
+            :ajax-map {:params params}
+            :success-event [:series/load-page-ok]}}))
+
+(reg-event-db
   :series/add-ok
-  (fn [{:keys [series-list] :as db} [_ {:keys [series]}]]
-    (assoc db :success "add a series ok"
-              :series-list (conj series-list series))))
+  (fn [db [_ {:keys [series]}]]
+    (let [series-list (:series/list db)]
+      (assoc db :success "保存成功"
+                :series/list (conj series-list series)))))
 
 (reg-event-fx
   :series/add
@@ -46,13 +84,6 @@
             :url (str site-uri "/series/" id)
             :success-event [:series/load-ok]}}))
 
-
-(reg-event-db
-  :series/add-ok
-  (fn [db [_ {:keys [series]}]]
-    (js/console.log "body: " series)
-    (assoc db :success "add a series ok")))
-
 (reg-event-fx
   :series/update
   (fn [_ [_ {:keys [name] :as series}]]
@@ -61,14 +92,14 @@
       {:http {:method        PATCH
               :url           (str site-uri "/series")
               :ajax-map      {:params series}
-              :success-event [:series/update-ok]}})))
+              :success-event [:set-success "保存成功"]}})))
 
 (reg-event-db
   :series/delete-ok
   (fn [db [_ id]]
-    (let [series-list (:series-list db)
+    (let [series-list (:series/list db)
           series-list(remove #(= id (:id %)) series-list)]
-      (assoc db :success "删除成功" :series-list series-list))))
+      (assoc db :success "删除成功" :series/list series-list))))
 
 
 (reg-event-fx
