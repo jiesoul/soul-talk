@@ -16,7 +16,7 @@
 (defn update-menu! [menu]
   (sql/update! *db*
     :menu
-    menu
+    (select-keys menu [:id :pid :name :url :update_at :update_by :note])
     [" id = ? " (:id menu)]))
 
 (defn delete-menu! [id]

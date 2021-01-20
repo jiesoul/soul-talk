@@ -7,7 +7,7 @@
 (rf/reg-event-fx
   :menus/load-menus-ok
   (fn [{:keys [db]} [_ {:keys [menus]}]]
-    {:db (assoc db :menus menus)}))
+    {:db (assoc db :menus  menus)}))
 
 (rf/reg-event-fx
   :menus/load-menus
@@ -15,6 +15,21 @@
     {:http {:method GET
             :url (str site-uri "/menus?ids=" ids)
             :success-event [:menus/load-menus-ok]}}))
+
+(reg-event-db
+  :menus/set-add-status 
+  (fn [db [_ value]]
+    (assoc db :menus/add-status value)))
+
+(reg-event-db
+  :menus/set-edit-status
+  (fn [db [_ value]]
+    (assoc db :menus/edit-status value)))
+
+(reg-event-db
+  :menus/set-delete-status
+  (fn [db [_ value]]
+    (assoc db :menus/delete-status value)))
 
 (reg-event-db
   :menus/set-query-params
@@ -30,7 +45,7 @@
 (reg-event-db
   :menus/load-page-ok
   (fn [db [_ {:keys [menus pagination query-params]}]]
-    (assoc db :menus menus :pagination pagination :menus/query-params query-params)))
+    (assoc db :menus menus :menus/pagination pagination :menus/query-params query-params)))
 
 (reg-event-fx
   :menus/load-page
@@ -43,7 +58,7 @@
 (reg-event-db
   :menus/load-menu-ok
   (fn [db [_ {:keys [menu]}]]
-    (assoc db :menu menu)))
+    (assoc db :menus/edit menu)))
 
 (reg-event-fx
   :menus/load-menu
@@ -53,14 +68,14 @@
             :success-event [:menus/load-menu-ok]}}))
 
 (reg-event-db
-  :menus/clean-menu
+  :menus/clean-edit
   (fn [db _]
-    (dissoc db :menu)))
+    (dissoc db :menus/edit)))
 
 (reg-event-db
   :menus/set-attr
   (fn [db [_ key value]]
-    (assoc-in db [:menu key] value)))
+    (assoc-in db [:menus/edit key] value)))
 
 (reg-event-db
   :menus/add-ok
@@ -71,6 +86,7 @@
 (reg-event-fx
   :menus/add
   (fn [_ [_ menu]]
+    (println "menu: " menu)
     {:http {:method        POST
             :url           (str site-uri "/menus")
             :ajax-map      {:params menu}
@@ -104,9 +120,13 @@
             :success-event [:menus/delete-ok id]}}))
 
 (reg-event-db
-  :menus/clean
+  :menus/init
   (fn [db _]
-    (dissoc db :menus :menus/query-params :menu)))
+    (-> db
+      (dissoc :menus :menus/query-params :menus/edit)
+      (assoc :menus/add-status false
+             :menus/edit-status false
+             :menus/delete-status false))))
 
 (reg-event-db
   :menus/select

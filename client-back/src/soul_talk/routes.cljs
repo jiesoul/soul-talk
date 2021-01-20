@@ -63,7 +63,7 @@
 
 (defroute "/menus" []
   (run-events-admin [[:set-breadcrumb ["菜单管理"]]
-                     [:menus/clean]
+                     [:menus/init]
                      [:set-active-page :menus]]))
 
 (defroute "/roles" []

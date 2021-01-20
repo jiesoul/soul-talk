@@ -10,7 +10,8 @@
 
 (defn save-menu! [menu]
   (let [now (l/local-date-time)
-        menu (menu-db/save-menu! (assoc menu :create_at now :update_at now))]
+        create-by (:create_by menu)
+        menu (menu-db/save-menu! (assoc menu :create_at now :update_at now :update_by create-by))]
     (utils/ok {:menu menu})))
 
 (defn update-menu! [menu]

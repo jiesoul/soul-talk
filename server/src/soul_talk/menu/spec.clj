@@ -4,17 +4,16 @@
 
 (def create-menu
   (ds/spec {:name :menu/create
-            :spec {:id spec/id
+            :spec {
                    :name spec/non-empty-string?
                    (ds/opt :url) (ds/maybe string?)
                    :pid spec/id
                    (ds/opt :note) (ds/maybe string?)
-                   :create_by spec/id
-                   :update_by spec/id}}))
+                   :create_by spec/id}}))
 
 (def update-menu
   (ds/spec {:name :menu/update
-            :spec {:id spec/id
+            :spec {
                    :name spec/non-empty-string?
                    (ds/opt :url) (ds/maybe string?)
                    :pid spec/id

@@ -25,8 +25,7 @@
 (s/def ::Pagination (s/keys :opt-un [::page ::pre-page]))
 
 (def id
-  (st/spec {:spec        pos-int?
-            :type        :long
+  (st/spec {:spec        int?
             :description "id"
             :reason "id 必须为非负整数！"}))
 
