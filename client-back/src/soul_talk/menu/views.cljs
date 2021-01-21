@@ -3,23 +3,20 @@
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [soul-talk.common.styles :as styles]
+            [soul-talk.routes :refer [navigate!]]
             ["@material-ui/core" :as mui]
             ["@material-ui/icons" :as mui-icons]))
 
-(defn add-form [{:keys [classes]}]
-  (let [menu    (subscribe [:menus/edit])
-        user    (subscribe [:user])
-        user-id (:id @user)
-        add-status (subscribe [:menus/add-status])]
-    [c/dialog {:open     @add-status
-               :title    "添加菜单"
-               :on-close (fn [e props]
-                           (do
-                             (dispatch [:menus/clean-edit])
-                             (dispatch [:menus/set-add-status false])))
-               :on-ok    #(let [menu @menu]
-                            (assoc menu :update_by user-id)
-                            (dispatch [:menus/add (assoc menu :create_by user-id)]))}
+(defn- add-form [{:keys [classes]}]
+  (let [user    (subscribe [:user])
+        menu (r/atom {:create_by (:id @user)
+                      :update_by (:id @user)})
+        id (r/cursor menu [:id])
+        name (r/cursor menu [:name])
+        url (r/cursor menu [:url])
+        pid (r/cursor menu [:pid])
+        note (r/cursor menu [:note])]
+    [:> mui/Paper {:class-name (.-paper classes)}
      [:form {:name "add-menu-form"
              :class-name (.-root classes)}
       [:> mui/TextField {:name       "id"
@@ -28,21 +25,21 @@
                          :full-width true
                          :required   true
                          :on-change  #(let [value (-> % .-target .-value)]
-                                        (dispatch [:menus/set-attr :id (js/parseInt value)]))}]
-      [:> mui/TextField {:name      "name"
-                         :label     "名称"
-                         :size "small"
-                         :required true
+                                        (reset! id (js/parseInt value)))}]
+      [:> mui/TextField {:name       "name"
+                         :label      "名称"
+                         :size       "small"
+                         :required   true
                          :full-width true
-                         :rules     [{:required true}]
-                         :on-change #(let [value (-> % .-target .-value)]
-                                       (dispatch [:menus/set-attr :name value]))}]
-      [:> mui/TextField {:name      "url"
-                         :label     "地址"
-                         :size "small"
+                         :rules      [{:required true}]
+                         :on-change  #(let [value (-> % .-target .-value)]
+                                        (reset! name value))}]
+      [:> mui/TextField {:name       "url"
+                         :label      "地址"
+                         :size       "small"
                          :full-width true
-                         :on-change #(let [value (-> % .-target .-value)]
-                                       (dispatch [:menus/set-attr :name value]))}]
+                         :on-change  #(let [value (-> % .-target .-value)]
+                                        (reset! url value))}]
       [:> mui/TextField {:name       "pid"
                          :label      "父id"
                          :size       "small"
@@ -50,83 +47,123 @@
                          :full-width true
                          :rules      [{:required true}]
                          :on-change  #(let [value (-> % .-target .-value)]
-                                        (dispatch [:menus/set-attr :pid (js/parseInt value)]))}]
-      [:> mui/TextField {:name      "note"
-                         :label     "备注"
-                         :size "small"
+                                        (reset! pid (js/parseInt value)))}]
+      [:> mui/TextField {:name       "note"
+                         :label      "备注"
+                         :size       "small"
                          :full-width true
-                         :on-change #(let [value (-> % .-target .-value)]
-                                       (dispatch [:menus/set-attr :note value]))}]]]))
+                         :on-change  #(let [value (-> % .-target .-value)]
+                                        (reset! note value))}]
+      [:div {:style      {:margin "normal"}
+             :class-name (.-buttons classes)}
+       [:> mui/Button {:type     "button"
+                       :variant  "outlined"
+                       :size     "small"
+                       :color    "primary"
+                       :on-click #(let [user-id (:id @user)]
+                                    (dispatch [:menus/set-attr :update_by user-id :create_by user-id])
+                                    (dispatch [:menus/add @menu]))}
+        "保存"]
+       [:> mui/Button {:type     "button"
+                       :variant  "outlined"
+                       :size     "small"
+                       :color    "secondary"
+                       :on-click #(navigate! (str "/menus"))}
+        "返回"]]]]))
 
-(defn edit-form [{:keys [classes]}]
+(defn- add-page [props]
+  [c/layout props
+   (styles/styled-edit-form add-form)])
+
+(defn add []
+  (styles/styled-layout add-page))
+
+
+(defn- edit-form [{:keys [classes]}]
   (let [menu (subscribe [:menus/edit])
-        user (subscribe [:user])
-        user-id  (:id @user)
-        edit-status (subscribe [:menus/edit-status])]
-    (fn []
-      [c/dialog {:open     @edit-status
-                 :title    "编辑数据字典"
-                 :on-close #(do
-                              (dispatch [:menus/clean-edit])
-                              (dispatch [:menus/set-edit-status false]))
-                 :on-ok    #(let [menu @menu]
-                              (assoc menu :update_by user-id)
-                              (dispatch [:menus/update menu]))}
-       [:form {:name       "add-menu-form"
-               :class-name (.-root classes)}
-        [:> mui/TextField {:name          "id"
-                           :label         "id"
-                           :size          "small"
-                           :full-width    true
-                           :required      true
-                           :default-value (:id @menu)
-                           :on-change     #(dispatch [:menus/set-attr :id (-> % .-target .-value js/parseInt)])
-                           }]
-        [:> mui/TextField {:name          "name"
-                           :label         "名称"
-                           :size          "small"
-                           :required      true
-                           :full-width    true
-                           :default-value (:name @menu)
-                           :on-change     #(let [value (-> % .-target .-value)]
-                                             (dispatch [:menus/set-attr :name value]))}]
-        [:> mui/TextField {:name          "url"
-                           :label         "地址"
-                           :size          "small"
-                           :full-width    true
-                           :default-value (:url @menu)
-                           :on-change     #(let [value (-> % .-target .-value)]
-                                             (dispatch [:menus/set-attr :url value]))}]
-        [:> mui/TextField {:name          "pid"
-                           :label         "父id"
-                           :size          "small"
-                           :required      true
-                           :full-width    true
-                           :default-value (:pid @menu)
-                           :on-change     #(let [value (-> % .-target .-value)]
-                                             (dispatch [:menus/set-attr :pid (js/parseInt value)]))}]
-        [:> mui/TextField {:name          "note"
-                           :label         "备注"
-                           :size          "small"
-                           :default-value (:note @menu)
-                           :full-width    true
-                           :on-change     #(let [value (-> % .-target .-value)]
-                                             (dispatch [:menus/set-attr :note value]))}]]])))
-(defn delete-form []
+        user (subscribe [:user])]
+      (if @menu
+        (let [{:keys [id name url pid note]} @menu]
+          [:> mui/Paper {:class-name (.-paper classes)}
+           [:form {:name       "add-menu-form"
+                   :class-name (.-root classes)}
+            [:> mui/TextField {:name          "id"
+                               :label         "id"
+                               :size          "small"
+                               :full-width    true
+                               :required      true
+                               :default-value id
+                               :on-change     #(dispatch [:menus/set-attr :id (-> % .-target .-value js/parseInt)])}]
+            [:> mui/TextField {:name          "name"
+                               :label         "名称"
+                               :size          "small"
+                               :required      true
+                               :full-width    true
+                               :default-value name
+                               :on-change     #(let [value (-> % .-target .-value)]
+                                                 (dispatch [:menus/set-attr :name value]))}]
+            [:> mui/TextField {:name          "url"
+                               :label         "地址"
+                               :size          "small"
+                               :full-width    true
+                               :default-value url
+                               :on-change     #(let [value (-> % .-target .-value)]
+                                                 (dispatch [:menus/set-attr :url value]))}]
+            [:> mui/TextField {:name          "pid"
+                               :label         "父id"
+                               :size          "small"
+                               :required      true
+                               :full-width    true
+                               :default-value pid
+                               :on-change     #(let [value (-> % .-target .-value)]
+                                                 (dispatch [:menus/set-attr :pid (js/parseInt value)]))}]
+            [:> mui/TextField {:name          "note"
+                               :label         "备注"
+                               :size          "small"
+                               :default-value note
+                               :full-width    true
+                               :on-change     #(let [value (-> % .-target .-value)]
+                                                 (dispatch [:menus/set-attr :note value]))}]
+            [:div {:style      {:margin "normal"}
+                   :class-name (.-buttons classes)}
+             [:> mui/Button {:type     "button"
+                             :variant  "outlined"
+                             :size     "small"
+                             :color    "primary"
+                             :on-click #(do
+                                          (dispatch [:menus/set-attr :update_by (:id @user)])
+                                          (dispatch [:menus/update @menu]))}
+              "保存"]
+             [:> mui/Button {:type     "button"
+                             :variant  "outlined"
+                             :size     "small"
+                             :color    "secondary"
+                             :on-click #(navigate! (str "/menus"))}
+              "返回"]]
+            ]]))))
+
+(defn- edit-page [props]
+  [c/layout props
+   (styles/styled-form edit-form)])
+
+(defn edit []
+  (styles/styled-layout edit-page))
+
+(defn- delete-form []
   (let [menu (subscribe [:menus/edit])
         delete-status (subscribe [:menus/delete-status])]
+    (println "...menu: " @menu)
     (if @menu
-      [c/dialog {:open     @delete-status
-                 :title    "删除数据字典"
-                 :ok-text  "确认"
-                 :on-close #(do
-                              (dispatch [:menus/clean-edit])
-                              (dispatch [:menus/set-delete-status false]))
-                 :on-ok    #(do (dispatch [:menus/set-delete-status false])
-                                (dispatch [:data-dices/delete (:id @menu)]))}
-       [:> mui/DialogContentText (str "你确定要删除" (:name @menu) "吗？")]])))
+      (let [{:keys [id name]} @menu]
+        ^{:key "delete-menu-dialog"}
+        [c/dialog {:open     @delete-status
+                   :title    "删除菜单"
+                   :ok-text  "确认"
+                   :on-close #(dispatch [:menus/set-delete-status false])
+                   :on-ok    #(dispatch [:menus/delete id])}
+         [:> mui/DialogContentText (str "你确定要删除" name "吗？")]]))))
 
-(defn query-form [{:keys [classes]}]
+(defn- query-form [{:keys [classes]}]
   (let [query-params (subscribe [:menus/query-params])]
     (fn []
       [:> mui/Paper {:class-name (.-paper classes)}
@@ -162,8 +199,7 @@
                          :size     "small"
                          :variant  "outlined"
                          :on-click (fn []
-                                     (dispatch [:menus/clean-edit])
-                                     (dispatch [:menus/set-add-status true]))}
+                                     (navigate! (str "/menus/add")))}
           "新增"]]]])))
 
 (defn list-table [{:keys [classes]}]
@@ -204,9 +240,7 @@
                  [:div
                   [:> mui/IconButton {:color    "primary"
                                       :size     "small"
-                                      :on-click (fn []
-                                                  (dispatch [:menus/load-menu id])
-                                                  (dispatch [:menus/set-edit-status true]))}
+                                      :on-click #(navigate! (str "/menus/" id "/edit"))}
                    [:> mui-icons/Edit]]
 
                   [:> mui/IconButton {:color    "secondary"
@@ -224,8 +258,6 @@
   [props]
   [c/layout props
    [:<>
-    (styles/styled-edit-form add-form)
-    (styles/styled-edit-form edit-form)
     (styles/styled-edit-form delete-form)
     (styles/styled-form query-form)
     (styles/styled-table list-table)

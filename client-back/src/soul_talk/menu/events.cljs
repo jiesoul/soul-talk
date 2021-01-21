@@ -110,7 +110,7 @@
   (fn [db [_ id]]
     (let [menus (:menus db)
           menus (remove #(= id (:id %)) menus)]
-      (assoc db :success "删除成功" :menus menus))))
+      (assoc db :success "删除成功" :menus menus :menus/delete-status false))))
 
 (reg-event-fx
   :menus/delete

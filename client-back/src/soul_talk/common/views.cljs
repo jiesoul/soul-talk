@@ -249,7 +249,7 @@
    [:> mui/DialogContent {:dividers true}
     children]
    [:> mui/DialogActions
-    [:> mui/Button {:on-click on-close :color "default"} (if cancel-text cancel-text "取消")]
+    [:> mui/Button {:on-click on-close :color "secondary"} (if cancel-text cancel-text "取消")]
     [:> mui/Button {:on-click on-ok :color "primary"} (if ok-text ok-text "保存")]]])
 
 (defn default-page [props]

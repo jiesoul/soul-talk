@@ -46,7 +46,7 @@
 
 (defn load-menus-page [{:keys [offset per_page]} params]
   (let [[where coll] (gen-where params)
-        query-sql (str "select * from menu " where " offset ? limit ?")
+        query-sql (str "select * from menu " where " order by id offset ? limit ?")
         menus (sql/query *db*
                 (into [query-sql] (conj coll offset per_page)))
         count-sql (str "select count(1) as c from menu " where)

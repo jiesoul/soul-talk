@@ -66,6 +66,15 @@
                      [:menus/init]
                      [:set-active-page :menus]]))
 
+(defroute "/menus/add" []
+  (run-events-admin [[:set-breadcrumb ["菜单管理" "添加菜单"]]
+                     [:set-active-page :menus/add]]))
+
+(defroute "/menus/:id/edit" [id]
+  (run-events-admin [[:set-breadcrumb ["菜单管理" "修改菜单"]]
+                     [:menus/load-menu id]
+                     [:set-active-page :menus/edit]]))
+
 (defroute "/roles" []
   (run-events-admin [[:roles/init]
                      [:set-active-page :roles]]))

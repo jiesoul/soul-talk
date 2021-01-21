@@ -46,6 +46,12 @@
 (defmethod pages :menus [_ _]
   (admin menu/home))
 
+(defmethod pages :menus/add [_ _]
+  (admin menu/add))
+
+(defmethod pages :menus/edit [_ _]
+  (admin menu/edit))
+
 (defmethod pages :roles [_ _]
   (admin role/home))
 
@@ -86,7 +92,7 @@
 ;; 根据配置加载不同页面
 (defn main-page []
   (let [ready? (subscribe [:initialised?])
-               active-page (subscribe [:active-page])]
+        active-page (subscribe [:active-page])]
     (when @ready?
       (fn []
         [styles/theme-provider styles/custom-theme
