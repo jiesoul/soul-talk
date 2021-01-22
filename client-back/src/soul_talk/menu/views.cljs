@@ -5,7 +5,8 @@
             [soul-talk.common.styles :as styles]
             [soul-talk.routes :refer [navigate!]]
             ["@material-ui/core" :as mui]
-            ["@material-ui/icons" :as mui-icons]))
+            ["@material-ui/icons" :as mui-icons]
+            [soul-talk.utils :as du]))
 
 (defn- add-form [{:keys [classes]}]
   (let [user    (subscribe [:user])
@@ -221,12 +222,14 @@
             [:> mui/TableCell {:align "center"} "名称"]
             [:> mui/TableCell {:align "center"} "地址"]
             [:> mui/TableCell {:align "center"} "PID"]
+            [:> mui/TableCell {:align "center"} "创建时间"]
+            [:> mui/TableCell {:align "center"} "更新时间"]
             [:> mui/TableCell {:align "center"} "备注"]
             [:> mui/TableCell {:align "center"} "操作"]
             ]]
           [:> mui/TableBody {:class-name (.-body classes)}
            (doall
-             (for [{:keys [index id name pid url note] :as menu} (map #(assoc %1 :index %2) @menus (range offset (+ offset per_page)))]
+             (for [{:keys [index id name pid url note create_at update_at] :as menu} (map #(assoc %1 :index %2) @menus (range offset (+ offset per_page)))]
                ^{:key menu}
                [:> mui/TableRow {:class-name (.-row classes)
                                  :tab-index index}
@@ -235,6 +238,8 @@
                 [:> mui/TableCell {:align "center"} name]
                 [:> mui/TableCell {:align "center"} url]
                 [:> mui/TableCell {:align "center"} pid]
+                [:> mui/TableCell {:align "center"} (du/to-date-time create_at)]
+                [:> mui/TableCell {:align "center"} (du/to-date-time update_at)]
                 [:> mui/TableCell {:align "center"} note]
                 [:> mui/TableCell {:align "center"}
                  [:div

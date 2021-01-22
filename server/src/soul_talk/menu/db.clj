@@ -56,5 +56,5 @@
 
 (defn get-all []
   (sql/query *db*
-    ["select * from menus"]))
+    ["select * from menu"]))
 

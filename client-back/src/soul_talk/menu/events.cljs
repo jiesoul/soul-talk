@@ -4,10 +4,22 @@
             [clojure.string :as str]
             [soul-talk.db :refer [site-uri]]))
 
+(rf/reg-event-db
+  :menus/load-all-ok
+  (fn [db [_ {:keys [menus]}]]
+    (assoc db :menus menus)))
+
 (rf/reg-event-fx
+  :menus/load-all
+  (fn []
+    {:http {:method GET
+            :url (str site-uri "/menus/all")
+            :success-event [:menus/load-all-ok]}}))
+
+(rf/reg-event-db
   :menus/load-menus-ok
-  (fn [{:keys [db]} [_ {:keys [menus]}]]
-    {:db (assoc db :menus  menus)}))
+  (fn [db [_ {:keys [menus]}]]
+    (assoc db :menus menus)))
 
 (rf/reg-event-fx
   :menus/load-menus
@@ -15,16 +27,6 @@
     {:http {:method GET
             :url (str site-uri "/menus?ids=" ids)
             :success-event [:menus/load-menus-ok]}}))
-
-(reg-event-db
-  :menus/set-add-status 
-  (fn [db [_ value]]
-    (assoc db :menus/add-status value)))
-
-(reg-event-db
-  :menus/set-edit-status
-  (fn [db [_ value]]
-    (assoc db :menus/edit-status value)))
 
 (reg-event-db
   :menus/set-delete-status

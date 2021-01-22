@@ -8,33 +8,16 @@
   :roles/init
   (fn [db _]
     (-> db
-      (assoc :roles/add-dialog-open false
-             :roles/edit-dialog-open false
-             :roles/delete-dialog-open false
-             :roles/menus-dialog-open false)
+      (assoc :roles/delete-dialog-open false)
       (dissoc
         :roles/query-params
-        :roles/list))))
-
-(rf/reg-event-db
-  :roles/set-add-dialog-open
-  (fn [db [_ value]]
-    (assoc db :roles/add-dialog-open value)))
-
-(rf/reg-event-db
-  :roles/set-edit-dialog-open
-  (fn [db [_ value]]
-    (assoc db :roles/edit-dialog-open value)))
+        :roles/pagination
+        :roles))))
 
 (rf/reg-event-db
   :roles/set-delete-dialog-open
   (fn [db [_ value]]
     (assoc db :roles/delete-dialog-open value)))
-
-(rf/reg-event-db
-  :roles/set-menus-dialog-open
-  (fn [db [_ value]]
-    (assoc db :roles/menus-dialog-open value)))
 
 (rf/reg-event-db
   :roles/set-query-params
@@ -49,7 +32,7 @@
 (rf/reg-event-db
   :roles/load-page-ok
   (fn [db [_ {:keys [roles pagination params]}]]
-    (assoc db :roles/list roles :roles/pagination pagination :roles/query-params params)))
+    (assoc db :roles roles :roles/pagination pagination :roles/query-params params)))
 
 (rf/reg-event-fx
   :roles/load-page
@@ -67,13 +50,13 @@
 (reg-event-db
   :roles/set-attr
   (fn [db [_ key value]]
-    (assoc-in db [:roles/role key] value)))
+    (assoc-in db [:roles/edit key] value)))
 
 (reg-event-db
   :roles/add-ok
   (fn [db [_ {:keys [role]}]]
-    (let [roles (:roles/list db)]
-      (assoc db :success "保存成功" :roles/list (conj roles role)))))
+    (let [roles (:roles db)]
+      (assoc db :success "保存成功" :roles (conj roles role)))))
 
 (reg-event-fx
   :roles/add
@@ -86,7 +69,7 @@
 (reg-event-db
   :roles/load-role-ok
   (fn [db [_ {:keys [role]}]]
-    (assoc db :roles/role role)))
+    (assoc db :roles/edit role)))
 
 (reg-event-fx
   :roles/load-role
@@ -111,9 +94,9 @@
 (reg-event-db
   :roles/delete-ok
   (fn [db [_ id]]
-    (let [roles (:roles/list db)
+    (let [roles (:roles db)
           roles (remove #(= id (:id %)) roles)]
-      (assoc db :success "删除成功" :roles/list roles))))
+      (assoc db :success "删除成功" :roles roles))))
 
 (reg-event-fx
   :roles/delete

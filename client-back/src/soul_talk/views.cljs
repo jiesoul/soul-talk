@@ -55,6 +55,13 @@
 (defmethod pages :roles [_ _]
   (admin role/home))
 
+(defmethod pages :roles/add [_ _]
+  (admin role/add))
+
+(defmethod pages :roles/edit [_ _]
+  (admin role/edit))
+
+
 ;; user
 (defmethod pages :users [_ _]
   (admin users/home))

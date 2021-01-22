@@ -30,8 +30,9 @@
                :params params})))
 
 (defn get-role [id]
-  (let [role (role-db/get-role-by-id id)]
-    (utils/ok {:role role})))
+  (let [role (role-db/get-role-by-id id)
+        role-menus (role-db/get-role-menus-by-role-id id)]
+    (utils/ok {:role (assoc role :menus-ids (map :menu_id role-menus))})))
 
 (defn get-role-menus [id]
   (let [role-menus (role-db/get-role-menus-by-role-id id)]

@@ -6,7 +6,5 @@
 (reg-sub :menus/edit query)
 (reg-sub :menus/query-params query)
 (reg-sub :menus/pagination query)
-(reg-sub :menus/add-status query)
-(reg-sub :menus/edit-status query)
 (reg-sub :menus/delete-status query)
 (reg-sub :menus/selected query)

@@ -79,6 +79,17 @@
   (run-events-admin [[:roles/init]
                      [:set-active-page :roles]]))
 
+(defroute "/roles/add" []
+  (run-events-admin [[:set-breadcrumb ["角色管理" "添加角色"]]
+                     [:menus/load-all]
+                     [:set-active-page :roles/add]]))
+
+(defroute "/roles/:id/edit" [id]
+  (run-events-admin [[:set-breadcrumb ["角色管理" "修改角色"]]
+                     [:roles/load-role id]
+                     [:menus/load-all]
+                     [:set-active-page :roles/edit]]))
+
 (defroute "/users" []
   (run-events-admin [[:set-breadcrumb ["用户管理" "用户列表"]]
                      [:users/init]

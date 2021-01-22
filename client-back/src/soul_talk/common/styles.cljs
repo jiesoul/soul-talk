@@ -120,6 +120,13 @@
        :dataGrid #js {:textAlign "center"
                       :minHeight "300"} })
 
+(defn- checkbox-list-styles [^js/Mui.Theme theme]
+  #js {:root #js {:width "100%"
+                  :backgroundColor (-> theme .-palette .-background .-paper)}})
+
+(defn styled-checkbox-list [checkbox-list]
+  (with-custom-styled checkbox-list-styles checkbox-list))
+
 (defn styled-layout [layout]
   (with-custom-styled layout-styles layout))
 

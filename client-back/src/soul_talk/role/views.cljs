@@ -9,79 +9,6 @@
             ["@material-ui/icons" :as mui-icons]
             ["@material-ui/lab" :refer [TreeItem TreeView]]))
 
-(defn add-form [{:keys [classes]}]
-  (let [role    (subscribe [:roles/role])
-        user    (subscribe [:user])
-        open (subscribe [:roles/add-dialog-open])
-        user-id (:id @user)]
-    (if @open
-      [c/dialog {:open     @open
-                 :title    "添加角色"
-                 :on-close (fn [e props]
-                             (do
-                               (dispatch [:roles/set-add-dialog-open false])))
-                 :on-ok    #(let [role @role]
-                              (assoc role :update_by user-id)
-                              (dispatch [:roles/add role]))}
-       [:form {:name       "add-role-form"
-               :class-name (.-root classes)}
-        [:> mui/TextField {:name       "name"
-                           :label      "名称"
-                           :size       "small"
-                           :required   true
-                           :full-width true
-                           :rules      [{:required true}]
-                           :on-change  #(let [value (-> % .-target .-value)]
-                                          (dispatch [:roles/set-attr :name value]))}]
-        [:> mui/TextField {:name       "note"
-                           :label      "备注"
-                           :size       "small"
-                           :full-width true
-                           :on-change  #(let [value (-> % .-target .-value)]
-                                          (dispatch [:roles/set-attr :note value]))}]]])))
-(defn edit-form [{:keys [classes]}]
-  (let [role (subscribe [:roles/role])
-        user (subscribe [:user])
-        user-id  (:id @user)
-        open (subscribe [:roles/edit-dialog-open])]
-    (if @open
-      (let [{:keys [name note]} @role]
-        [c/dialog {:open     @open
-                   :title    "编辑角色"
-                   :on-close #(dispatch [:roles/set-edit-dialog-open false])
-                   :on-ok    #(let [role @role]
-                                (assoc role :update_by user-id)
-                                (dispatch [:roles/update role]))}
-         [:form {:name "add-role-form"
-                 :class-name (.-root classes)}
-          [:> mui/TextField {:name      "name"
-                             :label     "名称"
-                             :size "small"
-                             :required true
-                             :full-width true
-                             :value name
-                             :on-change #(let [value (-> % .-target .-value)]
-                                           (dispatch [:roles/set-attr :name value]))}]
-          [:> mui/TextField {:name      "note"
-                             :label     "备注"
-                             :size "small"
-                             :value note
-                             :full-width true
-                             :on-change #(let [value (-> % .-target .-value)]
-                                           (dispatch [:roles/set-attr :note value]))}]]]))))
-
-(def ^:dynamic *delete-id* (r/atom 0))
-(defn delete-dialog [id]
-  (let [open (subscribe [:roles/delete-dialog-open])]
-    (if @open
-      [c/dialog {:open     @open
-                 :title    "删除角色"
-                 :ok-text  "确认"
-                 :on-close #(dispatch [:roles/set-delete-dialog-open false])
-                 :on-ok    #(do (dispatch [:roles/set-delete-dialog-open false])
-                                (dispatch [:data-dices/delete id]))}
-       [:> mui/DialogContentText "你确定要删除吗？"]])))
-
 (defn menu-tree-items [{:keys [classes color bgColor menus checked-ids] :as props} ]
   (doall
     (for [menu menus]
@@ -105,29 +32,133 @@
                     :expanded (.-treeItemExpanded classes)
                     :selected (.-treeItemSelected classes)
                     :group    (.-treeItemGroup classes)
-                    :label    (.-treeItemLabel classes)}
-          }
+                    :label    (.-treeItemLabel classes)}}
          (when-not (empty? children)
            (menu-tree-items (assoc props :menus children :checked-ids checked-ids)))]))))
 
-(defn role-menus-form-dialog [{:keys [classes] :as props}]
-  (let [role (subscribe [:roles/role])
-        role-menus (subscribe [:roles/role-menus])
-        open (subscribe [:roles/menus-dialog-open])
-        menus (subscribe [:menus])]
+(defn role-menus [{:keys [classes] :as props}]
+  (let [role (subscribe [:roles/edit])
+        menus-tree (utils/make-tree @(subscribe [:menus]))]
+    [:> mui/Paper {:class-name (.-root classes)}
+     [:> mui/Divider]
+     [:> mui/Typography  {:variant "subtitle1"
+                          :color "textPrimary"} "菜单列表"]
+     [:form {:id "role-menus-form"}
+      [:> TreeView {:default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
+                    :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
+                    :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
+       (menu-tree-items (assoc props :checked-ids (:menus-ids @role)
+                                     :menus (:children menus-tree)))]]]))
+
+
+(defn- add-form [{:keys [classes]}]
+  (let [role    (subscribe [:roles/edit])
+        user    (subscribe [:user])
+        menus (subscribe [:menus])
+        menus-tree (utils/make-tree menus)
+        user-id (:id @user)]
+    [:> mui/Paper {:class-name (.-paper classes)}
+     [:form {:name       "add-role-form"
+             :class-name (.-root classes)}
+      [:> mui/TextField {:name       "name"
+                         :label      "名称"
+                         :size       "small"
+                         :required   true
+                         :full-width true
+                         :rules      [{:required true}]
+                         :on-change  #(let [value (-> % .-target .-value)]
+                                        (dispatch [:roles/set-attr :name value]))}]
+      [:> mui/TextField {:name       "note"
+                         :label      "备注"
+                         :size       "small"
+                         :full-width true
+                         :on-change  #(let [value (-> % .-target .-value)]
+                                        (dispatch [:roles/set-attr :note value]))}]
+
+
+      [:div {:style      {:margin "normal"}
+             :class-name (.-buttons classes)}
+       [:> mui/Button {:type     "button"
+                       :variant  "outlined"
+                       :size     "small"
+                       :color    "primary"
+                       :on-click #(do
+                                    (dispatch [:menus/set-attr :update_by (:id @user)])
+                                    (dispatch [:menus/update @role]))}
+        "保存"]
+       [:> mui/Button {:type     "button"
+                       :variant  "outlined"
+                       :size     "small"
+                       :color    "secondary"
+                       :on-click #(js/history.go -1)}
+        "返回"]]]]))
+
+(defn- add-page [props]
+  [c/layout props
+   (styles/styled-edit-form add-form)])
+
+(defn add []
+  (styles/styled-layout add-page))
+
+(defn- edit-form [{:keys [classes] :as props}]
+  (let [role (subscribe [:roles/edit])
+        user (subscribe [:user])
+        user-id  (:id @user)]
+    (let [{:keys [name note]} @role]
+      [:> mui/Paper {:class-name (.-paper classes)}
+       [:form {:name       "add-role-form"
+               :class-name (.-root classes)}
+        [:> mui/TextField {:name       "name"
+                           :label      "名称"
+                           :size       "small"
+                           :required   true
+                           :full-width true
+                           :value      name
+                           :on-change  #(let [value (-> % .-target .-value)]
+                                          (dispatch [:roles/set-attr :name value]))}]
+        [:> mui/TextField {:name       "note"
+                           :label      "备注"
+                           :size       "small"
+                           :value      note
+                           :full-width true
+                           :on-change  #(let [value (-> % .-target .-value)]
+                                          (dispatch [:roles/set-attr :note value]))}]
+        (styles/styled-edit-form role-menus)
+        [:div {:style      {:margin "normal"}
+               :class-name (.-buttons classes)}
+         [:> mui/Button {:type     "button"
+                         :variant  "outlined"
+                         :size     "small"
+                         :color    "primary"
+                         :on-click #(do
+                                      (dispatch [:menus/set-attr :update_by (:id @user)])
+                                      (dispatch [:menus/update @role]))}
+          "保存"]
+         [:> mui/Button {:type     "button"
+                         :variant  "outlined"
+                         :size     "small"
+                         :color    "secondary"
+                         :on-click #(js/history.go -1)}
+          "返回"]]]])))
+
+(defn- edit-page [props]
+  [c/layout props
+   (styles/styled-edit-form edit-form)])
+
+(defn edit []
+  (styles/styled-layout edit-page))
+
+(def ^:dynamic *delete-id* (r/atom 0))
+(defn delete-dialog [id]
+  (let [open (subscribe [:roles/delete-dialog-open])]
     (if @open
-      (fn []
-        [c/dialog {:open     @open
-                   :title    (str "角色：" (:name @role))
-                   :on-close #(dispatch [:roles/set-menus-dialog-open false])
-                   :on-ok    (fn [])}
-         [:> mui/Paper {:class-name (.-root classes)}
-          [:form {:id "role-menus-form"}
-           [:> mui/Divider]
-           [:> TreeView {:default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
-                         :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
-                         :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
-            (menu-tree-items (assoc props :role @role :checked-ids (map :menu_id @role-menus) :menus (:children (utils/make-tree @menus))))]]]]))))
+      [c/dialog {:open     @open
+                 :title    "删除角色"
+                 :ok-text  "确认"
+                 :on-close #(dispatch [:roles/set-delete-dialog-open false])
+                 :on-ok    #(do (dispatch [:roles/set-delete-dialog-open false])
+                                (dispatch [:data-dices/delete id]))}
+       [:> mui/DialogContentText "你确定要删除吗？"]])))
 
 (defn query-form [{:keys [classes]}]
   (let [query-params (subscribe [:roles/query-params])]
@@ -156,12 +187,11 @@
          [:> mui/Button {:color    "secondary"
                          :size     "small"
                          :variant  "outlined"
-                         :on-click (fn []
-                                     (dispatch [:roles/set-add-dialog-open true]))}
+                         :on-click #(navigate! "/roles/add")}
           "新增"]]]])))
 
 (defn list-table [{:keys [classes]}]
-  (let [roles (subscribe [:roles/list])
+  (let [roles (subscribe [:roles])
         pagination (subscribe [:roles/pagination])
         query-params (subscribe [:roles/query-params])]
     (fn []
@@ -175,7 +205,6 @@
          [:> mui/TableRow {:class-name (.-head classes)}
           [:> mui/TableCell {:align "center"} "名称"]
           [:> mui/TableCell {:align "center"} "备注"]
-          [:> mui/TableCell {:align "center"} "菜单"]
           [:> mui/TableCell {:align "center"} "操作"]
           ]]
         [:> mui/TableBody {:class-name (.-body classes)}
@@ -187,21 +216,9 @@
               [:> mui/TableCell {:align "center"} note]
               [:> mui/TableCell {:align "center"}
                [:div
-                [:> mui/Button {:size     "small"
-                                :color    "primary"
-                                :on-click #(do
-                                             (dispatch [:roles/load-role id])
-                                             (dispatch [:menus/load-menus])
-                                             (dispatch [:roles/load-role-menus id])
-                                             (dispatch [:roles/set-menus-dialog-open true]))}
-                 "明细"]]]
-              [:> mui/TableCell {:align "center"}
-               [:div
                 [:> mui/IconButton {:color    "primary"
                                     :size     "small"
-                                    :on-click (fn []
-                                                (dispatch [:roles/load-role id])
-                                                (dispatch [:roles/set-edit-dialog-open true]))}
+                                    :on-click #(navigate! (str "/roles/" id "/edit"))}
                  [:> mui-icons/Edit]]
 
                 [:> mui/IconButton {:color    "secondary"
@@ -219,10 +236,7 @@
   [props]
   [c/layout props
    [:<>
-    (styles/styled-edit-form add-form)
-    (styles/styled-edit-form edit-form)
     (styles/styled-edit-form delete-dialog)
-    (styles/styled-edit-form role-menus-form-dialog)
     (styles/styled-form query-form)
     (styles/styled-table list-table)
     ]])
