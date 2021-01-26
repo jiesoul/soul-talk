@@ -82,15 +82,18 @@
 (defmethod pages :series [_ _]
   (admin series/home))
 
-;;; article
-;(defmethod pages :articles [_ _]
-;  (admin article/home))
-;
-;(defmethod pages :articles-add [_ _]
-;  (admin article/add-article-page))
-;
-;(defmethod pages :articles-edit [_ _]
-;  (admin article/edit-article-page))
+;; article
+(defmethod pages :articles [_ _]
+  (admin article/home))
+
+(defmethod pages :articles/add [_ _]
+  (admin article/add))
+
+(defmethod pages :articles/edit [_ _]
+  (admin article/edit))
+
+(defmethod pages :articles/view [_ _]
+  (admin article/edit))
 
 
 ;; default

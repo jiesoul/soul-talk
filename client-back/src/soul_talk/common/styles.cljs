@@ -96,7 +96,9 @@
        :buttons #js {"& > *" #js {:margin (.spacing theme 1)}
                      :textAlign "center"}
        :paper #js {:padding (.spacing theme 2)
-                   :alignItems "center"}})
+                   :alignItems "center"}
+       :textArea #js {:width "100%"
+                      :marginTop "20px"}})
 
 (defn- form-styles [^js/Mui.Theme theme]
   #js {:root #js {"& .MuiTextField-root" #js {:margin (.spacing theme 1)

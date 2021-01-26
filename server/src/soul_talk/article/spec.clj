@@ -9,6 +9,7 @@
                    (ds/opt :description) string?
                    :body                 spec/non-empty-string?
                    :create_by            int?
+                   :update_by             int?
                    (ds/opt :tagList)     (s/coll-of string?)}}))
 
 (def update-article
@@ -16,9 +17,9 @@
             :spec {:id                   spec/non-empty-string?
                    :update_by            int?
                    :title                spec/non-empty-string?
-                   (ds/opt :description) spec/non-empty-string?
+                   (ds/opt :description) (or nil? spec/non-empty-string?)
                    :body                 spec/non-empty-string?
-                   (ds/opt :tagList)     (ds/maybe (s/coll-of string?))}}))
+                   (ds/opt :tagList)     (or nil? (ds/maybe (s/coll-of string?)))}}))
 
 (def article
   (ds/spec {:name :article/article

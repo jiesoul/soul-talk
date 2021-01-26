@@ -4,6 +4,10 @@
 
 (reg-sub :articles query)
 
-(reg-sub :article query)
+(reg-sub :articles/edit query)
 
-(reg-sub :editing-article query)
+(reg-sub :articles/query-params query)
+
+(reg-sub :articles/pagination query)
+
+(reg-sub :articles/delete-dialog-open query)

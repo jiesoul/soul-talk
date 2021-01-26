@@ -121,23 +121,23 @@
                       [:set-active-page :app-keys]]))
 
 (defroute "/articles" []
-  (run-events-admin [[:load-articles]
-                     [:set-breadcrumb ["文章"]]
+  (run-events-admin [[:set-breadcrumb ["文章管理" "文章查询"]]
+                     [:articles/init]
                      [:set-active-page :articles]]))
 
 (defroute "/articles/add" []
-  (run-events-admin [[:load-tags]
-                     [:set-active-page :articles-add]]))
+  (run-events-admin [[:set-breadcrumb ["文章管理" "添加文章"]]
+                     [:articles/clear-edit]
+                     [:set-active-page :articles/add]]))
 
 (defroute "/articles/:id/edit" [id]
-  (run-events-admin [[:articles/get id]
-                     [:load-tags]
-                     [:set-active-page :articles-edit]]))
+  (run-events-admin [[:set-breadcrumb ["文章管理" "添加文章"]]
+                     [:articles/load-article id]
+                     [:set-active-page :articles/edit]]))
 
 (defroute "/articles/:id" [id]
-  (run-events-admin [[:load-tags]
-                     [:load-article id]
-                     [:set-active-page :articles-view]]))
+  (run-events-admin [[:load-article id]
+                     [:set-active-page :articles/view]]))
 
 (defroute "*" []
   (run-events-admin [[:set-breadcrumb ["未找到页面"]]
