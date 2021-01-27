@@ -107,7 +107,7 @@
                  :on-close #(dispatch [:articles/set-delete-dialog-open false])
                  :on-ok    #(do (dispatch [:articles/set-delete-dialog-open false])
                                 (dispatch [:articles/delete (:id @article)]))}
-       [:> mui/DialogContentText (str "你确定要删除\n" (:title @article) " 吗?")]])))
+       [:> mui/DialogContentText (str "你确定要删" (:title @article) " 吗?")]])))
 
 (defn query-form [{:keys [classes]}]
   (let [query-params (subscribe [:articles/query-params])]

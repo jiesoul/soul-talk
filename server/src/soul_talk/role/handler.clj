@@ -32,7 +32,7 @@
 (defn get-role [id]
   (let [role (role-db/get-role-by-id id)
         role-menus (role-db/get-role-menus-by-role-id id)]
-    (utils/ok {:role (assoc role :menus-ids (map :menu_id role-menus))})))
+    (utils/ok {:role (assoc role :menus-ids (set (map :menu_id role-menus)))})))
 
 (defn get-role-menus [id]
   (let [role-menus (role-db/get-role-menus-by-role-id id)]
@@ -40,5 +40,4 @@
 
 (defn get-role-menus-by-ids [ids]
   (let [role-menus (role-db/get-role-menus-by-ids ids)]
-    (log/debug "===== ids:" ids)
     (utils/ok {:role-menus role-menus})))

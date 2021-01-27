@@ -49,8 +49,9 @@
 
 (reg-event-db
   :roles/set-attr
-  (fn [db [_ key value]]
-    (assoc-in db [:roles/edit key] value)))
+  (fn [db [_ attr]]
+    (let [edit (:roles/edit db)]
+      (assoc db :roles/edit (merge edit attr)))))
 
 (reg-event-db
   :roles/add-ok

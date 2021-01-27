@@ -9,54 +9,25 @@
             ["@material-ui/icons" :as mui-icons]
             ["@material-ui/lab" :refer [TreeItem TreeView]]))
 
-(defn menu-tree-items [{:keys [classes color bgColor menus checked-ids] :as props} ]
+(defn menu-tree-items [{:keys [menus checked-ids]} ]
   (doall
-    (for [menu menus]
-      (let [{:keys [children id pid url name]} menu]
-        ^{:key menu}
-        [:> TreeItem
-         {:nodeId  (str id)
-          :label   (r/as-element
-                     (let []
-                       [:div
-                        [:> mui/Checkbox {:size      "small"
-                                          :checked   (if (some #(= % id) checked-ids) true false)
-                                          :on-change (fn [e]
-                                                       (println (-> e .-target)))}]
-                        [:> mui/Typography {:variant "inherit"}
-                         name]]))
-          :style   {"--tree-view-color"    color
-                    "--tree-view-bg-color" bgColor}
-          :classes {:root     (.-treeItemRoot classes)
-                    :content  (.-treeItemContent classes)
-                    :expanded (.-treeItemExpanded classes)
-                    :selected (.-treeItemSelected classes)
-                    :group    (.-treeItemGroup classes)
-                    :label    (.-treeItemLabel classes)}}
-         (when-not (empty? children)
-           (menu-tree-items (assoc props :menus children :checked-ids checked-ids)))]))))
+    (for [{:keys [children id pid name] :as menu} menus]
+      [:> TreeItem
+       {:nodeId id
+        :label name}
+       (when-not (empty? children)
+         (menu-tree-items {:menus       children
+                           :checked-ids checked-ids}))])))
 
-(defn role-menus [{:keys [classes] :as props}]
-  (let [role (subscribe [:roles/edit])
-        menus-tree (utils/make-tree @(subscribe [:menus]))]
-    [:> mui/Paper {:class-name (.-root classes)}
-     [:> mui/Divider]
-     [:> mui/Typography  {:variant "subtitle1"
-                          :color "textPrimary"} "菜单列表"]
-     [:form {:id "role-menus-form"}
-      [:> TreeView {:default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
-                    :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
-                    :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
-       (menu-tree-items (assoc props :checked-ids (:menus-ids @role)
-                                     :menus (:children menus-tree)))]]]))
-
+(defn role-menus [{:keys [classes] :as props}])
 
 (defn- add-form [{:keys [classes]}]
   (let [role    (subscribe [:roles/edit])
         user    (subscribe [:user])
         menus (subscribe [:menus])
-        menus-tree (utils/make-tree menus)
-        user-id (:id @user)]
+        user-id (:id @user)
+        _ (dispatch [:roles/set-attr {:update_by user-id :create_by user-id :menus-ids #{}}])]
+    ^{:key "add-role-form"}
     [:> mui/Paper {:class-name (.-paper classes)}
      [:form {:name       "add-role-form"
              :class-name (.-root classes)}
@@ -66,15 +37,20 @@
                          :required   true
                          :full-width true
                          :rules      [{:required true}]
-                         :on-change  #(let [value (-> % .-target .-value)]
-                                        (dispatch [:roles/set-attr :name value]))}]
+                         :on-change  #(dispatch [:roles/set-attr {:name (utils/event-value %)}])}]
       [:> mui/TextField {:name       "note"
                          :label      "备注"
                          :size       "small"
                          :full-width true
-                         :on-change  #(let [value (-> % .-target .-value)]
-                                        (dispatch [:roles/set-attr :note value]))}]
+                         :on-change  #(dispatch [:roles/set-attr {:note (utils/event-value %)}])}]
 
+      [:> mui/Divider]
+      [:> mui/Typography "菜单列表"]
+      [:> TreeView {:default-collapse-icon mui-icons/ExpandMore
+                    :default-expand-icon   mui-icons/ChevronRight}
+       ;(menu-tree-items {:checked-ids (:menus-ids @role)
+       ;                  :menus       (:children (utils/make-tree @menus))})
+       ]
 
       [:div {:style      {:margin "normal"}
              :class-name (.-buttons classes)}
@@ -82,9 +58,7 @@
                        :variant  "outlined"
                        :size     "small"
                        :color    "primary"
-                       :on-click #(do
-                                    (dispatch [:menus/set-attr :update_by (:id @user)])
-                                    (dispatch [:menus/update @role]))}
+                       :on-click #(dispatch [:menus/update @role])}
         "保存"]
        [:> mui/Button {:type     "button"
                        :variant  "outlined"
@@ -103,6 +77,7 @@
 (defn- edit-form [{:keys [classes] :as props}]
   (let [role (subscribe [:roles/edit])
         user (subscribe [:user])
+        menus (subscribe [:menus])
         user-id  (:id @user)]
     (let [{:keys [name note]} @role]
       [:> mui/Paper {:class-name (.-paper classes)}
@@ -113,17 +88,23 @@
                            :size       "small"
                            :required   true
                            :full-width true
-                           :value      name
+                           :default-value      name
                            :on-change  #(let [value (-> % .-target .-value)]
                                           (dispatch [:roles/set-attr :name value]))}]
         [:> mui/TextField {:name       "note"
                            :label      "备注"
                            :size       "small"
-                           :value      note
+                           :default-value      note
                            :full-width true
                            :on-change  #(let [value (-> % .-target .-value)]
                                           (dispatch [:roles/set-attr :note value]))}]
-        (styles/styled-edit-form role-menus)
+        [:> mui/Divider]
+        [:> mui/Typography "菜单列表"]
+        [:> TreeView {:default-collapse-icon mui-icons/ExpandMore
+                      :default-expand-icon   mui-icons/ChevronRight}
+         (menu-tree-items {:checked-ids (:menus-ids @role)
+                           :menus       (:children (utils/make-tree @menus))})]
+
         [:div {:style      {:margin "normal"}
                :class-name (.-buttons classes)}
          [:> mui/Button {:type     "button"
@@ -235,11 +216,10 @@
 (defn query-page
   [props]
   [c/layout props
-   [:<>
+   [:div
     (styles/styled-edit-form delete-dialog)
     (styles/styled-form query-form)
-    (styles/styled-table list-table)
-    ]])
+    (styles/styled-table list-table)]])
 
 (defn home []
   (styles/styled-layout query-page))
