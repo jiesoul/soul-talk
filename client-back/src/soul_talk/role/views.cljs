@@ -9,17 +9,40 @@
             ["@material-ui/icons" :as mui-icons]
             ["@material-ui/lab" :refer [TreeItem TreeView]]))
 
-(defn menu-tree-items [{:keys [menus checked-ids]} ]
-  (doall
-    (for [{:keys [children id pid name] :as menu} menus]
-      [:> TreeItem
-       {:nodeId id
-        :label name}
-       (when-not (empty? children)
-         (menu-tree-items {:menus       children
-                           :checked-ids checked-ids}))])))
+(defn menu-tree-items [{:keys [classes color bgColor] :as props} menus role]
+  (let [checked-ids (:menus-ids role)]
+    (doall
+      (for [menu menus]
+        (let [{:keys [children id pid url]} menu]
+          ^{:key menu}
+          [:> TreeItem
+           {:nodeId (str id)
+            :label  (r/as-element
+                      (let []
+                        [:div
+                         [:> mui/Checkbox {:checked   (if (contains? checked-ids id) true false)
+                                           :on-change #(dispatch [:roles/checked-menu {:id id :pid pid} (-> % .-target .-checked)])}]
+                         [:> mui/Button
+                          (:name menu)]]))
+            :on-label-click #()}
+           (when-not (empty? children)
+             (menu-tree-items props children role))])))))
 
-(defn role-menus [{:keys [classes] :as props}])
+(defn menu-tree-view [{:keys [classes] :as props}]
+  (let [user (rf/subscribe [:user])
+        menus (subscribe [:menus])
+        menus-tree (utils/make-tree @menus)
+        role (subscribe [:roles/edit])
+        _ (dispatch [:roles/set-attr {:create_by (:id @user)}])]
+    (fn []
+      [:> mui/Paper {:class-name (.-paper classes)}
+       [:> mui/Typography "菜单列表"]
+       [:> TreeView {:class-name            (.-root classes)
+                     :multi-select true
+                     :default-collapse-icon (r/as-element [:> mui-icons/ExpandMore])
+                     :default-expand-icon   (r/as-element [:> mui-icons/ChevronRight])
+                     :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
+        (menu-tree-items props (:children menus-tree) @role)]])))
 
 (defn- add-form [{:keys [classes]}]
   (let [role    (subscribe [:roles/edit])
@@ -45,12 +68,7 @@
                          :on-change  #(dispatch [:roles/set-attr {:note (utils/event-value %)}])}]
 
       [:> mui/Divider]
-      [:> mui/Typography "菜单列表"]
-      [:> TreeView {:default-collapse-icon mui-icons/ExpandMore
-                    :default-expand-icon   mui-icons/ChevronRight}
-       ;(menu-tree-items {:checked-ids (:menus-ids @role)
-       ;                  :menus       (:children (utils/make-tree @menus))})
-       ]
+      (styles/styled-checkbox-list menu-tree-view)
 
       [:div {:style      {:margin "normal"}
              :class-name (.-buttons classes)}
@@ -99,11 +117,7 @@
                            :on-change  #(let [value (-> % .-target .-value)]
                                           (dispatch [:roles/set-attr :note value]))}]
         [:> mui/Divider]
-        [:> mui/Typography "菜单列表"]
-        [:> TreeView {:default-collapse-icon mui-icons/ExpandMore
-                      :default-expand-icon   mui-icons/ChevronRight}
-         (menu-tree-items {:checked-ids (:menus-ids @role)
-                           :menus       (:children (utils/make-tree @menus))})]
+        (styles/styled-checkbox-list menu-tree-view)
 
         [:div {:style      {:margin "normal"}
                :class-name (.-buttons classes)}

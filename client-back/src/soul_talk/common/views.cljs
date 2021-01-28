@@ -175,8 +175,7 @@
                     :default-collapse-icon (r/as-element [:> mui-icons/ArrowDropDown])
                     :default-expand-icon   (r/as-element [:> mui-icons/ArrowRight])
                     :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
-       (menu-tree-items props (:children menus-tree))]
-      )))
+       (menu-tree-items props (:children menus-tree))])))
 
 (defn drawer [{:keys [classes] :as props}]
   (let [drawer-paper (.-drawerPaper classes)

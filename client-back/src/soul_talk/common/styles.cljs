@@ -124,7 +124,11 @@
 
 (defn- checkbox-list-styles [^js/Mui.Theme theme]
   #js {:root #js {:width "100%"
-                  :backgroundColor (-> theme .-palette .-background .-paper)}})
+                  :backgroundColor (-> theme .-palette .-background .-paper)}
+       :paper            #js {:padding       (.spacing theme 2)
+                              :display       "flex"
+                              :overflow      "auto"
+                              :flexDirection "column"}})
 
 (defn styled-checkbox-list [checkbox-list]
   (with-custom-styled checkbox-list-styles checkbox-list))

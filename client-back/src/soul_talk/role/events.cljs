@@ -54,6 +54,26 @@
       (assoc db :roles/edit (merge edit attr)))))
 
 (reg-event-db
+  :roles/checked-menu
+  (fn [db [_ {:keys [id pid]} checked]]
+    (let [menus (:menus db)
+          child-ids (set (map :id (filter #(= id (:pid %)) menus)))
+          role (:roles/edit db)
+          ids (set (:menus-ids role))]
+      (if checked
+        (let [menus-ids (conj ids id)
+              menus-ids (if-not (zero? pid) (conj menus-ids pid) menus-ids)
+              menus-ids (reduce conj menus-ids child-ids)]
+          (assoc-in db [:roles/edit :menus-ids] menus-ids))
+        (let [menus-ids (remove #(contains? (conj child-ids id) %) ids)
+              brother-ids (set (map :id (filter #(and (= pid (:pid %)) (not= id (:id %))) menus)))
+              brother-ids (filter #(contains? brother-ids %) menus-ids)
+              menus-ids (if (empty? brother-ids) (remove #(= pid %) menus-ids) menus-ids)]
+          (js/console.log "----" brother-ids)
+          (js/console.log "----" menus-ids)
+          (assoc-in db [:roles/edit :menus-ids] menus-ids))))))
+
+(reg-event-db
   :roles/add-ok
   (fn [db [_ {:keys [role]}]]
     (let [roles (:roles db)]
