@@ -3,61 +3,45 @@
             [re-frame.core :as rf]
             ["@material-ui/core" :as mui]
             ["@material-ui/icons" :as mui-icons]
+            ["semantic-ui-react" :as sui :refer [Grid Image Form Input Button Label]]
             [reagent.core :as r]
             [soul-talk.common.styles :as styles]))
 
 (defn edit-form [{:keys [classes] :as props}]
   (let [site-info (rf/subscribe [:site-info])
         {:keys [id name logo author description]} @site-info]
-    [:> mui/Paper {:class-name (.-paper classes)}
-     [:form {:class-name (.-root classes)
-             :id         "site-info-edit-form"}
-      [:> mui/TextField {:variant    "outlined"
-                         :margin     "normal"
-                         :required   true
-                         :full-width true
-                         :size       "small"
-                         :label      "网站名称"
-                         :name       "name"
-                         :id         "name"
-                         :default-value      name
-                         :on-change  #(rf/dispatch [:site-info/set-attr :name (-> % .-target .-value)])}]
-      [:> mui/TextField {:name       "logo"
-                         :id         "logo"
-                         :label      "网站图标"
-                         :size       "small"
-                         :margin     "normal"
-                         :variant    "outlined"
-                         :full-width true
-                         :default-value      logo
-                         :on-change  #(rf/dispatch [:site-info/set-attr :logo (-> % .-target .-value)])}]
-      [:> mui/TextField {:name       "description"
-                         :id         "description"
-                         :label      "简介"
-                         :size       "small"
-                         :margin     "normal"
-                         :variant    "outlined"
-                         :full-width true
-                         :default-value      description
-                         :on-change  #(rf/dispatch [:site-info/set-attr :description (-> % .-target .-value)])}]
-      [:> mui/TextField {:name       "author"
-                         :id         "author"
-                         :label      "作者"
-                         :variant    "outlined"
-                         :size       "small"
-                         :margin     "normal"
-                         :full-width true
-                         :default-value      author
-                         :rules      [{:required true}]
-                         :on-change  #(rf/dispatch [:site-info/set-attr :author (-> % .-target .-value)])}]
-      [:div {:style      {:margin "normal"}
-             :class-name (.-buttons classes)}
-       [:> mui/Button {:type     "button"
-                       :variant  "outlined"
-                       :size     "small"
-                       :color    "primary"
-                       :on-click #(rf/dispatch [:site-info/update @site-info])}
-        "保存"]]
+    [:div
+     [:> Form {:as "form"}
+      [:> Form.Field {:required true}
+       [:label "名称"]
+       [:> Input
+        {:required      true
+         :name          "name"
+         :id            "name"
+         :default-value name
+         :on-change     #(rf/dispatch [:site-info/set-attr :name (-> % .-target .-value)])}]]
+      [:> Form.Field
+       [:label "图标"]
+       [:> Input
+        {:name          "logo"
+         :default-value logo
+         :on-change     #(rf/dispatch [:site-info/set-attr :logo (-> % .-target .-value)])}]]
+      [:> Form.Field
+       [:label "简介"]
+       [:> Input {:name          "description"
+                          :default-value description
+                          :on-change     #(rf/dispatch [:site-info/set-attr :description (-> % .-target .-value)])}]]
+      [:> Form.Field
+       [:label "作者"]
+       [:> Input {:name          "author"
+                          :default-value author
+                          :on-change     #(rf/dispatch [:site-info/set-attr :author (-> % .-target .-value)])}]]
+      [:> Button {:type     "button"
+                  :color    "primary"
+                  :basic true
+                  :size "mini"
+                  :on-click #(rf/dispatch [:site-info/update @site-info])}
+       "保存"]
       ]]))
 
 (defn edit-page [props]

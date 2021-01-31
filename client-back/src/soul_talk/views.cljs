@@ -107,9 +107,7 @@
       (fn []
         [styles/theme-provider styles/custom-theme
          [:<>
-          [:> mui/CssBaseline]
-          [:div
-           (styles/with-custom-styled styles/backdrop-styles c/lading-backdrop)
-           (styles/with-custom-styled styles/success-snackbar-styles c/success-snackbars)
-           (styles/with-custom-styled styles/success-snackbar-styles c/error-snackbars)
-           (pages @active-page)]]]))))
+          [c/success]
+          (styles/with-custom-styled styles/success-snackbar-styles c/error-snackbars)
+          [c/lading]
+          (pages @active-page)]]))))

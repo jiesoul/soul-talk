@@ -11,23 +11,21 @@
         login-user (r/atom {:email "" :password ""})
         email (r/cursor login-user [:email])
         password (r/cursor login-user [:password])]
-    [:div {:style {:background-image "https://source.unsplash.com/random"
-                   :background-repeat "no-repeat"
-                   :background-size "cover"}}
+    [:div
      [:> Grid {:text-align "center"
                :style {:height "100vh"
-                       :background-image "https://source.unsplash.com/random"
+                       :background-image "url(https://source.unsplash.com/random)"
                        :background-repeat "no-repeat"
                        :background-size "cover"}
                :vertical-align "middle"}
       [:> Grid.Column {:style {:max-width "450px"}}
-       [:> sui/Header {:as         "h2"
-                       :color      "teal"
-                       :text-align "center"}
-        (str "Log in to " (:name @site-info))]
 
        [:> sui/Form {:size "large"}
         [:> sui/Segment {:stacked true}
+         [:> sui/Header {:as         "h2"
+                         :color      "teal"
+                         :text-align "center"}
+          (str "Log in to " (:name @site-info))]
          [:> sui/Form.Input {:fluid         true
                              :margin        "normal"
                              :icon          "user"
@@ -40,7 +38,7 @@
                              :on-change     #(reset! email (-> % .-target .-value))}]
          [:> sui/Form.Input {:fluid         true
                              :margin        "normal"
-                             :icon          "user"
+                             :icon          "lock"
                              :icon-position "left"
                              :placeholder   "请输入密码"
                              :required      true
@@ -54,7 +52,7 @@
                          :color    "teal"
                          :on-click #(dispatch [:login @login-user])}
           "登录"]
-         [:div {:style {:margin-top "5px"}}
+         [:div {:style {:margin-top "20px"}}
           [c/copyright]]]]]]]))
 
 
