@@ -10,5 +10,4 @@
    "ssdasfasdfasdff"])
 
 (defn home []
-  [c/layout
-   [chart]])
+  [c/layout [chart]])

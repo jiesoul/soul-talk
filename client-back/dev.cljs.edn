@@ -4,6 +4,7 @@
  :target          :bundle
  :output-dir      "resources/public/js"
  :output-to       "resources/public/js/main.js"
+ ;; 使用类 nix 系统请直接用 yarn
  :bundle-cmd      {:none ["yarn.cmd" "webpack" "--mode=development" :output-to]}
  :aot-cache       false
  :clean-outputs   true

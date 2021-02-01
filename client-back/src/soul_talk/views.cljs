@@ -19,6 +19,7 @@
             [soul-talk.series.views :as series]
             ["@material-ui/core" :as mui]
             ["@material-ui/core/styles" :refer [ThemeProvider]]
+            ["react-toastify" :refer [ToastContainer]]
             [soul-talk.utils :as utils]))
 
 ;;多重方法  响应对应的页面
@@ -108,6 +109,7 @@
         [styles/theme-provider styles/custom-theme
          [:<>
           [c/success]
+          [:> ToastContainer {:auto-close 3000}]
           (styles/with-custom-styled styles/success-snackbar-styles c/error-snackbars)
           [c/lading]
           (pages @active-page)]]))))

@@ -12,11 +12,15 @@
             [soul-talk.common.styles :as styles]
             ["semantic-ui-react" :as sui :refer [Breadcrumb Container Menu Divider Dropdown Grid Segment Dimmer Loader
                                                  Sidebar Message]]
+            ["react-toastify" :refer [toast]]
             [react :as react]))
 
 (def validate-messages {:required "${label} 必须的"
                         :types {:email "${label} 非法邮件格式"
                                 :url "${label} 非法地址"}})
+
+(defn sleep [f ms]
+  (js/setTimeout f ms))
 
 (defn lading []
   (let [lading? (rf/subscribe [:loading?])]
@@ -28,19 +32,10 @@
   (let [success (rf/subscribe [:success])
         on-close #(rf/dispatch [:clean-success])]
     (when @success
-      [:> Message {:success            true
-                   :visible            (if @success true false)
-                   :floating           true
-                   :size               "mini"
-                   :key                "success"
-                   :auto-hide-Duration 3000
-                   :on-dismiss           on-close
-                   :action             (r/as-element [:> mui/IconButton {:size       "small"
-                                                                         :aria-label "close"
-                                                                         :color      "inherit"
-                                                                         :on-click   on-close}
-                                                      [:> mui-icons/Close {:font-size "small"}]])
-                   :header             @success}])))
+      (toast.success @success {:position    (-> toast .-POSITION .-TOP_CENTER)
+                                :auto-close       3000
+                                :on-close    on-close})
+      (rf/dispatch [:clean-success]))))
 
 (defn error-snackbars [{:keys [classes]}]
   (let [error (rf/subscribe [:error])
@@ -141,7 +136,7 @@
         (:name @site-info)]
        (str " " year ".")])))
 
-(defn layout [{:keys [classes] :as props} & children]
+(defn layout [children]
   [:div
    [app-bar]
    [:> Grid {:style {:padding "1px 20px 0px 0px"}}
