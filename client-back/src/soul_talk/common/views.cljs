@@ -3,15 +3,11 @@
             [reagent.dom :as rd]
             [re-frame.core :as rf]
             ["react-highlight.js" :as hljs]
-            ["@material-ui/core" :as mui]
-            ["@material-ui/core/colors" :as mui-colors]
-            ["@material-ui/icons" :as mui-icons]
-            ["@material-ui/lab" :refer [TreeView TreeItem Alert]]
             [soul-talk.routes :refer [navigate!]]
             [soul-talk.utils :as utils]
             [soul-talk.common.styles :as styles]
             ["semantic-ui-react" :as sui :refer [Breadcrumb Container Menu Divider Dropdown Grid Segment Dimmer Loader
-                                                 Sidebar Message]]
+                                                 Sidebar Message Modal Button Pagination]]
             ["react-toastify" :refer [toast]]
             [react :as react]))
 
@@ -25,37 +21,32 @@
 (defn lading []
   (let [lading? (rf/subscribe [:loading?])]
     (when @lading?
-      [:> Dimmer {:active @lading?}
+      [:> Dimmer {:active @lading?
+                  :inverted true}
        [:> Loader {:size "large"} "加载中"]])))
+
+(defn progress []
+  )
 
 (defn success []
   (let [success (rf/subscribe [:success])
         on-close #(rf/dispatch [:clean-success])]
     (when @success
       (toast.success @success {:position    (-> toast .-POSITION .-TOP_CENTER)
-                                :auto-close       3000
-                                :on-close    on-close})
-      (rf/dispatch [:clean-success]))))
+                               :toast-id "success-toast"
+                               :auto-close       3000
+                               :on-close    on-close})
+      (on-close))))
 
-(defn error-snackbars [{:keys [classes]}]
+(defn error []
   (let [error (rf/subscribe [:error])
         on-close #(rf/dispatch [:clean-error])]
     (when @error
-      [:> mui/Snackbar {:anchor-origin {:vertical   "top"
-                                        :horizontal "center"}
-                        :class-name (.-root classes)
-                        :open          true
-                        :key "error"
-                        :auto-hide-Duration 3000
-                        :on-close on-close
-                        :action (r/as-element [:> mui/IconButton {:size "small"
-                                                                  :aria-label "close"
-                                                                  :color "inherit"
-                                                                  :on-click on-close}
-                                               [:> mui-icons/Close {:font-size "small"}]])}
-       [:> Alert {:on-close on-close
-                  :severity "error"}
-        @error]])))
+      (toast.error @success {:position    (-> toast .-POSITION .-TOP_CENTER)
+                             :toast-id "error-toast"
+                             :auto-close       3000
+                             :on-close    on-close})
+      (on-close))))
 
 (defn app-bar []
   (let [site-info (rf/subscribe [:site-info])
@@ -123,28 +114,21 @@
 
 (defn copyright []
   (let [year (.getFullYear (js/Date.))
-        site-info (rf/subscribe [:site-info])
-        name (:name @site-info)]
+        site-info (rf/subscribe [:site-info])]
     (if @site-info
-      [:> mui/Typography {:variant "body2"
-                          :color   "textSecondary"
-                          :align   "center"}
+      [:> Container {:text-align   "center"}
        "Copyright ©"
-       [:> mui/Link {:color    "inherit"
-                     :href     "https://www.jiesoul.com/"
-                     :children (:name @site-info)}
-        (:name @site-info)]
-       (str " " year ".")])))
+       [:a {:href     "https://www.jiesoul.com/"}
+        (:author @site-info)]
+       (str " 2019-" year ".")])))
 
 (defn layout [children]
   [:div
    [app-bar]
    [:> Grid {:style {:padding "1px 20px 0px 0px"}}
-    [:> Grid.Column {:width 2
-                     :container true}
+    [:> Grid.Column {:width 2}
      [drawer]]
-    [:> Grid.Column {:width 14
-                     :container true}
+    [:> Grid.Column {:width 14}
      [:> Segment
       [:<>
        [breadcrumbs]
@@ -154,52 +138,44 @@
         [:div {:style {:margin-top "20px"}}
          [copyright]]]]]]]])
 
-(defn dialog [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
-  [:> mui/Dialog {:aria-labelledby        "alert-dialog-title"
-                  :aria-describedby       "alert-dialog-description"
-                  :disable-backdrop-click true
-                  :style                  {:min-width "200px"}
-                  :open                   open
-                  :key (str "dialog" (random-uuid))}
-   [:> mui/DialogTitle {:id                 "alert-dialog-title"
-                        :disable-typography true
-                        :style              {:margin  0
-                                             :padding "5px"}}
-    [:> mui/Typography {:variant "h6"} title]
-    [:> mui/IconButton {:aria-label "close"
-                        :on-click   on-close
-                        :style      {:position "absolute"
-                                     :right    "5px"
-                                     :top      "1px"}}
-     [:> mui-icons/Close]]]
-   [:> mui/DialogContent {:dividers true}
-    children]
-   [:> mui/DialogActions
-    [:> mui/Button {:on-click on-close :color "secondary"} (if cancel-text cancel-text "取消")]
-    [:> mui/Button {:on-click on-ok :color "primary"} (if ok-text ok-text "保存")]]])
+(defn modal [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
+  [:> Modal {:dimmer   "blurring"
+                :on-close on-close
+                :open     open
+                :key      (str "modal" (random-uuid))
+                :size     "mini"}
+   [:> Modal.Header {:id                 "alert-dialog-title"
+                     :disable-typography true
+                     :style              {:margin  0
+                                          :padding "5px"}}
+    title]
+   [:> Modal.Content children]
+   [:> Modal.Actions
+    [:> Button {:on-click on-close :negative true} (if cancel-text cancel-text "取消")]
+    [:> Button {:on-click on-ok :positive true} (if ok-text ok-text "保存")]]])
 
-(defn default-page [props]
-  [layout props
+(defn default-page []
+  [layout
    [:div "页面未找到，请检查链接！"]])
 
 (defn default []
-  (styles/styled-layout default-page))
+  [default-page])
 
-(defn table-page [event {:keys [total per_page page] :as params}]
-  [:> mui/TablePagination {:rows-per-page-options   [10, 15, 100]
-                           :component               "div"
-                           :color                   "primary"
-                           :variant                 "outlined"
-                           :count                   total
-                           :rows-per-page           per_page
-                           :page                    (dec page)
-                           :on-change-page          (fn [_ page]
-                                                      (rf/dispatch [event
-                                                                    (assoc params :page (inc page))]))
-                           :on-change-rows-per-page (fn [e]
-                                                      (let [value (-> e .-target .-value)]
-                                                        (rf/dispatch [event
-                                                                      (assoc params :per_page value)])))}])
+(defn table-page [event {:keys [total per_page page total_pages] :as params}]
+  [:> Pagination {:active-page    page
+                  :total-pages    total_pages
+                  :first-item     {:aria-label "首页"
+                                   :content    "首页"}
+                  :last-item      {:aria-label "末页"
+                                   :content    "末页"}
+                  :prev-item      {:aria-label "上一页"
+                                   :content    "上一页"}
+                  :next-item      {:aria-label "下一页"
+                                   :content    "下一页"}
+                  :on-page-change (fn [e page]
+                                    (let [active-page (.-activePage page)]
+                                      (rf/dispatch [event (assoc params :page active-page)]))
+                                    )}])
 
 (defn logo []
   (let [site-info (rf/subscribe [:site-info])]

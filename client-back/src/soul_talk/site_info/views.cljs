@@ -10,38 +10,34 @@
   (let [site-info (rf/subscribe [:site-info])
         {:keys [id name logo author description]} @site-info]
     (if @site-info
-      [:div
-       [:> Form {:as "form"}
-        [:> Form.Field {:required true}
-         [:label "名称"]
-         [:> Input
-          {:required      true
-           :name          "name"
-           :id            "name"
-           :default-value name
-           :on-change     #(rf/dispatch [:site-info/set-attr :name (-> % .-target .-value)])}]]
-        [:> Form.Field
-         [:label "图标"]
-         [:> Input
-          {:name          "logo"
-           :default-value logo
-           :on-change     #(rf/dispatch [:site-info/set-attr :logo (-> % .-target .-value)])}]]
-        [:> Form.Field
-         [:label "简介"]
-         [:> Input {:name          "description"
-                    :default-value description
-                    :on-change     #(rf/dispatch [:site-info/set-attr :description (-> % .-target .-value)])}]]
-        [:> Form.Field
-         [:label "作者"]
-         [:> Input {:name          "author"
-                    :default-value author
-                    :on-change     #(rf/dispatch [:site-info/set-attr :author (-> % .-target .-value)])}]]
-        [:> Button {:type     "button"
+      [:> Form {:as "form"}
+       [:> Form.Input
+        {:required      true
+         :name          "name"
+         :label         "名称"
+         :id            "name"
+         :default-value name
+         :on-change     #(rf/dispatch [:site-info/set-attr :name (-> % .-target .-value)])}]
+       [:> Form.Input
+        {:name          "logo"
+         :label         "图标"
+         :default-value logo
+         :on-change     #(rf/dispatch [:site-info/set-attr :logo (-> % .-target .-value)])}]
+       [:> Form.Input {:name          "description"
+                  :label "简介"
+                  :default-value description
+                  :on-change     #(rf/dispatch [:site-info/set-attr :description (-> % .-target .-value)])}]
+       [:> Form.Input {:name          "author"
+                  :default-value author
+                  :label "作者"
+                  :on-change     #(rf/dispatch [:site-info/set-attr :author (-> % .-target .-value)])}]
+       [:div {:style {:text-align "center"}}
+        [:> Button {:color "green"
                     :basic    true
                     :size     "mini"
-                    :on-click #(rf/dispatch [:site-info/update @site-info])}
-         "保存"]
-        ]])))
+                    :icon "save"
+                    :content "保存"
+                    :on-click #(rf/dispatch [:site-info/update @site-info])}]]])))
 
 (defn home []
   [c/layout [edit-form]])

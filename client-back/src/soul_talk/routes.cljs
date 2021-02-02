@@ -57,12 +57,12 @@
                      [:set-active-page :site-info]]))
 
 (defroute "/data-dices" []
-  (run-events-admin [[:set-breadcrumb ["数据字典管理"]]
+  (run-events-admin [[:set-breadcrumb ["基础信息" "数据字典"]]
                      [:data-dices/clean]
                      [:set-active-page :data-dices]]))
 
 (defroute "/menus" []
-  (run-events-admin [[:set-breadcrumb ["菜单管理"]]
+  (run-events-admin [[:set-breadcrumb ["基础信息" "菜单列表"]]
                      [:menus/init]
                      [:set-active-page :menus]]))
 
@@ -76,7 +76,8 @@
                      [:set-active-page :menus/edit]]))
 
 (defroute "/roles" []
-  (run-events-admin [[:roles/init]
+  (run-events-admin [[:set-breadcrumb ["基础信息" "角色列表"]]
+                     [:roles/init]
                      [:set-active-page :roles]]))
 
 (defroute "/roles/add" []
@@ -107,17 +108,17 @@
 
 (defroute "/tags" []
   (run-events-admin [[:tags/load-all]
-                     [:set-breadcrumb ["标签"]]
+                     [:set-breadcrumb ["基础数据" "标签列表"]]
                      [:set-active-page :tags]]))
 
 (defroute "/series" []
   (run-events-admin [[:series/load-all]
-                     [:set-breadcrumb ["系列"]]
+                     [:set-breadcrumb ["基础数据" "系列列表"]]
                      [:set-active-page :series]]))
 
 (defroute "/app-keys" []
   (run-events-admin [[:app-keys/load-all]
-                      [:set-breadcrumb ["app key 管理"]]
+                      [:set-breadcrumb ["基础数据" "app key 管理"]]
                       [:set-active-page :app-keys]]))
 
 (defroute "/articles" []

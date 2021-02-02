@@ -7,7 +7,8 @@
             [soul-talk.routes :refer [navigate!]]
             ["@material-ui/core" :as mui]
             ["@material-ui/icons" :as mui-icons]
-            ["@material-ui/lab" :refer [TreeItem TreeView]]))
+            ["@material-ui/lab" :refer [TreeItem TreeView]]
+            ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input]]))
 
 (defn menu-tree-items [{:keys [classes color bgColor] :as props} menus role]
   (let [checked-ids (:menus-ids role)]
@@ -35,205 +36,175 @@
         role (subscribe [:roles/edit])
         _ (dispatch [:roles/set-attr {:create_by (:id @user)}])]
     (fn []
-      [:> mui/Paper {:class-name (.-paper classes)}
-       [:> mui/Typography "菜单列表"]
-       [:> TreeView {:class-name            (.-root classes)
-                     :multi-select true
-                     :default-collapse-icon (r/as-element [:> mui-icons/ExpandMore])
-                     :default-expand-icon   (r/as-element [:> mui-icons/ChevronRight])
-                     :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
-        (menu-tree-items props (:children menus-tree) @role)]])))
+      [:> Card
+       [:> Card.Header "菜单列表"]
+       [:> Card.Content
+        [:> TreeView {
+                      :multi-select          true
+                      :default-collapse-icon (r/as-element [:> mui-icons/ExpandMore])
+                      :default-expand-icon   (r/as-element [:> mui-icons/ChevronRight])
+                      :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
+         (menu-tree-items props (:children menus-tree) @role)]]])))
 
-(defn- add-form [{:keys [classes]}]
+(defn- add-form []
   (let [role    (subscribe [:roles/edit])
         user    (subscribe [:user])
         menus (subscribe [:menus])
         user-id (:id @user)
         _ (dispatch [:roles/set-attr {:update_by user-id :create_by user-id :menus-ids #{}}])]
     ^{:key "add-role-form"}
-    [:> mui/Paper {:class-name (.-paper classes)}
-     [:form {:name       "add-role-form"
-             :class-name (.-root classes)}
-      [:> mui/TextField {:name       "name"
-                         :label      "名称"
-                         :size       "small"
-                         :required   true
-                         :full-width true
-                         :rules      [{:required true}]
-                         :on-change  #(dispatch [:roles/set-attr {:name (utils/event-value %)}])}]
-      [:> mui/TextField {:name       "note"
-                         :label      "备注"
-                         :size       "small"
-                         :full-width true
-                         :on-change  #(dispatch [:roles/set-attr {:note (utils/event-value %)}])}]
+    [:> Form {:name       "add-role-form"
+            :size "mini"}
+     [:> Form.Group
+      [:> Form.Input {:name      "name"
+                      :label     "名称"
+                      :inline    true
+                      :required  true
+                      :on-change #(dispatch [:roles/set-attr {:name (utils/event-value %)}])}]
+      [:> Form.Input {:name      "note"
+                      :label     "备注"
+                      :inline    true
+                      :on-change #(dispatch [:roles/set-attr {:note (utils/event-value %)}])}]]
 
-      [:> mui/Divider]
-      (styles/styled-checkbox-list menu-tree-view)
-
-      [:div {:style      {:margin "normal"}
-             :class-name (.-buttons classes)}
-       [:> mui/Button {:type     "button"
-                       :variant  "outlined"
-                       :size     "small"
-                       :color    "primary"
-                       :on-click #(dispatch [:menus/update @role])}
-        "保存"]
-       [:> mui/Button {:type     "button"
-                       :variant  "outlined"
-                       :size     "small"
-                       :color    "secondary"
-                       :on-click #(js/history.go -1)}
-        "返回"]]]]))
-
-(defn- add-page [props]
-  [c/layout props
-   (styles/styled-edit-form add-form)])
+     [:div
+      (styles/styled-checkbox-list menu-tree-view)]
+     [:div {:style {:text-align "center"}}
+      [:> Button {:size     "mini"
+                  :color    "green"
+                  :icon     "save"
+                  :content  "保存"
+                  :on-click #(dispatch [:menus/update @role])}]
+      [:> Button {:size     "mini"
+                  :basic    true
+                  :on-click #(js/history.go -1)}
+       "返回"]]]))
 
 (defn add []
-  (styles/styled-layout add-page))
+  [c/layout [add-form]])
 
-(defn- edit-form [{:keys [classes] :as props}]
+(defn- edit-form []
   (let [role (subscribe [:roles/edit])
         user (subscribe [:user])
         menus (subscribe [:menus])
         user-id  (:id @user)]
     (let [{:keys [name note]} @role]
-      [:> mui/Paper {:class-name (.-paper classes)}
-       [:form {:name       "add-role-form"
-               :class-name (.-root classes)}
-        [:> mui/TextField {:name       "name"
-                           :label      "名称"
-                           :size       "small"
-                           :required   true
-                           :full-width true
-                           :default-value      name
-                           :on-change  #(let [value (-> % .-target .-value)]
+      [:> Form {:name       "add-role-form"
+                :size "mini"}
+       [:> Form.Group
+        [:> Form.Input {:name          "name"
+                        :inline        true
+                        :label         "名称"
+                        :size          "small"
+                        :required      true
+                        :default-value name
+                        :on-change     #(let [value (-> % .-target .-value)]
                                           (dispatch [:roles/set-attr :name value]))}]
-        [:> mui/TextField {:name       "note"
-                           :label      "备注"
-                           :size       "small"
-                           :default-value      note
-                           :full-width true
-                           :on-change  #(let [value (-> % .-target .-value)]
-                                          (dispatch [:roles/set-attr :note value]))}]
-        [:> mui/Divider]
-        (styles/styled-checkbox-list menu-tree-view)
+        [:> Form.Input {:name          "note"
+                        :inline        true
+                        :label         "备注"
+                        :default-value note
+                        :on-change     #(let [value (-> % .-target .-value)]
+                                          (dispatch [:roles/set-attr :note value]))}]]
+       [:> Divider]
+       (styles/styled-checkbox-list menu-tree-view)
 
-        [:div {:style      {:margin "normal"}
-               :class-name (.-buttons classes)}
-         [:> mui/Button {:type     "button"
-                         :variant  "outlined"
-                         :size     "small"
-                         :color    "primary"
-                         :on-click #(do
-                                      (dispatch [:menus/set-attr :update_by (:id @user)])
-                                      (dispatch [:menus/update @role]))}
-          "保存"]
-         [:> mui/Button {:type     "button"
-                         :variant  "outlined"
-                         :size     "small"
-                         :color    "secondary"
-                         :on-click #(js/history.go -1)}
-          "返回"]]]])))
-
-(defn- edit-page [props]
-  [c/layout props
-   (styles/styled-edit-form edit-form)])
+       [:div {:style {:text-align "center"}}
+        [:> Button {:basic    true
+                    :size     "mini"
+                    :color    "green"
+                    :content  "保存"
+                    :on-click #(do
+                                 (dispatch [:menus/set-attr :update_by (:id @user)])
+                                 (dispatch [:menus/update @role]))}]
+        [:> Button {
+                    :size     "mini"
+                    :basic    true
+                    :on-click #(js/history.go -1)}
+         "返回"]]])))
 
 (defn edit []
-  (styles/styled-layout edit-page))
+  [c/layout [edit-form]])
 
 (def ^:dynamic *delete-id* (r/atom 0))
 (defn delete-dialog [id]
   (let [open (subscribe [:roles/delete-dialog-open])]
     (if @open
-      [c/dialog {:open     @open
+      [c/modal {:open      @open
                  :title    "删除角色"
                  :ok-text  "确认"
                  :on-close #(dispatch [:roles/set-delete-dialog-open false])
                  :on-ok    #(do (dispatch [:roles/set-delete-dialog-open false])
                                 (dispatch [:data-dices/delete id]))}
-       [:> mui/DialogContentText "你确定要删除吗？"]])))
+       "你确定要删除吗？"])))
 
-(defn query-form [{:keys [classes]}]
+(defn query-form []
   (let [query-params (subscribe [:roles/query-params])]
     (fn []
-      [:> mui/Paper {:class-name (.-paper classes)}
-       [:form {:name       "query-form"
-               :class-name (.-root classes)
-               :size "small"}
-        [:div
-         [:> mui/TextField {:name      "name"
-                            :label     "名称"
-                            :size "small"
-                            :on-change #(dispatch [:roles/set-query-params :name (-> % .-target .-value)])}]]
-        [:div {:class-name (.-buttons classes)}
-         [:> mui/Button {:color    "primary"
-                         :size     "small"
-                         :variant  "outlined"
-                         :type "reset"
-                         :on-click #(dispatch [:roles/clean-query-params])}
-          "重置"]
-         [:> mui/Button {:variant  "outlined"
-                         :size     "small"
-                         :color    "primary"
-                         :on-click #(dispatch [:roles/load-page @query-params])}
-          "搜索"]
-         [:> mui/Button {:color    "secondary"
-                         :size     "small"
-                         :variant  "outlined"
-                         :on-click #(navigate! "/roles/add")}
-          "新增"]]]])))
+      [:> Form {:name       "query-form"
+              :size       "mini"}
+       [:> Form.Group
+        [:> Form.Input {:name      "name"
+                        :label     "名称"
+                   :inline true
+                        :on-change #(dispatch [:roles/set-query-params :name (-> % .-target .-value)])}]]
+       [:div {:style {:text-align "right"}}
+        [:> Button {:basic true
+                    :color    "green"
+                    :size "mini"
+                    :icon "search"
+                    :content "查询"
+                    :on-click #(dispatch [:roles/load-page @query-params])}]
+        [:> Button {:color    "red"
+                    :basic true
+                    :size "mini"
+                    :icon "add"
+                    :content "新增"
+                    :on-click #(navigate! "/roles/add")}]]])))
 
-(defn list-table [{:keys [classes]}]
+(defn list-table []
   (let [roles (subscribe [:roles])
         pagination (subscribe [:roles/pagination])
         query-params (subscribe [:roles/query-params])]
-    (fn []
-      [:> mui/TableContainer {:class-name (.-paper classes)
-                              :component  mui/Paper}
-       [:> mui/Table {:class-name    (.-table classes)
-                      :sticky-header true
-                      :aria-label    "list-table"
-                      :size          "small"}
-        [:> mui/TableHead {:class-name (.-head classes)}
-         [:> mui/TableRow {:class-name (.-head classes)}
-          [:> mui/TableCell {:align "center"} "名称"]
-          [:> mui/TableCell {:align "center"} "备注"]
-          [:> mui/TableCell {:align "center"} "操作"]
-          ]]
-        [:> mui/TableBody {:class-name (.-body classes)}
-         (doall
-           (for [{:keys [id name note] :as role} @roles]
-             ^{:key role}
-             [:> mui/TableRow {:class-name (.-row classes)}
-              [:> mui/TableCell {:align "center"} name]
-              [:> mui/TableCell {:align "center"} note]
-              [:> mui/TableCell {:align "center"}
-               [:div
-                [:> mui/IconButton {:color    "primary"
-                                    :size     "small"
-                                    :on-click #(navigate! (str "/roles/" id "/edit"))}
-                 [:> mui-icons/Edit]]
+    [:div
+     [:> Table {:celled     true
+                :selectable true
+                :size       "small"
+                :text-align "center"}
+      [:> Table.Header
+       [:> Table.Row
+        [:> Table.HeaderCell "名称"]
+        [:> Table.HeaderCell "备注"]
+        [:> Table.HeaderCell "操作"]]]
+      [:> Table.Body
+       (doall
+         (for [{:keys [id name note] :as role} @roles]
+           ^{:key role}
+           [:> Table.Row
+            [:> Table.Cell name]
+            [:> Table.Cell note]
+            [:> Table.Cell
+             [:div
+              [:> Button {:color    "green"
+                          :size     "mini"
+                          :icon     "edit"
+                          :basic true
+                          :on-click #(navigate! (str "/roles/" id "/edit"))}]
 
-                [:> mui/IconButton {:color    "secondary"
-                                    :size     "small"
-                                    :style    {:margin "0 8px"}
-                                    :on-click (fn []
-                                                (do
-                                                  (dispatch [:roles/set-delete-dialog-open true])
-                                                  (reset! *delete-id* id)))}
-                 [:> mui-icons/Delete]]]]]))]]
-       (if @roles
-         [c/table-page :roles/load-page (merge @query-params @pagination)])])))
-
-(defn query-page
-  [props]
-  [c/layout props
-   [:div
-    (styles/styled-edit-form delete-dialog)
-    (styles/styled-form query-form)
-    (styles/styled-table list-table)]])
+              [:> Button {:color    "red"
+                          :size     "mini"
+                          :basic true
+                          :icon     "delete"
+                          :on-click (fn []
+                                      (do
+                                        (dispatch [:roles/set-delete-dialog-open true])
+                                        (reset! *delete-id* id)))}]]]]))]]
+     (when @roles
+       [c/table-page :roles/load-page (merge @query-params @pagination)])]))
 
 (defn home []
-  (styles/styled-layout query-page))
+  [c/layout
+   [:<>
+    [delete-dialog]
+    [query-form]
+    [:> Divider]
+    [list-table]]])

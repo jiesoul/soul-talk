@@ -109,7 +109,8 @@
         [styles/theme-provider styles/custom-theme
          [:<>
           [c/success]
-          [:> ToastContainer {:auto-close 3000}]
-          (styles/with-custom-styled styles/success-snackbar-styles c/error-snackbars)
+          [c/error]
+          [:> ToastContainer {:auto-close 3000
+                              :newest-on-top true}]
           [c/lading]
           (pages @active-page)]]))))

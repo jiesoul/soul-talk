@@ -20,7 +20,7 @@
         id (r/cursor update-series [:id])
         name (r/cursor update-series [:name])]
     (fn []
-      [c/dialog {:visible    @*visible*
+      [c/modal {:visible     @*visible*
                  :title      "添加系列"
                  :okText     "保存"
                  :cancelText "退出"
@@ -105,7 +105,7 @@
                                  :alt      "删除"
                                  :on-click (fn []
                                              (r/as-element
-                                               (c/dialog
+                                               (c/modal
                                                  "删除"
                                                  (str "你确认要删除吗？")
                                                  #(dispatch [:series/delete id])

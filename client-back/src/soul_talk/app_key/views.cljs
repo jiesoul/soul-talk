@@ -77,7 +77,7 @@
                                :size     "small"
                                :on-click (fn []
                                            (r/as-element
-                                             (c/dialog
+                                             (c/modal
                                                "删除"
                                                (str "你确认要删除吗？")
                                                #(dispatch [:app-keys/delete id])

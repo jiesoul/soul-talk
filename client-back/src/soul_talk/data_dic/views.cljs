@@ -21,10 +21,10 @@
   (let [user-id  (:id @(subscribe [:user]))
         data-dic (subscribe [:data-dic])]
     (fn []
-      [c/dialog {:open         @*add-visible*
-                      :title "添加数据字典"
-                      :on-close        #(handle-close)
-                      :on-ok #(dispatch [:data-dices/add (assoc @data-dic :create_by user-id
+      [c/modal {:open           @*add-visible*
+                      :title    "添加数据字典"
+                      :on-close #(handle-close)
+                      :on-ok    #(dispatch [:data-dices/add (assoc @data-dic :create_by user-id
                                                                           :update_by user-id)])}
        [:form {:name "add-data-dic-form"}
         [:> mui/TextField {:name       "id"
@@ -57,11 +57,11 @@
     (fn []
       (if @data-dic
         (let [{:keys [id name pid note]} @data-dic]
-          [c/dialog {:open            @*edit-visible*
-                     :title "添加数据字典"
+          [c/modal {:open             @*edit-visible*
+                     :title           "添加数据字典"
                      :aria-labelledby "add-form-dialog"
                      :on-close        #(reset! *edit-visible* false)
-                     :on-ok #(dispatch [:data-dices/update (assoc @data-dic :update_by user-id)])}
+                     :on-ok           #(dispatch [:data-dices/update (assoc @data-dic :update_by user-id)])}
            [:form {:name       "add-data-dic-form"
                    :class-name (.-root classes)}
             [:> mui/TextField {:id            "id"
@@ -100,7 +100,7 @@
 (def ^:dynamic *delete-id* (r/atom 0))
 
 (defn delete-dialog []
-  [c/dialog {:open     @*delete-dialog-open*
+  [c/modal {:open      @*delete-dialog-open*
              :title    "删除数据字典"
              :ok-text  "确认"
              :on-close #(reset! *delete-dialog-open* false)

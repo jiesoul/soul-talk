@@ -101,7 +101,7 @@
   (let [open (subscribe [:articles/delete-dialog-open])
         article (subscribe [:articles/edit])]
     (if @open
-      [c/dialog {:open     @open
+      [c/modal {:open      @open
                  :title    (str "删除文章: ")
                  :ok-text  "确认"
                  :on-close #(dispatch [:articles/set-delete-dialog-open false])

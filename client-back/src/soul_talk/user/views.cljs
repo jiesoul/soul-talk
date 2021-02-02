@@ -125,7 +125,7 @@
         open (subscribe [:users/add-dialog-open])
         user-id (:id @user)]
     (if @open
-      [c/dialog {:open     @open
+      [c/modal {:open      @open
                  :title    "添加角色"
                  :on-close (fn [e props]
                              (do
@@ -156,7 +156,7 @@
         open (subscribe [:users/edit-dialog-open])]
     (if @open
       (let [{:keys [name note]} @user]
-        [c/dialog {:open     @open
+        [c/modal {:open      @open
                    :title    "编辑角色"
                    :on-close #(dispatch [:users/set-edit-dialog-open false])
                    :on-ok    #(let [user @user]
@@ -184,7 +184,7 @@
 (defn delete-dialog [id]
   (let [open (subscribe [:users/delete-dialog-open])]
     (if @open
-      [c/dialog {:open     @open
+      [c/modal {:open      @open
                  :title    "删除角色"
                  :ok-text  "确认"
                  :on-close #(dispatch [:users/set-delete-dialog-open false])
@@ -227,7 +227,7 @@
         menus (subscribe [:menus])]
     (if @open
       (fn []
-        [c/dialog {:open     @open
+        [c/modal {:open      @open
                    :title    (str "角色：" (:name @user))
                    :on-close #(dispatch [:users/set-roles-dialog-open false])
                    :on-ok    (fn [])}
