@@ -7,7 +7,7 @@
             [soul-talk.utils :as utils]
             [soul-talk.common.styles :as styles]
             ["semantic-ui-react" :as sui :refer [Breadcrumb Container Menu Divider Dropdown Grid Segment Dimmer Loader
-                                                 Sidebar Message Modal Button Pagination]]
+                                                 Sidebar Message Modal Button Pagination Header Visibility]]
             ["react-toastify" :refer [toast]]
             [react :as react]))
 
@@ -51,30 +51,29 @@
 (defn app-bar []
   (let [site-info (rf/subscribe [:site-info])
         user (rf/subscribe [:user])]
-    [:> Menu {:inverted true
-              :style {:padding "0"
-                      :margin "0px"}}
-     [:> Menu.Item {:as     "h3"
-                    :header true}
-      (:name @site-info)]
-     [:> Dropdown {:item     true
-                   :simple   true
-                   :pointing "right"
-                   :icon "user"
-                   :class-name "icon"
-                   :style {:margin-right "10px"}
-                   :text     (:name @user)}
-      [:> Dropdown.Menu
-       [:> Dropdown.Item {:as "a"
-                          :on-click #(navigate! (str "/users/" (:id @user) "/password"))}
-        "修改密码"]
-       [:> Dropdown.Item {:as "a"
-                          :on-click #(navigate! (str "/users/" (:id @user) "/profile"))}
-        "个人信息"]
-       [:> Divider]
-       [:> Dropdown.Item {:as "a"
-                          :on-click #(rf/dispatch [:logout])}
-        "退出"]]]]))
+    [:> Menu {:inverted true}
+     [:> Container {:fluid true}
+      [:> Menu.Item {:as     "h3"
+                     :header true}
+       (:name @site-info)]
+      [:> Dropdown {:item       true
+                    :simple     true
+                    :pointing   "right"
+                    :icon       "user"
+                    :class-name "icon"
+                    :style      {:margin-right "10px"}
+                    :text       (:name @user)}
+       [:> Dropdown.Menu
+        [:> Dropdown.Item {:as       "a"
+                           :on-click #(navigate! (str "/users/" (:id @user) "/password"))}
+         "修改密码"]
+        [:> Dropdown.Item {:as       "a"
+                           :on-click #(navigate! (str "/users/" (:id @user) "/profile"))}
+         "个人信息"]
+        [:> Divider]
+        [:> Dropdown.Item {:as       "a"
+                           :on-click #(rf/dispatch [:logout])}
+         "退出"]]]]]))
 
 (defn menu-tree-items [menus selected-id]
   (doall
@@ -89,22 +88,22 @@
                                        (rf/dispatch [:menus/select menu])
                                        (navigate! url))}]
            [:> Menu.Item
-            [:> Menu.Header name]
+            name
             [:> Menu.Menu
              (menu-tree-items children selected-id)]])]))))
 
-(defn drawer []
+(defn sidebar []
   (let [user (rf/subscribe [:user])
         menus (:menus @user)
         menus-tree (utils/make-tree menus)
         {:keys [id]} @(rf/subscribe [:menus/selected])]
     [:> Menu {:vertical true
-              :inverted true}
+              :fluid true}
      (menu-tree-items (:children menus-tree) id)]))
 
 (defn breadcrumbs []
   (let [[first second] @(rf/subscribe [:breadcrumb])]
-    [:> Breadcrumb {:size "large"}
+    [:> Breadcrumb
      (if second
        [:<>
         [:> Breadcrumb.Section first]
@@ -123,20 +122,23 @@
        (str " 2019-" year ".")])))
 
 (defn layout [children]
-  [:div
-   [app-bar]
-   [:> Grid {:style {:padding "1px 20px 0px 0px"}}
+  [:> Grid
+   [:> Grid.Row
+    [:> Grid.Column {:width 16}
+     [app-bar]]]
+   [:> Grid.Row {:style {:margin "-1em 1em"}}
     [:> Grid.Column {:width 2}
-     [drawer]]
+     [sidebar]]
+    [:> Divider {:vertical true}]
     [:> Grid.Column {:width 14}
      [:> Segment
-      [:<>
-       [breadcrumbs]
-       [:> Divider]
-       [:div {:max-width "lg"}
-        children
-        [:div {:style {:margin-top "20px"}}
-         [copyright]]]]]]]])
+      [breadcrumbs]
+      [:> Divider]
+      [:> Container {:max-width "lg"
+                     :fluid true}
+       children
+       [:div {:style {:margin-top "20px"}}
+        [copyright]]]]]]])
 
 (defn modal [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
   [:> Modal {:dimmer   "blurring"
