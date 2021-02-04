@@ -1,101 +1,93 @@
 (ns soul-talk.data-dic.views
   (:require [soul-talk.common.views :as c]
-            ["@material-ui/core" :as mui]
-            ["@material-ui/icons" :as mui-icons]
+            ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input]]
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [soul-talk.utils :as utils]
             [soul-talk.common.styles :as styles]))
 
-(def ^:dynamic *edit-visible* (r/atom false))
-(def ^:dynamic *add-visible* (r/atom false))
 (def ^:dynamic *delete-dialog-open* (r/atom false))
 
-(defn handle-close []
-               (do (dispatch [:data-dices/clean-data-dic])
-                   (reset! *add-visible* false)))
 (defn handle-ok [data-dic]
   (dispatch [:data-dices/add data-dic]))
 
-(defn add-form [{:keys [classes]}]
+(defn add-form []
   (let [user-id  (:id @(subscribe [:user]))
-        data-dic (subscribe [:data-dic])]
-    (fn []
-      [c/modal {:open           @*add-visible*
-                      :title    "添加数据字典"
-                      :on-close #(handle-close)
-                      :on-ok    #(dispatch [:data-dices/add (assoc @data-dic :create_by user-id
-                                                                          :update_by user-id)])}
-       [:form {:name "add-data-dic-form"}
-        [:> mui/TextField {:name       "id"
-                           :label      "id"
-                           :full-width true
-                           :rules      [{:required true}]
-                           :on-change  #(let [value (-> % .-target .-value)]
-                                          (dispatch [:data-dices/set-attr :id value]))}]
-        [:> mui/TextField {:name       "name"
-                           :label      "名称"
-                           :full-width true
-                           :rules      [{:required true}]
-                           :on-change  #(let [value (-> % .-target .-value)]
-                                          (dispatch [:data-dices/set-attr :name value]))}]
-        [:> mui/TextField {:name       "pid"
-                           :label      "父id"
-                           :full-width true
-                           :rules      [{:required true}]
-                           :on-change  #(let [value (-> % .-target .-value)]
-                                          (dispatch [:data-dices/set-attr :pid value]))}]
-        [:> mui/TextField {:name       "note"
-                           :label      "备注"
-                           :full-width true
-                           :on-change  #(let [value (-> % .-target .-value)]
-                                          (dispatch [:data-dices/set-attr :note value]))}]]])))
+        data-dic (subscribe [:data-dic])
+        data-dic (assoc @data-dic :create_by user-id
+                                  :update_by user-id)]
+    [:> Form {:name "add-data-dic-form"}
+     [:> Form.Input {:name       "id"
+                        :label      "id"
+                        :full-width true
+                        :rules      [{:required true}]
+                        :on-change  #(let [value (-> % .-target .-value)]
+                                       (dispatch [:data-dices/set-attr :id value]))}]
+     [:> Form.Input {:name       "name"
+                        :label      "名称"
+                        :full-width true
+                        :rules      [{:required true}]
+                        :on-change  #(let [value (-> % .-target .-value)]
+                                       (dispatch [:data-dices/set-attr :name value]))}]
+     [:> Form.Input {:name       "pid"
+                        :label      "父id"
+                        :full-width true
+                        :rules      [{:required true}]
+                        :on-change  #(let [value (-> % .-target .-value)]
+                                       (dispatch [:data-dices/set-attr :pid value]))}]
+     [:> Form.Input {:name       "note"
+                        :label      "备注"
+                        :full-width true
+                        :on-change  #(let [value (-> % .-target .-value)]
+                                       (dispatch [:data-dices/set-attr :note value]))}]]))
 
-(defn edit-form [{:keys [classes]}]
+
+(defn add []
+  [c/layout [add-form]])
+
+(defn edit-form []
   (let [user-id  (:id @(subscribe [:user]))
-        data-dic (subscribe [:data-dic])]
+        data-dic (subscribe [:data-dic])
+        data-dic (assoc @data-dic :update_by user-id)]
     (fn []
       (if @data-dic
         (let [{:keys [id name pid note]} @data-dic]
-          [c/modal {:open             @*edit-visible*
-                     :title           "添加数据字典"
-                     :aria-labelledby "add-form-dialog"
-                     :on-close        #(reset! *edit-visible* false)
-                     :on-ok           #(dispatch [:data-dices/update (assoc @data-dic :update_by user-id)])}
-           [:form {:name       "add-data-dic-form"
-                   :class-name (.-root classes)}
-            [:> mui/TextField {:id            "id"
-                               :name          "id"
-                               :label         "id"
-                               :required      true
-                               :full-width    true
-                               :variant       "outlined"
-                               :default-value id
-                               :on-change     #(let [value (-> % .-target .-value)]
-                                                 (dispatch [:data-dices/set-attr :id value]))}]
-            [:> mui/TextField {:name       "name"
-                               :label      "名称"
-                               :full-width true
-                               :variant    "outlined"
-                               :value      name
-                               :rules      [{:required true}]
-                               :on-change  #(let [value (-> % .-target .-value)]
-                                              (dispatch [:data-dices/set-attr :name value]))}]
-            [:> mui/TextField {:name       "pid"
-                               :label      "父id"
-                               :full-width true
-                               :variant    "outlined"
-                               :value      pid
-                               :rules      [{:required true}]
-                               :on-change  #(let [value (-> % .-target .-value)]
-                                              (dispatch [:data-dices/set-attr :pid value]))}]
-            [:> mui/TextField {:name       "note"
-                               :label      "备注"
-                               :variant    "outlined"
-                               :value      note
-                               :full-width true
-                               :on-change  #(let [value (-> % .-target .-value)]
-                                              (dispatch [:data-dices/set-attr :note value]))}]]])))))
+          [:> Form {:name "add-data-dic-form"}
+           [:> Form.Input {:id            "id"
+                           :name          "id"
+                           :label         "id"
+                           :required      true
+                           :full-width    true
+                           :variant       "outlined"
+                           :default-value id
+                           :on-change     #(let [value (-> % .-target .-value)]
+                                             (dispatch [:data-dices/set-attr :id value]))}]
+           [:> Form.Input {:name       "name"
+                           :label      "名称"
+                           :full-width true
+                           :variant    "outlined"
+                           :value      name
+                           :rules      [{:required true}]
+                           :on-change  #(let [value (-> % .-target .-value)]
+                                          (dispatch [:data-dices/set-attr :name value]))}]
+           [:> Form.Input {:name       "pid"
+                           :label      "父id"
+                           :full-width true
+                           :variant    "outlined"
+                           :value      pid
+                           :rules      [{:required true}]
+                           :on-change  #(let [value (-> % .-target .-value)]
+                                          (dispatch [:data-dices/set-attr :pid value]))}]
+           [:> Form.Input {:name       "note"
+                           :label      "备注"
+                           :variant    "outlined"
+                           :value      note
+                           :full-width true
+                           :on-change  #(let [value (-> % .-target .-value)]
+                                          (dispatch [:data-dices/set-attr :note value]))}]])))))
+
+(defn edit []
+  [c/layout [edit-form]])
 
 (def ^:dynamic *delete-id* (r/atom 0))
 
@@ -106,103 +98,90 @@
              :on-close #(reset! *delete-dialog-open* false)
              :on-ok    #(do (reset! *delete-dialog-open* false)
                             (dispatch [:data-dices/delete @*delete-id*]))}
-   [:> mui/DialogContentText "你确定要删除吗？"]])
+   "你确定要删除吗？"])
 
-(defn query-form [{:keys [classes] :as props}]
+(defn query-form []
   (let [pagination (subscribe [:pagination])
         params (subscribe [:data-dices/query-params])]
-    [:> mui/Paper {:class-name (.-paper classes)}
-     [:form {:name       "query-form"
-             :class-name (.-root classes)}
-      [:div
-       [:> mui/TextField {:name      "id"
-                          :label     "id"
-                          :on-change #(dispatch [:data-dices/set-query-params :id (-> % .-target .-value)])}]
-       [:> mui/TextField {:name      "name"
-                          :label     "名称"
-                          :on-change #(dispatch [:data-dices/set-query-params :name (-> % .-target .-value)])}]
-       [:> mui/TextField {:name      "pid"
-                          :label     "父id"
-                          :on-change #(dispatch [:data-dices/set-query-params :pid (-> % .-target .-value)])}]
-       ]
+    [:> Form {:name "query-form"
+              :size "mini"}
+     [:> Form.Group {:inline true}
+      [:> Form.Input {:name      "id"
+                      :label     "id"
+                      :on-change #(dispatch [:data-dices/set-query-params :id (-> % .-target .-value)])}]
+      [:> Form.Input {:name      "name"
+                      :label     "名称"
+                      :on-change #(dispatch [:data-dices/set-query-params :name (-> % .-target .-value)])}]
+      [:> Form.Input {:name      "pid"
+                      :label     "父id"
+                      :on-change #(dispatch [:data-dices/set-query-params :pid (-> % .-target .-value)])}]
+      ]
 
-      [:div {:class-name (.-buttons classes)}
-       [:> mui/Button {:variant "outlined"
-                       :color "default"
-                       :size "small"
-                       :type "reset"} "重置"]
-       [:> mui/Button {:variant  "outlined"
-                       :color    "primary"
-                       :size     "small"
-                       :on-click #(dispatch [:data-dices/load-page (merge @params @pagination)])}
-        "查询"]
-       [:> mui/Button {:variant  "outlined"
-                       :color    "secondary"
-                       :size     "small"
-                       :on-click #(reset! *add-visible* true)}
-        "新增"]]]]))
+     [:div {:style {:text-align "center"}}
+      [:> Button {:basic true
+                  :color "green"
+                  :size     "mini"
+                  :on-click #(dispatch [:data-dices/load-page (merge @params @pagination)])}
+       "查询"]
+      [:> Button {:basic true
+                  :color    "red"
+                  :size     "mini"
+                  :on-click #()}
+       "新增"]]]))
 
-(defn list-table [{:keys [classes]}]
+(defn list-table []
   (let [data-dices (subscribe [:data-dices])
         pagination (subscribe [:pagination])
         query-params (subscribe [:data-dices/query-params])]
-    (fn []
-      (let [{:keys [per_page page total total_pages]} @pagination]
-        [:> mui/Paper {:class-name (.-paper classes)}
-         [:> mui/TableContainer
-          [:> mui/Table {:sticky-header true
-                         :class-name    (.-table classes)
-                         :size          "small"
-                         :aria-label    "data-dices-table"}
-           [:> mui/TableHead
-            [:> mui/TableRow {:style {:background-color "blue"}}
-             [:> mui/TableCell {:align "center" :class-name (.-head classes)} "ID"]
-             [:> mui/TableCell {:align "center"} "名称"]
-             [:> mui/TableCell {:align "center"} "PID"]
-             [:> mui/TableCell {:align "center"} "备注"]
-             [:> mui/TableCell {:align "center"} "创建时间"]
-             [:> mui/TableCell {:align "center"} "创建人ID"]
-             [:> mui/TableCell {:align "center"} "更新时间"]
-             [:> mui/TableCell {:align "center"} "操作"]]]
-           [:> mui/TableBody
-            (doall
-              (for [{:keys [id pid name note create_at create_by update_at] :as data-dic} @data-dices]
-                ^{:key data-dic}
-                [:> mui/TableRow {:tab-index  -1
-                                  :class-name (.-row classes)}
-                 [:> mui/TableCell {:align "center"} id]
-                 [:> mui/TableCell {:align "center"} name]
-                 [:> mui/TableCell {:align "center"} pid]
-                 [:> mui/TableCell {:align "center"} note]
-                 [:> mui/TableCell {:align "center"} (utils/to-date-time create_at)]
-                 [:> mui/TableCell {:align "center"} create_by]
-                 [:> mui/TableCell {:align "center"} (utils/to-date-time update_at)]
-                 [:> mui/TableCell {:align "center"}
-                  [:div
-                   [:> mui/IconButton {:aria-label "edit"
-                                       :color      "primary"
-                                       :on-click   (fn []
-                                                     (dispatch [:data-dices/load-data-dic id])
-                                                     (reset! *edit-visible* true))}
-                    [:> mui-icons/Edit]]
-                   [:> mui/IconButton {:aria-label "delete"
-                                       :color      "secondary"
-                                       :style      {:margin "0 8px"}
-                                       :on-click   (fn []
-                                                     (do (reset! *delete-dialog-open* true)
-                                                         (reset! *delete-id* id)))}
-                    [:> mui-icons/Delete]]]]]))]]
-          (if @data-dices
-            [c/table-page :data-dices/load-page (merge @query-params @pagination)])]]))))
-
-(defn query-page [props]
-  [c/layout props
-   [:<>
-    (styles/styled-edit-form add-form)
-    (styles/styled-edit-form edit-form)
-    (styles/styled-edit-form delete-dialog)
-    (styles/styled-form query-form)
-    (styles/styled-table list-table)]])
+    (let [{:keys [per_page page total total_pages]} @pagination]
+      [:<>
+       [:> Table {:celled true
+                  :size          "mini"
+                  :aria-label    "data-dices-table"}
+        [:> Table.Header
+         [:> Table.Row
+          [:> Table.HeaderCell {:align "center"} "ID"]
+          [:> Table.HeaderCell {:align "center"} "名称"]
+          [:> Table.HeaderCell {:align "center"} "PID"]
+          [:> Table.HeaderCell {:align "center"} "备注"]
+          [:> Table.HeaderCell {:align "center"} "创建时间"]
+          [:> Table.HeaderCell {:align "center"} "创建人ID"]
+          [:> Table.HeaderCell {:align "center"} "更新时间"]
+          [:> Table.HeaderCell {:align "center"} "操作"]]]
+        [:> Table.Body
+         (doall
+           (for [{:keys [id pid name note create_at create_by update_at] :as data-dic} @data-dices]
+             ^{:key data-dic}
+             [:> Table.Row {:tab-index -1}
+              [:> Table.Cell {:align "center"} id]
+              [:> Table.Cell {:align "center"} name]
+              [:> Table.Cell {:align "center"} pid]
+              [:> Table.Cell {:align "center"} note]
+              [:> Table.Cell {:align "center"} (utils/to-date-time create_at)]
+              [:> Table.Cell {:align "center"} create_by]
+              [:> Table.Cell {:align "center"} (utils/to-date-time update_at)]
+              [:> Table.Cell {:align "center"}
+               [:div
+                [:> Button {:basic true
+                            :color      "green"
+                            :icon       "edit"
+                            :size "mini"
+                            :on-click   (fn []
+                                          (dispatch [:data-dices/load-data-dic id]))}]
+                [:> Button {:basic true
+                            :size "mini"
+                            :color      "red"
+                            :style      {:margin "0 8px"}
+                            :icon       "delete"
+                            :on-click   (fn []
+                                          (do (reset! *delete-dialog-open* true)
+                                              (reset! *delete-id* id)))}]]]]))]]
+       (if @data-dices
+         [c/table-page :data-dices/load-page (merge @query-params @pagination)])])))
 
 (defn home []
-  (styles/styled-layout query-page))
+  [c/layout
+   [:<>
+    [delete-dialog]
+    [query-form]
+    [list-table]]])

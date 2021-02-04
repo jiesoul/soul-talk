@@ -4,8 +4,7 @@
             [soul-talk.common.views :as c]
             [soul-talk.utils :as du]
             [soul-talk.common.styles :as styles]
-            ["@material-ui/core" :refer [Modal Form Input Row Col Button Table Divider]]
-            ["@material-ui/icons" :refer [SearchOutlined EditOutlined DeleteOutlined]]))
+            ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input]]))
 
 (def ^:dynamic *visible* (r/atom false))
 
@@ -17,24 +16,16 @@
                      (update :create_by #(or % (:id @user)))
                      r/atom)
         name (r/cursor update-tag [:name])]
-    (fn []
-      [:> Modal {:visible    @*visible*
-                 :title      "add a tag"
-                 :okText     "Create"
-                 :cancelText "Cancel"
-                 :onCancel   #(do
-                                (dispatch [:tags/clean-tag])
-                                (reset! *visible* false))
-                 :onOk       #(do
-                                (dispatch [:tags/add @update-tag]))}
-       [:> Form {:name "add_tag_form"}
-        [:> Form.Item {:title "name"
-                       :label "name"
-                       :required true
-                       :rules [{:require true :message "please enter name"}]
-                       :on-change #(let [value (-> % .-target .-value)]
-                                     (reset! name value))}
-         [:> Input]]]])))
+    [:> Form {:name "add_tag_form"}
+     [:> Form.Input {:title     "name"
+                     :label     "name"
+                     :required  true
+                     :rules     [{:require true :message "please enter name"}]
+                     :on-change #(let [value (-> % .-target .-value)]
+                                   (reset! name value))}]]))
+
+(defn edit []
+  [c/layout [edit-form]])
 
 (defn query-form []
   (let [pagination (subscribe [:pagination])
@@ -44,24 +35,18 @@
       [:div
        [:> Form {:title     ""
                  :className "advanced-search-form"}
-        [:> Row {:gutter 24}
-         [:> Col {:span 8}
-          [:> Form.Item {:name  "name"
-                         :label "name"}
-           [:> Input {:placeholder "name"
-                      :value       @name
-                      :on-blur     #(reset! name (-> % .-target .-value))}]]]]
-        [:> Row
-         [:> Col {:span 24 :style {:text-align "right"}}
-          [:div
-           [:> Button {:type     "primary"
-                       :htmlType "submit"
-                       :on-click #(dispatch [:tags/load-all (merge @params @pagination)])}
-            "search"]
-           [:> Button {:type     "dashed" :style {:margin "0 8px"}
-                       :on-click #(reset! *visible* true)}
-            "new"]]]]]
-       [edit-form]])))
+        [:> Form.Group
+         [:> Form.Input {:placeholder "name"
+                         :value       @name
+                         :on-blur     #(reset! name (-> % .-target .-value))}]]
+        [:div {:span 24 :style {:text-align "right"}}
+         [:> Button {:type     "primary"
+                     :htmlType "submit"
+                     :on-click #(dispatch [:tags/load-all (merge @params @pagination)])}
+          "search"]
+         [:> Button {:type     "dashed" :style {:margin "0 8px"}
+                     :on-click #(reset! *visible* true)}
+          "new"]]]])))
 
 (def list-columns
   [{:title "名称" :dataIndex "name", :key "name", :align "center"}
@@ -73,21 +58,7 @@
     :render (fn [_ article]
               (let [article (js->clj article :keywordize-keys true)]
                 (du/to-date-time (:update_at article))))}
-   {:title  "操作" :dataIndex "actions" :key "actions" :align "center"
-    :render (fn [_ article]
-              (r/as-element
-                (let [{:keys [id]} (js->clj article :keywordize-keys true)]
-                  [:div
-                   [:> Button {:type     "danger"
-                               :icon     (r/as-element [:> DeleteOutlined])
-                               :size     "small"
-                               :on-click (fn []
-                                           (r/as-element
-                                             (c/modal
-                                               "删除"
-                                               (str "你确认要删除吗？")
-                                               #(dispatch [:tags/delete id])
-                                               #(js/console.log "cancel"))))}]])))}])
+   {:title  "操作" :dataIndex "actions" :key "actions" :align "center"}])
 
 (defn list-table []
   (r/with-let [tags (subscribe [:tags])]
@@ -98,13 +69,8 @@
                   :row-key    "id"
                   :bordered   true}]])))
 
-(defn query-page [props]
-  [c/layout props
+(defn home []
+  [c/layout
    [:<>
     [query-form]
     [list-table]]])
-
-
-(defn home []
-  (styles/styled-layout query-page))
-

@@ -4,8 +4,7 @@
             [soul-talk.common.views :as c]
             [soul-talk.utils :as du]
             [soul-talk.common.styles :as styles]
-            ["@material-ui/core" :refer [Modal Form Row Col Button Input Table]]
-            ["@material-ui/icons" :refer [DeleteOutlined]]))
+            ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input]]))
 
 (def ^:dynamic *visible* (r/atom false))
 
@@ -14,20 +13,14 @@
         app-key (r/atom {})]
     (fn []
       (let [name (r/cursor app-key [:name])]
-        [:> Modal {:visible    @*visible*
-                   :title      "add a app-key"
-                   :okText     "Create"
-                   :cancelText "Cancel"
-                   :onCancel   #(do
-                                  (reset! *visible* false)
-                                  (reset! app-key {}))
-                   :onOk       #(do
-                                  (dispatch [:app-keys/add (assoc @app-key :create_by (:id @user))]))}
-         [:> Form {:name "add_app-key_form"}
-          [:> Form.Item {:title "name"
-                         :label "name"
-                         :rules [{:require true :message "please enter name"}]}
-           [:> Input {:on-blur #(reset! name (-> % .-target .-value))}]]]]))))
+        [:> Form {:name "add_app-key_form"}
+         [:> Form.Input {:title "name"
+                        :label "name"
+                        :rules [{:require true :message "please enter name"}]}
+          [:> Input {:on-blur #(reset! name (-> % .-target .-value))}]]]))))
+
+(defn edit []
+  [c/layout [edit-form]])
 
 (defn query-form []
   (let [pagination (subscribe [:pagination])
@@ -36,25 +29,19 @@
     [:div
      [:> Form {:title     ""
                :className "advanced-search-form"}
-      [:> Row {:gutter 24}
-       [:> Col {:span 8}
-        [:> Form.Item {:name  "name"
-                       :label "name"}
-         [:> Input {:placeholder "name"
-                    :on-blur     #(reset! name (-> % .-target .-value))}]]]]
-      [:> Row
-       [:> Col {:span 24 :style {:text-align "right"}}
-        [:<>
-         [:> Button {:type     "primary"
-                     :htmlType "submit"
-                     :on-click #(dispatch [:app-keys/load-all (merge @params @pagination)])}
-          "search"]
-         [:> Button {:type     "dashed" :style {:margin "0 8px"}
-                     :on-click #(reset! *visible* true)}
-          "new"]]
-        ]]]
-     [edit-form]
-     ]))
+      [:> Form.Group
+       [:> Form.Input {:placeholder "name"
+                  :on-blur     #(reset! name (-> % .-target .-value))}]]
+      [:div
+       [:<>
+        [:> Button {:type     "primary"
+                    :htmlType "submit"
+                    :on-click #(dispatch [:app-keys/load-all (merge @params @pagination)])}
+         "search"]
+        [:> Button {:type     "dashed" :style {:margin "0 8px"}
+                    :on-click #(reset! *visible* true)}
+         "new"]]
+       ]]]))
 
 (def list-columns
   [{:title "app" :dataIndex "app_name", :key "app_name", :align "center"}
@@ -67,21 +54,7 @@
     :render (fn [_ app-key]
               (let [app-key (js->clj app-key :keywordize-keys true)]
                 (du/to-date-time (:refresh_at app-key))))}
-   {:title  "操作" :dataIndex "actions" :key "actions" :align "center"
-    :render (fn [_ app-key]
-              (r/as-element
-                (let [{:keys [id]} (js->clj app-key :keywordize-keys true)]
-                  [:div
-                   [:> Button {:type     "danger"
-                               :icon     (r/as-element [:> DeleteOutlined])
-                               :size     "small"
-                               :on-click (fn []
-                                           (r/as-element
-                                             (c/modal
-                                               "删除"
-                                               (str "你确认要删除吗？")
-                                               #(dispatch [:app-keys/delete id])
-                                               #(js/console.log "cancel"))))}]])))}])
+   {:title  "操作" :dataIndex "actions" :key "actions" :align "center"}])
 
 (defn query-list []
   (r/with-let [app-keys (subscribe [:app-keys])]
@@ -91,14 +64,11 @@
                 :row-key "id"
                 :bordered true}]]))
 
-(defn query-page [props]
-  [c/layout props
+(defn home []
+  [c/layout
    [:div
     [query-form]
     [query-list]]])
-
-(defn home []
-  (styles/styled-layout query-page))
 
 
 

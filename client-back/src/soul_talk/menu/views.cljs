@@ -204,12 +204,11 @@
                               :size     "mini"
                               :icon "edit"
                               :basic true
-                              :content "编辑"
                               :on-click #(navigate! (str "/menus/" id "/edit"))}]
 
                   [:> Button {:color    "red"
                               :icon "delete"
-                              :content "删除"
+                              :placeholder "删除"
                               :basic true
                                       :size     "mini"
                                       :on-click (fn []

@@ -2,7 +2,6 @@
   (:require [soul-talk.common.views :as c]
             [re-frame.core :as rf]
             ["semantic-ui-react" :as sui :refer [Grid Image Form Input Button Label]]
-            ["react-toastify" :refer [toast]]
             [reagent.core :as r]
             [soul-talk.common.styles :as styles]))
 

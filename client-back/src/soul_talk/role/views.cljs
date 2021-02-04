@@ -5,46 +5,39 @@
             [soul-talk.utils :as utils]
             [soul-talk.common.styles :as styles]
             [soul-talk.routes :refer [navigate!]]
-            ["@material-ui/core" :as mui]
-            ["@material-ui/icons" :as mui-icons]
-            ["@material-ui/lab" :refer [TreeItem TreeView]]
             ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input]]))
 
-(defn menu-tree-items [{:keys [classes color bgColor] :as props} menus role]
-  (let [checked-ids (:menus-ids role)]
-    (doall
-      (for [menu menus]
-        (let [{:keys [children id pid url]} menu]
-          ^{:key menu}
-          [:> TreeItem
-           {:nodeId (str id)
-            :label  (r/as-element
-                      (let []
-                        [:div
-                         [:> mui/Checkbox {:checked   (if (contains? checked-ids id) true false)
-                                           :on-change #(dispatch [:roles/checked-menu {:id id :pid pid} (-> % .-target .-checked)])}]
-                         [:> mui/Button
-                          (:name menu)]]))
-            :on-label-click #()}
-           (when-not (empty? children)
-             (menu-tree-items props children role))])))))
+;(defn menu-tree-items [menus role]
+;  (let [checked-ids (:menus-ids role)]
+;    (doall
+;      (for [menu menus]
+;        (let [{:keys [children id pid url]} menu]
+;          ^{:key menu}
+;          [:> TreeItem
+;           {:nodeId (str id)
+;            :label  (r/as-element
+;                      (let []
+;                        [:div
+;                         [:> mui/Checkbox {:checked   (if (contains? checked-ids id) true false)
+;                                           :on-change #(dispatch [:roles/checked-menu {:id id :pid pid} (-> % .-target .-checked)])}]
+;                         [:> Button
+;                          (:name menu)]]))
+;            :on-label-click #()}
+;           (when-not (empty? children)
+;             (menu-tree-items children role))])))))
 
-(defn menu-tree-view [{:keys [classes] :as props}]
+(defn menu-tree-view []
   (let [user (rf/subscribe [:user])
         menus (subscribe [:menus])
+        tree-data (map #(clojure.set/rename-keys % []) menus)
         menus-tree (utils/make-tree @menus)
         role (subscribe [:roles/edit])
         _ (dispatch [:roles/set-attr {:create_by (:id @user)}])]
-    (fn []
-      [:> Card
-       [:> Card.Header "菜单列表"]
-       [:> Card.Content
-        [:> TreeView {
-                      :multi-select          true
-                      :default-collapse-icon (r/as-element [:> mui-icons/ExpandMore])
-                      :default-expand-icon   (r/as-element [:> mui-icons/ChevronRight])
-                      :default-end-icon      (r/as-element [:div {:style {:width 24}}])}
-         (menu-tree-items props (:children menus-tree) @role)]]])))
+    [:> Card
+     [:> Card.Header "菜单列表"]
+     [:> Card.Content
+      ;[:> SourceTree {:tree-data tree-data}]
+      ]]))
 
 (defn- add-form []
   (let [role    (subscribe [:roles/edit])
@@ -66,8 +59,7 @@
                       :inline    true
                       :on-change #(dispatch [:roles/set-attr {:note (utils/event-value %)}])}]]
 
-     [:div
-      (styles/styled-checkbox-list menu-tree-view)]
+     [menu-tree-view]
      [:div {:style {:text-align "center"}}
       [:> Button {:size     "mini"
                   :color    "green"
@@ -168,7 +160,7 @@
     [:div
      [:> Table {:celled     true
                 :selectable true
-                :size       "small"
+                :size       "mini"
                 :text-align "center"}
       [:> Table.Header
        [:> Table.Row

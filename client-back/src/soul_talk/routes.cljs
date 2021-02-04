@@ -53,40 +53,50 @@
 
 (defroute "/site-info/:id" [id]
   (run-events-admin [[:site-info/load id]
-                     [:set-breadcrumb ["基础信息" "网站信息"]]
+                     [:set-breadcrumb ["基础数据" "网站信息" "编辑"]]
                      [:set-active-page :site-info]]))
 
 (defroute "/data-dices" []
-  (run-events-admin [[:set-breadcrumb ["基础信息" "数据字典"]]
+  (run-events-admin [[:set-breadcrumb ["基础数据" "数据字典" "查询"]]
                      [:data-dices/clean]
                      [:set-active-page :data-dices]]))
 
+(defroute "/data-dices/add" []
+  (run-events-admin [[:set-breadcrumb ["基础数据" "数据字典" "添加"]]
+                     [:data-dices/clean]
+                     [:set-active-page :data-dices/add]]))
+
+(defroute "/data-dices/edit" []
+  (run-events-admin [[:set-breadcrumb ["基础数据" "数据字典" "编辑"]]
+                     [:data-dices/clean]
+                     [:set-active-page :data-dices/edit]]))
+
 (defroute "/menus" []
-  (run-events-admin [[:set-breadcrumb ["基础信息" "菜单列表"]]
+  (run-events-admin [[:set-breadcrumb ["基础数据" "菜单列表" "查询"]]
                      [:menus/init]
                      [:set-active-page :menus]]))
 
 (defroute "/menus/add" []
-  (run-events-admin [[:set-breadcrumb ["菜单管理" "添加菜单"]]
+  (run-events-admin [[:set-breadcrumb ["基础数据" "菜单管理" "添加菜单"]]
                      [:set-active-page :menus/add]]))
 
 (defroute "/menus/:id/edit" [id]
-  (run-events-admin [[:set-breadcrumb ["菜单管理" "修改菜单"]]
+  (run-events-admin [[:set-breadcrumb ["基础数据" "菜单管理" "修改菜单"]]
                      [:menus/load-menu id]
                      [:set-active-page :menus/edit]]))
 
 (defroute "/roles" []
-  (run-events-admin [[:set-breadcrumb ["基础信息" "角色列表"]]
+  (run-events-admin [[:set-breadcrumb ["基础数据" "角色列表" "查询"]]
                      [:roles/init]
                      [:set-active-page :roles]]))
 
 (defroute "/roles/add" []
-  (run-events-admin [[:set-breadcrumb ["角色管理" "添加角色"]]
+  (run-events-admin [[:set-breadcrumb ["基础数据" "角色管理" "添加角色"]]
                      [:menus/load-all]
                      [:set-active-page :roles/add]]))
 
 (defroute "/roles/:id/edit" [id]
-  (run-events-admin [[:set-breadcrumb ["角色管理" "修改角色"]]
+  (run-events-admin [[:set-breadcrumb ["基础数据" "角色管理" "修改角色"]]
                      [:roles/load-role id]
                      [:menus/load-all]
                      [:set-active-page :roles/edit]]))
@@ -97,12 +107,12 @@
                      [:set-active-page :users]]))
 
 (defroute "/users/:id/password" [id]
-  (run-events-admin [[:set-breadcrumb ["个人管理" "修改密码"]]
+  (run-events-admin [[:set-breadcrumb ["用户管理" "个人管理" "修改密码"]]
                      [:users/load-user id]
                      [:set-active-page :users-password]]))
 
 (defroute "/users/:id/profile" [id]
-  (run-events-admin [[:set-breadcrumb ["个人管理" "个人信息"]]
+  (run-events-admin [[:set-breadcrumb ["用户管理" "个人管理" "个人信息"]]
                      [:users/load-user id]
                      [:set-active-page :users-profile]]))
 

@@ -92,7 +92,7 @@
                   "& > * + *" #js {:marginTop (.spacing theme)}}})
 
 (defn- edit-form-styles [^js/Mui.Theme theme]
-  #js {:root #js {"& .MuiTextField-root" #js {:padding (.spacing theme 0.5)}}
+  #js {:root #js {"& .MuiForm.Input-root" #js {:padding (.spacing theme 0.5)}}
        :buttons #js {"& > *" #js {:margin (.spacing theme 1)}
                      :textAlign "center"}
        :paper #js {:padding (.spacing theme 2)
@@ -101,7 +101,7 @@
                       :marginTop "20px"}})
 
 (defn- form-styles [^js/Mui.Theme theme]
-  #js {:root #js {"& .MuiTextField-root" #js {:margin (.spacing theme 1)
+  #js {:root #js {"& .MuiForm.Input-root" #js {:margin (.spacing theme 1)
                                               :width "25ch"}}
        :buttons #js {"& > *" #js {:margin (.spacing theme 1)}
                      :textAlign "right"}

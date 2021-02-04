@@ -75,41 +75,52 @@
                            :on-click #(rf/dispatch [:logout])}
          "退出"]]]]]))
 
-(defn menu-tree-items [menus selected-id]
+(defn menu-tree-items [menus selected-menu]
   (doall
     (for [menu menus]
       (let [{:keys [children id pid url name]} menu]
         ^{:key menu}
-        [:div
-         (if (empty? children)
-           [:> Menu.Item {:name     name
-                          :active (= id selected-id)
-                          :on-click #(do
-                                       (rf/dispatch [:menus/select menu])
-                                       (navigate! url))}]
+        (if (empty? children)
+          [:> Menu.Item {:name     name
+                         :active   (= id (:id selected-menu))
+                         :on-click #(do
+                                      (rf/dispatch [:menus/select menu])
+                                      (navigate! url))}
+           name]
+          [:<>
+           [:> Divider {:style {:margin "0"}}]
            [:> Menu.Item
-            name
-            [:> Menu.Menu
-             (menu-tree-items children selected-id)]])]))))
+            [:> Menu.Header {:as "h5"} name]
+            [:> Menu.Menu {:style {:padding-left "10px"}}
+             (menu-tree-items children selected-menu)]]])))))
 
 (defn sidebar []
   (let [user (rf/subscribe [:user])
         menus (:menus @user)
         menus-tree (utils/make-tree menus)
-        {:keys [id]} @(rf/subscribe [:menus/selected])]
+        select-menu @(rf/subscribe [:menus/selected])]
     [:> Menu {:vertical true
-              :fluid true}
-     (menu-tree-items (:children menus-tree) id)]))
+              :fluid true
+              :size "mini"
+              :borderless true
+              :pointing true}
+     (menu-tree-items (:children menus-tree) select-menu)]))
+
+(defn out-breadcrumb [data]
+  (let [c (count data)
+        b (first data)]
+    (if (<= c 1)
+      [:> Breadcrumb.Section {:active true} b]
+      [:<>
+       [:> Breadcrumb.Section b]
+       [:> Breadcrumb.Divider "/"]
+       (out-breadcrumb (rest data))])))
 
 (defn breadcrumbs []
-  (let [[first second] @(rf/subscribe [:breadcrumb])]
+  (let [breadcrumbs-data @(rf/subscribe [:breadcrumb])
+        c (count breadcrumbs-data)]
     [:> Breadcrumb
-     (if second
-       [:<>
-        [:> Breadcrumb.Section first]
-        [:> Breadcrumb.Divider "/"]
-        [:> Breadcrumb.Section {:active true} second]]
-       [:> Breadcrumb.Section {:active true} first])]))
+     (out-breadcrumb breadcrumbs-data)]))
 
 (defn copyright []
   (let [year (.getFullYear (js/Date.))
@@ -122,7 +133,7 @@
        (str " 2019-" year ".")])))
 
 (defn layout [children]
-  [:> Grid
+  [:> Grid {:doubling true}
    [:> Grid.Row
     [:> Grid.Column {:width 16}
      [app-bar]]]
