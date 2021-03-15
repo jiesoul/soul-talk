@@ -5,7 +5,6 @@
             ["react-highlight.js" :as hljs]
             [soul-talk.routes :refer [navigate!]]
             [soul-talk.utils :as utils]
-            [soul-talk.common.styles :as styles]
             ["semantic-ui-react" :as sui :refer [Breadcrumb Container Menu Divider Dropdown Grid Segment Dimmer Loader
                                                  Sidebar Message Modal Button Pagination Header Visibility]]
             ["react-toastify" :refer [toast]]
@@ -32,21 +31,39 @@
   (let [success (rf/subscribe [:success])
         on-close #(rf/dispatch [:clean-success])]
     (when @success
-      (toast.success @success {:position    (-> toast .-POSITION .-TOP_CENTER)
-                               :toast-id "success-toast"
-                               :auto-close       3000
-                               :on-close    on-close})
-      (on-close))))
+      (toast.success @success {:position   (-> toast .-POSITION .-TOP_CENTER)
+                               :toast-id   "success-toast"
+                               :auto-close 3000
+                               :on-close   on-close}))))
 
 (defn error []
   (let [error (rf/subscribe [:error])
         on-close #(rf/dispatch [:clean-error])]
-    (when @error
-      (toast.error @success {:position    (-> toast .-POSITION .-TOP_CENTER)
-                             :toast-id "error-toast"
-                             :auto-close       3000
-                             :on-close    on-close})
-      (on-close))))
+    (toast.error @error {:position   (-> toast .-POSITION .-TOP_CENTER)
+                         :toast-id   "error-toast"
+                         :auto-close 5000
+                         :on-close   on-close})))
+
+(defn notify []
+  (let [success (rf/subscribe [:success])
+        error (rf/subscribe [:error])]
+    (if @success
+      (toast.success @success {:position (-> toast .-POSITION .-TOP_CENTER)
+                               :auto-close 3000
+                               :on-close #(rf/dispatch [:clean-success])})
+      (if @error
+        (toast.error @error {:position (-> toast .-POSITION .-TOP_CENTER)
+                             :auto-close 5000
+                             :on-close #(rf/dispatch [:clean-error])})))))
+
+(defn success-message []
+  (let [success (rf/subscribe [:success])]
+    [:> Message {:floating true
+                 :positive true
+                 :compact true
+                 :icon "right"
+                 (if @success :visible :hidden) true}
+     @success]))
 
 (defn app-bar []
   (let [site-info (rf/subscribe [:site-info])
@@ -101,7 +118,7 @@
         select-menu @(rf/subscribe [:menus/selected])]
     [:> Menu {:vertical true
               :fluid true
-              :size "mini"
+              :size "small"
               :borderless true
               :pointing true}
      (menu-tree-items (:children menus-tree) select-menu)]))
@@ -129,7 +146,7 @@
       [:> Container {:text-align   "center"}
        "Copyright ©"
        [:a {:href     "https://www.jiesoul.com/"}
-        (:author @site-info)]
+        "jiesoul"]
        (str " 2019-" year ".")])))
 
 (defn layout [children]
@@ -156,9 +173,8 @@
                 :on-close on-close
                 :open     open
                 :key      (str "modal" (random-uuid))
-                :size     "mini"}
+                :size     "small"}
    [:> Modal.Header {:id                 "alert-dialog-title"
-                     :disable-typography true
                      :style              {:margin  0
                                           :padding "5px"}}
     title]
@@ -175,20 +191,20 @@
   [default-page])
 
 (defn table-page [event {:keys [total per_page page total_pages] :as params}]
-  [:> Pagination {:active-page    page
-                  :total-pages    total_pages
-                  :first-item     {:aria-label "首页"
-                                   :content    "首页"}
-                  :last-item      {:aria-label "末页"
-                                   :content    "末页"}
-                  :prev-item      {:aria-label "上一页"
-                                   :content    "上一页"}
-                  :next-item      {:aria-label "下一页"
-                                   :content    "下一页"}
-                  :on-page-change (fn [e page]
-                                    (let [active-page (.-activePage page)]
-                                      (rf/dispatch [event (assoc params :page active-page)]))
-                                    )}])
+  [:div {:style {:text-align "center"}}
+   [:> Pagination {:active-page    page
+                   :total-pages    total_pages
+                   :first-item     {:aria-label "首页"
+                                    :content    "首页"}
+                   :last-item      {:aria-label "末页"
+                                    :content    "末页"}
+                   :prev-item      {:aria-label "上一页"
+                                    :content    "上一页"}
+                   :next-item      {:aria-label "下一页"
+                                    :content    "下一页"}
+                   :on-page-change (fn [e page]
+                                     (let [active-page (.-activePage page)]
+                                       (rf/dispatch [event (assoc params :page active-page)])))}]])
 
 (defn logo []
   (let [site-info (rf/subscribe [:site-info])]

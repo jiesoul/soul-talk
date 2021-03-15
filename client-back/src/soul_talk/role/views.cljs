@@ -3,7 +3,6 @@
             [reagent.core :as r]
             [re-frame.core :as rf :refer [subscribe dispatch dispatch-sync]]
             [soul-talk.utils :as utils]
-            [soul-talk.common.styles :as styles]
             [soul-talk.routes :refer [navigate!]]
             ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input]]))
 
@@ -39,7 +38,7 @@
       ;[:> SourceTree {:tree-data tree-data}]
       ]]))
 
-(defn- add-form []
+(defn- new-form []
   (let [role    (subscribe [:roles/edit])
         user    (subscribe [:user])
         menus (subscribe [:menus])
@@ -47,7 +46,7 @@
         _ (dispatch [:roles/set-attr {:update_by user-id :create_by user-id :menus-ids #{}}])]
     ^{:key "add-role-form"}
     [:> Form {:name       "add-role-form"
-            :size "mini"}
+            :size "small"}
      [:> Form.Group
       [:> Form.Input {:name      "name"
                       :label     "名称"
@@ -61,18 +60,20 @@
 
      [menu-tree-view]
      [:div {:style {:text-align "center"}}
-      [:> Button {:size     "mini"
-                  :color    "green"
-                  :icon     "save"
-                  :content  "保存"
-                  :on-click #(dispatch [:menus/update @role])}]
-      [:> Button {:size     "mini"
-                  :basic    true
-                  :on-click #(js/history.go -1)}
-       "返回"]]]))
+      [:> Button.Group {:size    "mini"
+                        :compact true}
+       [:> Button {:on-click #(js/history.go -1)}
+        "返回"]
+       [:> Button.Or]
+       [:> Button {:color    "green"
+                   :icon     "save"
+                   :content  "保存"
+                   :on-click #(dispatch [:menus/update @role])}]
 
-(defn add []
-  [c/layout [add-form]])
+       ]]]))
+
+(defn new []
+  [c/layout [new-form]])
 
 (defn- edit-form []
   (let [role (subscribe [:roles/edit])
@@ -81,7 +82,7 @@
         user-id  (:id @user)]
     (let [{:keys [name note]} @role]
       [:> Form {:name       "add-role-form"
-                :size "mini"}
+                :size "small"}
        [:> Form.Group
         [:> Form.Input {:name          "name"
                         :inline        true
@@ -98,21 +99,18 @@
                         :on-change     #(let [value (-> % .-target .-value)]
                                           (dispatch [:roles/set-attr :note value]))}]]
        [:> Divider]
-       (styles/styled-checkbox-list menu-tree-view)
 
        [:div {:style {:text-align "center"}}
-        [:> Button {:basic    true
-                    :size     "mini"
-                    :color    "green"
-                    :content  "保存"
-                    :on-click #(do
-                                 (dispatch [:menus/set-attr :update_by (:id @user)])
-                                 (dispatch [:menus/update @role]))}]
-        [:> Button {
-                    :size     "mini"
-                    :basic    true
-                    :on-click #(js/history.go -1)}
-         "返回"]]])))
+        [:> Button.Group {:size "mini"
+                          :compact true}
+         [:> Button {:on-click #(js/history.go -1)}
+          "返回"]
+         [:> Button.Or]
+         [:> Button {:color    "green"
+                     :content  "保存"
+                     :on-click #(do
+                                  (dispatch [:menus/set-attr :update_by (:id @user)])
+                                  (dispatch [:menus/update @role]))}]]]])))
 
 (defn edit []
   [c/layout [edit-form]])
@@ -133,25 +131,21 @@
   (let [query-params (subscribe [:roles/query-params])]
     (fn []
       [:> Form {:name       "query-form"
-              :size       "mini"}
+              :size       "small"}
        [:> Form.Group
         [:> Form.Input {:name      "name"
                         :label     "名称"
                    :inline true
                         :on-change #(dispatch [:roles/set-query-params :name (-> % .-target .-value)])}]]
-       [:div {:style {:text-align "right"}}
-        [:> Button {:basic true
-                    :color    "green"
-                    :size "mini"
-                    :icon "search"
-                    :content "查询"
-                    :on-click #(dispatch [:roles/load-page @query-params])}]
-        [:> Button {:color    "red"
-                    :basic true
-                    :size "mini"
-                    :icon "add"
-                    :content "新增"
-                    :on-click #(navigate! "/roles/add")}]]])))
+       [:div {:style {:text-align "center"}}
+        [:> Button.Group {:size "mini"
+                          :compact true}
+         [:> Button {:content  "查询"
+                     :on-click #(dispatch [:roles/load-page @query-params])}]
+         [:> Button.Or]
+         [:> Button {:positive true
+                     :content  "新增"
+                     :on-click #(navigate! "/roles/new")}]]]])))
 
 (defn list-table []
   (let [roles (subscribe [:roles])
@@ -160,7 +154,7 @@
     [:div
      [:> Table {:celled     true
                 :selectable true
-                :size       "mini"
+                :size       "small"
                 :text-align "center"}
       [:> Table.Header
        [:> Table.Row
@@ -176,20 +170,18 @@
             [:> Table.Cell note]
             [:> Table.Cell
              [:div
-              [:> Button {:color    "green"
-                          :size     "mini"
-                          :icon     "edit"
-                          :basic true
-                          :on-click #(navigate! (str "/roles/" id "/edit"))}]
-
-              [:> Button {:color    "red"
-                          :size     "mini"
-                          :basic true
-                          :icon     "delete"
-                          :on-click (fn []
-                                      (do
-                                        (dispatch [:roles/set-delete-dialog-open true])
-                                        (reset! *delete-id* id)))}]]]]))]]
+              [:> Button.Group {:size    "mini"
+                                :compact true}
+               [:> Button {:content  "编辑"
+                           :positive true
+                           :on-click #(navigate! (str "/roles/" id "/edit"))}]
+               [:> Button.Or]
+               [:> Button {:content  "删除"
+                           :negative true
+                           :on-click (fn []
+                                       (do
+                                         (dispatch [:roles/set-delete-dialog-open true])
+                                         (reset! *delete-id* id)))}]]]]]))]]
      (when @roles
        [c/table-page :roles/load-page (merge @query-params @pagination)])]))
 

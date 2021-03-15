@@ -18,19 +18,19 @@
             :success-event [:app-keys/load-all-ok]}}))
 
 (reg-event-db
-  :app-keys/add-ok
+  :app-keys/new-ok
   (fn [db [_ {:keys [message body]}]]
     (assoc db :success "add a tag ok")))
 
 (reg-event-fx
-  :app-keys/add
+  :app-keys/new
   (fn [_ [_ {:keys [name] :as tag}]]
     (if (str/blank? name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        POST
               :url           (str site-uri "/app-keys")
               :ajax-map      {:params tag}
-              :success-event [:app-keys/add-ok]}})))
+              :success-event [:app-keys/new-ok]}})))
 
 (reg-event-db
   :app-keys/delete-ok

@@ -5,6 +5,12 @@
             [soul-talk.db :refer [site-uri]]))
 
 (reg-event-db
+  :init
+  (fn [db _]
+    (-> db
+      (dissoc :data-dices/query-params))))
+
+(reg-event-db
   :data-dices/set-query-params
   (fn [db [_ key value]]
     (assoc-in db [:data-dices/query-params key] value)))
@@ -42,35 +48,37 @@
 
 (reg-event-db
   :data-dices/set-attr
-  (fn [db [_ key value]]
-    (assoc-in db [:data-dic key] value)))
+  (fn [db [_ attr]]
+    (js/console.log "..." attr)
+    (update-in db [:data-dic] merge attr)))
 
 (reg-event-db
-  :data-dices/add-ok
+  :data-dices/new-ok
   (fn [db [_ {:keys [data-dic]}]]
     (let [data-dices (:data-dices db)]
       (assoc db :success "保存成功" :data-dices (conj data-dices data-dic)))))
 
 (reg-event-fx
-  :data-dices/add
+  :data-dices/new
   (fn [_ [_ data-dic]]
+    (js/console.log "ssss:" data-dic)
     {:http {:method        POST
             :url           (str site-uri "/data-dices")
             :ajax-map      {:params data-dic}
-            :success-event [:data-dices/add-ok]}}))
+            :success-event [:data-dices/new-ok]}}))
 
 (reg-event-db
-  :data-dices/update-ok
+  :data-dices/edit-ok
   (fn [db [_ {:keys [data-dic]}]]
     (assoc db :success "保存成功")))
 
 (reg-event-fx
-  :data-dices/update
+  :data-dices/edit
   (fn [_ [_ data-dic]]
     {:http {:method        PATCH
             :url           (str site-uri "/data-dices")
             :ajax-map      {:params data-dic}
-            :success-event [:data-dices/update-ok]}}))
+            :success-event [:data-dices/edit-ok]}}))
 
 (reg-event-db
   :data-dices/delete-ok

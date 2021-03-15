@@ -18,7 +18,7 @@
 (reg-event-db
   :users/init
   (fn [db _]
-    (assoc db :users/add-dialog-open false
+    (assoc db :users/new-dialog-open false
               :users/edit-dialog-open false
               :users/delete-dialog-open false
               :users/roles-dialog-open false
@@ -29,7 +29,7 @@
 (reg-event-db
   :users/set-add-dialog-open
   (fn [db [_ value]]
-    (assoc db :users/add-dialog-open value)))
+    (assoc db :users/new-dialog-open value)))
 
 (reg-event-db
   :users/set-edit-dialog-open

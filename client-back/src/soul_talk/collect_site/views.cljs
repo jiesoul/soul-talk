@@ -3,7 +3,6 @@
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [soul-talk.utils :as du]
-            [soul-talk.common.styles :as styles]
             ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input]]))
 
 (def ^:dynamic *visible* (r/atom false))
@@ -24,7 +23,7 @@
                      :on-change #(let [value (-> % .-target .-value)]
                                    (reset! name value))}
       [:div
-       [:> Button  {:on-click #(dispatch [:collect-sites/add @update-collect-site])}]]]]))
+       [:> Button  {:on-click #(dispatch [:collect-sites/new @update-collect-site])}]]]]))
 
 (defn edit []
   [c/layout edit-form])

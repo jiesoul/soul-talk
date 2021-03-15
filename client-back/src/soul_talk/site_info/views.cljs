@@ -2,8 +2,7 @@
   (:require [soul-talk.common.views :as c]
             [re-frame.core :as rf]
             ["semantic-ui-react" :as sui :refer [Grid Image Form Input Button Label]]
-            [reagent.core :as r]
-            [soul-talk.common.styles :as styles]))
+            [reagent.core :as r]))
 
 (defn edit-form []
   (let [site-info (rf/subscribe [:site-info])
@@ -34,9 +33,10 @@
         [:> Button {:color "green"
                     :basic    true
                     :size     "mini"
+                    :compact true
                     :icon "save"
                     :content "保存"
                     :on-click #(rf/dispatch [:site-info/update @site-info])}]]])))
 
-(defn home []
+(defn edit []
   [c/layout [edit-form]])

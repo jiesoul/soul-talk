@@ -1,5 +1,5 @@
 (ns soul-talk.article.events
-  (:require [re-frame.core :refer [reg-event-fx reg-event-db subscribe]]
+  (:require [re-frame.core :refer [reg-event-fx reg-event-db subscribe ->interceptor] :as rf]
             [ajax.core :refer [POST GET DELETE PUT PATCH]]
             [soul-talk.db :refer [site-uri]]))
 
@@ -8,7 +8,13 @@
   (fn [db _]
     (-> db
       (dissoc :articles :articles/query-params :articles/pagination)
-      (assoc :articles/delete-dialog-open false))))
+      (assoc :articles/delete-dialog-open false
+             :articles/publish-dialog false))))
+
+(reg-event-db
+  :articles/set-publish-dialog
+  (fn [db [_ value]]
+    (assoc db :articles/publish-dialog value)))
 
 (reg-event-db
   :articles/set-delete-dialog-open
@@ -42,19 +48,32 @@
     (let [edit (:articles/edit db)]
       (assoc db :articles/edit (merge edit attr)))))
 
+(def articles-validate
+  (->interceptor
+    :id "articles-validate"
+    :before (fn [context]
+              (let [{:keys [db event]} (:coeffects context)
+                    [_ article] event
+                    {:keys [title ]} article]
+                (if title
+                  (-> context
+                    (update :db assoc :error "标题不能为空"))
+                  context)))))
+
 (reg-event-db
-  :articles/add-ok
+  :articles/new-ok
   (fn [db [_ {:keys [article]}]]
     (let [articles (:articles db)]
       (assoc db :success "保存成功" :articles (conj articles article)))))
 
 (reg-event-fx
-  :articles/add
-  (fn [_ [_ article]]
+  :articles/new
+  [articles-validate]
+  (fn [_ [_ {:keys [title] :as article}]]
     {:http {:method        POST
             :url           (str site-uri "/articles")
             :ajax-map      {:params article}
-            :success-event [:articles/add-ok article]}}))
+            :success-event [:articles/new-ok article]}}))
 
 (reg-event-db
   :articles/update-ok
@@ -103,6 +122,7 @@
 (reg-event-fx
   :articles/publish
   (fn [_ [_ id]]
+    (js/console.log "doing publish articles")
     {:http {:method PATCH
             :url (str site-uri "/articles/" id "/publish")
             :success-event [:articles/publish-ok]}}))

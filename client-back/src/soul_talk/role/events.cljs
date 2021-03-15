@@ -74,18 +74,18 @@
           (assoc-in db [:roles/edit :menus-ids] menus-ids))))))
 
 (reg-event-db
-  :roles/add-ok
+  :roles/new-ok
   (fn [db [_ {:keys [role]}]]
     (let [roles (:roles db)]
       (assoc db :success "保存成功" :roles (conj roles role)))))
 
 (reg-event-fx
-  :roles/add
+  :roles/new
   (fn [_ [_ role]]
     {:http {:method        POST
             :url           (str site-uri "/roles")
             :ajax-map      {:params role}
-            :success-event [:roles/add-ok]}}))
+            :success-event [:roles/new-ok]}}))
 
 (reg-event-db
   :roles/load-role-ok

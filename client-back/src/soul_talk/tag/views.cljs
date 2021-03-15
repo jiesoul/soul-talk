@@ -3,10 +3,12 @@
             [re-frame.core :refer [dispatch subscribe]]
             [soul-talk.common.views :as c]
             [soul-talk.utils :as du]
-            [soul-talk.common.styles :as styles]
             ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input]]))
 
 (def ^:dynamic *visible* (r/atom false))
+
+(defn new []
+  [c/layout])
 
 (defn edit-form []
   (let [user (subscribe [:user])
@@ -31,22 +33,22 @@
   (let [pagination (subscribe [:pagination])
         params (r/atom nil)
         name   (r/cursor params [:name])]
-    (fn []
-      [:div
-       [:> Form {:title     ""
-                 :className "advanced-search-form"}
-        [:> Form.Group
-         [:> Form.Input {:placeholder "name"
-                         :value       @name
-                         :on-blur     #(reset! name (-> % .-target .-value))}]]
-        [:div {:span 24 :style {:text-align "right"}}
-         [:> Button {:type     "primary"
-                     :htmlType "submit"
-                     :on-click #(dispatch [:tags/load-all (merge @params @pagination)])}
-          "search"]
-         [:> Button {:type     "dashed" :style {:margin "0 8px"}
-                     :on-click #(reset! *visible* true)}
-          "new"]]]])))
+    [:> Form {:size "small"}
+     [:> Form.Group
+      [:> Form.Input {:placeholder "name"
+                      :value       @name
+                      :on-blur     #(reset! name (-> % .-target .-value))}]]
+     [:div {:span 24 :style {:text-align "center"}}
+      [:> Button {:basic true
+                  :content "查询"
+                  :size "small"
+                  :icon "search"
+                  :on-click #(dispatch [:tags/load-all (merge @params @pagination)])}]
+      [:> Button {:color "green"
+                  :icon "add"
+                  :size "small"
+                  :content "新增"
+                  :on-click #(reset! *visible* true)}]]]))
 
 (def list-columns
   [{:title "名称" :dataIndex "name", :key "name", :align "center"}
@@ -61,16 +63,19 @@
    {:title  "操作" :dataIndex "actions" :key "actions" :align "center"}])
 
 (defn list-table []
-  (r/with-let [tags (subscribe [:tags])]
-    (fn []
-      [:div.search-result-list
-       [:> Table {:dataSource (clj->js @tags)
-                  :columns    (clj->js list-columns)
-                  :row-key    "id"
-                  :bordered   true}]])))
+  (let [tags (subscribe [:tags])]
+    [:> Container
+     [:> Table {:row-key    "id"
+                :text-align "center"
+                :celled   true}
+      [:> Table.Header
+       [:> Table.Row
+        [:> Table.HeaderCell "序号"]
+        [:> Table.HeaderCell "名称"]]]]]))
 
 (defn home []
   [c/layout
    [:<>
     [query-form]
+    [:> Divider]
     [list-table]]])

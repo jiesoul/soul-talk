@@ -8,8 +8,8 @@
             [soul-talk.common.coeffects]
             [soul-talk.common.effects]
             [soul-talk.routes]
-            [soul-talk.events]
             [soul-talk.subs]
+            [soul-talk.events]
             [soul-talk.views]))
 
 (set! *warn-on-infer* true)

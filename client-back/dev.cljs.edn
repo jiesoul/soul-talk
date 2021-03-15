@@ -1,14 +1,13 @@
 ^{:watch-dirs ["src" "env/dev"]
   :css-dirs ["resources/public/css"]}
 {:main            soul-talk.app
+ :output-dir "resources/public/js"
  :target          :bundle
- :output-dir      "resources/public/js"
- :output-to       "resources/public/js/main.js"
  ;; 使用类 nix 系统请直接用 yarn
- :bundle-cmd      {:none ["yarn.cmd" "webpack" "--mode=development" :output-to]}
- :aot-cache       false
- :clean-outputs   true
- :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true
-                   "soul_talk.db.site_url"               "http://localhost:3000/"}
+ :bundle-cmd      {:none ["yarn.cmd" "webpack" "--mode=development" :output-to
+                          "--output-path" :final-output-dir
+                          "--output-filename" :final-output-filename]}
+
+ :closure-defines {soul-talk.db/site-url "http://localhost:3000/"}
  :preloads        [re-frisk.preload devtools.preload]
  }

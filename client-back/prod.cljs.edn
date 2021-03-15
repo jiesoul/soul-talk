@@ -1,22 +1,16 @@
 ^{:hot-reload-cljs false
   :figwheel-core false}
 {:main            soul-talk.app
- :npm             {:bundles {"dist/index.bundle.js" "src-js/index.js"}}
- :output-to       "target/public/cljs/app.js"
- :output-dir      "target/public/cljs/"
- :npm-deps        false
- :infer-externs   true
- :optimizations   :advanced
- :pseudo-names    true
- :pretty-print    true
+ :target          :bundle
+ :output-dir      "dist/js"
+ ;; 使用类 nix 系统请直接用 yarn
+ :bundle-cmd      {:default ["yarn.cmd" "webpack" "--mode=production" :output-to
+                             "--output-path" :final-output-dir
+                             "--output-filename" :final-output-filename]}
+ :aot-cache       false
+ :clean-outputs   true
+ :optimizations   :simple
  :closure-defines {"goog.DEBUG"       false
                    cljs.core/*global* "window"
-                   "soul_talk.db.api_uri" "https://jiesoul.com/api/v1"}
- :foreign-libs    [{:file           "dist/index.bundle.js"
-                    :provides       ["react" "react-dom" "showdown" "hljs" "SimpleMDE"]
-                    :global-exports {react     React
-                                     react-dom ReactDOM
-                                     hljs      hljs
-                                     showdown  showdown
-                                     SimpleMDE SimpleMDE
-                                     api-uri   "https://jiesoul.com/api/v1"}}]}
+                   soul-talk.db/site-url "http://jiesoul.com:3000/"}
+ }

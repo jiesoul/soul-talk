@@ -11,3 +11,5 @@
 (reg-sub :articles/pagination query)
 
 (reg-sub :articles/delete-dialog-open query)
+
+(reg-sub :articles/publish-dialog query)

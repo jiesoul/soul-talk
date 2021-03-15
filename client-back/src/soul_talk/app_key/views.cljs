@@ -3,10 +3,13 @@
             [re-frame.core :refer [dispatch subscribe]]
             [soul-talk.common.views :as c]
             [soul-talk.utils :as du]
-            [soul-talk.common.styles :as styles]
             ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input]]))
 
 (def ^:dynamic *visible* (r/atom false))
+
+
+(defn new []
+  [c/layout])
 
 (defn edit-form []
   (let [user (subscribe [:user])

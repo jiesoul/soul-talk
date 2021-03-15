@@ -1,12 +1,12 @@
 (ns soul-talk.user.views
   (:require [reagent.core :as r]
             [re-frame.core :as rf :refer [dispatch subscribe]]
-            [soul-talk.common.styles :as styles]
+            [soul-talk.routes :refer [navigate!]]
             [soul-talk.common.views :as c]
             [soul-talk.utils :as utils]
             ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input]]))
 
-(defn change-pass-form []
+(defn password-form []
   (let [user (rf/subscribe [:users/user])
                pass-data (r/atom {:id (:id @user)
                                   :email (:email @user)
@@ -21,7 +21,7 @@
        [:> Form.Input {:id         "username"
                       :read-only  true
                       :label      "用户名："
-                      :value      (:name @pass-data)
+                      :default-value      (:name @user)
                       :full-width true
                       :size       "small"}]
        [:> Form.Input {:id          "old-pass"
@@ -49,17 +49,18 @@
                        :size        "small"
                        :on-change   #(reset! confirm-password (.-target.value %))}]
        [:div {:style {:text-align "center"}}
-        [:> Button {:type     "button"
-                    :variant  "outlined"
-                    :size     "small"
-                    :color    "primary"
-                    :on-click #(rf/dispatch [:users/change-password @pass-data])}
-         "保存"]]])))
+        [:> Button.Group {:size    "mini"
+                          :compact true}
+         [:> Button {:on-click #(navigate! "/users")} "返回"]
+         [:> Button.Or]
+         [:> Button {:positive true
+                     :on-click #(rf/dispatch [:users/change-password @pass-data])}
+          "保存"]]]])))
 
-(defn change-pass []
-  [c/layout [change-pass-form]])
+(defn password []
+  [c/layout [password-form]])
 
-(defn user-profile-form []
+(defn profile-form []
   (let [user (rf/subscribe [:users/user])
         edited-user (r/atom @user)
         name (r/cursor edited-user [:name])]
@@ -81,59 +82,83 @@
                          :on-change  #(reset! name (-> % .-target .-value))}]
 
          [:div {:style {:text-align "center"}}
-          [:> Button {:type     "button"
-                      :variant  "outlined"
-                      :size     "small"
-                      :color    "primary"
+          [:> Button {:size     "mini"
+                      :positive true
                       :on-click #(rf/dispatch [:users/user-profile @edited-user])}
-           "保存"]]
-         ]))))
+           "保存"]]]))))
 
-(defn user-profile []
-  [c/layout [user-profile-form]])
+(defn profile []
+  [c/layout [profile-form]])
 
-(defn add-form []
-  (let [user    (subscribe [:users/user])
+(defn- new-form []
+  (let [role    (subscribe [:users/edit])
         user    (subscribe [:user])
-        open (subscribe [:users/add-dialog-open])
-        user-id (:id @user)]
-    [:> Form {:name       "add-user-form"}
-     [:> Form.Input {:name       "name"
-                     :label      "名称"
-                     :size       "small"
-                     :required   true
-                     :full-width true
-                     :rules      [{:required true}]
-                     :on-change  #(let [value (-> % .-target .-value)]
-                                    (dispatch [:users/set-attr :name value]))}]
-     [:> Form.Input {:name       "note"
-                     :label      "备注"
-                     :size       "small"
-                     :full-width true
-                     :on-change  #(let [value (-> % .-target .-value)]
-                                    (dispatch [:users/set-attr :note value]))}]]))
-(defn edit-form []
-  (let [user (subscribe [:users/user])
+        menus (subscribe [:menus])
+        user-id (:id @user)
+        _ (dispatch [:users/set-attr {:update_by user-id :create_by user-id :menus-ids #{}}])]
+    ^{:key "add-role-form"}
+    [:> Form {:name       "add-role-form"
+              :size "small"}
+     [:> Form.Input {:name      "name"
+                     :label     "名称"
+                     :inline    true
+                     :required  true
+                     :on-change #(dispatch [:users/set-attr {:name (utils/event-value %)}])}]
+     [:> Form.Input {:name      "note"
+                     :label     "备注"
+                     :inline    true
+                     :on-change #(dispatch [:users/set-attr {:note (utils/event-value %)}])}]
+
+     [:div {:style {:text-align "center"}}
+      [:> Button.Group {:size    "mini"
+                        :compact true}
+       [:> Button {:on-click #(js/history.go -1)}
+        "返回"]
+       [:> Button.Or]
+       [:> Button {:color    "green"
+                   :icon     "save"
+                   :content  "保存"
+                   :on-click #(dispatch [:users/update @role])}]]]]))
+
+(defn new []
+  [c/layout [new-form]])
+
+(defn- edit-form []
+  (let [role (subscribe [:users/edit])
         user (subscribe [:user])
-        user-id  (:id @user)
-        open (subscribe [:users/edit-dialog-open])]
-    (let [{:keys [name note]} @user]
-      [:form {:name       "add-user-form"}
-       [:> Form.Input {:name       "name"
-                       :label      "名称"
-                       :size       "small"
-                       :required   true
-                       :full-width true
-                       :value      name
-                       :on-change  #(let [value (-> % .-target .-value)]
-                                      (dispatch [:users/set-attr :name value]))}]
-       [:> Form.Input {:name       "note"
-                       :label      "备注"
-                       :size       "small"
-                       :value      note
-                       :full-width true
-                       :on-change  #(let [value (-> % .-target .-value)]
-                                      (dispatch [:users/set-attr :note value]))}]])))
+        menus (subscribe [:menus])
+        user-id  (:id @user)]
+    (let [{:keys [name note]} @role]
+      [:> Form {:name       "add-role-form"
+                :size "small"}
+       [:> Form.Input {:name          "name"
+                       :inline        true
+                       :label         "名称"
+                       :size          "small"
+                       :required      true
+                       :default-value name
+                       :on-change     #(let [value (-> % .-target .-value)]
+                                         (dispatch [:users/set-attr :name value]))}]
+       [:> Form.Input {:name          "note"
+                       :inline        true
+                       :label         "备注"
+                       :default-value note
+                       :on-change     #(let [value (-> % .-target .-value)]
+                                         (dispatch [:users/set-attr :note value]))}]
+       [:> Divider]
+
+       [:div {:style {:text-align "center"}}
+        [:> Button.Group {:size "mini"
+                          :compact true}
+         [:> Button {:on-click #(js/history.go -1)}
+          "返回"]
+         [:> Button.Or]
+         [:> Button {:color    "green"
+                     :content  "保存"
+                     :on-click #(dispatch [:users/update @role])}]]]])))
+
+(defn edit []
+  [c/layout [edit-form]])
 
 (def ^:dynamic *delete-id* (r/atom 0))
 (defn delete-dialog [id]
@@ -155,39 +180,24 @@
         (when-not (empty? children)
           (user-tree-items (assoc props :menus children :checked-ids checked-ids)))))))
 
-(defn user-users-form-dialog []
-  (let [user (subscribe [:users/user])
-        user-roles (subscribe [:users/user-roles])
-        open (subscribe [:users/roles-dialog-open])
-        menus (subscribe [:menus])]
-    (if @open
-      (fn []
-        [:> Form {:id "user-roles-form"}
-         ;(user-tree-items (assoc props :user @user :checked-ids (map :menu_id @user-roles)
-         ;                              :menus (:children (utils/make-tree @menus))))
-         ]
-        ))))
-
 (defn query-form []
   (let [query-params (subscribe [:users/query-params])]
     [:> Form {:name       "query-form"
-            :size       "mini"}
+            :size       "small"}
      [:> Form.Group
       [:> Form.Input {:name      "name"
                       :label     "名称"
                       :inline true
                       :on-change #(dispatch [:users/set-query-params :name (-> % .-target .-value)])}]]
      [:div {:style {:text-align "center"}}
-      [:> Button {:basic true
-                  :size     "mini"
-                  :on-click #(dispatch [:users/load-page @query-params])}
-       "搜索"]
-      [:> Button {:color    "green"
-                  :basic true
-                  :size     "mini"
-                  :on-click (fn []
-                              (dispatch [:users/set-add-dialog-open true]))}
-       "新增"]]]))
+      [:> Button.Group {:size "mini"
+                        :compact true}
+       [:> Button {:on-click #(dispatch [:users/load-page @query-params])}
+        "搜索"]
+       [:> Button.Or]
+       [:> Button {:color    "green"
+                   :on-click #(navigate! "/users/new")}
+        "新增"]]]]))
 
 (defn list-table []
   (let [users (subscribe [:users/list])
@@ -196,43 +206,38 @@
     [:<>
      [:> Table {:celled     true
                 :selectable true
-                :size       "mini"
+                :size       "small"
                 :text-align "center"}
       [:> Table.Header
        [:> Table.Row
-        [:> Table.HeaderCell {:align "center"} "ID"]
-        [:> Table.HeaderCell {:align "center"} "Email"]
-        [:> Table.HeaderCell {:align "center"} "名称"]
-        [:> Table.HeaderCell {:align "center"} "备注"]
-        [:> Table.HeaderCell {:align "center"} "操作"]]]
+        [:> Table.HeaderCell "ID"]
+        [:> Table.HeaderCell "Email"]
+        [:> Table.HeaderCell "名称"]
+        [:> Table.HeaderCell "备注"]
+        [:> Table.HeaderCell "操作"]]]
       [:> Table.Body
        (doall
          (for [{:keys [id email name note] :as user} @users]
            ^{:key user}
            [:> Table.Row
-            [:> Table.Cell {:align "center"} id]
-            [:> Table.Cell {:align "center"} email]
-            [:> Table.Cell {:align "center"} name]
-            [:> Table.Cell {:align "center"} note]
-            [:> Table.Cell {:align "center"}
+            [:> Table.Cell id]
+            [:> Table.Cell email]
+            [:> Table.Cell name]
+            [:> Table.Cell note]
+            [:> Table.Cell
              [:div
-              [:> Button {:basic true
-                          :color    "green"
-                          :size     "mini"
-                          :icon     "edit"
-                          :on-click (fn []
-                                      (dispatch [:users/load-user id])
-                                      (dispatch [:users/set-edit-dialog-open true]))}]
-
-              [:> Button {:color    "red"
-                          :basic true
-                          :size     "mini"
-                          :icon     "delete"
-                          :style    {:margin "0 8px"}
-                          :on-click (fn []
-                                      (do
-                                        (dispatch [:users/set-delete-dialog-open true])
-                                        (reset! *delete-id* id)))}]]]]))]]
+              [:> Button.Group {:size "mini"
+                                :compact true}
+               [:> Button {:color    "green"
+                           :icon     "edit"
+                           :on-click #(navigate! (str "/users/" id "/edit"))}]
+                [:> Button.Or]
+               [:> Button {:color    "red"
+                           :icon     "delete"
+                           :on-click (fn []
+                                       (do
+                                         (dispatch [:users/set-delete-dialog-open true])
+                                         (reset! *delete-id* id)))}]]]]]))]]
      (if @users
        [c/table-page :users/load-page (merge @query-params @pagination)])]))
 

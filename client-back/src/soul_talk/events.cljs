@@ -60,7 +60,6 @@
 (reg-event-db
   :set-error
   (fn [db [_ message]]
-    (js/console.log "error message: " message)
     (assoc db :error message)))
 
 (reg-event-db

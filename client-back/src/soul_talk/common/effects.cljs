@@ -7,15 +7,14 @@
   :ajax-error
   (fn [_ [_ {:keys [response status] :as resp}]]
     (let [message (:message response)]
-      (js/console.log "error resp: " resp)
+      (js/console.log ".... error resp: " resp)
       {:dispatch-n (condp = status
-                     0 (list [:set-error message])
                      400 (list [:set-error (str "错误的请求!" message)])
                      401 (list [:set-error (str "请示验证失败！ " message)] [:logout])
                      403 (list [:set-error (str "错误的请求！ " message)] [:logout])
                      404 (list [:set-error (str "所请求的资源未找到，请检查！" message)])
                      500 (list [:set-error (str "发生内部错误，请联系管理员或重试！") message])
-                     (list [:set-error (str "发生未知错误！" message)]))})))
+                     (list [:set-error "发生未知错误！"]))})))
 
 (reg-fx
  :http

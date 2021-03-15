@@ -80,19 +80,19 @@
     (assoc-in db [:menus/edit key] value)))
 
 (reg-event-db
-  :menus/add-ok
+  :menus/new-ok
   (fn [db [_ {:keys [menu]}]]
     (let [menus (:menus db)]
       (assoc db :success "保存成功" :menus (conj menus menu)))))
 
 (reg-event-fx
-  :menus/add
+  :menus/new
   (fn [_ [_ menu]]
     (println "menu: " menu)
     {:http {:method        POST
             :url           (str site-uri "/menus")
             :ajax-map      {:params menu}
-            :success-event [:menus/add-ok]}}))
+            :success-event [:menus/new-ok]}}))
 
 (reg-event-db
   :menus/update-ok
@@ -126,7 +126,7 @@
   (fn [db _]
     (-> db
       (dissoc :menus :menus/query-params :menus/edit)
-      (assoc :menus/add-status false
+      (assoc :menus/new-status false
              :menus/edit-status false
              :menus/delete-status false))))
 

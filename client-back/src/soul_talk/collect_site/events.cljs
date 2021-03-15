@@ -18,19 +18,19 @@
             :success-event [:collect-sites/load-all-ok]}}))
 
 (reg-event-db
-  :collect-sites/add-ok
+  :collect-sites/new-ok
   (fn [db [_ {:keys [collect-site]}]]
     (assoc db :success "add a collect-site ok")))
 
 (reg-event-fx
-  :collect-sites/add
+  :collect-sites/new
   (fn [_ [_ {:keys [name] :as collect-site}]]
     (if (str/blank? name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        POST
               :url           (str site-uri "/collect-sites")
               :ajax-map      {:params collect-site}
-              :success-event [:collect-sites/add-ok]}})))
+              :success-event [:collect-sites/new-ok]}})))
 
 (reg-event-db
   :collect-sites/delete-ok

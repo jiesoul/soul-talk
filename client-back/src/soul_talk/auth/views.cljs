@@ -7,8 +7,7 @@
   (:import goog.History))
 
 (defn login-page []
-  (let [site-info (subscribe [:site-info])
-        login-user (r/atom {:email "" :password ""})
+  (let [login-user (r/atom {:email "" :password ""})
         email (r/cursor login-user [:email])
         password (r/cursor login-user [:password])]
     [:div
@@ -25,7 +24,7 @@
          [:> sui/Header {:as         "h2"
                          :color      "teal"
                          :text-align "center"}
-          (str "Log in to " (:name @site-info))]
+          (str "Log in")]
          [:> sui/Form.Input {:fluid         true
                              :margin        "normal"
                              :icon          "user"

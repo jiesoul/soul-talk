@@ -8,23 +8,18 @@
   :series/init
   (fn [db _]
     (-> db
-      (assoc :series/add-dialog false :series/update-dialog false :series/delete-dialog false)
+      (assoc :series/delete-dialog false)
       (dissoc :series/list :series/pagination :series/query-params))))
-
-(reg-event-db
-  :series/set-add-dialog
-  (fn [db [_ value]]
-    (assoc-in db :series/add-dialog value)))
-
-(reg-event-db
-  :series/set-update-dialog
-  (fn [db [_ value]]
-    (assoc-in db :series/update-dialog value)))
 
 (reg-event-db
   :series/set-delete-dialog
   (fn [db [_ value]]
     (assoc-in db :series/delete-dialog value)))
+
+(reg-event-db
+  :series/set-attr
+  (fn [db [_ attr]]
+    (update-in db [:series/edit] merge attr)))
 
 (reg-event-db
   :series/load-all-ok
@@ -56,21 +51,21 @@
             :success-event [:series/load-page-ok]}}))
 
 (reg-event-db
-  :series/add-ok
+  :series/new-ok
   (fn [db [_ {:keys [series]}]]
     (let [series-list (:series/list db)]
       (assoc db :success "保存成功"
                 :series/list (conj series-list series)))))
 
 (reg-event-fx
-  :series/add
+  :series/new
   (fn [_ [_ {:keys [name] :as series}]]
     (if (str/blank? name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        POST
               :url           (str site-uri "/series")
               :ajax-map      {:params series}
-              :success-event [:series/add-ok]}})))
+              :success-event [:series/new-ok]}})))
 
 (reg-event-db
   :series/load-ok

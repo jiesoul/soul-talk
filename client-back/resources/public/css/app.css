@@ -69,6 +69,11 @@ body {
     border: 0;
 }
 
+.button-center {
+    text-align: center;
+    margin-top: 5px;
+}
+
 .home-carousel-content {
     height: 450px;
     color: #fff;
