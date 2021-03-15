@@ -1,0 +1,35 @@
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const path = require("path");
+
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+
+const smp = new SpeedMeasurePlugin();
+
+module.exports = smp.wrap({
+    entry: [
+        "./resources/public/js/main.js"
+    ],
+    output: {
+        path:path.resolve(__dirname, "resources/public/js"),
+        filename: "index_bundle.js"
+    },
+    plugins: [
+    ],
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: [
+                    'thread-loader',
+                    "babel-loader"
+                ]
+            }, {
+                test: /\.jsx?$/,
+                exclude: /node_modules/,
+                use: "babel-loader"
+            }
+        ]
+    }
+});
+

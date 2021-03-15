@@ -1,0 +1,37 @@
+{
+  "name": "client-back",
+  "version": "1.0.0",
+  "description": "网站管理后台",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "7",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^5.0.0",
+    "less-loader": "^7.0.2",
+    "mini-css-extract-plugin": "^1.1.1",
+    "speed-measure-webpack-plugin": "^1.4.2",
+    "style-loader": "^2.0.0",
+    "thread-loader": "^3.0.1",
+    "webpack": "^4.32.0",
+    "webpack-cli": "^3.3.2"
+  },
+  "dependencies": {
+    "react": "^17.0.1",
+    "react-dom": "^17.0.0",
+    "react-highlight.js": "^1.0.7",
+    "react-toastify": "^7.0.2",
+    "semantic-ui-react": "^2.0.3"
+  }
+}
