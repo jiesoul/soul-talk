@@ -4,17 +4,28 @@
             [next.jdbc.sql :as sql]
             [clojure.string :as str]))
 
-(defn save-role! [role]
-  (sql/insert! *db* :role role {:builder-fn rs-set/as-unqualified-maps}))
+(defn add-role-menus! [role-id menus]
+  (when (not-empty menus)
+    (sql/insert-multi! *db* :role_menu [:role_id :menu_id] (map vector (repeat role-id) (map :id menus)))))
 
-(defn update-role! [role]
+(defn delete-role-menus! [role-id]
+  (sql/delete! *db* :role_menu ["role_id = ?" role-id]))
+
+(defn save-role! [{:keys [id menus] :as role}]
+  (add-role-menus! id menus)
+  (sql/insert! *db* :role (dissoc role :menus)))
+
+(defn update-role! [{:keys [id menus] :as role}]
+  (delete-role-menus! id)
+  (add-role-menus! id menus)
   (sql/update! *db* :role (select-keys role [:name :note]) [" id = ? " (:id role)]))
 
 (defn delete-role! [id]
+  (delete-role-menus! id)
   (sql/delete! *db* :role ["id = ?" id]))
 
 (defn get-role-by-id [id]
-  (sql/get-by-id *db* :role id {:builder-fn rs-set/as-unqualified-maps}))
+  (sql/get-by-id *db* :role id))
 
 (defn get-role-menus-by-role-id [id]
   (sql/query *db*
@@ -22,13 +33,11 @@
 
 (defn get-roles-by-ids [ids]
   (sql/query *db*
-    ["select * from role where id = any(?)" ids]
-    {:builder-fn rs-set/as-unqualified-maps}))
+    ["select * from role where id = any(?)" ids]))
 
 (defn get-roles-by-user-id [user-id]
   (sql/query *db*
-    ["select * from role where id in (select role_id from user_role where user_id = ?)" user-id]
-    {:builder-fn rs-set/as-unqualified-maps}))
+    ["select * from role where id in (select role_id from user_role where user_id = ?)" user-id]))
 
 (defn gen-where [{:keys [name]}]
   (let [[where-str coll] [(str " where 1=1 ") []]
