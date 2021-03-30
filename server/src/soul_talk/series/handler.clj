@@ -23,7 +23,9 @@
     (utils/ok {:series series})))
 
 (defn update-series [series]
-  (let [series (db/update-series series)]
+  (let [series (db/update-series (-> series 
+                                    (assoc :update_at (utils/now))
+                                    (dissoc :create_at)))]
     (utils/ok {:series series})))
 
 (defn delete-series [id]

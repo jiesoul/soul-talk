@@ -18,7 +18,7 @@
 ;                      (let []
 ;                        [:div
 ;                         [:> mui/Checkbox {:checked   (if (contains? checked-ids id) true false)
-;                                           :on-change #(dispatch [:roles/checked-menu {:id id :pid pid} (-> % .-target .-checked)])}]
+;                                           :on-change #(dispatch [:role/checked-menu {:id id :pid pid} (-> % .-target .-checked)])}]
 ;                         [:> Button
 ;                          (:name menu)]]))
 ;            :on-label-click #()}
@@ -30,8 +30,8 @@
         menus (subscribe [:menus])
         tree-data (map #(clojure.set/rename-keys % []) menus)
         menus-tree (utils/make-tree @menus)
-        role (subscribe [:roles/edit])
-        _ (dispatch [:roles/set-attr {:create_by (:id @user)}])]
+        role (subscribe [:role/edit])
+        _ (dispatch [:role/set-attr {:create_by (:id @user)}])]
     [:> Card
      [:> Card.Header "菜单列表"]
      [:> Card.Content
@@ -39,50 +39,47 @@
       ]]))
 
 (defn- new-form []
-  (let [role    (subscribe [:roles/edit])
+  (let [role    (subscribe [:role/edit])
         user    (subscribe [:user])
         menus (subscribe [:menus])
+        role-menus (:menus @role)
         user-id (:id @user)
-        _ (dispatch [:roles/set-attr {:update_by user-id :create_by user-id :menus-ids #{}}])]
+        _ (dispatch [:role/set-attr {:update_by user-id :create_by user-id :menus-ids #{}}])]
     ^{:key "add-role-form"}
-    [:> Form {:name       "add-role-form"
-            :size "small"}
+    [:> Form {:name       "add-role-form"}
      [:> Form.Group
       [:> Form.Input {:name      "name"
                       :label     "名称"
                       :inline    true
                       :required  true
-                      :on-change #(dispatch [:roles/set-attr {:name (utils/event-value %)}])}]
+                      :on-change #(dispatch [:role/set-attr {:name (utils/event-value %)}])}]
       [:> Form.Input {:name      "note"
                       :label     "备注"
                       :inline    true
-                      :on-change #(dispatch [:roles/set-attr {:note (utils/event-value %)}])}]]
+                      :on-change #(dispatch [:role/set-attr {:note (utils/event-value %)}])}]]
 
      [menu-tree-view]
-     [:div {:style {:text-align "center"}}
-      [:> Button.Group {:size    "mini"
-                        :compact true}
-       [:> Button {:on-click #(js/history.go -1)}
-        "返回"]
-       [:> Button.Or]
-       [:> Button {:color    "green"
-                   :icon     "save"
-                   :content  "保存"
-                   :on-click #(dispatch [:menus/update @role])}]
+     [:div.button-center
+      [:> Button {:on-click #(navigate! (str "/role"))}
+       "返回"]
+      [:> Button {:color    "green"
+                  :icon     "save"
+                  :content  "保存"
+                  :on-click #(dispatch [:role/save @role])}]
 
-       ]]]))
+      ]]))
 
 (defn new []
   [c/layout [new-form]])
 
 (defn- edit-form []
-  (let [role (subscribe [:roles/edit])
-        user (subscribe [:user])
+  (let [user (subscribe [:user])
+        role (subscribe [:role/edit])
+        _ (dispatch [:menus/set-attr :update_by (:id @user)])
         menus (subscribe [:menus])
         user-id  (:id @user)]
     (let [{:keys [name note]} @role]
-      [:> Form {:name       "add-role-form"
-                :size "small"}
+      [:> Form {:name       "add-role-form"}
        [:> Form.Group
         [:> Form.Input {:name          "name"
                         :inline        true
@@ -91,66 +88,57 @@
                         :required      true
                         :default-value name
                         :on-change     #(let [value (-> % .-target .-value)]
-                                          (dispatch [:roles/set-attr :name value]))}]
+                                          (dispatch [:role/set-attr :name value]))}]
         [:> Form.Input {:name          "note"
                         :inline        true
                         :label         "备注"
                         :default-value note
                         :on-change     #(let [value (-> % .-target .-value)]
-                                          (dispatch [:roles/set-attr :note value]))}]]
+                                          (dispatch [:role/set-attr :note value]))}]]
        [:> Divider]
 
        [:div {:style {:text-align "center"}}
-        [:> Button.Group {:size "mini"
-                          :compact true}
-         [:> Button {:on-click #(js/history.go -1)}
-          "返回"]
-         [:> Button.Or]
-         [:> Button {:color    "green"
-                     :content  "保存"
-                     :on-click #(do
-                                  (dispatch [:menus/set-attr :update_by (:id @user)])
-                                  (dispatch [:menus/update @role]))}]]]])))
+        [:> Button {:on-click #(navigate! (str "/role"))}
+         "返回"]
+        [:> Button {:color    "green"
+                    :content  "保存"
+                    :on-click #(dispatch [:role/update @role])}]]])))
 
 (defn edit []
   [c/layout [edit-form]])
 
-(def ^:dynamic *delete-id* (r/atom 0))
 (defn delete-dialog [id]
-  (let [open (subscribe [:roles/delete-dialog-open])]
+  (let [open (subscribe [:role/delete-dialog])
+        role (subscribe [:role/edit])]
     (if @open
-      [c/modal {:open      @open
-                 :title    "删除角色"
-                 :ok-text  "确认"
-                 :on-close #(dispatch [:roles/set-delete-dialog-open false])
-                 :on-ok    #(do (dispatch [:roles/set-delete-dialog-open false])
-                                (dispatch [:data-dices/delete id]))}
-       "你确定要删除吗？"])))
+      [c/confirm {:open   @open
+                :title    "删除角色"
+                :ok-text  "确认"
+                :on-close #(dispatch [:role/set-delete-dialog false])
+                :on-ok    #(do (dispatch [:role/set-delete-dialog false])
+                               (dispatch [:data-dices/delete (:id @role)]))}
+       (str "你确定要删除角色 " (:name @role) " 吗？")])))
 
 (defn query-form []
-  (let [query-params (subscribe [:roles/query-params])]
+  (let [query-params (subscribe [:role/query-params])]
     (fn []
-      [:> Form {:name       "query-form"
-              :size       "small"}
+      [:> Form
        [:> Form.Group
         [:> Form.Input {:name      "name"
                         :label     "名称"
-                   :inline true
-                        :on-change #(dispatch [:roles/set-query-params :name (-> % .-target .-value)])}]]
-       [:div {:style {:text-align "center"}}
-        [:> Button.Group {:size "mini"
-                          :compact true}
-         [:> Button {:content  "查询"
-                     :on-click #(dispatch [:roles/load-page @query-params])}]
-         [:> Button.Or]
-         [:> Button {:positive true
-                     :content  "新增"
-                     :on-click #(navigate! "/roles/new")}]]]])))
+                        :inline true
+                        :on-change #(dispatch [:role/set-query-params :name (-> % .-target .-value)])}]]
+       [:div.button-center
+        [:> Button {:content  "查询"
+                    :on-click #(dispatch [:role/load-page @query-params])}]
+        [:> Button {:positive true
+                    :content  "新增"
+                    :on-click #(navigate! "/role/new")}]]])))
 
 (defn list-table []
-  (let [roles (subscribe [:roles])
-        pagination (subscribe [:roles/pagination])
-        query-params (subscribe [:roles/query-params])]
+  (let [roles (subscribe [:role/list])
+        pagination (subscribe [:role/pagination])
+        query-params (subscribe [:role/query-params])]
     [:div
      [:> Table {:celled     true
                 :selectable true
@@ -170,20 +158,17 @@
             [:> Table.Cell note]
             [:> Table.Cell
              [:div
-              [:> Button.Group {:size    "mini"
-                                :compact true}
-               [:> Button {:content  "编辑"
-                           :positive true
-                           :on-click #(navigate! (str "/roles/" id "/edit"))}]
-               [:> Button.Or]
-               [:> Button {:content  "删除"
-                           :negative true
-                           :on-click (fn []
-                                       (do
-                                         (dispatch [:roles/set-delete-dialog-open true])
-                                         (reset! *delete-id* id)))}]]]]]))]]
+              [:> Button {:icon "edit"
+                          :positive true
+                          :on-click #(navigate! (str "/role/" id "/edit"))}]
+              [:> Button {:icon "delete"
+                          :negative true
+                          :on-click (fn []
+                                      (do
+                                        (dispatch [:role/set-attr role])
+                                        (dispatch [:role/set-delete-dialog true])))}]]]]))]]
      (when @roles
-       [c/table-page :roles/load-page (merge @query-params @pagination)])]))
+       [c/table-page :role/load-page (merge @query-params @pagination)])]))
 
 (defn home []
   [c/layout

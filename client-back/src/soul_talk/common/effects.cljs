@@ -1,13 +1,13 @@
 (ns soul-talk.common.effects
   (:require [re-frame.core :as rf :refer [dispatch reg-fx reg-event-fx reg-event-db]]
             [accountant.core :as accountant]
-            [ajax.core :as ajax]))
+            [ajax.core :as ajax]
+            [reagent.core :as r]))
 
 (reg-event-fx
   :ajax-error
   (fn [_ [_ {:keys [response status] :as resp}]]
     (let [message (:message response)]
-      (js/console.log ".... error resp: " resp)
       {:dispatch-n (condp = status
                      400 (list [:set-error (str "错误的请求!" message)])
                      401 (list [:set-error (str "请示验证失败！ " message)] [:logout])
@@ -28,16 +28,30 @@
             ajax-map {}}}]
    (dispatch [:set-loading])
    (method url (merge
-                 {:handler         (fn [response]
-                                     (when success-event
-                                       (dispatch (if ignore-response-body
-                                                   success-event
-                                                   (conj success-event response))))
-                                     (dispatch [:unset-loading]))
-                  :error-handler   (fn [resp]
-                                     (dispatch (conj error-event resp))
-                                     (dispatch [:unset-loading]))}
+                 {:handler       (fn [response]
+                                   (when success-event
+                                     (dispatch (if ignore-response-body
+                                                 success-event
+                                                 (conj success-event response))))
+                                   (dispatch [:unset-loading]))
+                  :error-handler (fn [resp]
+                                   (dispatch (conj error-event resp))
+                                   (dispatch [:unset-loading]))}
                 ajax-map))))
+
+(defonce timeouts (r/atom {}))
+(reg-fx
+  :timeout
+  (fn [{:keys [id event time]}]
+    (when-some [existing (get @timeouts id)]
+      (js/clearTimeout existing)
+      (swap! timeouts dissoc id))
+    (when (some? event)
+      (swap! timeouts assoc id
+        (js/setTimeout
+          (fn []
+            (dispatch event))
+          time)))))
 
 (reg-fx
   :navigate

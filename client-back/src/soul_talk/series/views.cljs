@@ -20,60 +20,77 @@
                       :required  true
                       :on-change #(dispatch [:series/set-attr {:name (du/event-value %)}])}]
       [:> Form.Input {:label     "简介"
+                      :required  true
                       :on-change #(dispatch [:series/set-attr {:description (du/event-value %)}])}]
-
-      [:> Button.Group {:size "mini"}
-       [:> Button {:content "返回"
-                   :on-click #(js/history.go -1)}]
-       [:> Button.Or]
-       [:> Button {:content "保存"
+      [:div.button-center
+       [:> Button {:content  "返回"
+                   :on-click #(navigate! (str "/series"))}]
+       [:> Button {:content  "保存"
                    :positive true
-                   :on-click #(dispatch [:series/new @series])}]]]]))
+                   :on-click #(dispatch [:series/save @series])}]]
+      ]]))
 
 (defn edit []
   (let [user (subscribe [:user])
-        ori-series (subscribe [:series/series])
-        update-series (-> @ori-series
-                     (update :name #(or % ""))
-                     (update :create_by #(or % (:id @user)))
-                     r/atom)
-        id (r/cursor update-series [:id])
-        name (r/cursor update-series [:name])]
+        series (subscribe [:series/edit])
+        _ (dispatch [:series/set-attr {:update_by (:id @user)}])]
     [c/layout
      [:> Form
       [:> Form.Input {:title     "name"
                       :label     "name"
                       :required  true
-                      :on-change #(let [value (-> % .-target .-value)]
-                                    (reset! name value))}]]]))
+                      :default-value (:name @series)
+                      :on-change #(dispatch [:series/set-attr {:name (du/event-value %)}])}]
+      [:> Form.Input {:label     "简介"
+                      :required  true
+                      :default-value (:description @series)
+                      :on-change #(dispatch [:series/set-attr {:description (du/event-value %)}])}]
+      [:div.button-center
+       [:> Button {:content  "返回"
+                   :on-click #(navigate! (str "/series"))}]
+       [:> Button {:content  "保存"
+                   :positive true
+                   :on-click #(dispatch [:series/update @series])}]]
+      ]]))
+
+(defn- delete-modal []
+  (let [series (subscribe [:series/edit])
+        delete-status (subscribe [:series/delete-dialog])]
+    (if @series
+      (let [{:keys [id name]} @series]
+        ^{:key "delete-series-dialog"}
+        [c/confirm {:open   @delete-status
+                  :title    "删除菜单"
+                  :ok-text  "确认"
+                  :on-close #(dispatch [:series/set-delete-dialog false])
+                  :on-ok    #(do
+                               (dispatch [:series/set-delete-dialog false])
+                               (dispatch [:series/delete id]))}
+         (str "你确定要删除系列 " name " 吗？")]))))
 
 (defn query-form []
-  (let [params (subscribe [:series/query-params])
-        name (r/cursor params [:name])]
-    [:> Form {:size "small"}
+  (let [params (subscribe [:series/query-params])]
+    [:> Form
      [:> Form.Group
       [:> Form.Input {:label       "名称"
                       :inline      true
                       :on-change   #(reset! name (-> % .-target .-value))}]]
-     [:div {:style {:text-align "center"}}
+     [:div.button-center
       [:> Button {:basic    true
-                  :size     "small"
                   :icon "search"
-                  :content  "查询:"
+                  :content  "查询"
                   :on-click #(dispatch [:series/load-page @params])}]
       [:> Button {:color "green"
                   :icon "add"
-                  :size     "small"
                   :content  "新增"
                   :on-click #(navigate! "/series/new")}]]]))
 
-(defn list-table [{:keys [classes]}]
+(defn list-table []
   (let [series-list (subscribe [:series/list])
         query-params (subscribe [:series/query-params])
         pagination (subscribe [:series/pagination])]
     [:div
      [:> Table {:celled     true
-                :size       "small"
                 :text-align "center"}
       [:> Table.Header
        [:> Table.Row
@@ -95,32 +112,23 @@
             [:> Table.Cell (du/to-date-time update_at)]
             [:> Table.Cell
              [:div
-              [:> Button {:type     "primary"
-                          :size     "small"
+              [:> Button {:color "green"
                           :alt      "修改"
-                          :icon     "修改"
-                          :on-click (fn []
-                                      (do
-                                        (dispatch [:series/load id])
-                                        (set! *visible* true)))}]
-              [:> Button {:type     "danger"
-                          :size     "small"
+                          :icon     "edit"
+                          :on-click #(navigate! (str "/series/" id "/edit"))}]
+              [:> Button {:color    "red"
                           :alt      "删除"
                           :icon     "delete"
-                          :on-click (fn []
-                                      (r/as-element
-                                        (c/modal
-                                          "删除"
-                                          (str "你确认要删除吗？")
-                                          #(dispatch [:series/delete id])
-                                          #(js/console.log "cancel"))))}]]]]))]]
+                          :on-click #(do
+                                      (dispatch [:series/set-attr {:id id :name name}])
+                                      (dispatch [:series/set-delete-dialog true]))}]]]]))]]
      (if @series-list
-       [:div {:text-align "center"}
-        [c/table-page :series/load-page (merge @query-params @pagination)]])]))
+       [c/table-page :series/load-page (merge @query-params @pagination)])]))
 
 (defn home []
   [c/layout
    [:<>
     [query-form]
     [:> Divider]
+    [delete-modal]
     [list-table]]])

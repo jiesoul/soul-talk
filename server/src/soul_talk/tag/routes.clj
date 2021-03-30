@@ -68,12 +68,6 @@
       :return Result
       (tag/get-tag-by-id id))
 
-    (PATCH "/:id" []
-      :auth-login #{"admin"}
-      :path-params [id :- int?]
-      :return Result
-      :summary "修改标签")
-
     (DELETE "/:id" []
       :auth-login #{"admin"}
       :path-params [id :- int?]

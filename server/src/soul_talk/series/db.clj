@@ -21,7 +21,7 @@
     [series total]))
 
 (defn save-series [series]
-  (sql/insert! *db* :series series {:builder-fn rs-set/as-unqualified-maps}))
+  (sql/insert! *db* :series series))
 
 (defn update-series [{:keys [id] :as series}]
   (sql/update! *db* :series series {:id id}))

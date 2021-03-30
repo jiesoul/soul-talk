@@ -5,151 +5,142 @@
             [soul-talk.utils :as utils]))
 
 (rf/reg-event-db
-  :roles/init
+  :role/init
   (fn [db _]
     (-> db
-      (assoc :roles/delete-dialog-open false)
+      (assoc :role/delete-dialog false)
       (dissoc
-        :roles/query-params
-        :roles/pagination
-        :roles))))
+        :role/edit
+        :role/query-params
+        :role/pagination
+        :role/list))))
 
 (rf/reg-event-db
-  :roles/set-delete-dialog-open
+  :role/set-delete-dialog
   (fn [db [_ value]]
-    (assoc db :roles/delete-dialog-open value)))
+    (assoc db :role/delete-dialog value)))
 
 (rf/reg-event-db
-  :roles/set-query-params
+  :role/set-query-params
   (fn [db [_ key value]]
-    (assoc-in db [:roles/query-params key] value)))
+    (assoc-in db [:role/query-params key] value)))
 
 (rf/reg-event-db
-  :roles/clean-query-params
+  :role/clean-query-params
   (fn [db _]
-    (dissoc db :roles/query-params)))
+    (dissoc db :role/query-params)))
 
 (rf/reg-event-db
-  :roles/load-page-ok
+  :role/load-page-ok
   (fn [db [_ {:keys [roles pagination params]}]]
-    (assoc db :roles roles :roles/pagination pagination :roles/query-params params)))
+    (assoc db :role/list roles :role/pagination pagination :role/query-params params)))
 
 (rf/reg-event-fx
-  :roles/load-page
+  :role/load-page
   (fn [_ [_ params]]
     {:http {:method GET
             :url (str site-uri "/roles")
             :ajax-map {:params params}
-            :success-event [:roles/load-page-ok]}}))
+            :success-event [:role/load-page-ok]}}))
 
 (reg-event-db
-  :roles/clean-role
+  :role/clean-role
   (fn [db _]
     (dissoc db :role)))
 
 (reg-event-db
-  :roles/set-attr
+  :role/set-attr
   (fn [db [_ attr]]
-    (let [edit (:roles/edit db)]
-      (assoc db :roles/edit (merge edit attr)))))
+    (let [edit (:role/edit db)]
+      (assoc db :role/edit (merge edit attr)))))
 
 (reg-event-db
-  :roles/checked-menu
+  :role/checked-menu
   (fn [db [_ {:keys [id pid]} checked]]
     (let [menus (:menus db)
           child-ids (set (map :id (filter #(= id (:pid %)) menus)))
-          role (:roles/edit db)
+          role (:role/edit db)
           ids (set (:menus-ids role))]
       (if checked
         (let [menus-ids (conj ids id)
               menus-ids (if-not (zero? pid) (conj menus-ids pid) menus-ids)
               menus-ids (reduce conj menus-ids child-ids)]
-          (assoc-in db [:roles/edit :menus-ids] menus-ids))
+          (assoc-in db [:role/edit :menus-ids] menus-ids))
         (let [menus-ids (remove #(contains? (conj child-ids id) %) ids)
               brother-ids (set (map :id (filter #(and (= pid (:pid %)) (not= id (:id %))) menus)))
               brother-ids (filter #(contains? brother-ids %) menus-ids)
               menus-ids (if (empty? brother-ids) (remove #(= pid %) menus-ids) menus-ids)]
           (js/console.log "----" brother-ids)
           (js/console.log "----" menus-ids)
-          (assoc-in db [:roles/edit :menus-ids] menus-ids))))))
-
-(reg-event-db
-  :roles/new-ok
-  (fn [db [_ {:keys [role]}]]
-    (let [roles (:roles db)]
-      (assoc db :success "保存成功" :roles (conj roles role)))))
+          (assoc-in db [:role/edit :menus-ids] menus-ids))))))
 
 (reg-event-fx
-  :roles/new
+  :role/save
   (fn [_ [_ role]]
     {:http {:method        POST
             :url           (str site-uri "/roles")
             :ajax-map      {:params role}
-            :success-event [:roles/new-ok]}}))
+            :success-event [:set-success "保存成功"]}}))
 
 (reg-event-db
-  :roles/load-role-ok
+  :role/load-role-ok
   (fn [db [_ {:keys [role]}]]
-    (assoc db :roles/edit role)))
+    (assoc db :role/edit role)))
 
 (reg-event-fx
-  :roles/load-role
+  :role/load-role
   (fn [_ [_ id]]
     {:http {:method GET
             :url (str site-uri "/roles/" id)
-            :success-event [:roles/load-role-ok]}}))
-
-(reg-event-db
-  :roles/update-ok
-  (fn [db [_ {:keys [role]}]]
-    (assoc db :success "保存成功")))
+            :success-event [:role/load-role-ok]}}))
 
 (reg-event-fx
-  :roles/update
+  :role/update
   (fn [_ [_ role]]
     {:http {:method        PATCH
             :url           (str site-uri "/roles")
             :ajax-map      {:params role}
-            :success-event [:roles/update-ok]}}))
-
-(reg-event-db
-  :roles/delete-ok
-  (fn [db [_ id]]
-    (let [roles (:roles db)
-          roles (remove #(= id (:id %)) roles)]
-      (assoc db :success "删除成功" :roles roles))))
+            :success-event [:set-success "保存成功"]}}))
 
 (reg-event-fx
-  :roles/delete
+  :role/delete-ok
+  (fn [{:keys [db]} [_ id]]
+    (let [roles (:role db)
+          roles (remove #(= id (:id %)) roles)]
+      {:db (assoc db :role roles)
+       :dispatch [:set-success "删除成功"]})))
+
+(reg-event-fx
+  :role/delete
   (fn [_ [_ id]]
     {:http {:method  DELETE
             :url (str site-uri "/roles/" id)
-            :success-event [:roles/delete-ok id]}}))
+            :success-event [:role/delete-ok id]}}))
 
 (reg-event-db
-  :roles/load-role-menus-ok
+  :role/load-role-menus-ok
   (fn [db [_ {:keys [role-menus]}]]
-    (assoc db :roles/role-menus role-menus)))
+    (assoc db :role/role-menus role-menus)))
 
 (reg-event-fx
-  :roles/load-role-menus
+  :role/load-role-menus
   (fn [_ [_ id]]
     {:http {:method GET
             :url (str site-uri "/roles/" id "/menus")
-            :success-event [:roles/load-role-menus-ok]}}))
+            :success-event [:role/load-role-menus-ok]}}))
 
 (rf/reg-event-fx
-  :roles/load-menus-ok
+  :role/load-menus-ok
   (fn [{:keys [db]} [_ {:keys [role-roles]}]]
     (let [menu-ids (map :menu_id role-roles)]
       {:db         (assoc-in db [:user :role-roles] role-roles)
-       :dispatch-n (list [:roles/load-roles menu-ids])})))
+       :dispatch-n (list [:role/load-roles menu-ids])})))
 
 (rf/reg-event-fx
-  :roles/load-menus
+  :role/load-menus
   (fn [_ [_ ids]]
     {:http {:method        GET
             :url           (str site-uri "/roles/menus")
             :ajax-map      {:params {:ids ids}}
-            :success-event [:roles/load-menus-ok]}}))
+            :success-event [:role/load-menus-ok]}}))
 

@@ -6,6 +6,12 @@ body {
     background: #fff;
 }
 
+div {
+    margin:0;
+    border:0;
+    padding:0;
+}
+
 .site-layout-background {
     background: #fff;
 }

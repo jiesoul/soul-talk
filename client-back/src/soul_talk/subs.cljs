@@ -7,8 +7,6 @@
             [soul-talk.role.subs]
             [soul-talk.menu.subs]
             [soul-talk.app-key.subs]
-            [soul-talk.collect-link.subs]
-            [soul-talk.collect-site.subs]
             [soul-talk.series.subs]
             [soul-talk.data-dic.subs]
             [soul-talk.dash.subs]
@@ -28,8 +26,6 @@
 
 (reg-sub :api-url query)
 
-(reg-sub :app-key query)
-
 (reg-sub :active-page query)
 
 (reg-sub :error query)
@@ -39,9 +35,5 @@
 (reg-sub :login-events query)
 
 (reg-sub :loading? query)
-
-(reg-sub :pagination query)
-
-(reg-sub :query-params query)
 
 (reg-sub :drawer-status query)

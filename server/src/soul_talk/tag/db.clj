@@ -44,11 +44,6 @@
       [(str "select * from tag where name in (" tag-str ")")]
       {:builder-fn rs-set/as-unqualified-maps})))
 
-(defn add-tags-to-article [article-id tag-names]
-  (when-not (empty? tag-names)
-    (if-let [tags (tags-with-names tag-names)]
-      (let [inputs (map vector (repeat article-id) (map :id tags))]
-        (sql/insert-multi! *db* :article_tags [:article_id :tag_id] inputs)))))
 
 (defn get-tag-by-article-id [id]
   (sql/query *db*

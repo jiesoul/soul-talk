@@ -7,4 +7,4 @@
 (reg-sub :series/list query)
 (reg-sub :series/series query)
 (reg-sub :series/edit query)
-(reg-sub :series/new-dialog query)
+(reg-sub :series/delete-dialog query)

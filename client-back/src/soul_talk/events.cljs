@@ -1,6 +1,7 @@
 (ns soul-talk.events
   (:require [re-frame.core :refer [inject-cofx dispatch dispatch-sync reg-event-db reg-event-fx subscribe]]
             [soul-talk.db :refer [default-db]]
+            ["react-toastify" :refer [toast]]
             [soul-talk.common.local-storage :as storage]
             [soul-talk.site-info.events]
             [soul-talk.auth.events]
@@ -8,14 +9,11 @@
             [soul-talk.role.events]
             [soul-talk.menu.events]
             [soul-talk.app-key.events]
-            [soul-talk.collect-link.events]
-            [soul-talk.collect-site.events]
             [soul-talk.series.events]
             [soul-talk.data-dic.events]
             [soul-talk.dash.events]
             [soul-talk.article.events]
-            [soul-talk.tag.events]
-            ))
+            [soul-talk.tag.events]))
 
 ;; 初始化
 (reg-event-fx
@@ -48,19 +46,25 @@
     (assoc db :drawer-status value)))
 
 (reg-event-db
-  :set-success
-  (fn [db [_ message]]
-    (assoc db :success message)))
-
-(reg-event-db
   :clean-success
   (fn [db _]
     (dissoc db :success)))
 
-(reg-event-db
+(reg-event-fx
+  :set-success
+  (fn [cfx [_ message]]
+    {:db (assoc (:db cfx) :success message)
+     :timeout {:id "clean-success"
+               :event [:clean-success]
+               :time 3000}}))
+
+(reg-event-fx
   :set-error
-  (fn [db [_ message]]
-    (assoc db :error message)))
+  (fn [cfx [_ message]]
+    {:db (assoc (:db cfx) :error message)
+     :timeout {:id "clean-error"
+               :event [:clean-error]
+               :time 10000}}))
 
 (reg-event-db
   :clean-error

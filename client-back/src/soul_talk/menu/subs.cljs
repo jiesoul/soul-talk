@@ -1,10 +1,10 @@
 (ns soul-talk.menu.subs
   (:require [re-frame.core :as rf :refer [reg-sub]]
             [soul-talk.common.effects :refer [query]]))
-
 (reg-sub :menus query)
-(reg-sub :menus/edit query)
-(reg-sub :menus/query-params query)
-(reg-sub :menus/pagination query)
-(reg-sub :menus/delete-status query)
-(reg-sub :menus/selected query)
+(reg-sub :menu/list query)
+(reg-sub :menu/edit query)
+(reg-sub :menu/query-params query)
+(reg-sub :menu/pagination query)
+(reg-sub :menu/delete-dialog query)
+(reg-sub :menu/selected query)

@@ -6,8 +6,8 @@
             [soul-talk.routes :refer [navigate!]]
             [soul-talk.utils :as utils]
             ["semantic-ui-react" :as sui :refer [Breadcrumb Container Menu Divider Dropdown Grid Segment Dimmer Loader
-                                                 Sidebar Message Modal Button Pagination Header Visibility]]
-            ["react-toastify" :refer [toast]]
+                                                 Sidebar Message Modal Button Pagination Header Visibility Confirm
+                                                 TransitionablePortal Icon]]
             [react :as react]))
 
 (def validate-messages {:required "${label} 必须的"
@@ -24,46 +24,42 @@
                   :inverted true}
        [:> Loader {:size "large"} "加载中"]])))
 
-(defn progress []
-  )
-
-(defn success []
-  (let [success (rf/subscribe [:success])
-        on-close #(rf/dispatch [:clean-success])]
-    (when @success
-      (toast.success @success {:position   (-> toast .-POSITION .-TOP_CENTER)
-                               :toast-id   "success-toast"
-                               :auto-close 3000
-                               :on-close   on-close}))))
-
-(defn error []
-  (let [error (rf/subscribe [:error])
-        on-close #(rf/dispatch [:clean-error])]
-    (toast.error @error {:position   (-> toast .-POSITION .-TOP_CENTER)
-                         :toast-id   "error-toast"
-                         :auto-close 5000
-                         :on-close   on-close})))
-
-(defn notify []
-  (let [success (rf/subscribe [:success])
-        error (rf/subscribe [:error])]
-    (if @success
-      (toast.success @success {:position (-> toast .-POSITION .-TOP_CENTER)
-                               :auto-close 3000
-                               :on-close #(rf/dispatch [:clean-success])})
-      (if @error
-        (toast.error @error {:position (-> toast .-POSITION .-TOP_CENTER)
-                             :auto-close 5000
-                             :on-close #(rf/dispatch [:clean-error])})))))
-
-(defn success-message []
+(defn success-portal []
   (let [success (rf/subscribe [:success])]
-    [:> Message {:floating true
-                 :positive true
-                 :compact true
-                 :icon "right"
-                 (if @success :visible :hidden) true}
-     @success]))
+    [:> TransitionablePortal {:open       (if @success true false)
+                              :transition {:animation "fly up"
+                                           :duration  100}}
+     [:> Message {:style {:left     "50%"
+                          :position "fixed"
+                          :top      "5%"
+                          :z-index  1000}
+                  :success true
+                  :content @success}]]))
+
+(defn error-portal []
+  (let [error (rf/subscribe [:error])]
+    [:> TransitionablePortal {:open       (if @error true false)
+                              :transition {:animation "fly up"
+                                           :duration  100}}
+     [:> Message {:style    {:left     "40%"
+                             :position "fixed"
+                             :top      "5%"
+                             :z-index  1000}
+                  :error true
+                  :content @error}]]))
+
+
+(defn info-portal []
+  (let [info (rf/subscribe [:info])]
+    [:> TransitionablePortal {:open       (if @info true false)
+                              :transition {:animation "fly up"
+                                           :duration  100}}
+     [:> Message {:style    {:left     "40%"
+                             :position "fixed"
+                             :top      "5%"
+                             :z-index  1000}
+                  :info true
+                  :content @info}]]))
 
 (defn app-bar []
   (let [site-info (rf/subscribe [:site-info])
@@ -82,10 +78,10 @@
                     :text       (:name @user)}
        [:> Dropdown.Menu
         [:> Dropdown.Item {:as       "a"
-                           :on-click #(navigate! (str "/users/" (:id @user) "/password"))}
+                           :on-click #(navigate! (str "/user/" (:id @user) "/password"))}
          "修改密码"]
         [:> Dropdown.Item {:as       "a"
-                           :on-click #(navigate! (str "/users/" (:id @user) "/profile"))}
+                           :on-click #(navigate! (str "/user/" (:id @user) "/profile"))}
          "个人信息"]
         [:> Divider]
         [:> Dropdown.Item {:as       "a"
@@ -101,12 +97,12 @@
           [:> Menu.Item {:name     name
                          :active   (= id (:id selected-menu))
                          :on-click #(do
-                                      (rf/dispatch [:menus/select menu])
+                                      (rf/dispatch [:menu/select menu])
                                       (navigate! url))}
            name]
           [:<>
            [:> Divider {:style {:margin "0"}}]
-           [:> Menu.Item
+           [:> Menu.Item {:key name}
             [:> Menu.Header {:as "h5"} name]
             [:> Menu.Menu {:style {:padding-left "10px"}}
              (menu-tree-items children selected-menu)]]])))))
@@ -115,10 +111,9 @@
   (let [user (rf/subscribe [:user])
         menus (:menus @user)
         menus-tree (utils/make-tree menus)
-        select-menu @(rf/subscribe [:menus/selected])]
+        select-menu @(rf/subscribe [:menu/selected])]
     [:> Menu {:vertical true
               :fluid true
-              :size "small"
               :borderless true
               :pointing true}
      (menu-tree-items (:children menus-tree) select-menu)]))
@@ -168,20 +163,15 @@
        [:div {:style {:margin-top "20px"}}
         [copyright]]]]]]])
 
-(defn modal [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
-  [:> Modal {:dimmer   "blurring"
-                :on-close on-close
-                :open     open
-                :key      (str "modal" (random-uuid))
-                :size     "small"}
-   [:> Modal.Header {:id                 "alert-dialog-title"
-                     :style              {:margin  0
-                                          :padding "5px"}}
-    title]
-   [:> Modal.Content children]
-   [:> Modal.Actions
-    [:> Button {:on-click on-close :negative true} (if cancel-text cancel-text "取消")]
-    [:> Button {:on-click on-ok :positive true} (if ok-text ok-text "保存")]]])
+(defn confirm [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
+  [:> Confirm {:open     open
+               :key      (str "modal" (random-uuid))
+               :confirm-button (if ok-text ok-text "保存")
+               :cancel-button (if cancel-text cancel-text "取消")
+               :on-cancel on-close
+               :on-confirm on-ok
+               :header title
+               :content children}])
 
 (defn default-page []
   [layout

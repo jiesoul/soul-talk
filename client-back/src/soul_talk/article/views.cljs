@@ -4,14 +4,23 @@
             [soul-talk.routes :refer (navigate!)]
             [soul-talk.common.views :as c]
             [soul-talk.utils :as du :refer [to-date]]
-            ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input TextArea]]
+            ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input TextArea
+                                         Dropdown Label]]
             [soul-talk.utils :as utils]))
+
+(defn cancel-button []
+  [:> Button {:content "返回"
+              :on-click #(navigate! (str "/articles"))}])
+
 
 (defn new []
   (let [article    (subscribe [:articles/edit])
+        tags (:tags article)
         user    (subscribe [:user])
         user-id (:id @user)
-        _ (dispatch [:articles/set-attr {:update_by user-id :create_by user-id :publish 0}])]
+        _ (dispatch [:articles/set-attr {:update_by user-id :create_by user-id :publish 0}])
+        search (fn [e {:keys [search-query] :as data}]
+                 (js/console.log data))]
     [c/layout
      [:> Form
       [:> Form.Input {:name        "name"
@@ -22,18 +31,30 @@
                     :cols        10
                     :placeholder "内容"
                     :on-change   #(dispatch [:articles/set-attr {:body (utils/event-value %)}])}]
+      [:div {:style {:margin "5px"}}
+       [:> Label.Group
+        [:> Label "测试"]
+        (doall
+          (for [tag tags]
+            [:> Label {:content (:name tag)}]))]]
 
+      [:> Dropdown {:placeholder "标签"
+                    :multiple true
+                    :fluid true
+                    :search true
+                    :selection true
+                    :on-search-change search
+                    }]
       [:div.button-center
-       [:> Button {:content  "返回"
-                   :on-click #(js/history.go -1)}]
+       [cancel-button]
        [:> Button {:color    "green"
                    :content  "保存"
-                   :on-click #(dispatch [:articles/new @article])}]
+                   :on-click #(dispatch [:articles/save @article])}]
        [:> Button {:content  "上传文件"
                    :color    "orange"
                    :on-click #()}]]]]))
 
-(defn edit [{:keys [classes] :as props}]
+(defn edit []
   (let [article (subscribe [:articles/edit])
         user (subscribe [:user])
         user-id  (:id @user)
@@ -52,9 +73,7 @@
                       :default-value body
                       :on-change     #(dispatch [:articles/set-attr {:body (utils/event-value %)}])}]
         [:div.button-center
-         [:> Button {:basic true
-                     :on-click #(js/history.go -1)}
-          "返回"]
+         [cancel-button]
          [:> Button {:color "green"
                      :on-click #(dispatch [:articles/update @article])}
           "保存"]]])]))
@@ -66,26 +85,26 @@
   (let [open (subscribe [:articles/publish-dialog])
         article (subscribe [:articles/edit])]
     (if @open
-      [c/modal {:open  @open
-                :title "发布文章"
-                :ok-text "发布"
+      [c/confirm {:open   @open
+                :title    "发布文章"
+                :ok-text  "发布"
                 :on-close #(dispatch [:articles/set-publish-dialog false])
-                :on-ok #(do
+                :on-ok    #(do
                           (dispatch [:articles/publish (:id @article)])
                           (dispatch [:articles/set-publish-dialog false]))}
        (str "确定发布文章吗？")])))
 
 (defn delete-dialog []
-  (let [open (subscribe [:articles/delete-dialog-open])
+  (let [open (subscribe [:articles/delete-dialog])
         article (subscribe [:articles/edit])]
     (if @open
-      [c/modal {:open      @open
+      [c/confirm {:open    @open
                  :title    (str "删除文章: ")
                  :ok-text  "确认"
-                 :on-close #(dispatch [:articles/set-delete-dialog-open false])
-                 :on-ok    #(do (dispatch [:articles/set-delete-dialog-open false])
+                 :on-close #(dispatch [:articles/set-delete-dialog false])
+                 :on-ok    #(do (dispatch [:articles/set-delete-dialog false])
                                 (dispatch [:articles/delete (:id @article)]))}
-       (str "你确定要删" (:title @article) " 吗?")])))
+       (str "你确定要删 " (:title @article) " 吗?")])))
 
 (defn query-form []
   (let [query-params (subscribe [:articles/query-params])]
@@ -107,7 +126,7 @@
                   :on-click #(navigate! "/articles/new")}]]]))
 
 (defn list-table []
-  (let [articles (subscribe [:articles])
+  (let [articles (subscribe [:articles/list])
         pagination (subscribe [:articles/pagination])
         query-params (subscribe [:articles/query-params])]
     [:<>
@@ -139,16 +158,17 @@
               [:> Table.Cell title]
               [:> Table.Cell description]
               [:> Table.Cell create_by]
-              [:> Table.Cell publish]
+              [:> Table.Cell (if (zero? publish) "否" "是")]
               [:> Table.Cell pv]
               [:> Table.Cell (du/to-date-time create_at)]
               [:> Table.Cell (du/to-date-time update_at)]
               [:> Table.Cell
                [:div.button-center
-                [:> Button {:content "发布"
-                            :on-click #(do
-                                         (dispatch [:articles/set-attr {:id id :title title}])
-                                         (dispatch [:articles/set-publish-dialog true]))}]
+                (when (zero? publish)
+                  [:> Button {:content  "发布"
+                              :on-click #(do
+                                           (dispatch [:articles/set-attr {:id id :title title}])
+                                           (dispatch [:articles/set-publish-dialog true]))}])
                 [:> Button {:color    "green"
                             :icon "edit"
                             :on-click #(navigate! (str "/articles/" id "/edit"))}]

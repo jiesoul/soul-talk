@@ -2,26 +2,29 @@
   (:require [next.jdbc :as jdbc]
             [next.jdbc.sql :as sql]
             [soul-talk.database.db :refer [*db*]]
-            [soul-talk.tag.db :refer [add-tags-to-article]]
             [next.jdbc.result-set :as rs-set]))
 
 (defn insert-article! [article]
-  (sql/insert! *db* :article article {:builder-fn rs-set/as-unqualified-maps}))
+  (sql/insert! *db* :article article))
 
-(defn save-article! [article]
-  (let [tagList (:tagList article)
-        id (:id article)
-        article (-> article (dissoc :tagList))]
-    (do
-      (add-tags-to-article id tagList)
-      (insert-article! article)
-      )))
+(defn add-article-tags! [article-id tags]
+  (when-not (empty? tags)
+     (let [inputs (map vector (repeat article-id) (map :id tags))]
+       (sql/insert-multi! *db* :article_tag [:article_id :tag_id] inputs))))
 
-(defn update-article! [{:keys [id] :as article}]
+(defn delete-article-tags! [article-id]
+  (sql/delete! *db* :article_tag ["article_id = ? " article-id]))
+
+(defn save-article! [{:keys [id tags] :as article}]
+  (add-article-tags! id tags)
+  (sql/insert! *db* :article (dissoc article :tags)))
+
+(defn update-article! [{:keys [id tags] :as article}]
+  (delete-article-tags! id)
+  (add-article-tags! id tags)
   (sql/update! *db* :article
     (select-keys article [:title :image :description :body :update_by :update_at :publish])
-    ["id = ?" id]
-    {:builder-fn rs-set/as-unqualified-maps}))
+    ["id = ?" id]))
 
 (defn get-article-all []
   (sql/query *db* ["select * from article order by create_at desc"] {:builder-fn rs-set/as-unqualified-maps}))
@@ -39,7 +42,7 @@
         articles (sql/query *db*
                    (into [query-str] (conj coll offset per-page))
                    {:builder-fn rs-set/as-unqualified-maps})
-        count-str (str "select count(1) as c from article " where )
+        count-str (str "select count(1) as c from article " where)
         total (:c
                 (first
                   (sql/query *db*
@@ -50,7 +53,7 @@
   (sql/get-by-id *db* :article id
     {:builder-fn rs-set/as-unqualified-maps}))
 
-(defn publish-article! [{:keys [id] :as article} ]
+(defn publish-article! [{:keys [id] :as article}]
   (sql/update! *db* :article
     (select-keys article [:publish :update_at :update_by])
     ["id = ?" id]

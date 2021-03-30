@@ -31,15 +31,10 @@
   (fn [db [_ key value]]
     (assoc-in db [:site-info key] value)))
 
-(rf/reg-event-db
-  :site-info/update-ok
-  (fn [db [_ {:keys [site-info]}]]
-    (assoc db :success "保存成功" :site-info site-info)))
-
 (rf/reg-event-fx
   :site-info/update
   (fn [_ [_ site-info]]
     {:http {:method        PATCH
             :url           (str site-uri "/site-info")
             :ajax-map      {:params site-info}
-            :success-event [:site-info/update-ok]}}))
+            :success-event [:set-success "保存成功"]}}))

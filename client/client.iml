@@ -10,7 +10,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="semantic-ui" level="application" />
     <orderEntry type="library" name="Deps: com.cognitect/transit-java:1.0.343" level="project" />
     <orderEntry type="library" name="Deps: com.google.elemental2/elemental2-core:1.0.0-RC1" level="project" />
     <orderEntry type="library" name="Deps: org.clojure/data.json:0.2.6" level="project" />
@@ -140,10 +139,5 @@
     <orderEntry type="library" name="Deps: com.fasterxml.jackson.dataformat/jackson-dataformat-smile:2.10.2" level="project" />
     <orderEntry type="library" name="Deps: javax.xml.bind/jaxb-api:2.3.0" level="project" />
     <orderEntry type="library" name="Deps: com.google.code.gson/gson:2.7" level="project" />
-  </component>
-  <component name="copyright">
-    <Base>
-      <setting name="state" value="2" />
-    </Base>
   </component>
 </module>

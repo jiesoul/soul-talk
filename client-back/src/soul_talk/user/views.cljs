@@ -22,15 +22,13 @@
                       :read-only  true
                       :label      "用户名："
                       :default-value      (:name @user)
-                      :full-width true
-                      :size       "small"}]
+                      :full-width true}]
        [:> Form.Input {:id          "old-pass"
                        :name        "old-pass"
                        :placeholder "请输入旧密码"
                        :label       "旧密码："
                        :type        "password"
                        :required    true
-                       :size        "small"
                        :on-change   #(reset! old-password (.-target.value %))}]
        [:> Form.Input {:id          "pass-new"
                        :name        "pass-new"
@@ -38,7 +36,6 @@
                        :type        "password"
                        :label       "新密码："
                        :required    true
-                       :size        "small"
                        :on-change   #(reset! new-password (.-target.value %))}]
        [:> Form.Input {:id          "pass-confirm"
                        :name        "pass-confirm"
@@ -46,16 +43,12 @@
                        :label       "新密码："
                        :type        "password"
                        :required    true
-                       :size        "small"
                        :on-change   #(reset! confirm-password (.-target.value %))}]
-       [:div {:style {:text-align "center"}}
-        [:> Button.Group {:size    "mini"
-                          :compact true}
-         [:> Button {:on-click #(navigate! "/users")} "返回"]
-         [:> Button.Or]
-         [:> Button {:positive true
-                     :on-click #(rf/dispatch [:users/change-password @pass-data])}
-          "保存"]]]])))
+       [:div.button-center
+        [:> Button {:on-click #(navigate! "/users")} "返回"]
+        [:> Button {:positive true
+                    :on-click #(rf/dispatch [:users/change-password @pass-data])}
+         "保存"]]])))
 
 (defn password []
   [c/layout [password-form]])
@@ -74,7 +67,6 @@
                          :read-only true}]
          [:> Form.Input {:variant    "outlined"
                          :required   true
-                         :size       "small"
                          :label      "名称"
                          :name       "name"
                          :id         "name"
@@ -82,8 +74,7 @@
                          :on-change  #(reset! name (-> % .-target .-value))}]
 
          [:div {:style {:text-align "center"}}
-          [:> Button {:size     "mini"
-                      :positive true
+          [:> Button {:positive true
                       :on-click #(rf/dispatch [:users/user-profile @edited-user])}
            "保存"]]]))))
 
@@ -97,8 +88,7 @@
         user-id (:id @user)
         _ (dispatch [:users/set-attr {:update_by user-id :create_by user-id :menus-ids #{}}])]
     ^{:key "add-role-form"}
-    [:> Form {:name       "add-role-form"
-              :size "small"}
+    [:> Form {:name       "add-role-form"}
      [:> Form.Input {:name      "name"
                      :label     "名称"
                      :inline    true
@@ -109,32 +99,27 @@
                      :inline    true
                      :on-change #(dispatch [:users/set-attr {:note (utils/event-value %)}])}]
 
-     [:div {:style {:text-align "center"}}
-      [:> Button.Group {:size    "mini"
-                        :compact true}
-       [:> Button {:on-click #(js/history.go -1)}
-        "返回"]
-       [:> Button.Or]
-       [:> Button {:color    "green"
-                   :icon     "save"
-                   :content  "保存"
-                   :on-click #(dispatch [:users/update @role])}]]]]))
+     [:div.button-center
+      [:> Button {:on-click #(js/history.go -1)}
+       "返回"]
+      [:> Button {:color    "green"
+                  :icon     "save"
+                  :content  "保存"
+                  :on-click #(dispatch [:users/update @role])}]]]))
 
 (defn new []
   [c/layout [new-form]])
 
 (defn- edit-form []
-  (let [role (subscribe [:users/edit])
+  (let [user (subscribe [:users/edit])
         user (subscribe [:user])
         menus (subscribe [:menus])
         user-id  (:id @user)]
-    (let [{:keys [name note]} @role]
-      [:> Form {:name       "add-role-form"
-                :size "small"}
+    (let [{:keys [name note]} @user]
+      [:> Form {:name       "add-role-form"}
        [:> Form.Input {:name          "name"
                        :inline        true
                        :label         "名称"
-                       :size          "small"
                        :required      true
                        :default-value name
                        :on-change     #(let [value (-> % .-target .-value)]
@@ -147,15 +132,12 @@
                                          (dispatch [:users/set-attr :note value]))}]
        [:> Divider]
 
-       [:div {:style {:text-align "center"}}
-        [:> Button.Group {:size "mini"
-                          :compact true}
-         [:> Button {:on-click #(js/history.go -1)}
-          "返回"]
-         [:> Button.Or]
-         [:> Button {:color    "green"
-                     :content  "保存"
-                     :on-click #(dispatch [:users/update @role])}]]]])))
+       [:div.button-center
+        [:> Button {:on-click #(js/history.go -1)}
+         "返回"]
+        [:> Button {:color    "green"
+                    :content  "保存"
+                    :on-click #(dispatch [:users/update @user])}]]])))
 
 (defn edit []
   [c/layout [edit-form]])
@@ -164,7 +146,7 @@
 (defn delete-dialog [id]
   (let [open (subscribe [:users/delete-dialog-open])]
     (if @open
-      [c/modal {:open      @open
+      [c/confirm {:open    @open
                  :title    "删除角色"
                  :ok-text  "确认"
                  :on-close #(dispatch [:users/set-delete-dialog-open false])
@@ -189,15 +171,12 @@
                       :label     "名称"
                       :inline true
                       :on-change #(dispatch [:users/set-query-params :name (-> % .-target .-value)])}]]
-     [:div {:style {:text-align "center"}}
-      [:> Button.Group {:size "mini"
-                        :compact true}
-       [:> Button {:on-click #(dispatch [:users/load-page @query-params])}
-        "搜索"]
-       [:> Button.Or]
-       [:> Button {:color    "green"
-                   :on-click #(navigate! "/users/new")}
-        "新增"]]]]))
+     [:div.button-center
+      [:> Button {:on-click #(dispatch [:users/load-page @query-params])}
+       "搜索"]
+      [:> Button {:color    "green"
+                  :on-click #(navigate! "/users/new")}
+       "新增"]]]))
 
 (defn list-table []
   (let [users (subscribe [:users/list])
@@ -206,7 +185,6 @@
     [:<>
      [:> Table {:celled     true
                 :selectable true
-                :size       "small"
                 :text-align "center"}
       [:> Table.Header
        [:> Table.Row
@@ -226,18 +204,15 @@
             [:> Table.Cell note]
             [:> Table.Cell
              [:div
-              [:> Button.Group {:size "mini"
-                                :compact true}
-               [:> Button {:color    "green"
-                           :icon     "edit"
-                           :on-click #(navigate! (str "/users/" id "/edit"))}]
-                [:> Button.Or]
-               [:> Button {:color    "red"
-                           :icon     "delete"
-                           :on-click (fn []
-                                       (do
-                                         (dispatch [:users/set-delete-dialog-open true])
-                                         (reset! *delete-id* id)))}]]]]]))]]
+              [:> Button {:color    "green"
+                          :icon     "edit"
+                          :on-click #(navigate! (str "/users/" id "/edit"))}]
+              [:> Button {:color    "red"
+                          :icon     "delete"
+                          :on-click (fn []
+                                      (do
+                                        (dispatch [:users/set-delete-dialog-open true])
+                                        (reset! *delete-id* id)))}]]]]))]]
      (if @users
        [c/table-page :users/load-page (merge @query-params @pagination)])]))
 
@@ -247,3 +222,8 @@
     [delete-dialog]
     [query-form]
     [list-table]]])
+
+
+
+(defn auth-keys []
+  )

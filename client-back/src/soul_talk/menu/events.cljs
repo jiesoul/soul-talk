@@ -5,132 +5,108 @@
             [soul-talk.db :refer [site-uri]]))
 
 (rf/reg-event-db
-  :menus/load-all-ok
+  :menu/load-all-ok
   (fn [db [_ {:keys [menus]}]]
     (assoc db :menus menus)))
 
 (rf/reg-event-fx
-  :menus/load-all
+  :menu/load-all
   (fn []
     {:http {:method GET
             :url (str site-uri "/menus/all")
-            :success-event [:menus/load-all-ok]}}))
+            :success-event [:menu/load-all-ok]}}))
 
 (rf/reg-event-db
-  :menus/load-menus-ok
+  :menu/load-menus-ok
   (fn [db [_ {:keys [menus]}]]
     (assoc db :menus menus)))
 
 (rf/reg-event-fx
-  :menus/load-menus
+  :menu/load-menus
   (fn [_ [_ ids]]
     {:http {:method GET
             :url (str site-uri "/menus?ids=" ids)
-            :success-event [:menus/load-menus-ok]}}))
+            :success-event [:menu/load-menus-ok]}}))
 
 (reg-event-db
-  :menus/set-delete-status
+  :menu/set-delete-dialog
   (fn [db [_ value]]
-    (assoc db :menus/delete-status value)))
+    (assoc db :menu/delete-dialog value)))
 
 (reg-event-db
-  :menus/set-query-params
+  :menu/set-query-params
   (fn [db [_ key value]]
-    (assoc-in db [:menus/query-params key] value)))
+    (assoc-in db [:menu/query-params key] value)))
 
 (reg-event-db
-  :menus/clean-query-params
-  (fn [db _]
-    (js/console.log "clean query params")
-    (dissoc db :menus/query-params)))
-
-(reg-event-db
-  :menus/load-page-ok
+  :menu/load-page-ok
   (fn [db [_ {:keys [menus pagination query-params]}]]
-    (assoc db :menus menus :menus/pagination pagination :menus/query-params query-params)))
+    (assoc db :menu/list menus :menu/pagination pagination :menu/query-params query-params)))
 
 (reg-event-fx
-  :menus/load-page
+  :menu/load-page
   (fn [_ [_ params]]
     {:http {:method        GET
             :url           (str site-uri "/menus")
             :ajax-map      {:params params}
-            :success-event [:menus/load-page-ok]}}))
+            :success-event [:menu/load-page-ok]}}))
 
 (reg-event-db
-  :menus/load-menu-ok
+  :menu/load-menu-ok
   (fn [db [_ {:keys [menu]}]]
-    (assoc db :menus/edit menu)))
+    (assoc db :menu/edit menu)))
 
 (reg-event-fx
-  :menus/load-menu
+  :menu/load-menu
   (fn [_ [_ id]]
     {:http {:method GET
             :url (str site-uri "/menus/" id)
-            :success-event [:menus/load-menu-ok]}}))
+            :success-event [:menu/load-menu-ok]}}))
 
 (reg-event-db
-  :menus/clean-edit
-  (fn [db _]
-    (dissoc db :menus/edit)))
-
-(reg-event-db
-  :menus/set-attr
-  (fn [db [_ key value]]
-    (assoc-in db [:menus/edit key] value)))
-
-(reg-event-db
-  :menus/new-ok
-  (fn [db [_ {:keys [menu]}]]
-    (let [menus (:menus db)]
-      (assoc db :success "保存成功" :menus (conj menus menu)))))
+  :menu/set-attr
+  (fn [db [_ attr]]
+    (update-in db [:menu/edit] merge attr)))
 
 (reg-event-fx
-  :menus/new
+  :menu/save
   (fn [_ [_ menu]]
-    (println "menu: " menu)
     {:http {:method        POST
             :url           (str site-uri "/menus")
             :ajax-map      {:params menu}
-            :success-event [:menus/new-ok]}}))
-
-(reg-event-db
-  :menus/update-ok
-  (fn [db [_ {:keys [menu]}]]
-    (assoc db :success "保存成功")))
+            :success-event [:set-success "保存成功"]}}))
 
 (reg-event-fx
-  :menus/update
+  :menu/update
   (fn [_ [_ menu]]
     {:http {:method        PATCH
             :url           (str site-uri "/menus")
             :ajax-map      {:params menu}
-            :success-event [:menus/update-ok]}}))
-
-(reg-event-db
-  :menus/delete-ok
-  (fn [db [_ id]]
-    (let [menus (:menus db)
-          menus (remove #(= id (:id %)) menus)]
-      (assoc db :success "删除成功" :menus menus :menus/delete-status false))))
+            :success-event [:set-success "保存成功"]}}))
 
 (reg-event-fx
-  :menus/delete
+  :menu/delete-ok
+  (fn [{:keys [db]} [_ id]]
+    (let [menus (:menu/list db)
+          menus (remove #(= id (:id %)) menus)]
+      {:db (assoc db :menu/list menus :menu/delete-dialog false)
+       :dispatch [:set-success "删除成功"]})))
+
+(reg-event-fx
+  :menu/delete
   (fn [_ [_ id]]
     {:http {:method  DELETE
             :url (str site-uri "/menus/" id)
-            :success-event [:menus/delete-ok id]}}))
+            :success-event [:menu/delete-ok id]}}))
 
 (reg-event-db
-  :menus/init
+  :menu/init
   (fn [db _]
     (-> db
-      (dissoc :menus :menus/query-params :menus/edit)
-      (assoc :menus/new-status false
-             :menus/edit-status false
-             :menus/delete-status false))))
+      (dissoc :menu/list :menu/query-params :menu/edit :menu/pagination)
+      (assoc :menu/delete-dialog false))))
 
 (reg-event-db
-  :menus/select
+  :menu/select
   (fn [db [_ menu]]
-    (assoc db :menus/selected menu)))
+    (assoc db :menu/selected menu)))

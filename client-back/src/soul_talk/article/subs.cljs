@@ -2,14 +2,14 @@
   (:require [re-frame.core :refer [reg-sub]]
             [soul-talk.common.effects :refer [query]]))
 
-(reg-sub :articles query)
+(reg-sub :article/list query)
 
-(reg-sub :articles/edit query)
+(reg-sub :article/edit query)
 
-(reg-sub :articles/query-params query)
+(reg-sub :article/query-params query)
 
-(reg-sub :articles/pagination query)
+(reg-sub :article/pagination query)
 
-(reg-sub :articles/delete-dialog-open query)
+(reg-sub :article/delete-dialog query)
 
-(reg-sub :articles/publish-dialog query)
+(reg-sub :article/publish-dialog query)

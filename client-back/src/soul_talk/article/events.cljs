@@ -4,53 +4,53 @@
             [soul-talk.db :refer [site-uri]]))
 
 (reg-event-db
-  :articles/init
+  :article/init
   (fn [db _]
     (-> db
-      (dissoc :articles :articles/query-params :articles/pagination)
-      (assoc :articles/delete-dialog-open false
-             :articles/publish-dialog false))))
+      (dissoc :article/list :article/query-params :article/pagination)
+      (assoc :article/delete-dialog false
+             :article/publish-dialog false))))
 
 (reg-event-db
-  :articles/set-publish-dialog
+  :article/set-publish-dialog
   (fn [db [_ value]]
-    (assoc db :articles/publish-dialog value)))
+    (assoc db :article/publish-dialog value)))
 
 (reg-event-db
-  :articles/set-delete-dialog-open
+  :article/set-delete-dialog
   (fn [db [_ value]]
-    (assoc db :articles/delete-dialog-open value)))
+    (assoc db :article/delete-dialog value)))
 
 (reg-event-db
-  :articles/load-page-ok
+  :article/load-page-ok
   (fn [db [_ {:keys [articles pagination query-params]}]]
-    (assoc db :articles articles
-              :articles/pagination pagination
-              :articles/query-str query-params)))
+    (assoc db :article/list articles
+              :article/pagination pagination
+              :article/query-str query-params)))
 
 (reg-event-fx
-  :articles/load-page
+  :article/load-page
   (fn [_ [_ pagination]]
     {:http {:method        GET
             :url           (str site-uri "/articles")
             :ajax-map      {:params pagination}
-            :success-event [:articles/load-page-ok]}}))
+            :success-event [:article/load-page-ok]}}))
 
 (reg-event-db
-  :articles/clear-edit
+  :article/clear-edit
   (fn [db _]
-    (dissoc db :articles/edit)))
+    (dissoc db :article/edit)))
 
 
 (reg-event-db
-  :articles/set-attr
+  :article/set-attr
   (fn [db [_ attr]]
-    (let [edit (:articles/edit db)]
-      (assoc db :articles/edit (merge edit attr)))))
+    (let [edit (:article/edit db)]
+      (assoc db :article/edit (merge edit attr)))))
 
-(def articles-validate
+(def article-validate
   (->interceptor
-    :id "articles-validate"
+    :id "article-validate"
     :before (fn [context]
               (let [{:keys [db event]} (:coeffects context)
                     [_ article] event
@@ -60,70 +60,66 @@
                     (update :db assoc :error "标题不能为空"))
                   context)))))
 
-(reg-event-db
-  :articles/new-ok
-  (fn [db [_ {:keys [article]}]]
-    (let [articles (:articles db)]
-      (assoc db :success "保存成功" :articles (conj articles article)))))
+(reg-event-fx
+  :article/save-ok
+  (fn [{:keys [db]} [_ {:keys [article]}]]
+    {:db         (update-in db [:article] conj article)
+     :dispatch-n [[:set-success "保存成功"]
+                  [:article/clear-edit]]}))
 
 (reg-event-fx
-  :articles/new
-  [articles-validate]
+  :article/save
+  [article-validate]
   (fn [_ [_ {:keys [title] :as article}]]
     {:http {:method        POST
             :url           (str site-uri "/articles")
             :ajax-map      {:params article}
-            :success-event [:articles/new-ok article]}}))
-
-(reg-event-db
-  :articles/update-ok
-  (fn [db _]
-    (assoc db :success "保存成功")))
+            :success-event [:article/save-ok]}}))
 
 (reg-event-fx
-  :articles/update
+  :article/update
   (fn [_ [_ {:keys [id counter] :as article}]]
     {:http {:method        PATCH
             :url           (str site-uri "/articles/" id)
             :ajax-map      {:params article}
-            :success-event [:articles/update-ok]}}))
+            :success-event [:set-success "更新成功"]}}))
 
 (reg-event-db
-  :articles/load-article-ok
+  :article/load-ok
   (fn [db [_ {article :article}]]
-    (assoc db :articles/edit article)))
+    (assoc db :article/edit article)))
 
 (reg-event-fx
-  :articles/load-article
+  :article/load
   (fn [_ [_ id]]
     {:http {:method        GET
             :url           (str site-uri "/articles/" id)
-            :success-event [:articles/load-article-ok]}}))
+            :success-event [:article/load-ok]}}))
 
 (reg-event-db
-  :articles/delete-ok
+  :article/delete-ok
   (fn [db [_ id]]
-    (let [articles (get db :articles)
-          articles (remove #(= id (:id %)) articles)]
-      (assoc db :success "删除成功" :articles articles))))
+    (let [article (get db :article)
+          article (remove #(= id (:id %)) article)]
+      (assoc db :success "删除成功" :article article))))
 
 (reg-event-fx
-  :articles/delete
+  :article/delete
   (fn [_ [_ id]]
     {:http {:method        DELETE
             :url           (str site-uri "/articles/" id)
-            :success-event [:articles/delete-ok id]}}))
+            :success-event [:article/delete-ok id]}}))
 
 (reg-event-db
-  :articles/publish-ok
+  :article/publish-ok
   (fn [db [_ {:keys [article]}]]
-    (assoc db :success "发布成功" :articles/edit article)))
+    (assoc db :success "发布成功" :article/edit article)))
 
 (reg-event-fx
-  :articles/publish
+  :article/publish
   (fn [_ [_ id]]
-    (js/console.log "doing publish articles")
+    (js/console.log "doing publish article")
     {:http {:method PATCH
             :url (str site-uri "/articles/" id "/publish")
-            :success-event [:articles/publish-ok]}}))
+            :success-event [:article/publish-ok]}}))
 

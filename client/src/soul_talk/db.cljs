@@ -1,8 +1,6 @@
 (ns soul-talk.db)
 
 (def default-db
-  {:active-page :login
-   :drawer-status true
-   :login-events []})
+  {:active-page :home})
 
-(goog-define site-uri "http://localhost:3000")
+(goog-define api-uri "http://localhost:3000/api/v1")

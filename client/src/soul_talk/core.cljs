@@ -2,7 +2,7 @@
   (:require [reagent.core :as r]
             [reagent.dom :as rd]
             [soul-talk.common.interceptors :refer [load-interceptors!]]
-            [soul-talk.routes :refer [hook-browser-navigation! logged-in? navigate!]]
+            [soul-talk.routes :refer [hook-browser-navigation! navigate!]]
             [re-frame.core :refer [dispatch-sync dispatch]]
             ;;初始化处理器和订阅器
             [soul-talk.common.coeffects]

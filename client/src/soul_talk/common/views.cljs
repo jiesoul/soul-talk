@@ -6,13 +6,8 @@
             [soul-talk.routes :refer [navigate!]]
             [soul-talk.utils :as utils]
             ["semantic-ui-react" :as sui :refer [Breadcrumb Container Menu Divider Dropdown Grid Segment Dimmer Loader
-                                                 Sidebar Message Modal Button Pagination Header Visibility]]
-            ["react-toastify" :refer [toast]]
+                                                 Image Message Button Pagination Header Visibility List]]
             [react :as react]))
-
-(def validate-messages {:required "${label} 必须的"
-                        :types {:email "${label} 非法邮件格式"
-                                :url "${label} 非法地址"}})
 
 (defn sleep [f ms]
   (js/setTimeout f ms))
@@ -24,104 +19,63 @@
                   :inverted true}
        [:> Loader {:size "large"} "加载中"]])))
 
-(defn progress []
-  )
+(defn logo []
+  (let [site-info (rf/subscribe [:site-info])]
+    [:div
+     (:name @site-info)]))
 
-(defn success []
-  (let [success (rf/subscribe [:success])
-        on-close #(rf/dispatch [:clean-success])]
-    (when @success
-      (toast.success @success {:position   (-> toast .-POSITION .-TOP_CENTER)
-                               :toast-id   "success-toast"
-                               :auto-close 3000
-                               :on-close   on-close}))))
+(defn copyright []
+  (let [year (.getFullYear (js/Date.))]
+    [:> Container {:text-align "center"}
+     "Copyright ©"
+     [:a {:href "https://www.jiesoul.com/"}
+      "jiesoul"]
+     (str " 2019-" year ".")]))
 
-(defn error []
-  (let [error (rf/subscribe [:error])
-        on-close #(rf/dispatch [:clean-error])]
-    (toast.error @error {:position   (-> toast .-POSITION .-TOP_CENTER)
-                         :toast-id   "error-toast"
-                         :auto-close 5000
-                         :on-close   on-close})))
+(defn app-bar [& opts]
+  (let [active-page (rf/subscribe [:active-page])]
+    [:> Menu (merge {:secondary true
+                     :pointing true} (first opts))
+     [:> Container
+      [:> Menu.Item {:as   "h2"
+                     :name "jiesoul的个人网站"
+                     :header true}]
+      [:> Menu.Menu {:position "right"}
+       [:> Menu.Item {:as     "a"
+                      :name   "主页"
+                      :active (if (= :home @active-page) true false)
+                      :on-click #(navigate! "/")}]
+       [:> Menu.Item {:as "a"
+                      :name "文章"
+                      :active (if (= :articles @active-page) true false)
+                      :on-click #(navigate! "/articles")}]
+       [:> Menu.Item {:as "a"
+                      :name "系列"
+                      :active (if (= :series @active-page) true false)
+                      :on-click #(navigate! "/series")}]
+       [:> Menu.Item {:as "a"
+                      :name "标签"
+                      :active (if (= :tags @active-page) true false)
+                      :on-click #(navigate! "/tags")}]
+       [:> Menu.Item {:as "a"
+                      :name "关于"
+                      :active (if (= :about @active-page) true false)
+                      :on-click #(navigate! "/about")}]]]]))
 
-(defn notify []
-  (let [success (rf/subscribe [:success])
-        error (rf/subscribe [:error])]
-    (if @success
-      (toast.success @success {:position (-> toast .-POSITION .-TOP_CENTER)
-                               :auto-close 3000
-                               :on-close #(rf/dispatch [:clean-success])})
-      (if @error
-        (toast.error @error {:position (-> toast .-POSITION .-TOP_CENTER)
-                             :auto-close 5000
-                             :on-close #(rf/dispatch [:clean-error])})))))
-
-(defn success-message []
-  (let [success (rf/subscribe [:success])]
-    [:> Message {:floating true
-                 :positive true
-                 :compact true
-                 :icon "right"
-                 (if @success :visible :hidden) true}
-     @success]))
-
-(defn app-bar []
-  (let [site-info (rf/subscribe [:site-info])
-        user (rf/subscribe [:user])]
-    [:> Menu {:inverted true}
-     [:> Container {:fluid true}
-      [:> Menu.Item {:as     "h3"
-                     :header true}
-       (:name @site-info)]
-      [:> Dropdown {:item       true
-                    :simple     true
-                    :pointing   "right"
-                    :icon       "user"
-                    :class-name "icon"
-                    :style      {:margin-right "10px"}
-                    :text       (:name @user)}
-       [:> Dropdown.Menu
-        [:> Dropdown.Item {:as       "a"
-                           :on-click #(navigate! (str "/users/" (:id @user) "/password"))}
-         "修改密码"]
-        [:> Dropdown.Item {:as       "a"
-                           :on-click #(navigate! (str "/users/" (:id @user) "/profile"))}
-         "个人信息"]
-        [:> Divider]
-        [:> Dropdown.Item {:as       "a"
-                           :on-click #(rf/dispatch [:logout])}
-         "退出"]]]]]))
-
-(defn menu-tree-items [menus selected-menu]
-  (doall
-    (for [menu menus]
-      (let [{:keys [children id pid url name]} menu]
-        ^{:key menu}
-        (if (empty? children)
-          [:> Menu.Item {:name     name
-                         :active   (= id (:id selected-menu))
-                         :on-click #(do
-                                      (rf/dispatch [:menus/select menu])
-                                      (navigate! url))}
-           name]
-          [:<>
-           [:> Divider {:style {:margin "0"}}]
-           [:> Menu.Item
-            [:> Menu.Header {:as "h5"} name]
-            [:> Menu.Menu {:style {:padding-left "10px"}}
-             (menu-tree-items children selected-menu)]]])))))
-
-(defn sidebar []
-  (let [user (rf/subscribe [:user])
-        menus (:menus @user)
-        menus-tree (utils/make-tree menus)
-        select-menu @(rf/subscribe [:menus/selected])]
-    [:> Menu {:vertical true
-              :fluid true
-              :size "small"
-              :borderless true
-              :pointing true}
-     (menu-tree-items (:children menus-tree) select-menu)]))
+(defn footer []
+  [:> Segment {:inverted true}
+   [:> Container {:text-align "center"}
+    [:> Divider {:inverted true
+                 :section  true}]
+    [:> List {:horizontal true
+              :inverted   true
+              :divided    true
+              :link       true
+              :size       "small"}
+     [:> List.Item {:as "a"} "text"]
+     [:> List.Item {:as "a"} "text"]
+     [:> List.Item {:as "a"} "text"]]]
+   [copyright]])
 
 (defn out-breadcrumb [data]
   (let [c (count data)
@@ -139,53 +93,10 @@
     [:> Breadcrumb
      (out-breadcrumb breadcrumbs-data)]))
 
-(defn copyright []
-  (let [year (.getFullYear (js/Date.))
-        site-info (rf/subscribe [:site-info])]
-    (if @site-info
-      [:> Container {:text-align   "center"}
-       "Copyright ©"
-       [:a {:href     "https://www.jiesoul.com/"}
-        "jiesoul"]
-       (str " 2019-" year ".")])))
 
-(defn layout [children]
-  [:> Grid {:doubling true}
-   [:> Grid.Row
-    [:> Grid.Column {:width 16}
-     [app-bar]]]
-   [:> Grid.Row {:style {:margin "-1em 1em"}}
-    [:> Grid.Column {:width 2}
-     [sidebar]]
-    [:> Divider {:vertical true}]
-    [:> Grid.Column {:width 14}
-     [:> Segment
-      [breadcrumbs]
-      [:> Divider]
-      [:> Container {:max-width "lg"
-                     :fluid true}
-       children
-       [:div {:style {:margin-top "20px"}}
-        [copyright]]]]]]])
-
-(defn modal [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
-  [:> Modal {:dimmer   "blurring"
-                :on-close on-close
-                :open     open
-                :key      (str "modal" (random-uuid))
-                :size     "small"}
-   [:> Modal.Header {:id                 "alert-dialog-title"
-                     :style              {:margin  0
-                                          :padding "5px"}}
-    title]
-   [:> Modal.Content children]
-   [:> Modal.Actions
-    [:> Button {:on-click on-close :negative true} (if cancel-text cancel-text "取消")]
-    [:> Button {:on-click on-ok :positive true} (if ok-text ok-text "保存")]]])
 
 (defn default-page []
-  [layout
-   [:div "页面未找到，请检查链接！"]])
+  [:div "页面未找到，请检查链接！"])
 
 (defn default []
   [default-page])
@@ -206,11 +117,7 @@
                                      (let [active-page (.-activePage page)]
                                        (rf/dispatch [event (assoc params :page active-page)])))}]])
 
-(defn logo []
-  (let [site-info (rf/subscribe [:site-info])]
-    [:div.logo
-     [:h1
-      (:name @site-info)]]))
+
 
 ;;高亮代码 循环查找结节
 (defn highlight-code [node]

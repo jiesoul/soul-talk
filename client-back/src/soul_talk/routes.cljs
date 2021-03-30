@@ -32,11 +32,11 @@
 
 (defn run-events-admin
   [events]
-  (if (logged-in?)
-    (doseq [event events]
-      (dispatch event))
-    (dispatch [:add-login-event events])))
-
+  (let [events (conj events [:clean-error] [:clean-success])]
+    (if (logged-in?)
+      (doseq [event events]
+        (dispatch event))
+      (dispatch [:add-login-event events]))))
 
 (defroute "/login" []
   (dispatch [:set-active-page :login]))
@@ -56,139 +56,140 @@
                      [:set-breadcrumb ["基础数据" "网站信息" "编辑"]]
                      [:set-active-page :site-info]]))
 
-(defroute "/data-dices" []
+(defroute "/data-dic" []
   (run-events-admin [[:set-breadcrumb ["基础数据" "数据字典" "查询"]]
-                     [:data-dices/clean]
-                     [:set-active-page :data-dices]]))
+                     [:data-dic/init]
+                     [:set-active-page :data-dic]]))
 
-(defroute "/data-dices/new" []
+(defroute "/data-dic/new" []
   (run-events-admin [[:set-breadcrumb ["基础数据" "数据字典" "新增"]]
-                     [:data-dices/clean]
-                     [:set-active-page :data-dices/new]]))
+                     [:data-dic/clean-edit]
+                     [:set-active-page :data-dic/new]]))
 
-(defroute "/data-dices/:id/edit" [id]
+(defroute "/data-dic/:id/edit" [id]
   (run-events-admin [[:set-breadcrumb ["基础数据" "数据字典" "编辑"]]
-                     [:data-dices/load-data-dic id]
-                     [:set-active-page :data-dices/edit]]))
+                     [:data-dic/load-data-dic id]
+                     [:set-active-page :data-dic/edit]]))
 
-(defroute "/menus" []
+(defroute "/menu" []
   (run-events-admin [[:set-breadcrumb ["基础数据" "菜单列表" "查询"]]
-                     [:menus/init]
-                     [:set-active-page :menus]]))
+                     [:menu/init]
+                     [:set-active-page :menu]]))
 
-(defroute "/menus/new" []
+(defroute "/menu/new" []
   (run-events-admin [[:set-breadcrumb ["基础数据" "菜单管理" "添加菜单"]]
-                     [:set-active-page :menus/new]]))
+                     [:set-active-page :menu/new]]))
 
-(defroute "/menus/:id/edit" [id]
+(defroute "/menu/:id/edit" [id]
   (run-events-admin [[:set-breadcrumb ["基础数据" "菜单管理" "修改菜单"]]
-                     [:menus/load-menu id]
-                     [:set-active-page :menus/edit]]))
+                     [:menu/load-menu id]
+                     [:set-active-page :menu/edit]]))
 
-(defroute "/roles" []
+(defroute "/role" []
   (run-events-admin [[:set-breadcrumb ["基础数据" "角色列表" "查询"]]
-                     [:roles/init]
-                     [:set-active-page :roles]]))
+                     [:role/init]
+                     [:set-active-page :role]]))
 
-(defroute "/roles/new" []
+(defroute "/role/new" []
   (run-events-admin [[:set-breadcrumb ["基础数据" "角色管理" "添加角色"]]
-                     [:menus/load-all]
-                     [:set-active-page :roles/new]]))
+                     [:menu/load-all]
+                     [:set-active-page :role/new]]))
 
-(defroute "/roles/:id/edit" [id]
+(defroute "/role/:id/edit" [id]
   (run-events-admin [[:set-breadcrumb ["基础数据" "角色管理" "修改角色"]]
-                     [:roles/load-role id]
-                     [:menus/load-all]
-                     [:set-active-page :roles/edit]]))
+                     [:role/load-role id]
+                     [:menu/load-all]
+                     [:set-active-page :role/edit]]))
 
-(defroute "/users" []
+(defroute "/user" []
   (run-events-admin [[:set-breadcrumb ["用户管理" "用户列表"]]
-                     [:users/init]
-                     [:set-active-page :users]]))
+                     [:user/init]
+                     [:set-active-page :user]]))
 
-(defroute "/users/new" []
+(defroute "/user/new" []
   (run-events-admin [[:set-breadcrumb ["用户管理" "个人管理" "新增"]]
-                     [:users/init]
-                     [:set-active-page :users/new]]))
+                     [:user/init]
+                     [:set-active-page :user/new]]))
 
-(defroute "/users/:id/edit" [id]
+(defroute "/user/:id/edit" [id]
   (run-events-admin [[:set-breadcrumb ["用户管理" "个人管理" "编辑"]]
-                     [:users/init]
-                     [:users/load-user id]
-                     [:set-active-page :users/edit]]))
+                     [:user/init]
+                     [:user/load-user id]
+                     [:set-active-page :user/edit]]))
 
-(defroute "/users/:id/password" [id]
+(defroute "/user/:id/password" [id]
   (run-events-admin [[:set-breadcrumb ["用户管理" "个人管理" "修改密码"]]
-                     [:users/load-user id]
-                     [:set-active-page :users/password]]))
+                     [:user/load-user id]
+                     [:set-active-page :user/password]]))
 
-(defroute "/users/:id/profile" [id]
+(defroute "/user/:id/profile" [id]
   (run-events-admin [[:set-breadcrumb ["用户管理" "个人管理" "个人信息"]]
-                     [:users/load-user id]
-                     [:set-active-page :users/profile]]))
+                     [:user/load-user id]
+                     [:set-active-page :user/profile]]))
 
-(defroute "/tags" []
-  (run-events-admin [[:tags/load-all]
+(defroute "/tag" []
+  (run-events-admin [[:tag/init]
                      [:set-breadcrumb ["基础数据" "标签列表"]]
-                     [:set-active-page :tags]]))
+                     [:set-active-page :tag]]))
 
-(defroute "/tags/new" []
-  (run-events-admin [[:tags/load-all]
+(defroute "/tag/new" []
+  (run-events-admin [[:tag/clean-edit]
                      [:set-breadcrumb ["基础数据" "标签列表"]]
-                     [:set-active-page :tags]]))
+                     [:set-active-page :tag/new]]))
 
-(defroute "/tags/:id/edit" [id]
-  (run-events-admin [[:tags/load-all]
+(defroute "/tag/:id/edit" [id]
+  (run-events-admin [[:tag/load id]
                      [:set-breadcrumb ["基础数据" "标签列表"]]
-                     [:set-active-page :tags]]))
+                     [:set-active-page :tag/edit]]))
 
 (defroute "/series" []
-  (run-events-admin [[:series/load-all]
+  (run-events-admin [[:series/init]
                      [:set-breadcrumb ["基础数据" "系列列表"]]
                      [:set-active-page :series]]))
 
 (defroute "/series/new" []
-  (run-events-admin [[:set-breadcrumb ["基础数据" "系列列表" "新增"]]
+  (run-events-admin [[:series/clean-edit]
+                     [:set-breadcrumb ["基础数据" "系列列表" "新增"]]
                      [:set-active-page :series/new]]))
 
 (defroute "/series/:id/edit" [id]
-  (run-events-admin [[:series/load-series id]
+  (run-events-admin [[:series/load id]
                      [:set-breadcrumb ["基础数据" "系列列表" "编辑"]]
                      [:set-active-page :series/edit]]))
 
-(defroute "/app-keys" []
-  (run-events-admin [[:app-keys/load-all]
+(defroute "/app-key" []
+  (run-events-admin [[:app-key/init]
                       [:set-breadcrumb ["基础数据" "app key 管理"]]
-                      [:set-active-page :app-keys]]))
+                      [:set-active-page :app-key]]))
 
-(defroute "/app-keys/new" []
-  (run-events-admin [[:app-keys/load-all]
+(defroute "/app-key/new" []
+  (run-events-admin [[:app-key/clean-edit]
                      [:set-breadcrumb ["基础数据" "app key 管理" "新增"]]
-                     [:set-active-page :app-keys]]))
+                     [:set-active-page :app-key]]))
 
-(defroute "/app-keys/:id/edit" [id]
-  (run-events-admin [[:app-keys/load-all]
+(defroute "/app-key/:id/edit" [id]
+  (run-events-admin [[:app-key/load id]
                      [:set-breadcrumb ["基础数据" "app key 管理" "编辑"]]
-                     [:set-active-page :app-keys]]))
+                     [:set-active-page :app-key]]))
 
-(defroute "/articles" []
+(defroute "/article" []
   (run-events-admin [[:set-breadcrumb ["文章管理" "文章查询"]]
-                     [:articles/init]
-                     [:set-active-page :articles]]))
+                     [:article/init]
+                     [:set-active-page :article]]))
 
-(defroute "/articles/new" []
+(defroute "/article/new" []
+  (run-events-admin [[:article/clear-edit]
+                     [:set-breadcrumb ["文章管理" "添加文章"]]
+                     [:set-active-page :article/new]]))
+
+(defroute "/article/:id/edit" [id]
   (run-events-admin [[:set-breadcrumb ["文章管理" "添加文章"]]
-                     [:articles/clear-edit]
-                     [:set-active-page :articles/new]]))
+                     [:article/load id]
+                     [:set-active-page :article/edit]]))
 
-(defroute "/articles/:id/edit" [id]
-  (run-events-admin [[:set-breadcrumb ["文章管理" "添加文章"]]
-                     [:articles/load-article id]
-                     [:set-active-page :articles/edit]]))
-
-(defroute "/articles/:id" [id]
+(defroute "/article/:id" [id]
   (run-events-admin [[:load-article id]
-                     [:set-active-page :articles/view]]))
+                     [:set-active-page :article/view]]))
 
 (defroute "*" []
   (run-events-admin [[:set-breadcrumb ["未找到页面"]]

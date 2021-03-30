@@ -16,79 +16,60 @@
     (storage/remove-item! storage/login-user-key)))
 
 (reg-event-db
-  :users/init
+  :user/init
   (fn [db _]
-    (assoc db :users/new-dialog-open false
-              :users/edit-dialog-open false
-              :users/delete-dialog-open false
-              :users/roles-dialog-open false
-              :users/query-params nil
-              :users/list nil
-              :users/pagination nil)))
+    (assoc db :user/delete-dialog-open false
+              :user/query-params nil
+              :user/list nil
+              :user/pagination nil)))
 
 (reg-event-db
-  :users/set-add-dialog-open
+  :user/set-delete-dialog
   (fn [db [_ value]]
-    (assoc db :users/new-dialog-open value)))
-
-(reg-event-db
-  :users/set-edit-dialog-open
-  (fn [db [_ value]]
-    (assoc db :users/edit-dialog-open value)))
-
-(reg-event-db
-  :users/set-delete-dialog-open
-  (fn [db [_ value]]
-    (assoc db :users/delete-dialog-open value)))
-
-(reg-event-db
-  :users/set-roles-dialog-open
-  (fn [db [_ value]]
-    (assoc db :users/roles-dialog-open value)))
+    (assoc db :user/delete-dialog value)))
 
 (reg-event-fx
-  :users/load-roles-ok
+  :user/load-roles-ok
   (fn [{:keys [db]} [_ {:keys [user-roles]}]]
     (let [role-ids (map :role_id user-roles)]
       {:db         (assoc-in db [:user :user-roles] user-roles)
        :dispatch-n (list [:roles/load-menus role-ids])})))
 
 (reg-event-fx
-  :users/load-roles
+  :user/load-roles
   (fn [_ [_ id]]
     {:http {:method        GET
             :url           (str site-uri "/users/" id "/roles")
-            :success-event [:users/load-roles-ok]}}))
+            :success-event [:user/load-roles-ok]}}))
 
 (reg-event-db
-  :users/load-all-ok
+  :user/load-all-ok
   (fn [db [_ {:keys [users]}]]
-    (assoc db :users users)))
+    (assoc db :user users)))
 
 (reg-event-fx
-  :users/load-all
+  :user/load-all
   (fn [_ _]
     {:http {:method        GET
             :url           (str site-uri "/users")
-            :success-event [:users/load-all-ok]}}))
+            :success-event [:user/load-all-ok]}}))
 
 (reg-event-db
-  :users/load-user-ok
+  :user/load-user-ok
   (fn [db [_ {:keys [user]}]]
-    (assoc db :users/user user)))
+    (assoc db :user/user user)))
 
 (reg-event-fx
-  :users/load-user
+  :user/load-user
   (fn [_ [_ id]]
     {:http {:method GET
             :url (str site-uri "/users/" id)
-            :success-event [:users/load-user-ok]}}))
+            :success-event [:user/load-user-ok]}}))
 
 (reg-event-fx
-  :users/change-password
+  :user/change-password
   [reagent.debug/tracking]
   (fn [_ [_ {:keys [id old-password new-password confirm-password] :as params}]]
-    (println "params: " params)
     (if (str/blank? old-password)
       {:dispatch [:set-error "旧密码不能为空"]}
       (if (str/blank? new-password)
@@ -103,7 +84,7 @@
                     :success-event [:set-success "修改密码成功"]}}))))))
 
 (reg-event-fx
-  :users/user-profile
+  :user/user-profile
   (fn [_ [_ {:keys [id email name] :as user}]]
     {:http {:method        PATCH
             :url           (str site-uri "/users/" id "")
@@ -111,21 +92,21 @@
             :success-event [:set-success "保存信息成功"]}}))
 
 (reg-event-db
-  :users/set-query-params
+  :user/set-query-params
   (fn [db [_ key value]]
-    (assoc-in db [:users/query-params key] value)))
+    (assoc-in db [:user/query-params key] value)))
 
 (reg-event-db
-  :users/load-page-ok
+  :user/load-page-ok
   (fn [db [_ {:keys [users pagination query-params]}]]
-    (assoc db :users/list users
-              :users/pagination pagination
-              :users/query-params query-params)))
+    (assoc db :user/list users
+              :user/pagination pagination
+              :user/query-params query-params)))
 
 (reg-event-fx
-  :users/load-page
+  :user/load-page
   (fn [_ [_ params]]
     {:http {:method GET
             :url (str site-uri "/users")
             :ajax-map {:params params}
-            :success-event [:users/load-page-ok]}}))
+            :success-event [:user/load-page-ok]}}))

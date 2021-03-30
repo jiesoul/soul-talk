@@ -7,85 +7,8 @@
             ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input TextArea]]
             [soul-talk.utils :as utils]))
 
-(defn new []
-  (let [article    (subscribe [:articles/edit])
-        user    (subscribe [:user])
-        user-id (:id @user)
-        _ (dispatch [:articles/set-attr {:update_by user-id :create_by user-id :publish 0}])]
-    [c/layout
-     [:> Form
-      [:> Form.Input {:name        "name"
-                      :placeholder "请输入标题"
-                      :required    true
-                      :on-change   #(dispatch [:articles/set-attr {:title (utils/event-value %)}])}]
-      [:> TextArea {:rows        18
-                    :cols        10
-                    :placeholder "内容"
-                    :on-change   #(dispatch [:articles/set-attr {:body (utils/event-value %)}])}]
-
-      [:div.button-center
-       [:> Button {:content  "返回"
-                   :on-click #(js/history.go -1)}]
-       [:> Button {:color    "green"
-                   :content  "保存"
-                   :on-click #(dispatch [:articles/new @article])}]
-       [:> Button {:content  "上传文件"
-                   :color    "orange"
-                   :on-click #()}]]]]))
-
-(defn edit [{:keys [classes] :as props}]
-  (let [article (subscribe [:articles/edit])
-        user (subscribe [:user])
-        user-id  (:id @user)
-        _ (dispatch [:articles/set-attr {:update_by user-id}])]
-    [c/layout
-     (let [{:keys [title body]} @article]
-       [:> Form
-        [:> Form.Input {:name          "name"
-                        :required      true
-                        :default-value title
-                        :on-change     #(let [value (-> % .-target .-value)]
-                                          (dispatch [:articles/set-attr {:title value}]))}]
-        [:> TextArea {:rows          18
-                      :cols          10
-                      :placeholder   "内容"
-                      :default-value body
-                      :on-change     #(dispatch [:articles/set-attr {:body (utils/event-value %)}])}]
-        [:div.button-center
-         [:> Button {:basic true
-                     :on-click #(js/history.go -1)}
-          "返回"]
-         [:> Button {:color "green"
-                     :on-click #(dispatch [:articles/update @article])}
-          "保存"]]])]))
-
 (defn view []
-  [c/layout [:div "ddd"]])
-
-(defn publish-dialog []
-  (let [open (subscribe [:articles/publish-dialog])
-        article (subscribe [:articles/edit])]
-    (if @open
-      [c/modal {:open  @open
-                :title "发布文章"
-                :ok-text "发布"
-                :on-close #(dispatch [:articles/set-publish-dialog false])
-                :on-ok #(do
-                          (dispatch [:articles/publish (:id @article)])
-                          (dispatch [:articles/set-publish-dialog false]))}
-       (str "确定发布文章吗？")])))
-
-(defn delete-dialog []
-  (let [open (subscribe [:articles/delete-dialog-open])
-        article (subscribe [:articles/edit])]
-    (if @open
-      [c/modal {:open      @open
-                 :title    (str "删除文章: ")
-                 :ok-text  "确认"
-                 :on-close #(dispatch [:articles/set-delete-dialog-open false])
-                 :on-ok    #(do (dispatch [:articles/set-delete-dialog-open false])
-                                (dispatch [:articles/delete (:id @article)]))}
-       (str "你确定要删" (:title @article) " 吗?")])))
+  [:div "ddd"])
 
 (defn query-form []
   (let [query-params (subscribe [:articles/query-params])]
@@ -161,17 +84,6 @@
                                           (dispatch [:articles/set-delete-dialog-open true])))}]]]])))]]
      (if @articles
        [c/table-page :articles/load-page (merge @query-params @pagination)])]))
-
-(defn home []
-  [c/layout
-   [:<>
-
-    [query-form]
-    [:> Divider]
-    [publish-dialog]
-    [delete-dialog]
-    [list-table]
-    ]])
 
 
 

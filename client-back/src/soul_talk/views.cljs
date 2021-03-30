@@ -13,10 +13,7 @@
             [soul-talk.data-dic.views :as data-dic]
             [soul-talk.menu.views :as menu]
             [soul-talk.role.views :as role]
-            [soul-talk.collect-link.views :as collect-link]
-            [soul-talk.collect-site.views :as collect-site]
             [soul-talk.series.views :as series]
-            ["react-toastify" :refer [ToastContainer]]
             [soul-talk.utils :as utils]))
 
 ;;多重方法  响应对应的页面
@@ -38,66 +35,76 @@
 (defmethod pages :site-info [_ _]
   (admin site-info/edit))
 ;; 数据字典
-(defmethod pages :data-dices [_ _]
+(defmethod pages :data-dic [_ _]
   (admin data-dic/home))
 
-(defmethod pages :data-dices/new [_ _]
+(defmethod pages :data-dic/new [_ _]
   (admin data-dic/new))
 
-(defmethod pages :data-dices/edit [_ _]
+(defmethod pages :data-dic/edit [_ _]
   (admin data-dic/edit))
 ;; 菜单
-(defmethod pages :menus [_ _]
+(defmethod pages :menu [_ _]
   (admin menu/home))
 
-(defmethod pages :menus/new [_ _]
+(defmethod pages :menu/new [_ _]
   (admin menu/new))
 
-(defmethod pages :menus/edit [_ _]
+(defmethod pages :menu/edit [_ _]
   (admin menu/edit))
 ;; 角色
-(defmethod pages :roles [_ _]
+(defmethod pages :role [_ _]
   (admin role/home))
 
-(defmethod pages :roles/new [_ _]
+(defmethod pages :role/new [_ _]
   (admin role/new))
 
-(defmethod pages :roles/edit [_ _]
+(defmethod pages :role/edit [_ _]
   (admin role/edit))
 
 ;; user
-(defmethod pages :users [_ _]
+(defmethod pages :user [_ _]
   (admin users/home))
 
-(defmethod pages :users/new [_ _]
+(defmethod pages :user/new [_ _]
   (admin users/new))
 
-(defmethod pages :users/edit [_ _]
+(defmethod pages :user/edit [_ _]
   (admin users/edit))
 
-(defmethod pages :users/password [_ _]
+(defmethod pages :user/password [_ _]
   (admin users/password))
 
-(defmethod pages :users/profile [_ _]
+(defmethod pages :user/profile [_ _]
   (admin users/profile))
 
-;; tag
-(defmethod pages :tags [_ _]
-  (admin tag/home))
 
-(defmethod pages :tags/new [_ _]
-  (admin tag/new))
-
-(defmethod pages :tags/new [_ _]
-  (admin tag/edit))
-;; 应用授权
-(defmethod pages :app-keys [_ _]
+(defmethod pages :app-key [_ _]
   (admin app-key/home))
 
-(defmethod pages :app-keys/new [_ _]
+(defmethod pages :app-key/new [_ _]
   (admin app-key/new))
 
-(defmethod pages :app-keys/edit [_ _]
+(defmethod pages :app-key/edit [_ _]
+  (admin app-key/edit))
+
+;; tag
+(defmethod pages :tag [_ _]
+  (admin tag/home))
+
+(defmethod pages :tag/new [_ _]
+  (admin tag/new))
+
+(defmethod pages :tag/edit [_ _]
+  (admin tag/edit))
+;; 应用授权
+(defmethod pages :app-key [_ _]
+  (admin app-key/home))
+
+(defmethod pages :app-key/new [_ _]
+  (admin app-key/new))
+
+(defmethod pages :app-key/edit [_ _]
   (admin app-key/edit))
 ;; 系列
 (defmethod pages :series [_ _]
@@ -110,16 +117,16 @@
   (admin series/edit))
 
 ;; article
-(defmethod pages :articles [_ _]
+(defmethod pages :article [_ _]
   (admin article/home))
 
-(defmethod pages :articles/new [_ _]
+(defmethod pages :article/new [_ _]
   (admin article/new))
 
-(defmethod pages :articles/edit [_ _]
+(defmethod pages :article/edit [_ _]
   (admin article/edit))
 
-(defmethod pages :articles/view [_ _]
+(defmethod pages :article/view [_ _]
   (admin article/view))
 
 
@@ -132,7 +139,7 @@
         active-page (subscribe [:active-page])]
     (when @ready?
       [:<>
-       [:> ToastContainer {:auto-close    3000
-                           :newest-on-top true}]
        [c/lading]
+       [c/success-portal]
+       [c/error-portal]
        (pages @active-page)])))

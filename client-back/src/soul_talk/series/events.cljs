@@ -9,12 +9,12 @@
   (fn [db _]
     (-> db
       (assoc :series/delete-dialog false)
-      (dissoc :series/list :series/pagination :series/query-params))))
+      (dissoc :series/list :series/pagination :series/query-params :series/edit))))
 
 (reg-event-db
   :series/set-delete-dialog
   (fn [db [_ value]]
-    (assoc-in db :series/delete-dialog value)))
+    (assoc db :series/delete-dialog value)))
 
 (reg-event-db
   :series/set-attr
@@ -44,33 +44,30 @@
 (reg-event-fx
   :series/load-page
   (fn [_ params]
-    (println "params: " params)
     {:http {:method GET
             :url (str site-uri "/series")
             :ajax-map {:params params}
             :success-event [:series/load-page-ok]}}))
 
-(reg-event-db
-  :series/new-ok
-  (fn [db [_ {:keys [series]}]]
-    (let [series-list (:series/list db)]
-      (assoc db :success "保存成功"
-                :series/list (conj series-list series)))))
+(reg-event-fx
+  :series/clean-edit
+  (fn [db _]
+    (dissoc db :series/edit)))
 
 (reg-event-fx
-  :series/new
+  :series/save
   (fn [_ [_ {:keys [name] :as series}]]
     (if (str/blank? name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        POST
               :url           (str site-uri "/series")
               :ajax-map      {:params series}
-              :success-event [:series/new-ok]}})))
+              :success-event [:set-success "保存成功"]}})))
 
 (reg-event-db
   :series/load-ok
   (fn [db [_ {:keys [series]}]]
-    (assoc db :series series)))
+    (assoc db :series/edit series)))
 
 (reg-event-fx
   :series/load
@@ -89,12 +86,13 @@
               :ajax-map      {:params series}
               :success-event [:set-success "保存成功"]}})))
 
-(reg-event-db
+(reg-event-fx
   :series/delete-ok
-  (fn [db [_ id]]
+  (fn [{:keys [db]} [_ id]]
     (let [series-list (:series/list db)
-          series-list(remove #(= id (:id %)) series-list)]
-      (assoc db :success "删除成功" :series/list series-list))))
+          series-list (remove #(= id (:id %)) series-list)]
+      {:db (assoc db :series/list series-list)
+       :dispatch [:set-success "删除成功"]})))
 
 
 (reg-event-fx
@@ -103,9 +101,4 @@
     {:http {:method  DELETE
             :url (str site-uri "/series/" id)
             :success-event [:series/delete-ok id]}}))
-
-(reg-event-db
-  :series/clean-series
-  (fn [db _]
-    (dissoc db :series)))
 

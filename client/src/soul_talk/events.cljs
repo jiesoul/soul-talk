@@ -1,30 +1,15 @@
 (ns soul-talk.events
   (:require [re-frame.core :refer [inject-cofx dispatch dispatch-sync reg-event-db reg-event-fx subscribe]]
             [soul-talk.db :refer [default-db]]
-            [soul-talk.common.local-storage :as storage]
-            [soul-talk.site-info.events]
-            [soul-talk.auth.events]
-            [soul-talk.user.events]
-            [soul-talk.role.events]
-            [soul-talk.menu.events]
-            [soul-talk.app-key.events]
-            [soul-talk.collect-link.events]
-            [soul-talk.collect-site.events]
-            [soul-talk.series.events]
-            [soul-talk.data-dic.events]
-            [soul-talk.dash.events]
             [soul-talk.article.events]
-            [soul-talk.tag.events]
-            ))
+            [soul-talk.tag.events]))
 
 ;; 初始化
 (reg-event-fx
   :initialize-db
-  [(inject-cofx :local-store storage/login-user-key)]
   (fn [cofx _]
-    (let [user (get-in cofx [:local-store storage/login-user-key])
-          db (:db cofx)]
-      {:db (merge db (assoc default-db :user (js->clj user :keywordize-keys true)))})))
+    (let [db (:db cofx)]
+      {:db (merge db default-db)})))
 
 ;; 设置当前页
 (reg-event-db
@@ -36,41 +21,6 @@
   :navigate-to
   (fn [_ [_ url]]
     {:navigate url}))
-
-(reg-event-db
-  :set-dialog-status
-  (fn [db [_ [key ^boolean? value]]]
-    (assoc db key value)))
-
-(reg-event-db
-  :set-drawer-status
-  (fn [db [_ value]]
-    (assoc db :drawer-status value)))
-
-(reg-event-db
-  :set-success
-  (fn [db [_ message]]
-    (assoc db :success message)))
-
-(reg-event-db
-  :clean-success
-  (fn [db _]
-    (dissoc db :success)))
-
-(reg-event-db
-  :set-error
-  (fn [db [_ message]]
-    (assoc db :error message)))
-
-(reg-event-db
-  :clean-error
-  (fn [db _]
-    (dissoc db :error)))
-
-(reg-event-db
-  :update-value
-  (fn [db [_ keys val]]
-    (assoc-in db keys val)))
 
 ;; 取消加载
 (reg-event-db

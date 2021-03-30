@@ -1,52 +1,87 @@
 (ns soul-talk.tag.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db]]
-            [ajax.core :refer [GET POST DELETE PUT]]
+            [ajax.core :refer [GET POST DELETE PUT PATCH]]
             [clojure.string :as str]
             [soul-talk.db :refer [site-uri]]))
 
 (reg-event-db
-  :tags/load-all-ok
+  :tag/init
+  (fn [db _]
+    (-> db
+      (assoc :tag/delete-dialog false)
+      (dissoc :tag/query-params :tag/pagination :tag/list))))
+
+(reg-event-db
+  :tag/set-delete-dialog
+  (fn [db [_ value]]
+    (assoc db :tag/delete-dialog value)))
+
+(reg-event-db
+  :tag/load-page-ok
   (fn [db [_ {:keys [tags pagination]}]]
-    (assoc db :tags tags :pagination pagination)))
+    (assoc db :tag/list tags :pagination pagination)))
 
 (reg-event-fx
-  :tags/load-all
+  :tag/load-page
   (fn [_ params]
     {:http {:method        GET
             :url           (str site-uri "/tags")
             :ajax-map      {:params params}
-            :success-event [:tags/load-all-ok]}}))
+            :success-event [:tag/load-page-ok]}}))
 
 (reg-event-db
-  :tags/new-ok
-  (fn [db [_ {:keys [tag]}]]
-    (assoc db :success "add a tag ok")))
+  :tag/clean-edit
+  (fn [db _]
+    (dissoc db :tag/edit)))
+
+(reg-event-db
+  :tag/set-attr
+  (fn [db [_ attr]]
+    (update-in db [:tag/edit] merge attr)))
 
 (reg-event-fx
-  :tags/new
+  :tag/save
   (fn [_ [_ {:keys [name] :as tag}]]
     (if (str/blank? name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        POST
               :url           (str site-uri "/tags")
               :ajax-map      {:params tag}
-              :success-event [:tags/new-ok]}})))
+              :success-event [:set-success "保存成功"]}})))
 
 (reg-event-db
-  :tags/delete-ok
-  (fn [db [_ id]]
-    (let [tags (:tags db)
-          tags (remove #(= id (:id %)) tags)]
-      (assoc db :success "删除成功" :tags tags))))
+  :tag/load-ok
+  (fn [db [_ {:keys [tag]}]]
+    (assoc db :tag/edit tag)))
 
 (reg-event-fx
-  :tags/delete
+  :tag/load
+  (fn [_ [_ id]]
+    {:http {:method GET
+            :url (str site-uri "/tags/" id)
+            :success-event [:tag/load-ok]}}))
+
+(reg-event-fx
+  :tag/update
+  (fn [_ [_ {:keys [name id] :as tag}]]
+    (if (str/blank? name)
+      {:dispatch [:set-error "名称不能为空"]}
+      {:http {:method        PATCH
+              :url           (str site-uri "/tags/" id)
+              :ajax-map      {:params tag}
+              :success-event [:set-success "保存成功"]}})))
+
+(reg-event-fx
+  :tag/delete-ok
+  (fn [{:keys [db]} [_ id]]
+    (let [tags (:tag db)
+          tags (remove #(= id (:id %)) tags)]
+      {:db (assoc db :success "删除成功" :tag tags)
+       :dispatch [:set-success "删除成功"]})))
+
+(reg-event-fx
+  :tag/delete
   (fn [_ [_ id]]
     {:http {:method  DELETE
             :url (str site-uri "/tags/" id)
-            :success-event [:tags/delete-ok id]}}))
-
-(reg-event-db
-  :tags/clean-tag
-  (fn [db _]
-    (dissoc db :tag)))
+            :success-event [:tag/delete-ok id]}}))
