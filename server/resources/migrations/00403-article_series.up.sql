@@ -3,3 +3,4 @@ create table if not exists article_series (
     article_id varchar(50),
     series_id int
 )
+

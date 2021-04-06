@@ -7,8 +7,7 @@
             [mount.core :as mount]
             [mount-up.core :as mu]
             [soul-talk.database.my-migrations :as my-migrations]
-            [com.jakemccrary.test-refresh :as test-refresh]
-            [clojure.tools.logging :as log]))
+            [com.jakemccrary.test-refresh :as test-refresh]))
 
 (mu/on-upndown :info mu/log :before)
 

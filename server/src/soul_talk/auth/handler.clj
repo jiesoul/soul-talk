@@ -9,7 +9,7 @@
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.backends.token :refer [token-backend]]
             [java-time.local :as l :refer [local-date-time]]
-            [clojure.tools.logging :as log]
+            [taoensso.timbre :as log]
             [soul-talk.auth.spec :as spec]))
 
 (def login spec/login)

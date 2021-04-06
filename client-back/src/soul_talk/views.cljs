@@ -1,7 +1,5 @@
 (ns soul-talk.views
-  (:require [reagent.core :as r]
-            [re-frame.core :refer [subscribe dispatch]]
-            [soul-talk.routes :refer [logged-in? navigate!]]
+  (:require [re-frame.core :refer [subscribe]]
             [soul-talk.common.views :as c]
             [soul-talk.dash.views :as dash]
             [soul-talk.site-info.views :as site-info]
@@ -13,8 +11,7 @@
             [soul-talk.data-dic.views :as data-dic]
             [soul-talk.menu.views :as menu]
             [soul-talk.role.views :as role]
-            [soul-talk.series.views :as series]
-            [soul-talk.utils :as utils]))
+            [soul-talk.series.views :as series]))
 
 ;;多重方法  响应对应的页面
 (defmulti pages (fn [page _] page))
@@ -78,6 +75,8 @@
 (defmethod pages :user/profile [_ _]
   (admin users/profile))
 
+(defmethod pages :user/auth-key [_ _]
+  (admin users/auth-key-home))
 
 (defmethod pages :app-key [_ _]
   (admin app-key/home))

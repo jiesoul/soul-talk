@@ -20,7 +20,7 @@ insert into menu (id, name, url, pid, note) VALUES (1104, '角色管理', '/role
 
 insert into menu (id, name, url, pid, note) VALUES (12, '用户授权', '', 0, '');
 insert into menu (id, name, url, pid, note) VALUES (1201, '用户管理', '/user', 12, '');
-insert into menu (id, name, url, pid, note) VALUES (1202, '用户授权管理', '/auth-key', 12, '');
+insert into menu (id, name, url, pid, note) VALUES (1202, '用户授权管理', '/user/auth-key', 12, '');
 insert into menu (id, name, url, pid, note) VALUES (1203, 'APP key管理', '/app-key', 12, '');
 
 insert into menu (id, name, url, pid, note) VALUES (13, '数据管理', '', 0, '');

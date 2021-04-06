@@ -2,7 +2,7 @@
   (:require [ring.util.http-response :as resp]
             [crypto.random :refer [url-part]]
             [java-time.local :as l]
-            [clojure.tools.logging :as log]))
+            [taoensso.timbre :as log]))
 
 (defn now []
   (l/local-date-time))
@@ -62,7 +62,6 @@
 
 (defn log-error
   [^Exception e data request-or-response type]
-  (log/error "error type： -- " type)
   (log/error "error case： -- " (.getMessage e)))
 
 (defn parse-header [request]

@@ -2,8 +2,7 @@
   (:require [goog.events :as events]
             [secretary.core :as secretary :refer-macros [defroute]]
             [accountant.core :as accountant]
-            [reagent.core :as r]
-            [re-frame.core :refer [dispatch dispatch-sync  subscribe]])
+            [re-frame.core :refer [dispatch subscribe]])
   (:import [goog History]
            [goog.History EventType]))
 
@@ -22,13 +21,6 @@
 
 (defn navigate! [url]
   (accountant/navigate! (str "#" url)))
-
-(defn run-events
-  [events]
-  (if (logged-in?)
-    (doseq [event events]
-      (dispatch event))
-    (dispatch [:set-active-page :login])))
 
 (defn run-events-admin
   [events]
@@ -127,6 +119,12 @@
                      [:user/load-user id]
                      [:set-active-page :user/profile]]))
 
+
+(defroute "/user/auth-key" []
+  (run-events-admin [[:set-breadcrumb ["用户管理" "授权记录"]]
+                     [:user/auth-key-init]
+                     [:set-active-page :user/auth-key]]))
+
 (defroute "/tag" []
   (run-events-admin [[:tag/init]
                      [:set-breadcrumb ["基础数据" "标签列表"]]
@@ -165,12 +163,12 @@
 (defroute "/app-key/new" []
   (run-events-admin [[:app-key/clean-edit]
                      [:set-breadcrumb ["基础数据" "app key 管理" "新增"]]
-                     [:set-active-page :app-key]]))
+                     [:set-active-page :app-key/new]]))
 
 (defroute "/app-key/:id/edit" [id]
   (run-events-admin [[:app-key/load id]
                      [:set-breadcrumb ["基础数据" "app key 管理" "编辑"]]
-                     [:set-active-page :app-key]]))
+                     [:set-active-page :app-key/edit]]))
 
 (defroute "/article" []
   (run-events-admin [[:set-breadcrumb ["文章管理" "文章查询"]]
@@ -187,8 +185,9 @@
                      [:article/load id]
                      [:set-active-page :article/edit]]))
 
-(defroute "/article/:id" [id]
-  (run-events-admin [[:load-article id]
+(defroute "/article/:id/view" [id]
+  (run-events-admin [[:set-breadcrumb ["文章管理" "查看文章"]]
+                     [:article/load id]
                      [:set-active-page :article/view]]))
 
 (defroute "*" []

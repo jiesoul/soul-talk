@@ -10,7 +10,7 @@
             [ring.middleware.defaults :as ring-defaults]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.cors :refer [wrap-cors]]
-            [clojure.tools.logging :as log]
+            [taoensso.timbre :as log]
             [soul-talk.env :refer [defaults]]
             [cognitect.transit :as transit]
             [compojure.api.middleware :as cm]
@@ -80,8 +80,8 @@
                     "admin"     #{"any" "user" "poweruser" "admin"}
                     "poweruser" #{"any" "user" "poweruser"}
                     "user"      #{"any" "user"}
-                    #{}
-                    )
+                    #{})
+                    
         matched-roles (clojure.set/intersection has-roles required-roles)]
     (not (empty? matched-roles))))
 
@@ -148,5 +148,5 @@
     wrap-defaults
     wrap-internal-error
     mw/wrap-format-response
-    wrap-multipart-params
-    ))
+    wrap-multipart-params))
+    

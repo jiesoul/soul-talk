@@ -1,74 +1,81 @@
 (ns soul-talk.app-key.views
-  (:require [reagent.core :as r]
-            [re-frame.core :refer [dispatch subscribe]]
+  (:require [re-frame.core :refer [dispatch subscribe]]
             [soul-talk.common.views :as c]
             [soul-talk.routes :refer [navigate!]]
-            ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input]]
-            [soul-talk.utils :as utils]))
+            ["semantic-ui-react" :refer [Form Button Table Divider Input Label Select Dropdown]]
+            [soul-talk.utils :as utils]
+            [taoensso.timbre :as log]))
 
 (defn- new-form []
   (let [app-key    (subscribe [:app-key/edit])
         user    (subscribe [:user])
         user-id (:id @user)
-        _ (dispatch [:app-key/set-attr {:update_by user-id :create_by user-id}])]
-    ^{:key "add-role-form"}
-    [:> Form {:name       "add-role-form"}
+        _ (dispatch [:app-key/set-attr {:create_by user-id}])]
+    [:> Form {:name       "add-app-key-form"}
      [:> Form.Input {:name      "name"
-                     :label     "名称"
-                     :inline    true
+                     :label     "应用名称"
                      :required  true
-                     :on-change #(dispatch [:app-key/set-attr {:name (utils/event-value %)}])}]
-     [:> Form.Input {:name      "note"
-                     :label     "备注"
-                     :inline    true
-                     :on-change #(dispatch [:app-key/set-attr {:note (utils/event-value %)}])}]
+                     :on-change #(dispatch [:app-key/set-attr {:app_name (utils/event-value %)}])}]
+     [:> Form.Input {:required      true
+                     :read-only     true
+                     :default-value (:token @app-key)
+                     :action        {:color    "teal"
+                                     :type     "button"
+                                     :on-click #(dispatch [:app-key/gen])
+                                     :content  "生成"}}]
      [:div.button-center
-      [:> Button {:on-click #(js/history.go -1)}
+      [:> Button {:on-click #(navigate! (str "/app-key"))}
        "返回"]
       [:> Button {:color    "green"
                   :icon     "save"
                   :content  "保存"
-                  :on-click #(dispatch [:app-key/update @app-key])}]]]))
+                  :on-click #(dispatch [:app-key/save @app-key])}]]]))
 
 (defn new []
   [c/layout [new-form]])
 
+(def valid-options
+  [{:key 1 :value 1 :text "有效"}
+   {:key 0 :value 0 :text "无效"}])
+
 (defn- edit-form []
   (let [app-key (subscribe [:app-key/edit])
         user (subscribe [:user])
-        menus (subscribe [:menus])
-        user-id  (:id @user)]
-    (let [{:keys [name note]} @app-key]
-      [:> Form {:name       "add-role-form"}
-       [:> Form.Input {:name          "name"
-                       :inline        true
-                       :label         "名称"
-                       :required      true
-                       :default-value name
-                       :on-change     #(let [value (-> % .-target .-value)]
-                                         (dispatch [:app-key/set-attr :name value]))}]
-       [:> Form.Input {:name          "note"
-                       :inline        true
-                       :label         "备注"
-                       :default-value note
-                       :on-change     #(let [value (-> % .-target .-value)]
-                                         (dispatch [:app-key/set-attr :note value]))}]
-       [:> Divider]
+        {:keys [app_name token valid]} @app-key]
+    [:> Form {:name       "edit-app-key-form"}
+     [:> Form.Input {:name          "name"
+                     :label         "名称"
+                     :required      true
+                     :default-value app_name
+                     :on-change     #(let [value (-> % .-target .-value)]
+                                       (dispatch [:app-key/set-attr :name value]))}]
+     [:> Form.Input {:required      true
+                     :read-only     true
+                     :default-value token
+                     :action        {:color    "teal"
+                                     :type     "button"
+                                     :on-click #(dispatch [:app-key/gen])
+                                     :content  "重新生成"}}]
+     [:> Dropdown {:placeholder "是否有效"
+                   :options     valid-options
+                   :selection   true
+                   :default-value valid
+                   :on-change   #(let [value (-> % .-target)]
+                                   (dispatch [:app-key/set-attr {:valid (.-value %2)}]))}]
 
-       [:div.button-center
-        [:> Button {:on-click #(js/history.go -1)}
-         "返回"]
-        [:> Button {:color    "green"
-                    :content  "保存"
-                    :on-click #(dispatch [:app-key/update @app-key])}]]])))
+     [:div.button-center
+      [:> Button {:on-click #(navigate! (str "/app-key"))}
+       "返回"]
+      [:> Button {:color    "green"
+                  :content  "保存"
+                  :on-click #(dispatch [:app-key/update @app-key])}]]]))
 
 (defn edit []
   [c/layout [edit-form]])
 
-(def ^:dynamic *delete-id* (r/atom 0))
 (defn delete-dialog [id]
   (let [open (subscribe [:app-key/delete-dialog])]
-    (if @open
+    (when @open
       [c/confirm {:open    @open
                   :title    "删除角色"
                   :ok-text  "确认"
@@ -76,14 +83,6 @@
                   :on-ok    #(do (dispatch [:app-key/set-delete-dialog false])
                                  (dispatch [:data-dices/delete id]))}
        "你确定要删除吗？"])))
-
-(defn user-tree-items [{:keys [classes color bgColor menus checked-ids] :as props} ]
-  (doall
-    (for [menu menus]
-      (let [{:keys [children id pid url name]} menu]
-        ^{:key menu}
-        (when-not (empty? children)
-          (user-tree-items (assoc props :menus children :checked-ids checked-ids)))))))
 
 (defn query-form []
   (let [query-params (subscribe [:app-key/query-params])]
@@ -112,19 +111,25 @@
       [:> Table.Header
        [:> Table.Row
         [:> Table.HeaderCell "ID"]
-        [:> Table.HeaderCell "Email"]
-        [:> Table.HeaderCell "名称"]
-        [:> Table.HeaderCell "备注"]
+        [:> Table.HeaderCell "KEY"]
+        [:> Table.HeaderCell "应用"]
+        [:> Table.HeaderCell "有效"]
+        [:> Table.HeaderCell "创建人"]
+        [:> Table.HeaderCell "生成时间"]
+        [:> Table.HeaderCell "刷新时间"]
         [:> Table.HeaderCell "操作"]]]
       [:> Table.Body
        (doall
-         (for [{:keys [id email name note] :as app-key} @app-keys]
+         (for [{:keys [id token app_name valid create_by create_at refresh_at] :as app-key} @app-keys]
            ^{:key app-key}
            [:> Table.Row
             [:> Table.Cell id]
-            [:> Table.Cell email]
-            [:> Table.Cell name]
-            [:> Table.Cell note]
+            [:> Table.Cell token]
+            [:> Table.Cell app_name]
+            [:> Table.Cell valid]
+            [:> Table.Cell create_by]
+            [:> Table.Cell (utils/to-date create_at)]
+            [:> Table.Cell (utils/to-date refresh_at)]
             [:> Table.Cell
              [:div
               [:> Button {:color    "green"
@@ -132,11 +137,10 @@
                           :on-click #(navigate! (str "/app-key/" id "/edit"))}]
               [:> Button {:color    "red"
                           :icon     "delete"
-                          :on-click (fn []
-                                      (do
-                                        (dispatch [:app-key/set-delete-dialog true])
-                                        (dispatch [:app-key/set-attr app-key])))}]]]]))]]
-     (if @app-keys
+                          :on-click #(do
+                                       (dispatch [:app-key/set-delete-dialog true])
+                                       (dispatch [:app-key/set-attr app-key]))}]]]]))]]
+     (when @app-keys
        [c/table-page :app-key/load-page (merge @query-params @pagination)])]))
 
 (defn home []

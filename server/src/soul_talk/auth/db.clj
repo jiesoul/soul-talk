@@ -2,7 +2,7 @@
   (:require [next.jdbc.sql :as sql]
             [next.jdbc.result-set :as rs-set]
             [soul-talk.database.db :refer [*db*]]
-            [clojure.tools.logging :as log]
+            [taoensso.timbre :as log]
             [next.jdbc :as jdbc]))
 
 (defn save-token!

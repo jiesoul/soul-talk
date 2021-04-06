@@ -3,7 +3,7 @@
             [ragtime.repl :as repl]
             [clojure.string :refer [join]]
             [soul-talk.config :refer [conf]]
-            [clojure.tools.logging :as log]))
+            [taoensso.timbre :as log]))
 
 (def migrations
   {"migrate"

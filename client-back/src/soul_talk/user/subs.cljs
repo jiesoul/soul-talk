@@ -14,3 +14,7 @@
 (reg-sub :user/query-params query)
 (reg-sub :user/pagination query)
 (reg-sub :user/delete-dialog query)
+
+(reg-sub :user/auth-key-query-params query)
+(reg-sub :user/auth-key-pagination query)
+(reg-sub :user/auth-key-list query)

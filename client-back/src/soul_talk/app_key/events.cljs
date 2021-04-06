@@ -18,17 +18,41 @@
     (assoc db :app-key/delete-dialog value)))
 
 (reg-event-db
-  :app-key/load-all-ok
+  :app-key/load-page-ok
   (fn [db [_ {:keys [app-keys pagination query-params]}]]
     (assoc db :app-key/list app-keys :app-key/pagination pagination :app-key/query-params query-params)))
 
 (reg-event-fx
-  :app-key/load-all
+  :app-key/load-page
   (fn [_ params]
     {:http {:method        GET
             :url           (str site-uri "/app-keys")
             :ajax-map      {:params params}
-            :success-event [:app-key/load-all-ok]}}))
+            :success-event [:app-key/load-page-ok]}}))
+
+(reg-event-db
+ :app-key/gen-ok
+ (fn [db [_ {:keys [token]}]]
+   (assoc-in db [:app-key/edit :token] token)))
+
+(reg-event-fx
+ :app-key/gen
+ (fn [_ _]
+   {:http {:method GET
+           :url (str site-uri "/app-keys/gen")
+           :success-event [:app-key/gen-ok]}}))
+
+(reg-event-db
+  :app-key/load-ok
+  (fn [db [_ {:keys [app-key]}]]
+    (assoc db :app-key/edit app-key)))
+
+(reg-event-fx
+  :app-key/load
+  (fn [_ [_ id]]
+    {:http {:method GET
+            :url (str site-uri "/app-keys/" id)
+            :success-event [:app-key/load-ok]}}))
 
 (reg-event-db
   :app-key/clean-edit
@@ -42,13 +66,13 @@
 
 (reg-event-db
   :app-key/save-ok
-  (fn [db [_ {:keys [message body]}]]
-    (assoc db :success "add a tag ok")))
+  (fn [db [_ {:keys [app-key]}]]
+    (assoc db :success "保存成功")))
 
 (reg-event-fx
   :app-key/save
-  (fn [_ [_ {:keys [name] :as tag}]]
-    (if (str/blank? name)
+  (fn [_ [_ {:keys [app_name] :as tag}]]
+    (if (str/blank? app_name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        POST
               :url           (str site-uri "/app-keys")
@@ -58,16 +82,16 @@
 (reg-event-db
   :app-key/update-ok
   (fn [db [_ {:keys [message body]}]]
-    (assoc db :success "add a tag ok")))
+    (assoc db :success "保存成功")))
 
 (reg-event-fx
-  :app-key/save
-  (fn [_ [_ {:keys [name] :as tag}]]
-    (if (str/blank? name)
+  :app-key/update
+  (fn [_ [_ {:keys [app_name] :as app-key}]]
+    (if (str/blank? app_name)
       {:dispatch [:set-error "名称不能为空"]}
-      {:http {:method        POST
+      {:http {:method        PATCH
               :url           (str site-uri "/app-keys")
-              :ajax-map      {:params tag}
+              :ajax-map      {:params app-key}
               :success-event [:app-key/update-ok]}})))
 
 (reg-event-db

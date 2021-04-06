@@ -91,47 +91,5 @@
 ;                                     :pass-confirm pass-confirm}}
 ;            :success-event [:handle-register]}}))
 
-(reg-event-db
-  :auth-key/init
-  (fn [db _]
-    (-> db
-      (assoc :auth-keys/delete-dialog false)
-      (dissoc :auth-key/list :auth-keys/edit :auth-key/query-params :auth-key/pagination))))
 
-(reg-event-db
-  :auth-key/load-page-ok
-  (fn [db [_ {:keys [app-keys pagination query-params]}]]
-    (assoc db :auth-key/list app-keys :auth-key/pagination pagination :auth-key/query-params query-params)))
-
-(reg-event-fx
-  :auth-key/load-page
-  (fn [_ params]
-    {:http {:method        GET
-            :url           (str site-uri "/app-keys")
-            :ajax-map      {:params params}
-            :success-event [:auth-key/load-page-ok]}}))
-
-(reg-event-db
-  :auth-key/set-delete-dialog
-  (fn [db [_ value]]
-    (assoc db :auth-key/delete-dialog value)))
-
-(reg-event-db
-  :auth-key/set-attr
-  (fn [db [_ attr]]
-    (update-in db [:auth-key/edit] merge attr)))
-
-(reg-event-db
-  :auth-key/delete-ok
-  (fn [db [_ id]]
-    (let [auth-keys (:auth-keys db)
-          auth-keys (remove #(= id (:id %)) auth-keys)]
-      (assoc db :success "删除成功" :auth-key/list auth-keys))))
-
-(reg-event-fx
-  :auth-key/delete
-  (fn [_ [_ id]]
-    {:http {:method  DELETE
-            :url (str site-uri "/auth-keys/" id)
-            :success-event [:auth-key/delete-ok id]}}))
 

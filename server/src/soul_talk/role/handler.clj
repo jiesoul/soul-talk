@@ -3,7 +3,7 @@
             [soul-talk.pagination :as p]
             [soul-talk.role.spec :as spec]
             [soul-talk.utils :as utils]
-            [clojure.tools.logging :as log]))
+            [taoensso.timbre :as log]))
 
 (def create-role spec/create-role)
 (def update-role spec/update-role)

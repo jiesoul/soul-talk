@@ -8,6 +8,11 @@
                  [org.clojure/tools.cli "0.3.1"]
                  [org.clojure/tools.namespace "0.3.1"]
 
+                 ;; 日志
+                 [com.taoensso/timbre "5.1.2"]
+                 [com.fzakaria/slf4j-timbre "0.3.21"]
+                 [ch.qos.logback/logback-classic "1.2.3"]
+
                  [clojure.java-time "0.3.2"]
 
                  ;; web api
@@ -37,10 +42,6 @@
                  ;; DI
                  [mount "0.1.13"]
                  [tolitius/mount-up "0.1.1" :exclusions [ch.qos.logback/logback-classic]]
-
-                 ;; 日志
-                 [org.clojure/tools.logging "1.1.0"]
-                 [ch.qos.logback/logback-classic "1.2.3"]
 
                  ;; formats clojure.spec error messages
                  [expound "0.7.1"]

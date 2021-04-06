@@ -1,5 +1,5 @@
 (ns soul-talk.log
-  (:require [clojure.tools.logging :as timbre]
+  (:require [taoensso.timbre :as timbre]
             [cheshire.core :as json]))
 
 (defn- json-output [{:keys [level msg_ instant]}]

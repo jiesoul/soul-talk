@@ -17,6 +17,12 @@
   (context "/app-keys" []
     :tags ["app-key"]
 
+    (GET "/gen" []
+      :auth-login #{"admin"}
+      :summary "生成KEY"
+      :return Result
+      (app-key/gen-app-key))
+
     (GET "/" req
       :auth-login #{"admin"}
       :summary "获取全部app key"
@@ -28,19 +34,23 @@
       :summary "保存"
       :body [app-key app-key/create-app-key]
       :return Result
-      (app-key/save-app-key app-key))
+      (app-key/save-app-key! app-key))
 
-    (GET "/gen" []
+    (GET "/:id" []
       :auth-login #{"admin"}
-      :summary "生成KEY"
       :return Result
-      (app-key/gen-app-key))
+      :path-params [id :- int?]
+      (app-key/get-app-key id))
+
+    (PATCH "/" []
+      :auth-login #{"admin"}
+      :return Result
+      :body [app-key app-key/update-app-key]
+      (app-key/update-app-key! app-key))
 
     (DELETE "/:id" []
       :auth-login #{"admin"}
       :return Result
       :path-params [id :- int?]
       :summary "删除key"
-      (app-key/delete-app-key id))
-
-    ))
+      (app-key/delete-app-key! id))))

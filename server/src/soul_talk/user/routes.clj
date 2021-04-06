@@ -22,12 +22,19 @@
       :return Result
       :path-params [id :- int?]
       :summary "查看个人信息"
-      (handler/get-user-by-id id))
-    ))
+      (handler/get-user-by-id id))))
+    
 
 (def private-routes
   (context "/users" []
     :tags ["用户"]
+
+    (GET "/auth-keys" req
+      :auth-login #{"admin"}
+      :return Result 
+      :summary "查看登录记录"
+      (handler/load-users-auth-keys-page req))
+
     (GET "/" req
       :auth-login #{"admin"}
       :return Result
@@ -67,8 +74,8 @@
         :summary "获取用户角色"
         :auth-login #{"admin"}
         :return Result
-        (handler/get-user-roles id))
+        (handler/get-user-roles id)))))
 
-      )))
+      
 
 

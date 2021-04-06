@@ -14,11 +14,11 @@
 
 
 (defn new []
-  (let [article    (subscribe [:articles/edit])
+  (let [article    (subscribe [:article/edit])
         tags (:tags article)
         user    (subscribe [:user])
         user-id (:id @user)
-        _ (dispatch [:articles/set-attr {:update_by user-id :create_by user-id :publish 0}])
+        _ (dispatch [:article/set-attr {:update_by user-id :create_by user-id :publish 0}])
         search (fn [e {:keys [search-query] :as data}]
                  (js/console.log data))]
     [c/layout
@@ -26,11 +26,11 @@
       [:> Form.Input {:name        "name"
                       :placeholder "请输入标题"
                       :required    true
-                      :on-change   #(dispatch [:articles/set-attr {:title (utils/event-value %)}])}]
+                      :on-change   #(dispatch [:article/set-attr {:title (utils/event-value %)}])}]
       [:> TextArea {:rows        18
                     :cols        10
                     :placeholder "内容"
-                    :on-change   #(dispatch [:articles/set-attr {:body (utils/event-value %)}])}]
+                    :on-change   #(dispatch [:article/set-attr {:body (utils/event-value %)}])}]
       [:div {:style {:margin "5px"}}
        [:> Label.Group
         [:> Label "测试"]
@@ -49,16 +49,16 @@
        [cancel-button]
        [:> Button {:color    "green"
                    :content  "保存"
-                   :on-click #(dispatch [:articles/save @article])}]
+                   :on-click #(dispatch [:article/save @article])}]
        [:> Button {:content  "上传文件"
                    :color    "orange"
                    :on-click #()}]]]]))
 
 (defn edit []
-  (let [article (subscribe [:articles/edit])
+  (let [article (subscribe [:article/edit])
         user (subscribe [:user])
         user-id  (:id @user)
-        _ (dispatch [:articles/set-attr {:update_by user-id}])]
+        _ (dispatch [:article/set-attr {:update_by user-id}])]
     [c/layout
      (let [{:keys [title body]} @article]
        [:> Form
@@ -66,69 +66,69 @@
                         :required      true
                         :default-value title
                         :on-change     #(let [value (-> % .-target .-value)]
-                                          (dispatch [:articles/set-attr {:title value}]))}]
+                                          (dispatch [:article/set-attr {:title value}]))}]
         [:> TextArea {:rows          18
                       :cols          10
                       :placeholder   "内容"
                       :default-value body
-                      :on-change     #(dispatch [:articles/set-attr {:body (utils/event-value %)}])}]
+                      :on-change     #(dispatch [:article/set-attr {:body (utils/event-value %)}])}]
         [:div.button-center
          [cancel-button]
          [:> Button {:color "green"
-                     :on-click #(dispatch [:articles/update @article])}
+                     :on-click #(dispatch [:article/update @article])}
           "保存"]]])]))
 
 (defn view []
   [c/layout [:div "ddd"]])
 
 (defn publish-dialog []
-  (let [open (subscribe [:articles/publish-dialog])
-        article (subscribe [:articles/edit])]
+  (let [open (subscribe [:article/publish-dialog])
+        article (subscribe [:article/edit])]
     (if @open
       [c/confirm {:open   @open
                 :title    "发布文章"
                 :ok-text  "发布"
-                :on-close #(dispatch [:articles/set-publish-dialog false])
+                :on-close #(dispatch [:article/set-publish-dialog false])
                 :on-ok    #(do
-                          (dispatch [:articles/publish (:id @article)])
-                          (dispatch [:articles/set-publish-dialog false]))}
+                          (dispatch [:article/publish (:id @article)])
+                          (dispatch [:article/set-publish-dialog false]))}
        (str "确定发布文章吗？")])))
 
 (defn delete-dialog []
-  (let [open (subscribe [:articles/delete-dialog])
-        article (subscribe [:articles/edit])]
+  (let [open (subscribe [:article/delete-dialog])
+        article (subscribe [:article/edit])]
     (if @open
       [c/confirm {:open    @open
                  :title    (str "删除文章: ")
                  :ok-text  "确认"
-                 :on-close #(dispatch [:articles/set-delete-dialog false])
-                 :on-ok    #(do (dispatch [:articles/set-delete-dialog false])
-                                (dispatch [:articles/delete (:id @article)]))}
+                 :on-close #(dispatch [:article/set-delete-dialog false])
+                 :on-ok    #(do (dispatch [:article/set-delete-dialog false])
+                                (dispatch [:article/delete (:id @article)]))}
        (str "你确定要删 " (:title @article) " 吗?")])))
 
 (defn query-form []
-  (let [query-params (subscribe [:articles/query-params])]
+  (let [query-params (subscribe [:article/query-params])]
     [:> Form {:name       "query-form"}
      [:> Form.Group
       [:> Form.Input {:name      "name"
                       :label     "名称"
                       :size      "small"
                       :inline true
-                      :on-change #(dispatch [:articles/set-query-params :name (-> % .-target .-value)])}]]
+                      :on-change #(dispatch [:article/set-query-params :name (-> % .-target .-value)])}]]
      [:div.button-center
       [:> Button {:basic true
                   :content "查询"
                   :icon "search"
-                  :on-click #(dispatch [:articles/load-page @query-params])}]
+                  :on-click #(dispatch [:article/load-page @query-params])}]
       [:> Button {:color    "green"
                   :content "新增"
                   :icon "add"
-                  :on-click #(navigate! "/articles/new")}]]]))
+                  :on-click #(navigate! "/article/new")}]]]))
 
 (defn list-table []
-  (let [articles (subscribe [:articles/list])
-        pagination (subscribe [:articles/pagination])
-        query-params (subscribe [:articles/query-params])]
+  (let [articles (subscribe [:article/list])
+        pagination (subscribe [:article/pagination])
+        query-params (subscribe [:article/query-params])]
     [:<>
      [:> Table {:aria-label    "list-table"
                 :celled true
@@ -167,20 +167,20 @@
                 (when (zero? publish)
                   [:> Button {:content  "发布"
                               :on-click #(do
-                                           (dispatch [:articles/set-attr {:id id :title title}])
-                                           (dispatch [:articles/set-publish-dialog true]))}])
+                                           (dispatch [:article/set-attr {:id id :title title}])
+                                           (dispatch [:article/set-publish-dialog true]))}])
                 [:> Button {:color    "green"
                             :icon "edit"
-                            :on-click #(navigate! (str "/articles/" id "/edit"))}]
+                            :on-click #(navigate! (str "/article/" id "/edit"))}]
 
                 [:> Button {:color    "red"
                             :icon "delete"
                             :on-click (fn []
                                         (do
-                                          (dispatch [:articles/set-attr {:id id :title title}])
-                                          (dispatch [:articles/set-delete-dialog-open true])))}]]]])))]]
+                                          (dispatch [:article/set-attr {:id id :title title}])
+                                          (dispatch [:article/set-delete-dialog-open true])))}]]]])))]]
      (if @articles
-       [c/table-page :articles/load-page (merge @query-params @pagination)])]))
+       [c/table-page :article/load-page (merge @query-params @pagination)])]))
 
 (defn home []
   [c/layout

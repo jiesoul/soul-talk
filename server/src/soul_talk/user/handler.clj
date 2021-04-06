@@ -2,12 +2,9 @@
   (:require [soul-talk.user.db :as user-db]
             [soul-talk.utils :as utils]
             [buddy.hashers :as hashers]
-            [buddy.auth.accessrules :refer [success error restrict]]
-            [buddy.auth :refer [authenticated?]]
-            [buddy.auth.backends.token :refer [token-backend]]
-            [java-time.local :as l]
             [soul-talk.user.spec :as spec]
-            [soul-talk.pagination :as p]))
+            [soul-talk.pagination :as p]
+            [taoensso.timbre :as log]))
 
 (def update-user spec/update-user)
 (def user spec/user)
@@ -28,6 +25,16 @@
     (utils/ok {:users users
                :query-params params
                :pagination pagination})))
+
+(defn load-users-auth-keys-page [req]
+  (let [pagination (p/create req)
+        params (:params req)
+        [auth-keys total] (user-db/load-users-auth-keys-page pagination params)
+        pagination (p/create-total pagination total)]
+    (utils/ok {:auth-keys auth-keys
+                :query-params params 
+                :pagination pagination}))) 
+               
 
 (defn update-password! [id {:keys [old-password new-password confirm-password] :as params}]
   (let [user (user-db/find-by-id (long id))]
