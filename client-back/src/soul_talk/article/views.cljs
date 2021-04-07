@@ -3,10 +3,12 @@
             [re-frame.core :as rf :refer [subscribe dispatch]]
             [soul-talk.routes :refer (navigate!)]
             [soul-talk.common.views :as c]
+            [clojure.set :refer [rename-keys]]
             [soul-talk.utils :as du :refer [to-date]]
             ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input TextArea
                                          Dropdown Label]]
-            [soul-talk.utils :as utils]))
+            [soul-talk.utils :as utils]
+            [clojure.string :as str]))
 
 (defn cancel-button []
   [:> Button {:content "返回"
@@ -15,12 +17,16 @@
 
 (defn new []
   (let [article    (subscribe [:article/edit])
-        tags (:tags article)
         user    (subscribe [:user])
         user-id (:id @user)
+        tags (subscribe [:tag/list])
+        tag-options (->> @tags
+                      (map #(select-keys % [:id :name]))
+                      (map #(rename-keys % {:id :key :name :text}))
+                      (map #(assoc % :value (:key %))))
         _ (dispatch [:article/set-attr {:update_by user-id :create_by user-id :publish 0}])
-        search (fn [e {:keys [search-query] :as data}]
-                 (js/console.log data))]
+        search-tags #(dispatch [:tag/load-page {:name (.-searchQuery %2)}])
+        change-tags #(dispatch [:article/set-attr {:tags (.-value %2)}])]
     [c/layout
      [:> Form
       [:> Form.Input {:name        "name"
@@ -31,20 +37,15 @@
                     :cols        10
                     :placeholder "内容"
                     :on-change   #(dispatch [:article/set-attr {:body (utils/event-value %)}])}]
-      [:div {:style {:margin "5px"}}
-       [:> Label.Group
-        [:> Label "测试"]
-        (doall
-          (for [tag tags]
-            [:> Label {:content (:name tag)}]))]]
-
-      [:> Dropdown {:placeholder "标签"
-                    :multiple true
-                    :fluid true
-                    :search true
-                    :selection true
-                    :on-search-change search
-                    }]
+      [:> Form.Field
+       [:> Dropdown {:placeholder "标签"
+                     :multiple    true
+                     :fluid       true
+                     :search      true
+                     :selection   true
+                     :on-change  change-tags
+                     :on-search-change search-tags
+                     :options     tag-options}]]
       [:div.button-center
        [cancel-button]
        [:> Button {:color    "green"
@@ -61,22 +62,23 @@
         _ (dispatch [:article/set-attr {:update_by user-id}])]
     [c/layout
      (let [{:keys [title body]} @article]
-       [:> Form
-        [:> Form.Input {:name          "name"
-                        :required      true
-                        :default-value title
-                        :on-change     #(let [value (-> % .-target .-value)]
-                                          (dispatch [:article/set-attr {:title value}]))}]
-        [:> TextArea {:rows          18
-                      :cols          10
-                      :placeholder   "内容"
-                      :default-value body
-                      :on-change     #(dispatch [:article/set-attr {:body (utils/event-value %)}])}]
-        [:div.button-center
-         [cancel-button]
-         [:> Button {:color "green"
-                     :on-click #(dispatch [:article/update @article])}
-          "保存"]]])]))
+       [c/form-layout
+        [:> Form
+         [:> Form.Input {:name          "name"
+                         :required      true
+                         :default-value title
+                         :on-change     #(let [value (-> % .-target .-value)]
+                                           (dispatch [:article/set-attr {:title value}]))}]
+         [:> TextArea {:rows          18
+                       :cols          10
+                       :placeholder   "内容"
+                       :default-value body
+                       :on-change     #(dispatch [:article/set-attr {:body (utils/event-value %)}])}]
+         [:div.button-center
+          [cancel-button]
+          [:> Button {:color    "green"
+                      :on-click #(dispatch [:article/update @article])}
+           "保存"]]]])]))
 
 (defn view []
   [c/layout [:div "ddd"]])

@@ -2,7 +2,7 @@
   (:require [re-frame.core :refer [dispatch subscribe]]
             [soul-talk.common.views :as c]
             [soul-talk.routes :refer [navigate!]]
-            ["semantic-ui-react" :refer [Form Button Table Divider Input Label Select Dropdown]]
+            ["semantic-ui-react" :refer [Form Button Table Divider Input Label Select Dropdown Grid]]
             [soul-talk.utils :as utils]
             [taoensso.timbre :as log]))
 
@@ -11,25 +11,26 @@
         user    (subscribe [:user])
         user-id (:id @user)
         _ (dispatch [:app-key/set-attr {:create_by user-id}])]
-    [:> Form {:name       "add-app-key-form"}
-     [:> Form.Input {:name      "name"
-                     :label     "应用名称"
-                     :required  true
-                     :on-change #(dispatch [:app-key/set-attr {:app_name (utils/event-value %)}])}]
-     [:> Form.Input {:required      true
-                     :read-only     true
-                     :default-value (:token @app-key)
-                     :action        {:color    "teal"
-                                     :type     "button"
-                                     :on-click #(dispatch [:app-key/gen])
-                                     :content  "生成"}}]
-     [:div.button-center
-      [:> Button {:on-click #(navigate! (str "/app-key"))}
-       "返回"]
-      [:> Button {:color    "green"
-                  :icon     "save"
-                  :content  "保存"
-                  :on-click #(dispatch [:app-key/save @app-key])}]]]))
+    [c/form-layout
+     [:> Form {:name "add-app-key-form"}
+      [:> Form.Input {:name      "name"
+                      :label     "应用名称"
+                      :required  true
+                      :on-change #(dispatch [:app-key/set-attr {:app_name (utils/event-value %)}])}]
+      [:> Form.Input {:required      true
+                      :read-only     true
+                      :default-value (:token @app-key)
+                      :action        {:color    "teal"
+                                      :type     "button"
+                                      :on-click #(dispatch [:app-key/gen])
+                                      :content  "生成"}}]
+      [:div.button-center
+       [:> Button {:on-click #(navigate! (str "/app-key"))}
+        "返回"]
+       [:> Button {:color    "green"
+                   :icon     "save"
+                   :content  "保存"
+                   :on-click #(dispatch [:app-key/save @app-key])}]]]]))
 
 (defn new []
   [c/layout [new-form]])
@@ -42,47 +43,49 @@
   (let [app-key (subscribe [:app-key/edit])
         user (subscribe [:user])
         {:keys [app_name token valid]} @app-key]
-    [:> Form {:name       "edit-app-key-form"}
-     [:> Form.Input {:name          "name"
-                     :label         "名称"
-                     :required      true
-                     :default-value app_name
-                     :on-change     #(let [value (-> % .-target .-value)]
-                                       (dispatch [:app-key/set-attr :name value]))}]
-     [:> Form.Input {:required      true
-                     :read-only     true
-                     :default-value token
-                     :action        {:color    "teal"
-                                     :type     "button"
-                                     :on-click #(dispatch [:app-key/gen])
-                                     :content  "重新生成"}}]
-     [:> Dropdown {:placeholder "是否有效"
-                   :options     valid-options
-                   :selection   true
-                   :default-value valid
-                   :on-change   #(let [value (-> % .-target)]
-                                   (dispatch [:app-key/set-attr {:valid (.-value %2)}]))}]
+    [c/form-layout
+     [:> Form {:name "edit-app-key-form"}
+      [:> Form.Input {:name          "name"
+                      :label         "名称"
+                      :required      true
+                      :default-value app_name
+                      :on-change     #(let [value (-> % .-target .-value)]
+                                        (dispatch [:app-key/set-attr :name value]))}]
+      [:> Form.Input {:required      true
+                      :read-only     true
+                      :default-value token
+                      :action        {:color    "teal"
+                                      :type     "button"
+                                      :on-click #(dispatch [:app-key/gen])
+                                      :content  "重新生成"}}]
+      [:> Dropdown {:placeholder   "是否有效"
+                    :options       valid-options
+                    :selection     true
+                    :default-value {:key 1}
+                    :on-change     #(let [value (-> % .-target)]
+                                      (dispatch [:app-key/set-attr {:valid (.-value %2)}]))}]
 
-     [:div.button-center
-      [:> Button {:on-click #(navigate! (str "/app-key"))}
-       "返回"]
-      [:> Button {:color    "green"
-                  :content  "保存"
-                  :on-click #(dispatch [:app-key/update @app-key])}]]]))
+      [:div.button-center
+       [:> Button {:on-click #(navigate! (str "/app-key"))}
+        "返回"]
+       [:> Button {:color    "green"
+                   :content  "保存"
+                   :on-click #(dispatch [:app-key/update @app-key])}]]]]))
 
 (defn edit []
   [c/layout [edit-form]])
 
-(defn delete-dialog [id]
-  (let [open (subscribe [:app-key/delete-dialog])]
+(defn delete-dialog []
+  (let [open (subscribe [:app-key/delete-dialog])
+        app-key (subscribe [:app-key/edit])]
     (when @open
       [c/confirm {:open    @open
                   :title    "删除角色"
                   :ok-text  "确认"
                   :on-close #(dispatch [:app-key/set-delete-dialog false])
                   :on-ok    #(do (dispatch [:app-key/set-delete-dialog false])
-                                 (dispatch [:data-dices/delete id]))}
-       "你确定要删除吗？"])))
+                                 (dispatch [:app-key/delete (:id @app-key)]))}
+       (str "你确定要删除 " (:app_name @app-key) " 吗？")])))
 
 (defn query-form []
   (let [query-params (subscribe [:app-key/query-params])]

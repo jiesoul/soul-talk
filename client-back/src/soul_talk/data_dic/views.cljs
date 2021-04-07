@@ -11,33 +11,34 @@
         data-dic (subscribe [:data-dic/edit])
         _        (dispatch [:data-dic/set-attr {:create_by user-id
                                                   :update_by user-id}])]
-    [:> Form {:name "add-data-dic-form"}
-     [:> Form.Input {:name      "id"
-                     :label     "id"
-                     :required  true
-                     :on-change #(let [value (-> % .-target .-value)]
-                                   (dispatch [:data-dic/set-attr {:id value}]))}]
-     [:> Form.Input {:name      "name"
-                     :label     "名称"
-                     :required  true
-                     :on-change #(let [value (-> % .-target .-value)]
-                                   (dispatch [:data-dic/set-attr {:name value}]))}]
-     [:> Form.Input {:name      "pid"
-                     :label     "父id"
-                     :required  true
-                     :on-change #(let [value (-> % .-target .-value)]
-                                   (dispatch [:data-dic/set-attr {:pid value}]))}]
-     [:> Form.Input {:name      "note"
-                     :label     "备注"
-                     :on-change #(let [value (-> % .-target .-value)]
-                                   (dispatch [:data-dic/set-attr {:note value}]))}]
+    [c/form-layout
+     [:> Form {:name "add-data-dic-form"}
+      [:> Form.Input {:name      "id"
+                      :label     "id"
+                      :required  true
+                      :on-change #(let [value (-> % .-target .-value)]
+                                    (dispatch [:data-dic/set-attr {:id value}]))}]
+      [:> Form.Input {:name      "name"
+                      :label     "名称"
+                      :required  true
+                      :on-change #(let [value (-> % .-target .-value)]
+                                    (dispatch [:data-dic/set-attr {:name value}]))}]
+      [:> Form.Input {:name      "pid"
+                      :label     "父id"
+                      :required  true
+                      :on-change #(let [value (-> % .-target .-value)]
+                                    (dispatch [:data-dic/set-attr {:pid value}]))}]
+      [:> Form.Input {:name      "note"
+                      :label     "备注"
+                      :on-change #(let [value (-> % .-target .-value)]
+                                    (dispatch [:data-dic/set-attr {:note value}]))}]
 
-     [:div {:style {:text-align "center"}}
-      [:> Button {:content  "返回"
-                  :on-click #(navigate! (str "/data-dic"))}]
-      [:> Button {:content  "保存"
-                  :positive true
-                  :on-click #(dispatch [:data-dic/save @data-dic])}]]]))
+      [:div {:style {:text-align "center"}}
+       [:> Button {:content  "返回"
+                   :on-click #(navigate! (str "/data-dic"))}]
+       [:> Button {:content  "保存"
+                   :positive true
+                   :on-click #(dispatch [:data-dic/save @data-dic])}]]]]))
 
 
 (defn new []
@@ -47,37 +48,38 @@
   (let [user-id  (:id @(subscribe [:user]))
         data-dic (subscribe [:data-dic/edit])
         _        (dispatch [:data-dic/set-attr {:update_by user-id}])]
-    [:> Form {:name "add-data-dic-form"}
-     [:> Form.Input {:name      "id"
-                     :label     "id"
-                     :required  true
-                     :default-value (:id @data-dic)
-                     :on-change #(let [value (-> % .-target .-value)]
-                                   (dispatch [:data-dic/set-attr {:id value}]))}]
-     [:> Form.Input {:name      "name"
-                     :label     "名称"
-                     :required  true
-                     :default-value (:name @data-dic)
-                     :on-change #(let [value (-> % .-target .-value)]
-                                   (dispatch [:data-dic/set-attr {:name value}]))}]
-     [:> Form.Input {:name      "pid"
-                     :label     "父id"
-                     :required  true
-                     :default-value (:pid @data-dic)
-                     :on-change #(let [value (-> % .-target .-value)]
-                                   (dispatch [:data-dic/set-attr {:pid value}]))}]
-     [:> Form.Input {:name      "note"
-                     :label     "备注"
-                     :default-value (:note @data-dic)
-                     :on-change #(let [value (-> % .-target .-value)]
-                                   (dispatch [:data-dic/set-attr {:note value}]))}]
+    [c/form-layout
+     [:> Form {:name "add-data-dic-form"}
+      [:> Form.Input {:name          "id"
+                      :label         "id"
+                      :required      true
+                      :default-value (:id @data-dic)
+                      :on-change     #(let [value (-> % .-target .-value)]
+                                        (dispatch [:data-dic/set-attr {:id value}]))}]
+      [:> Form.Input {:name          "name"
+                      :label         "名称"
+                      :required      true
+                      :default-value (:name @data-dic)
+                      :on-change     #(let [value (-> % .-target .-value)]
+                                        (dispatch [:data-dic/set-attr {:name value}]))}]
+      [:> Form.Input {:name          "pid"
+                      :label         "父id"
+                      :required      true
+                      :default-value (:pid @data-dic)
+                      :on-change     #(let [value (-> % .-target .-value)]
+                                        (dispatch [:data-dic/set-attr {:pid value}]))}]
+      [:> Form.Input {:name          "note"
+                      :label         "备注"
+                      :default-value (:note @data-dic)
+                      :on-change     #(let [value (-> % .-target .-value)]
+                                        (dispatch [:data-dic/set-attr {:note value}]))}]
 
-     [:div {:style {:text-align "center"}}
-      [:> Button {:content  "返回"
-                  :on-click #(navigate! (str "/data-dic"))}]
-      [:> Button {:content  "保存"
-                  :positive true
-                  :on-click #(dispatch [:data-dic/update @data-dic])}]]]))
+      [:div {:style {:text-align "center"}}
+       [:> Button {:content  "返回"
+                   :on-click #(navigate! (str "/data-dic"))}]
+       [:> Button {:content  "保存"
+                   :positive true
+                   :on-click #(dispatch [:data-dic/update @data-dic])}]]]]))
 
 (defn edit []
   [c/layout [edit-form]])

@@ -62,6 +62,9 @@
 
 (defn log-error
   [^Exception e data request-or-response type]
+  (log/error "error request or response: " request-or-response)
+  (log/error "error data: " data)
+  (log/error "error type: " type)
   (log/error "error case： -- " (.getMessage e)))
 
 (defn parse-header [request]

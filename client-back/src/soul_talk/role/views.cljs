@@ -32,7 +32,7 @@
         menus-tree (utils/make-tree @menus)
         role (subscribe [:role/edit])
         _ (dispatch [:role/set-attr {:create_by (:id @user)}])]
-    [:> Card
+    [:> Card {:fluid true}
      [:> Card.Header "菜单列表"]
      [:> Card.Content
       ;[:> SourceTree {:tree-data tree-data}]
@@ -46,28 +46,26 @@
         user-id (:id @user)
         _ (dispatch [:role/set-attr {:update_by user-id :create_by user-id :menus-ids #{}}])]
     ^{:key "add-role-form"}
-    [:> Form {:name       "add-role-form"}
-     [:> Form.Group
+    [c/form-layout
+     [:> Form {:name "add-role-form"}
       [:> Form.Input {:name      "name"
                       :label     "名称"
-                      :inline    true
                       :required  true
                       :on-change #(dispatch [:role/set-attr {:name (utils/event-value %)}])}]
       [:> Form.Input {:name      "note"
                       :label     "备注"
-                      :inline    true
-                      :on-change #(dispatch [:role/set-attr {:note (utils/event-value %)}])}]]
+                      :on-change #(dispatch [:role/set-attr {:note (utils/event-value %)}])}]
 
-     [menu-tree-view]
-     [:div.button-center
-      [:> Button {:on-click #(navigate! (str "/role"))}
-       "返回"]
-      [:> Button {:color    "green"
-                  :icon     "save"
-                  :content  "保存"
-                  :on-click #(dispatch [:role/save @role])}]
+      [menu-tree-view]
+      [:div.button-center
+       [:> Button {:on-click #(navigate! (str "/role"))}
+        "返回"]
+       [:> Button {:color    "green"
+                   :icon     "save"
+                   :content  "保存"
+                   :on-click #(dispatch [:role/save @role])}]
 
-      ]]))
+       ]]]))
 
 (defn new []
   [c/layout [new-form]])
@@ -79,8 +77,8 @@
         menus (subscribe [:menus])
         user-id  (:id @user)]
     (let [{:keys [name note]} @role]
-      [:> Form {:name       "add-role-form"}
-       [:> Form.Group
+      [c/form-layout
+       [:> Form {:name "add-role-form"}
         [:> Form.Input {:name          "name"
                         :inline        true
                         :label         "名称"
@@ -94,15 +92,15 @@
                         :label         "备注"
                         :default-value note
                         :on-change     #(let [value (-> % .-target .-value)]
-                                          (dispatch [:role/set-attr :note value]))}]]
-       [:> Divider]
+                                          (dispatch [:role/set-attr :note value]))}]
+        [:> Divider]
 
-       [:div {:style {:text-align "center"}}
-        [:> Button {:on-click #(navigate! (str "/role"))}
-         "返回"]
-        [:> Button {:color    "green"
-                    :content  "保存"
-                    :on-click #(dispatch [:role/update @role])}]]])))
+        [:div {:style {:text-align "center"}}
+         [:> Button {:on-click #(navigate! (str "/role"))}
+          "返回"]
+         [:> Button {:color    "green"
+                     :content  "保存"
+                     :on-click #(dispatch [:role/update @role])}]]]])))
 
 (defn edit []
   [c/layout [edit-form]])

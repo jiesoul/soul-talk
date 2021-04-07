@@ -7,7 +7,7 @@
             ["semantic-ui-react" :refer [Form Button Table Divider]]))
 
 (defn password-form []
-  (let [user (rf/subscribe [:user/edit])
+  (let [user (rf/subscribe [:user])
                pass-data (r/atom {:id (:id @user)
                                   :email (:email @user)
                                   :old-password ""
@@ -17,66 +17,65 @@
                new-password (r/cursor pass-data [:new-password])
                confirm-password (r/cursor pass-data [:confirm-password])]
     (when @user
-      [:> Form {:id         "user-password-edit-form"}
-       [:> Form.Input {:id         "username"
-                      :read-only  true
-                      :label      "用户名："
-                      :default-value      (:name @user)
-                      :full-width true}]
-       [:> Form.Input {:id          "old-pass"
-                       :name        "old-pass"
-                       :placeholder "请输入旧密码"
-                       :label       "旧密码："
-                       :type        "password"
-                       :required    true
-                       :on-change   #(reset! old-password (.-target.value %))}]
-       [:> Form.Input {:id          "pass-new"
-                       :name        "pass-new"
-                       :placeholder "请输入新密码"
-                       :type        "password"
-                       :label       "新密码："
-                       :required    true
-                       :on-change   #(reset! new-password (.-target.value %))}]
-       [:> Form.Input {:id          "pass-confirm"
-                       :name        "pass-confirm"
-                       :placeholder "重复新密码"
-                       :label       "新密码："
-                       :type        "password"
-                       :required    true
-                       :on-change   #(reset! confirm-password (.-target.value %))}]
-       [:div.button-center
-        [:> Button {:on-click #(navigate! "/users")} "返回"]
-        [:> Button {:positive true
-                    :on-click #(rf/dispatch [:user/change-password @pass-data])}
-         "保存"]]])))
+      [c/form-layout
+       [:> Form {:id "user-password-edit-form"}
+        [:> Form.Input {:id            "username"
+                        :read-only     true
+                        :label         "用户名："
+                        :default-value (:name @user)
+                        :full-width    true}]
+        [:> Form.Input {:id          "old-pass"
+                        :name        "old-pass"
+                        :placeholder "请输入旧密码"
+                        :label       "旧密码："
+                        :type        "password"
+                        :required    true
+                        :on-change   #(reset! old-password (.-target.value %))}]
+        [:> Form.Input {:id          "pass-new"
+                        :name        "pass-new"
+                        :placeholder "请输入新密码"
+                        :type        "password"
+                        :label       "新密码："
+                        :required    true
+                        :on-change   #(reset! new-password (.-target.value %))}]
+        [:> Form.Input {:id          "pass-confirm"
+                        :name        "pass-confirm"
+                        :placeholder "重复新密码"
+                        :label       "新密码："
+                        :type        "password"
+                        :required    true
+                        :on-change   #(reset! confirm-password (.-target.value %))}]
+        [:div.button-center
+         [:> Button {:on-click #(navigate! "/users")} "返回"]
+         [:> Button {:positive true
+                     :on-click #(rf/dispatch [:user/change-password @pass-data])}
+          "保存"]]]])))
 
 (defn password []
   [c/layout [password-form]])
 
 (defn profile-form []
-  (let [user (rf/subscribe [:user/edit])
+  (let [user (rf/subscribe [:user])
         edited-user (r/atom @user)
         name (r/cursor edited-user [:name])]
-    (fn []
-      (when @user
-        [:> Form {:id         "user-profile-edit-form"}
-         [:> Form.Input {:id        "email"
-                         :label     "邮箱："
-                         :disabled  true
-                         :value     (:email @edited-user)
-                         :read-only true}]
-         [:> Form.Input {:variant    "outlined"
-                         :required   true
-                         :label      "名称"
-                         :name       "name"
-                         :id         "name"
-                         :value      @name
-                         :on-change  #(reset! name (-> % .-target .-value))}]
+    (when @user
+      [c/form-layout
+       [:> Form {:id "user-profile-edit-form"}
+        [:> Form.Input {:id        "email"
+                        :label     "邮箱："
+                        :default-value     (:email @edited-user)
+                        :read-only true}]
+        [:> Form.Input {:required  true
+                        :label     "名称"
+                        :name      "name"
+                        :id        "name"
+                        :default-value     @name
+                        :on-change #(reset! name (-> % .-target .-value))}]
 
-         [:div {:style {:text-align "center"}}
-          [:> Button {:positive true
-                      :on-click #(rf/dispatch [:users/user-profile @edited-user])}
-           "保存"]]]))))
+        [:div {:style {:text-align "center"}}
+         [:> Button {:positive true
+                     :on-click #(rf/dispatch [:user/user-profile @edited-user])}
+          "保存"]]]])))
 
 (defn profile []
   [c/layout [profile-form]])
@@ -88,50 +87,47 @@
         user-id (:id @login-user)
         _ (dispatch [:user/set-attr {:update_by user-id :create_by user-id :menus-ids #{}}])]
     ^{:key "add-role-form"}
-    [:> Form {:name       "add-role-form"}
-     [:> Form.Input {:name      "name"
-                     :label     "名称"
-                     :inline    true
-                     :required  true
-                     :on-change #(dispatch [:user/set-attr {:name (utils/event-value %)}])}]
-     [:> Form.Input {:name      "note"
-                     :label     "备注"
-                     :inline    true
-                     :on-change #(dispatch [:user/set-attr {:note (utils/event-value %)}])}]
+    [c/form-layout
+     [:> Form {:name "add-role-form"}
+      [:> Form.Input {:name      "name"
+                      :label     "名称"
+                      :required  true
+                      :on-change #(dispatch [:user/set-attr {:name (utils/event-value %)}])}]
+      [:> Form.Input {:name      "note"
+                      :label     "备注"
+                      :on-change #(dispatch [:user/set-attr {:note (utils/event-value %)}])}]
 
-     [:div.button-center
-      [:> Button {:on-click #(js/history.go -1)}
-       "返回"]
-      [:> Button {:color    "green"
-                  :icon     "save"
-                  :content  "保存"
-                  :on-click #(dispatch [:user/save @user])}]]]))
+      [:div.button-center
+       [:> Button {:on-click #(js/history.go -1)}
+        "返回"]
+       [:> Button {:color    "green"
+                   :icon     "save"
+                   :content  "保存"
+                   :on-click #(dispatch [:user/save @user])}]]]]))
 
 (defn new []
   [c/layout [new-form]])
 
 (defn- edit-form []
-  (let [user (subscribe [:users/edit])
+  (let [user (subscribe [:user/edit])
         login-user (subscribe [:user])
         ;; menus (subscribe [:menus])
         user-id  (:id @login-user)
-        _ (dispatch [:user/set-attr {:upcate_by user-id}])
+        _ (dispatch [:user/set-attr {:update_by user-id}])
         {:keys [name note]} @user]
-    (
-     [:> Form {:name       "edit-user-form"}
+    [c/form-layout
+     [:> Form {:name "edit-user-form"}
       [:> Form.Input {:name          "name"
-                      :inline        true
                       :label         "名称"
                       :required      true
                       :default-value name
                       :on-change     #(let [value (-> % .-target .-value)]
-                                        (dispatch [:users/set-attr {:name value}]))}]
+                                        (dispatch [:user/set-attr {:name value}]))}]
       [:> Form.Input {:name          "note"
-                      :inline        true
                       :label         "备注"
                       :default-value note
                       :on-change     #(let [value (-> % .-target .-value)]
-                                        (dispatch [:users/set-attr {:note value}]))}]
+                                        (dispatch [:user/set-attr {:note value}]))}]
       [:> Divider]
 
       [:div.button-center
@@ -139,7 +135,7 @@
         "返回"]
        [:> Button {:color    "green"
                    :content  "保存"
-                   :on-click #(dispatch [:users/update @user])}]]])))
+                   :on-click #(dispatch [:user/update @user])}]]]]))
 
 (defn edit []
   [c/layout [edit-form]])

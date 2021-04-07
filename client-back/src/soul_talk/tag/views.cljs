@@ -8,41 +8,47 @@
 
 (def ^:dynamic *visible* (r/atom false))
 
+(defn return-button []
+  [:> Button {:content  "返回"
+              :on-click #(navigate! "/tag")}])
+
 (defn new []
   [c/layout
    (let [user @(subscribe [:user])
          tag (subscribe [:tag/edit])
          _ (dispatch [:tag/set-attr {:create_by (:id user) :update_by (:id user)}])]
-     [:> Form
-      [:> Form.Input {:required true
-                      :label    "名称"
-                      :on-change #(dispatch [:tag/set-attr {:name (du/event-value %)}])}]
-      [:div.button-center
-       [:> Button {:content "返回"
-                   :on-click #(navigate! "/tags")}]
-       [:> Button {:color "green"
-                   :icon "save"
-                   :content "保存"
-                   :on-click #(dispatch [:tag/save @tag])}]]])])
+     [c/form-layout
+      [:> Form
+       [:> Form.Input {:required  true
+                       :label     "名称"
+                       :on-change #(dispatch [:tag/set-attr {:name (du/event-value %)}])}]
+       [:div.button-center
+        [return-button]
+        [:> Button {:color    "green"
+                    :icon     "save"
+                    :content  "保存"
+                    :on-click #(dispatch [:tag/save @tag])}]]]])])
 
 (defn edit []
   [c/layout
    (let [user (subscribe [:user])
-         tag  (subscribe [:tag/edit])]
-     [:> Form {:name "add_tag_form"}
-      [:> Form.Input {:title         "name"
-                      :label         "name"
-                      :required      true
-                      :default-value (:name @tag)
-                      :on-change     #(let [value (-> % .-target .-value)]
-                                        (dispatch [:tag/set-attr {:name value}]))}]
-      [:div.button-center
-       [:> Button {:content "返回"
-                   :on-click #(navigate! "/tags")}]
-       [:> Button {:color "green"
-                   :icon "save"
-                   :content "保存"
-                   :on-click #(dispatch [:tag/update @tag])}]]])])
+         user-id (:id @user)
+         tag  (subscribe [:tag/edit])
+         _ (dispatch [:tag/set-attr {:update_by user-id}])]
+     [c/form-layout
+      [:> Form {:name "add_tag_form"}
+       [:> Form.Input {:title         "name"
+                       :label         "name"
+                       :required      true
+                       :default-value (:name @tag)
+                       :on-change     #(let [value (-> % .-target .-value)]
+                                         (dispatch [:tag/set-attr {:name value}]))}]
+       [:div.button-center
+        [return-button]
+        [:> Button {:color    "green"
+                    :icon     "save"
+                    :content  "保存"
+                    :on-click #(dispatch [:tag/update @tag])}]]]])])
 
 (defn- delete-modal []
   (let [tags (subscribe [:tag/edit])
@@ -74,7 +80,7 @@
       [:> Button {:color "green"
                   :icon "add"
                   :content  "新增"
-                  :on-click #(navigate! "/tags/new")}]]]))
+                  :on-click #(navigate! "/tag/new")}]]]))
 
 (defn list-table []
   (let [tags (subscribe [:tag/list])

@@ -28,7 +28,8 @@
   (let [success (rf/subscribe [:success])]
     [:> TransitionablePortal {:open       (if @success true false)
                               :transition {:animation "fly up"
-                                           :duration  100}}
+                                           :duration  100}
+                              :on-close #(rf/dispatch [:clean-success])}
      [:> Message {:style {:left     "50%"
                           :position "fixed"
                           :top      "5%"
@@ -40,7 +41,8 @@
   (let [error (rf/subscribe [:error])]
     [:> TransitionablePortal {:open       (if @error true false)
                               :transition {:animation "fly up"
-                                           :duration  100}}
+                                           :duration  100}
+                              :on-close #(rf/dispatch [:clean-error])}
      [:> Message {:style    {:left     "40%"
                              :position "fixed"
                              :top      "5%"
@@ -162,6 +164,12 @@
        children
        [:div {:style {:margin-top "20px"}}
         [copyright]]]]]]])
+
+(defn form-layout [children]
+  [:> Grid {:centered true
+            :columns 2}
+   [:> Grid.Column
+    children]])
 
 (defn confirm [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
   [:> Confirm {:open     open

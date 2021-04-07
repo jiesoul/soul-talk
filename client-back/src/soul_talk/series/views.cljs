@@ -14,44 +14,46 @@
         series (subscribe [:series/edit])
         _ (dispatch [:series/set-attr {:create_by user-id :update_by user-id}])]
     [c/layout
-     [:> Form
-      [:> Form.Input {:title     "name"
-                      :label     "名称"
-                      :required  true
-                      :on-change #(dispatch [:series/set-attr {:name (du/event-value %)}])}]
-      [:> Form.Input {:label     "简介"
-                      :required  true
-                      :on-change #(dispatch [:series/set-attr {:description (du/event-value %)}])}]
-      [:div.button-center
-       [:> Button {:content  "返回"
-                   :on-click #(navigate! (str "/series"))}]
-       [:> Button {:content  "保存"
-                   :positive true
-                   :on-click #(dispatch [:series/save @series])}]]
-      ]]))
+     [c/form-layout
+      [:> Form
+       [:> Form.Input {:title     "name"
+                       :label     "名称"
+                       :required  true
+                       :on-change #(dispatch [:series/set-attr {:name (du/event-value %)}])}]
+       [:> Form.Input {:label     "简介"
+                       :required  true
+                       :on-change #(dispatch [:series/set-attr {:description (du/event-value %)}])}]
+       [:div.button-center
+        [:> Button {:content  "返回"
+                    :on-click #(navigate! (str "/series"))}]
+        [:> Button {:content  "保存"
+                    :positive true
+                    :on-click #(dispatch [:series/save @series])}]]
+       ]]]))
 
 (defn edit []
   (let [user (subscribe [:user])
         series (subscribe [:series/edit])
         _ (dispatch [:series/set-attr {:update_by (:id @user)}])]
     [c/layout
-     [:> Form
-      [:> Form.Input {:title     "name"
-                      :label     "name"
-                      :required  true
-                      :default-value (:name @series)
-                      :on-change #(dispatch [:series/set-attr {:name (du/event-value %)}])}]
-      [:> Form.Input {:label     "简介"
-                      :required  true
-                      :default-value (:description @series)
-                      :on-change #(dispatch [:series/set-attr {:description (du/event-value %)}])}]
-      [:div.button-center
-       [:> Button {:content  "返回"
-                   :on-click #(navigate! (str "/series"))}]
-       [:> Button {:content  "保存"
-                   :positive true
-                   :on-click #(dispatch [:series/update @series])}]]
-      ]]))
+     [c/form-layout
+      [:> Form
+       [:> Form.Input {:title         "name"
+                       :label         "name"
+                       :required      true
+                       :default-value (:name @series)
+                       :on-change     #(dispatch [:series/set-attr {:name (du/event-value %)}])}]
+       [:> Form.Input {:label         "简介"
+                       :required      true
+                       :default-value (:description @series)
+                       :on-change     #(dispatch [:series/set-attr {:description (du/event-value %)}])}]
+       [:div.button-center
+        [:> Button {:content  "返回"
+                    :on-click #(navigate! (str "/series"))}]
+        [:> Button {:content  "保存"
+                    :positive true
+                    :on-click #(dispatch [:series/update @series])}]]
+       ]]]))
 
 (defn- delete-modal []
   (let [series (subscribe [:series/edit])

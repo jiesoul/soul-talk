@@ -74,9 +74,9 @@
 (reg-event-fx
   :tag/delete-ok
   (fn [{:keys [db]} [_ id]]
-    (let [tags (:tag db)
+    (let [tags (:tag/list db)
           tags (remove #(= id (:id %)) tags)]
-      {:db (assoc db :success "删除成功" :tag tags)
+      {:db (assoc db :tag/list tags)
        :dispatch [:set-success "删除成功"]})))
 
 (reg-event-fx

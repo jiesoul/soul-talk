@@ -2,15 +2,18 @@
   (:require [next.jdbc :as jdbc]
             [next.jdbc.sql :as sql]
             [soul-talk.database.db :refer [*db*]]
-            [next.jdbc.result-set :as rs-set]))
+            [next.jdbc.result-set :as rs-set]
+            [taoensso.timbre :as log]))
 
 (defn insert-article! [article]
   (sql/insert! *db* :article article))
 
 (defn add-article-tags! [article-id tags]
-  (when-not (empty? tags)
-     (let [inputs (map vector (repeat article-id) (map :id tags))]
-       (sql/insert-multi! *db* :article_tag [:article_id :tag_id] inputs))))
+  (when (not-empty tags)
+    (let [input (map vector (repeat article-id) tags)]
+      (sql/insert-multi! *db* :article_tag
+        [:article_id :tag_id]
+        input))))
 
 (defn delete-article-tags! [article-id]
   (sql/delete! *db* :article_tag ["article_id = ? " article-id]))

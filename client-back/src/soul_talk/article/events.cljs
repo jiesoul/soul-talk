@@ -1,7 +1,8 @@
 (ns soul-talk.article.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db subscribe ->interceptor] :as rf]
             [ajax.core :refer [POST GET DELETE PUT PATCH]]
-            [soul-talk.db :refer [site-uri]]))
+            [soul-talk.db :refer [site-uri]]
+            [clojure.string :as str]))
 
 (reg-event-db
   :article/init
@@ -63,18 +64,20 @@
 (reg-event-fx
   :article/save-ok
   (fn [{:keys [db]} [_ {:keys [article]}]]
-    {:db         (update-in db [:article] conj article)
-     :dispatch-n [[:set-success "保存成功"]
-                  [:article/clear-edit]]}))
+    {:db       (update-in db [:article] conj article)
+     :dispatch [:set-success "保存成功"]}))
 
 (reg-event-fx
   :article/save
   [article-validate]
-  (fn [_ [_ {:keys [title] :as article}]]
-    {:http {:method        POST
-            :url           (str site-uri "/articles")
-            :ajax-map      {:params article}
-            :success-event [:article/save-ok]}}))
+  (fn [_ [_ {:keys [title body] :as article}]]
+    (cond
+      (str/blank? title) {:dispatch [:set-error "名称不能为空"]}
+      (str/blank? body) {:dispatch [:set-error "内容不能为空"]}
+      :else {:http {:method        POST
+                    :url           (str site-uri "/articles")
+                    :ajax-map      {:params article}
+                    :success-event [:article/save-ok]}})))
 
 (reg-event-fx
   :article/update

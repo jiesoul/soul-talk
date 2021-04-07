@@ -77,7 +77,7 @@
       {:http {:method        POST
               :url           (str site-uri "/app-keys")
               :ajax-map      {:params tag}
-              :success-event [:app-key/save-ok]}})))
+              :success-event [:set-success "保存成功"]}})))
 
 (reg-event-db
   :app-key/update-ok
@@ -92,18 +92,19 @@
       {:http {:method        PATCH
               :url           (str site-uri "/app-keys")
               :ajax-map      {:params app-key}
-              :success-event [:app-key/update-ok]}})))
+              :success-event [:set-success "保存成功"]}})))
 
-(reg-event-db
+(reg-event-fx
   :app-key/delete-ok
-  (fn [db [_ id]]
-    (let [app-key (:app-key db)
-          app-key (remove #(= id (:id %)) app-key)]
-      (assoc db :success "删除成功" :app-key app-key))))
+  (fn [{:keys [db]} [_ id]]
+    (let [app-keys (:app-key/list db)
+          app-keys (remove #(= id (:id %)) app-keys)]
+      {:db (assoc db :app-key/list app-keys)
+       :dispatch [:set-success "删除成功"]})))
 
 (reg-event-fx
   :app-key/delete
   (fn [_ [_ id]]
     {:http {:method  DELETE
-            :url (str site-uri "/app-key/" id)
+            :url (str site-uri "/app-keys/" id)
             :success-event [:app-key/delete-ok id]}}))
