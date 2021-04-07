@@ -3,7 +3,7 @@
             [next.jdbc.result-set :as rs-set]
             [next.jdbc.sql :as sql]))
 
-(defn save-app-key
+(defn save-app-key!
   [app-key]
   (sql/insert! *db* :app_key app-key {:builder-fn rs-set/as-unqualified-maps}))
 
@@ -14,7 +14,15 @@
     (some-> tokens
       first)))
 
-(defn delete-app-key
+(defn get-app-key [id]
+  (sql/get-by-id *db* :app_key id))
+
+(defn update-app-key! [{:keys [id] :as app-key}]
+  (sql/update! *db* :app_key 
+               (select-keys app-key [:token :valid])
+               ["id = ? " id]))
+
+(defn delete-app-key!
   [id]
   (sql/delete! *db* :app_key ["id = ?" id]))
 

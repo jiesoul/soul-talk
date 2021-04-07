@@ -50,14 +50,12 @@
     [articles total]))
 
 (defn get-article-by-id [id]
-  (sql/get-by-id *db* :article id
-    {:builder-fn rs-set/as-unqualified-maps}))
+  (sql/get-by-id *db* :article id))
 
 (defn publish-article! [{:keys [id] :as article}]
   (sql/update! *db* :article
-    (select-keys article [:publish :update_at :update_by])
-    ["id = ?" id]
-    {:builder-fn rs-set/as-unqualified-maps}))
+               (select-keys article [:publish :update_at :update_by])
+               ["id = ?" id]))
 
 (defn get-article-publish [id]
   (sql/query *db*

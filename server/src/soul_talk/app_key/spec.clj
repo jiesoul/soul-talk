@@ -22,3 +22,10 @@
             :spec {:token    token
                    :app_name app-name
                    :create_by spec/id}}))
+  
+(def update-app-key
+  (ds/spec {:name :app-key/update-app-key
+            :spec {:id  spec/id
+                   :token    token
+                   :app_name app-name
+                   :create_by spec/id}}))
