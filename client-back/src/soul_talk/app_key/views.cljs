@@ -36,13 +36,15 @@
   [c/layout [new-form]])
 
 (def valid-options
-  [{:key 1 :value 1 :text "有效"}
+  [{:key 1 :value 1 :text "有效" :selected true}
    {:key 0 :value 0 :text "无效"}])
 
 (defn- edit-form []
   (let [app-key (subscribe [:app-key/edit])
         user (subscribe [:user])
-        {:keys [app_name token valid]} @app-key]
+        data-dices @(subscribe [:data-dices])
+        options (utils/data->options (filter #(= "10" (:pid %)) data-dices) :id :name :id)
+        {:keys [app_name token is_valid]} @app-key]
     [c/form-layout
      [:> Form {:name "edit-app-key-form"}
       [:> Form.Input {:name          "name"
@@ -53,17 +55,17 @@
                                         (dispatch [:app-key/set-attr :name value]))}]
       [:> Form.Input {:required      true
                       :read-only     true
+                      :label "Token"
                       :default-value token
                       :action        {:color    "teal"
                                       :type     "button"
                                       :on-click #(dispatch [:app-key/gen])
                                       :content  "重新生成"}}]
-      [:> Dropdown {:placeholder   "是否有效"
-                    :options       valid-options
-                    :selection     true
-                    :default-value {:key 1}
-                    :on-change     #(let [value (-> % .-target)]
-                                      (dispatch [:app-key/set-attr {:valid (.-value %2)}]))}]
+      [:> Form.Select {:placeholder   "是否有效"
+                       :label         "有效"
+                       :options       options
+                       :default-value is_valid
+                       :on-change     #(dispatch [:app-key/set-attr {:is_valid (.-value %2)}])}]
 
       [:div.button-center
        [:> Button {:on-click #(navigate! (str "/app-key"))}

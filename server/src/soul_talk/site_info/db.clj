@@ -4,7 +4,7 @@
             [next.jdbc.result-set :as rs-set]))
 
 (defn update! [{:keys [id] :as site-info}]
-  (sql/update! *db* :site_info site-info {:id id} {:builder-fn rs-set/as-unqualified-maps}))
+  (sql/update! *db* :site_info site-info {:id id}))
 
 (defn get-by-id [id]
-  (sql/get-by-id *db* :site_info id {:builder-fn rs-set/as-unqualified-maps}))
+  (sql/get-by-id *db* :site_info id))

@@ -6,46 +6,50 @@
             [clojure.set :refer [rename-keys]]
             [soul-talk.utils :as du :refer [to-date]]
             ["semantic-ui-react" :refer [Form Button Table Divider Icon Container Card Input TextArea
-                                         Dropdown Label]]
+                                         Dropdown Label Select]]
             [soul-talk.utils :as utils]
             [clojure.string :as str]))
 
+(def publish-flag "11")
+
 (defn cancel-button []
   [:> Button {:content "返回"
-              :on-click #(navigate! (str "/articles"))}])
+              :on-click #(navigate! (str "/article"))}])
 
+(defn search-tags [e d]
+  (dispatch [:tag/load-page {:name (.-searchQuery d)}]))
+
+(defn change-tags [e d]
+  (dispatch [:article/set-attr {:tags (.-value d)}]))
 
 (defn new []
   (let [article    (subscribe [:article/edit])
         user    (subscribe [:user])
         user-id (:id @user)
         tags (subscribe [:tag/list])
-        tag-options (->> @tags
-                      (map #(select-keys % [:id :name]))
-                      (map #(rename-keys % {:id :key :name :text}))
-                      (map #(assoc % :value (:key %))))
-        _ (dispatch [:article/set-attr {:update_by user-id :create_by user-id :publish 0}])
-        search-tags #(dispatch [:tag/load-page {:name (.-searchQuery %2)}])
-        change-tags #(dispatch [:article/set-attr {:tags (.-value %2)}])]
+        tag-options (utils/data->options @tags :id :name :id)
+        _ (dispatch [:article/set-attr {:update_by user-id :create_by user-id :publish 0}])]
     [c/layout
      [:> Form
       [:> Form.Input {:name        "name"
+                      :label "标题"
                       :placeholder "请输入标题"
                       :required    true
                       :on-change   #(dispatch [:article/set-attr {:title (utils/event-value %)}])}]
-      [:> TextArea {:rows        18
+      [:> TextArea {:label "内容"
+                    :rows        18
                     :cols        10
                     :placeholder "内容"
                     :on-change   #(dispatch [:article/set-attr {:body (utils/event-value %)}])}]
-      [:> Form.Field
-       [:> Dropdown {:placeholder "标签"
-                     :multiple    true
-                     :fluid       true
-                     :search      true
-                     :selection   true
-                     :on-change  change-tags
-                     :on-search-change search-tags
-                     :options     tag-options}]]
+      [:> Dropdown {:placeholder      "标签"
+                    :label "标签"
+                    :multiple         true
+                    :fluid            true
+                    :search           true
+                    :selection        true
+                    :on-change        change-tags
+                    :on-search-change search-tags
+                    :options          tag-options}]
       [:div.button-center
        [cancel-button]
        [:> Button {:color    "green"
@@ -57,28 +61,42 @@
 
 (defn edit []
   (let [article (subscribe [:article/edit])
+        article-tags (->> (:tags @article)
+                       (map #(:tag_id %)))
         user (subscribe [:user])
         user-id  (:id @user)
+        tags (subscribe [:tag/list])
+        tag-options (utils/data->options @tags :id :name :id)
         _ (dispatch [:article/set-attr {:update_by user-id}])]
+    (js/console.log "article-tags: " article-tags)
     [c/layout
      (let [{:keys [title body]} @article]
-       [c/form-layout
-        [:> Form
-         [:> Form.Input {:name          "name"
-                         :required      true
-                         :default-value title
-                         :on-change     #(let [value (-> % .-target .-value)]
-                                           (dispatch [:article/set-attr {:title value}]))}]
-         [:> TextArea {:rows          18
-                       :cols          10
-                       :placeholder   "内容"
-                       :default-value body
-                       :on-change     #(dispatch [:article/set-attr {:body (utils/event-value %)}])}]
-         [:div.button-center
-          [cancel-button]
-          [:> Button {:color    "green"
-                      :on-click #(dispatch [:article/update @article])}
-           "保存"]]]])]))
+       [:> Form
+        [:> Form.Input {:name          "name"
+                        :required      true
+                        :default-value title
+                        :on-change     #(let [value (-> % .-target .-value)]
+                                          (dispatch [:article/set-attr {:title value}]))}]
+        [:> TextArea {:rows          18
+                      :cols          10
+                      :placeholder   "内容"
+                      :default-value body
+                      :on-change     #(dispatch [:article/set-attr {:body (utils/event-value %)}])}]
+        [:> Dropdown {:placeholder      "标签"
+                      :label            "标签"
+                      :multiple         true
+                      :fluid            true
+                      :search           true
+                      :selection        true
+                      :default-value    article-tags
+                      :on-change        change-tags
+                      :on-search-change search-tags
+                      :options          tag-options}]
+        [:div.button-center
+         [cancel-button]
+         [:> Button {:color    "green"
+                     :on-click #(dispatch [:article/update @article])}
+          "保存"]]])]))
 
 (defn view []
   [c/layout [:div "ddd"]])
@@ -109,14 +127,19 @@
        (str "你确定要删 " (:title @article) " 吗?")])))
 
 (defn query-form []
-  (let [query-params (subscribe [:article/query-params])]
+  (let [query-params (subscribe [:article/query-params])
+        data-dices (subscribe [:data-dices])
+        publish-options (utils/data->options (filter #(= "11" (:pid %)) @data-dices) :id :name :id)]
     [:> Form {:name       "query-form"}
      [:> Form.Group
-      [:> Form.Input {:name      "name"
-                      :label     "名称"
-                      :size      "small"
-                      :inline true
-                      :on-change #(dispatch [:article/set-query-params :name (-> % .-target .-value)])}]]
+      [:> Form.Input {:name      "title"
+                      :label     "标题"
+                      :on-change #(dispatch [:article/set-query-params {:title (-> % .-target .-value)}])}]
+      [:> Form.Select {:name "publish"
+                      :label "发布状态"
+                       :options publish-options
+                       :clearable true
+                      :on-change #(dispatch [:article/set-query-params {:publish (.-value %2)}])}]]
      [:div.button-center
       [:> Button {:basic true
                   :content "查询"
@@ -160,7 +183,7 @@
               [:> Table.Cell title]
               [:> Table.Cell description]
               [:> Table.Cell create_by]
-              [:> Table.Cell (if (zero? publish) "否" "是")]
+              [:> Table.Cell (:name (utils/get-data-dic-by-id publish))]
               [:> Table.Cell pv]
               [:> Table.Cell (du/to-date-time create_at)]
               [:> Table.Cell (du/to-date-time update_at)]

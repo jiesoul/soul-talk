@@ -40,6 +40,18 @@
             :success-event [:data-dic/load-page-ok]}}))
 
 (reg-event-db
+  :data-dic/load-all-ok
+  (fn [db [_ {:keys [data-dices]}]]
+    (assoc db :data-dices data-dices)))
+
+(reg-event-fx
+  :data-dic/load-all
+  (fn [_ [_ id]]
+    {:http {:method GET
+            :url (str site-uri "/data-dices/all")
+            :success-event [:data-dic/load-all-ok]}}))
+
+(reg-event-db
   :data-dic/load-data-dic-ok
   (fn [db [_ {:keys [data-dic]}]]
     (assoc db :data-dic/edit data-dic)))

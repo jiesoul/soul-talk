@@ -26,7 +26,7 @@
     (utils/ok {:app-key app-key})))
 
 (defn update-app-key! [app-key]
-  (let [_ (db/update-app-key! app-key)]
+  (let [_ (db/update-app-key! (assoc app-key :refresh_at (utils/now)))]
     (utils/ok "保存成功")))
 
 (defn delete-app-key! [id]

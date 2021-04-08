@@ -3,9 +3,9 @@ CREATE TABLE IF NOT EXISTS users
  email VARCHAR(50) unique,
  name VARCHAR(50),
  password VARCHAR(200) NOT NULL,
- admin BOOLEAN default FALSE ,
+ admin varchar(8) default '1202',
  last_login_at timestamp,
- is_active BOOLEAN default TRUE,
+ is_valid varchar(20) default '1001',
  create_by int default 0,
  create_at timestamp default now(),
  update_by int default 0,
@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS users
 );
 
 -- 插入初始用户 密码为 12345678
-insert into users (name, email, admin, last_login_at, is_active, password)
-VALUES ('jiesoul', 'jiesoul@gmail.com', '1', now(), '1',
-        'bcrypt+sha512$91735d27fa9797835267bb14e457ba5d$12$7d6efccba210c2be98c9b9cabe0e428344cc8f69e38867f1');
+insert into users (name, email, admin, last_login_at, password, is_valid, create_by, update_by)
+VALUES ('jiesoul', 'jiesoul@gmail.com', '1201', now(),
+        'bcrypt+sha512$91735d27fa9797835267bb14e457ba5d$12$7d6efccba210c2be98c9b9cabe0e428344cc8f69e38867f1',
+        '1001', 1, 1);

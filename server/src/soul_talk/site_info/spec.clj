@@ -9,4 +9,5 @@
             :spec {:id                   spec/id
                    :name                 spec/non-empty-string?
                    (ds/opt :description) (ds/maybe spec/non-empty-string?)
+                   (ds/opt :tags) (ds/maybe spec/non-empty-string?)
                    :author               spec/non-empty-string?}}))

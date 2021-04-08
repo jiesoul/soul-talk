@@ -14,9 +14,12 @@
 
 (def format-id (java-time.format/formatter "yyyyMMddHHmmssSSS"))
 
-(defn load-articles-page [request]
-  (let [pagination (p/create request)
-        params (:param request)
+(def publish-false "1102")
+(def publish-true "1101")
+
+(defn load-articles-page [req]
+  (let [params (:params req)
+        pagination (p/create req)
         [articles total] (article-db/load-articles-page pagination params)
         pagination (p/create-total pagination total)]
     (utils/ok  {:pagination pagination
@@ -26,39 +29,36 @@
 (defn load-articles-publish-page [req]
   (let [pagination (p/create req)
         params (:params req)
-        [articles total] (article-db/load-articles-page pagination (assoc params :public 1))
+        [articles total] (article-db/load-articles-page pagination (assoc params :publish publish-true))
         pagination (p/create-total pagination total)]
     (utils/ok {:articles   articles
                :pagination pagination
                :query-params params})))
 
 (defn get-article [article-id]
-  (let [article (article-db/get-article-by-id article-id)]
-    (utils/ok "加载成功" {:article article})))
+  (let [article (article-db/get-article-by-id article-id)
+        article-tags (article-db/get-article-tags-by-article-id article-id)]
+    (utils/ok "加载成功" {:article (assoc article :tags article-tags)})))
 
 (defn insert-article! [article]
   (let [time (l/local-date-time)
         id (f/format format-id time)]
     (let [article (article-db/save-article!
-                    (-> article
-                      (assoc :id id)
-                      (assoc :create_at time)
-                      (assoc :update_at time)))]
-      (utils/ok "保存成功" {:article article}))))
+                    (assoc article :id id :create_at time :update_at time :publish publish-false))]
+      (utils/ok {:article article}))))
 
 (defn upload-article! [{:keys [body params] :as req}]
   (let [file (:file params)
         md (slurp (:tempfile file))
         time (l/local-date-time)
         id (f/format format-id time)
-        article {:id id :content md :create_at time :update_at time :title "" :author "" :publish 0}]
+        article {:id id :content md :create_at time :update_at time :title "" :author "" :publish publish-false}]
     (do
       (article-db/insert-article! article)
       (utils/ok "上传成功" {:id id}))))
 
 (defn update-article! [article]
-  (article-db/update-article! (-> article
-                                (assoc :update_at (l/local-date-time))))
+  (article-db/update-article! (assoc article :update_at (utils/now) :publish publish-false))
   (utils/ok {:article (assoc article :body nil)}))
 
 (defn delete-article! [id]
@@ -69,7 +69,7 @@
 (defn publish-article! [id]
   (let [article (article-db/get-article-by-id id)]
     (if article
-      (let [article (assoc article :publish 1 :update_at (l/local-date-time))
+      (let [article (assoc article :publish publish-true :update_at (utils/now))
             article (article-db/publish-article! article)]
         (utils/ok "发布成功" {:article article}))
       (utils/bad-request "未找到文章"))))

@@ -36,6 +36,12 @@
   (context "/data-dices" []
     :tags ["数据字典"]
 
+    (GET "/all" req
+      :auth-login #{"admin"}
+      :return Result
+      :summary "全部字典数据"
+      (data-dic/load-all-data-dices req))
+
     (GET "/" req
       :auth-login #{"admin"}
       :return Result

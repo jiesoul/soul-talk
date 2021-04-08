@@ -1,11 +1,22 @@
 (ns soul-talk.utils
   (:require [cljs-time.format :as cf :refer [parse unparse formatter formatters]]
             [cljs-time.coerce :as tc]
-            [reagent.core :as r]))
+            [reagent.core :as r]
+            [re-frame.core :refer [subscribe]]))
 
 (def custom-formatter-date-time (formatter "yyyy-MM-dd HH:mm:ss"))
 (def custom-formatter-date (formatter "yyyy-MM-dd"))
 
+(defn data->options [data key text value]
+  (->> data
+    (map #(assoc % :value (get % value)
+                   :key (get % key)
+                   :text (get % text)))
+    (map #(select-keys % [:key :value :text]))))
+
+(defn get-data-dic-by-id [id]
+  (let [data-dices @(subscribe [:data-dices])]
+    (first (filter #(= id (:id %)) data-dices))))
 
 (defn to-date-time
   ([date]

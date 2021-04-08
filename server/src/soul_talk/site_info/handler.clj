@@ -9,9 +9,8 @@
 (defn update-site-info!
   [site-info]
   (let [id (:id site-info)
-        rs (db/update! site-info)
+        _ (db/update! site-info)
         site-info (db/get-by-id id)]
-    (log/debug "===" site-info)
     (utils/ok {:site-info site-info})))
 
 (defn get-site-info

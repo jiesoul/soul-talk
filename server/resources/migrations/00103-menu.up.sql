@@ -30,12 +30,5 @@ insert into menu (id, name, url, pid, note) VALUES (1302, '标签管理', '/tag'
 insert into menu (id, name, url, pid, note) VALUES (14, '文章管理', '', 0, '');
 insert into menu (id, name, url, pid, note) values (1401, '文章列表', '/article', 14, '');
 insert into menu (id, name, url, pid, note) values (1402, '文章标签管理', '/article/tag', 14, '');
-
-insert into menu (id, name, url, pid, note) VALUES (15, '收藏网站管理', '', 0, '');
-insert into menu (id, name, url, pid, note) values (1501, '收藏网站列表', '/collect-site', 15, '');
-insert into menu (id, name, url, pid, note) values (1502, '收藏网站标签管理', '/collect-site/tag', 15, '');
-
-insert into menu (id, name, url, pid, note) VALUES (16, '收藏链接管理', '', 0, '');
-insert into menu (id, name, url, pid, note) values (1601, '收藏链接列表', '/collect-link', 16, '');
-insert into menu (id, name, url, pid, note) values (1602, '收藏链接标签管理', '/collect-link/tag', 16, '');
+insert into menu (id, name, url, pid, note) values (1403, '文章评论管理', '/article/comment', 14, '');
 

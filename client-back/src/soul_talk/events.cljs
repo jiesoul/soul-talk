@@ -22,7 +22,9 @@
   (fn [cofx _]
     (let [user (get-in cofx [:local-store storage/login-user-key])
           db (:db cofx)]
-      {:db (merge db (assoc default-db :user (js->clj user :keywordize-keys true)))})))
+      {:db (merge db (assoc default-db :user (js->clj user :keywordize-keys true)))
+       :dispatch-n [[:site-info/load 1]
+                    [:data-dic/load-all]]})))
 
 ;; 设置当前页
 (reg-event-db

@@ -48,3 +48,6 @@
 (defn get-data-dic-by-id [id]
   (let [data-dic (db/get-data-dic-by-id id)]
     (utils/ok {:data-dic data-dic})))
+
+(defn load-all-data-dices [req]
+  (utils/ok {:data-dices (db/get-data-dic-all)}))

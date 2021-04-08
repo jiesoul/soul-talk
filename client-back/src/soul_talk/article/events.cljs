@@ -23,18 +23,23 @@
     (assoc db :article/delete-dialog value)))
 
 (reg-event-db
+  :article/set-query-params
+  (fn [db [_ params]]
+    (update-in db [:article/query-params] merge params)))
+
+(reg-event-db
   :article/load-page-ok
   (fn [db [_ {:keys [articles pagination query-params]}]]
     (assoc db :article/list articles
               :article/pagination pagination
-              :article/query-str query-params)))
+              :article/query-params query-params)))
 
 (reg-event-fx
   :article/load-page
-  (fn [_ [_ pagination]]
+  (fn [_ [_ params]]
     {:http {:method        GET
             :url           (str site-uri "/articles")
-            :ajax-map      {:params pagination}
+            :ajax-map      {:params params}
             :success-event [:article/load-page-ok]}}))
 
 (reg-event-db

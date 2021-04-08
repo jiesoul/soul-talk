@@ -6,7 +6,7 @@
 
 (defn edit-form []
   (let [site-info (rf/subscribe [:site-info])
-        {:keys [name logo author description]} @site-info]
+        {:keys [name logo author description tags]} @site-info]
     (if @site-info
       [c/form-layout
        [:> Form {:as "form"}
@@ -24,6 +24,10 @@
                         :label         "简介"
                         :default-value description
                         :on-change     #(rf/dispatch [:site-info/set-attr :description (-> % .-target .-value)])}]
+        [:> Form.Input {:name          "tags"
+                        :label         "标签"
+                        :default-value tags
+                        :on-change     #(rf/dispatch [:site-info/set-attr :tags (-> % .-target .-value)])}]
         [:> Form.Input {:name          "author"
                         :default-value author
                         :label         "作者"

@@ -5,12 +5,12 @@
 
 (defn save-app-key!
   [app-key]
-  (sql/insert! *db* :app_key app-key {:builder-fn rs-set/as-unqualified-maps}))
+  (sql/insert! *db* :app_key app-key))
 
 (defn auth-app-key
   [token]
   (let [sql-str (str "SELECT * FROM app_key " " WHERE token = ?")
-        tokens (sql/query *db* [sql-str token] {:builder-fn rs-set/as-unqualified-maps})]
+        tokens (sql/query *db* [sql-str token])]
     (some-> tokens
       first)))
 
@@ -19,7 +19,7 @@
 
 (defn update-app-key! [{:keys [id] :as app-key}]
   (sql/update! *db* :app_key 
-               (select-keys app-key [:token :valid])
+               (select-keys app-key [:token :is_valid :refresh_at])
                ["id = ? " id]))
 
 (defn delete-app-key!

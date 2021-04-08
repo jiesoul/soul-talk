@@ -23,6 +23,7 @@
       {:db               (assoc db :user user)
        :dispatch-n       (list
                            [:navigate-to "#/dash"]
+                           [:data-dic/load-all]
                            [:run-login-events])
        :set-user!        user})))
 

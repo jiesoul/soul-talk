@@ -182,6 +182,7 @@
 
 (defroute "/article/:id/edit" [id]
   (run-events-admin [[:set-breadcrumb ["文章管理" "添加文章"]]
+                     [:article/clear-edit]
                      [:article/load id]
                      [:set-active-page :article/edit]]))
 

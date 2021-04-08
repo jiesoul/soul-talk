@@ -93,18 +93,16 @@
        [:> Table.Row
         [:> Table.HeaderCell "序号"]
         [:> Table.HeaderCell "名称"]
-        [:> Table.HeaderCell "简介"]
         [:> Table.HeaderCell "创建时间"]
         [:> Table.HeaderCell "更新时间"]
         [:> Table.HeaderCell "操作"]]]
       [:> Table.Body
        (doall
-         (for [{:keys [id name description create_at update_at] :as tags} @tags]
+         (for [{:keys [id name create_at update_at] :as tags} @tags]
            ^{:key tags}
            [:> Table.Row
             [:> Table.Cell 1]
             [:> Table.Cell name]
-            [:> Table.Cell description]
             [:> Table.Cell (du/to-date-time create_at)]
             [:> Table.Cell (du/to-date-time update_at)]
             [:> Table.Cell

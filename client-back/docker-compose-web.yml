@@ -1,7 +1,7 @@
 version: '3'
 services:
   web:
-    image: jiesoul/soul-talk-web:0.1.5
+    image: jiesoul/soul-talk-web:latest
     ports:
       - "80:80"
       - "443:443"

@@ -3,7 +3,8 @@
             [next.jdbc.sql :as sql]
             [soul-talk.database.db :refer [*db*]]
             [next.jdbc.result-set :as rs-set]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [clojure.string :as str]))
 
 (defn insert-article! [article]
   (sql/insert! *db* :article article))
@@ -33,18 +34,18 @@
   (sql/query *db* ["select * from article order by create_at desc"] {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn gen-where [{:keys [title publish]}]
-  (let [where-str (str "where title like ?")
-        coll [(str "%" title "%")]
-        where-str (if (nil? publish) where-str (str where-str " and publish = ?"))
-        coll (if (nil? publish) coll (conj coll publish))]
+  (let [[where-str coll] [(str "where title like ?")
+                          [(str "%" title "%")]]
+        [where-str coll] (if (str/blank? publish)
+                           [where-str coll]
+                           [(str where-str " and publish = ?") (conj coll publish)])]
     [where-str coll]))
 
 (defn load-articles-page [{:keys [offset per-page]} params]
   (let [[where coll] (gen-where params)
         query-str (str "select * from article " where " order by create_at desc offset ? limit ?")
         articles (sql/query *db*
-                   (into [query-str] (conj coll offset per-page))
-                   {:builder-fn rs-set/as-unqualified-maps})
+                   (into [query-str] (conj coll offset per-page)))
         count-str (str "select count(1) as c from article " where)
         total (:c
                 (first
@@ -54,6 +55,9 @@
 
 (defn get-article-by-id [id]
   (sql/get-by-id *db* :article id))
+
+(defn get-article-tags-by-article-id [article-id]
+  (sql/query *db* ["select * from article_tag where article_id = ? " article-id]))
 
 (defn publish-article! [{:keys [id] :as article}]
   (sql/update! *db* :article
@@ -75,13 +79,13 @@
                 from
                   (select date_part('year', create_at) as year,
                     date_part('month', create_at) as month
-                    from article where publish = 1) t
+                    from article where publish = '1101') t
                 group by year,month"]
     {:builder-fn rs-set/as-unqualified-maps}))
 
 (defn get-article-archives-year-month [year month]
   (sql/query *db*
-    ["select * from article where publish = 1
+    ["select * from article where publish = '1101'
       and date_part('year', create_at) = ?
       and date_part('month', create_at) = ?
       order by create_at desc"
@@ -98,8 +102,7 @@
   (sql/insert-multi! *db*
     :article-tags
     [:article_id :tag_id]
-    (map #([(:article_id %) (:tag_id %)]) article-tags
-      {:builder-fn rs-set/as-unqualified-maps})))
+    (map #([(:article_id %) (:tag_id %)]) article-tags)))
 
 (defn get-article-tags-by-article-id [article-id]
   (sql/query *db*
