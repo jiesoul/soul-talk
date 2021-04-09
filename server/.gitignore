@@ -9,7 +9,6 @@ out/
 .lsp/
 
 # leiningen project
-env/prod/
 /target
 /classes
 pom.xml
@@ -21,4 +20,5 @@ pom.xml.asc
 /.nrepl-port
 soul-talk.iml
 log/
-
+/env/prod/
+./env/prod/resources/config.edn

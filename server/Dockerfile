@@ -1,5 +1,5 @@
 # 基础依赖
-FROM clojure
+FROM gcr.io/distroless/java:11
 # 个人信息
 MAINTAINER jiesoul <jiesoul@gmail.com>
 
