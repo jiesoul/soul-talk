@@ -53,8 +53,7 @@
 
   :main ^:skip-aot soul-talk.core
 
-  :plugins [[lein-ring "0.12.4"]
-            [io.sarnowski/lein-docker "1.1.0"]]
+  :plugins [[lein-ring "0.12.4"]]
 
   :ring {:handler soul-talk.handler/app}
 
@@ -84,6 +83,6 @@
                         [com.jakemccrary/lein-test-refresh "0.24.1"]
                         [org.clojure/test.check "1.1.0"]]
        :plugins        [[mvxcvi/whidbey "2.2.1"]
-                        [venantius/ultra "0.6.0"]
+                        ;[venantius/ultra "0.6.0"]
                         [com.jakemccrary/lein-test-refresh "0.24.1"]
                         [pjstadig/humane-test-output "0.10.0"]]}})

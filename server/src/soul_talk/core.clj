@@ -20,7 +20,7 @@
   :start ((or (:init defaults) identity))
   :stop  ((or (:stop defaults) identity)))
 
-(defn start-system []
+(defn start-system [conf]
   (log/info "total config: " conf)
   (-> #'app
       (jetty/run-jetty
@@ -30,7 +30,7 @@
 
 (defstate ^{:on-reload :noop}
   system
-  :start (start-system)
+  :start (start-system conf)
   :stop (.stop system))
 
 (defn stop-app []
@@ -39,8 +39,7 @@
   (shutdown-agents))
 
 (defn start-app [args]
-  (doseq [component (-> args
-                        (parse-opts cli-options)
+  (doseq [component (-> (parse-opts args cli-options)
                         mount/start-with-args
                         :started)])
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
