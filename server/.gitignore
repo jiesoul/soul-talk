@@ -20,5 +20,3 @@ pom.xml.asc
 /.nrepl-port
 soul-talk.iml
 log/
-/env/prod/
-./env/prod/resources/config.edn
