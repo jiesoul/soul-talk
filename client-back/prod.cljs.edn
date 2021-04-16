@@ -2,15 +2,15 @@
   :figwheel-core false}
 {:main            soul-talk.app
  :target          :bundle
- :output-dir "resources/public/js"
+ :output-dir      "resources/public/js"
  ;; 使用类 nix 系统请直接用 yarn
- :bundle-cmd      {:default ["yarn.cmd" "webpack" "--mode=production" :output-to
+ :bundle-cmd      {:default ["yarn" "webpack" "--mode=production" :output-to
                              "--output-path" :final-output-dir
                              "--output-filename" :final-output-filename]}
  :aot-cache       false
  :clean-outputs   true
  :optimizations   :simple
- :closure-defines {"goog.DEBUG"       false
-                   cljs.core/*global* "window"
-                   soul-talk.db/site-url "http://jiesoul.com:3000/"}
+ :closure-defines {"goog.DEBUG"             false
+                   cljs.core/*global*       "window"
+                   "soul-talk.db.site_url" "https://api.jiesoul.com"}
  }
