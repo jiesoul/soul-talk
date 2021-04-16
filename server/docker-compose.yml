@@ -10,7 +10,7 @@ services:
     # 存储 引用下面的
     volumes:
       - db-data:/var/lib/postgresql/data
-    # 端口 前面的表示暴露出的端口，可以在主机访问，后面是容器内的端口
+    # 端口 前面的表示映射到宿主机端口，后面是容器内的端口
     ports:
       - "5432:5432"
     # 环境变量配置 对应下面的数据库用户名、密码、数据库名称
@@ -29,6 +29,11 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: jdbc:postgresql://db/soul_talk?user=jiesoul&password=soul1982
+
+  # admin
+  
+
+  # home
 #存储
 volumes:
   db-data:
