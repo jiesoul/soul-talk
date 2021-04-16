@@ -41,7 +41,8 @@
 (defn start-app [args]
   (doseq [component (-> (parse-opts args cli-options)
                         mount/start-with-args
-                        :started)])
+                        :started)]
+    (log/info component " started"))
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]
