@@ -1,7 +1,7 @@
 (ns soul-talk.file.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db]]
             [ajax.core :refer [POST GET]]
-            [soul-talk.db :refer [site-uri]]))
+            [soul-talk.db :refer [api-url]]))
 
 (reg-event-fx
   :articles/upload-ok
@@ -23,7 +23,7 @@
                  (.append "file" files))]
       {:http
        {:method   POST
-        :url               (str site-uri "/articles/upload")
+        :url               (str api-url "/articles/upload")
         :ajax-map          {:body data}
         :success-event [:articles/upload-ok]
         :error-event [:articles/upload-error]}})))
@@ -47,7 +47,7 @@
                  (.append "file" files))]
       {:http
        {:method   POST
-        :url               (str site-uri "/admin/files/md")
+        :url               (str api-url "/admin/files/md")
         :ajax-map          {:body data}
         :success-event [:upload-md-file-ok]
         :error-event [:upload-md-file-error]}})))

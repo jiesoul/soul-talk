@@ -5,4 +5,4 @@
    :drawer-status true
    :login-events []})
 
-(goog-define site-uri "http://localhost:3000")
+(goog-define api-url "")

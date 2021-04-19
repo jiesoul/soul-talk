@@ -1,7 +1,7 @@
 (ns soul-talk.app-key.events
   (:require [re-frame.core :refer [reg-event-db reg-event-fx subscribe]]
             [ajax.core :refer [GET POST PATCH DELETE PUT]]
-            [soul-talk.db :refer [site-uri]]
+            [soul-talk.db :refer [api-url]]
             [soul-talk.routes :refer [navigate!]]
             [clojure.string :as str]))
 
@@ -26,7 +26,7 @@
   :app-key/load-page
   (fn [_ params]
     {:http {:method        GET
-            :url           (str site-uri "/app-keys")
+            :url           (str api-url "/app-keys")
             :ajax-map      {:params params}
             :success-event [:app-key/load-page-ok]}}))
 
@@ -39,7 +39,7 @@
  :app-key/gen
  (fn [_ _]
    {:http {:method GET
-           :url (str site-uri "/app-keys/gen")
+           :url (str api-url "/app-keys/gen")
            :success-event [:app-key/gen-ok]}}))
 
 (reg-event-db
@@ -51,7 +51,7 @@
   :app-key/load
   (fn [_ [_ id]]
     {:http {:method GET
-            :url (str site-uri "/app-keys/" id)
+            :url (str api-url "/app-keys/" id)
             :success-event [:app-key/load-ok]}}))
 
 (reg-event-db
@@ -75,7 +75,7 @@
     (if (str/blank? app_name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        POST
-              :url           (str site-uri "/app-keys")
+              :url           (str api-url "/app-keys")
               :ajax-map      {:params tag}
               :success-event [:set-success "保存成功"]}})))
 
@@ -90,7 +90,7 @@
     (if (str/blank? app_name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        PATCH
-              :url           (str site-uri "/app-keys")
+              :url           (str api-url "/app-keys")
               :ajax-map      {:params app-key}
               :success-event [:set-success "保存成功"]}})))
 
@@ -106,5 +106,5 @@
   :app-key/delete
   (fn [_ [_ id]]
     {:http {:method  DELETE
-            :url (str site-uri "/app-keys/" id)
+            :url (str api-url "/app-keys/" id)
             :success-event [:app-key/delete-ok id]}}))

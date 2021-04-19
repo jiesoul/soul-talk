@@ -1,7 +1,7 @@
 (ns soul-talk.article.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db subscribe ->interceptor] :as rf]
             [ajax.core :refer [POST GET DELETE PUT PATCH]]
-            [soul-talk.db :refer [site-uri]]
+            [soul-talk.db :refer [api-url]]
             [clojure.string :as str]))
 
 (reg-event-db
@@ -38,7 +38,7 @@
   :article/load-page
   (fn [_ [_ params]]
     {:http {:method        GET
-            :url           (str site-uri "/articles")
+            :url           (str api-url "/articles")
             :ajax-map      {:params params}
             :success-event [:article/load-page-ok]}}))
 
@@ -80,7 +80,7 @@
       (str/blank? title) {:dispatch [:set-error "名称不能为空"]}
       (str/blank? body) {:dispatch [:set-error "内容不能为空"]}
       :else {:http {:method        POST
-                    :url           (str site-uri "/articles")
+                    :url           (str api-url "/articles")
                     :ajax-map      {:params article}
                     :success-event [:article/save-ok]}})))
 
@@ -88,7 +88,7 @@
   :article/update
   (fn [_ [_ {:keys [id counter] :as article}]]
     {:http {:method        PATCH
-            :url           (str site-uri "/articles/" id)
+            :url           (str api-url "/articles/" id)
             :ajax-map      {:params article}
             :success-event [:set-success "更新成功"]}}))
 
@@ -101,7 +101,7 @@
   :article/load
   (fn [_ [_ id]]
     {:http {:method        GET
-            :url           (str site-uri "/articles/" id)
+            :url           (str api-url "/articles/" id)
             :success-event [:article/load-ok]}}))
 
 (reg-event-db
@@ -115,7 +115,7 @@
   :article/delete
   (fn [_ [_ id]]
     {:http {:method        DELETE
-            :url           (str site-uri "/articles/" id)
+            :url           (str api-url "/articles/" id)
             :success-event [:article/delete-ok id]}}))
 
 (reg-event-db
@@ -128,6 +128,6 @@
   (fn [_ [_ id]]
     (js/console.log "doing publish article")
     {:http {:method PATCH
-            :url (str site-uri "/articles/" id "/publish")
+            :url (str api-url "/articles/" id "/publish")
             :success-event [:article/publish-ok]}}))
 

@@ -2,7 +2,7 @@
   (:require [re-frame.core :as rf :refer [reg-event-db reg-event-fx]]
             [ajax.core :refer [GET POST DELETE PUT PATCH]]
             [clojure.string :as str]
-            [soul-talk.db :refer [site-uri]]))
+            [soul-talk.db :refer [api-url]]))
 
 (rf/reg-event-db
   :menu/load-all-ok
@@ -13,7 +13,7 @@
   :menu/load-all
   (fn []
     {:http {:method GET
-            :url (str site-uri "/menus/all")
+            :url (str api-url "/menus/all")
             :success-event [:menu/load-all-ok]}}))
 
 (rf/reg-event-db
@@ -25,7 +25,7 @@
   :menu/load-menus
   (fn [_ [_ ids]]
     {:http {:method GET
-            :url (str site-uri "/menus?ids=" ids)
+            :url (str api-url "/menus?ids=" ids)
             :success-event [:menu/load-menus-ok]}}))
 
 (reg-event-db
@@ -47,7 +47,7 @@
   :menu/load-page
   (fn [_ [_ params]]
     {:http {:method        GET
-            :url           (str site-uri "/menus")
+            :url           (str api-url "/menus")
             :ajax-map      {:params params}
             :success-event [:menu/load-page-ok]}}))
 
@@ -60,7 +60,7 @@
   :menu/load-menu
   (fn [_ [_ id]]
     {:http {:method GET
-            :url (str site-uri "/menus/" id)
+            :url (str api-url "/menus/" id)
             :success-event [:menu/load-menu-ok]}}))
 
 (reg-event-db
@@ -72,7 +72,7 @@
   :menu/save
   (fn [_ [_ menu]]
     {:http {:method        POST
-            :url           (str site-uri "/menus")
+            :url           (str api-url "/menus")
             :ajax-map      {:params menu}
             :success-event [:set-success "保存成功"]}}))
 
@@ -80,7 +80,7 @@
   :menu/update
   (fn [_ [_ menu]]
     {:http {:method        PATCH
-            :url           (str site-uri "/menus")
+            :url           (str api-url "/menus")
             :ajax-map      {:params menu}
             :success-event [:set-success "保存成功"]}}))
 
@@ -96,7 +96,7 @@
   :menu/delete
   (fn [_ [_ id]]
     {:http {:method  DELETE
-            :url (str site-uri "/menus/" id)
+            :url (str api-url "/menus/" id)
             :success-event [:menu/delete-ok id]}}))
 
 (reg-event-db

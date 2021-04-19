@@ -1,7 +1,7 @@
 (ns soul-talk.user.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db reg-fx]]
             [ajax.core :refer [GET POST PUT PATCH DELETE]]
-            [soul-talk.db :refer [site-uri]]
+            [soul-talk.db :refer [api-url]]
             [soul-talk.common.local-storage :as storage]
             [clojure.string :as str]))
 
@@ -39,7 +39,7 @@
   :user/load-roles
   (fn [_ [_ id]]
     {:http {:method        GET
-            :url           (str site-uri "/users/" id "/roles")
+            :url           (str api-url "/users/" id "/roles")
             :success-event [:user/load-roles-ok]}}))
 
 (reg-event-db
@@ -51,7 +51,7 @@
   :user/load-all
   (fn [_ _]
     {:http {:method        GET
-            :url           (str site-uri "/users")
+            :url           (str api-url "/users")
             :success-event [:user/load-all-ok]}}))
 
 (reg-event-db
@@ -63,7 +63,7 @@
   :user/load-user
   (fn [_ [_ id]]
     {:http {:method GET
-            :url (str site-uri "/users/" id)
+            :url (str api-url "/users/" id)
             :success-event [:user/load-user-ok]}}))
 
 (reg-event-fx
@@ -78,7 +78,7 @@
          (if (not= new-password confirm-password)
            {:dispatch [:set-error "新密码和确认密码必须一样"]}
            {:http {:method        PATCH
-                   :url           (str site-uri "/users/" id "/password")
+                   :url           (str api-url "/users/" id "/password")
                    :ajax-map      {:params params}
                    :success-event [:set-success "修改密码成功"]}}))))))
 
@@ -96,7 +96,7 @@
   :user/user-profile
   (fn [_ [_ {:keys [id] :as user}]]
     {:http {:method        PATCH
-            :url           (str site-uri "/users/" id "")
+            :url           (str api-url "/users/" id "")
             :ajax-map      {:params user}
             :success-event [:set-success "保存信息成功"]}}))
 
@@ -116,7 +116,7 @@
   :user/load-page
   (fn [_ [_ params]]
     {:http {:method GET
-            :url (str site-uri "/users")
+            :url (str api-url "/users")
             :ajax-map {:params params}
             :success-event [:user/load-page-ok]}}))
 
@@ -140,6 +140,6 @@
   :user/load-auth-key-page
   (fn [_ [_ params]]
     {:http {:method        GET
-            :url           (str site-uri "/users/auth-keys")
+            :url           (str api-url "/users/auth-keys")
             :ajax-map      {:params params}
             :success-event [:user/load-auth-key-page-ok]}}))

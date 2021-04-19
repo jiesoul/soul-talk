@@ -1,5 +1,5 @@
 (ns soul-talk.auth.events
-  (:require [soul-talk.db :refer [site-uri] :as db]
+  (:require [soul-talk.db :refer [api-url] :as db]
             [re-frame.core :refer [reg-event-fx reg-event-db dispatch inject-cofx reg-fx]]
             [ajax.core :refer [POST GET DELETE PUT]]
             [soul-talk.common.local-storage :refer [login-user-key login-token-key]]
@@ -37,7 +37,7 @@
   :login
   (fn [_ [_ login-user]]
     {:http {:method        POST
-            :url           (str site-uri "/login")
+            :url           (str api-url "/login")
             :ajax-map      {:params login-user}
             :success-event [:login-ok]}}))
 
@@ -56,7 +56,7 @@
   :logout
   (fn [_ {:keys [id]}]
     {:http {:method               POST
-            :url                  (str site-uri "/logout")
+            :url                  (str api-url "/logout")
             :ignore-response-body true
             :ajax-map {:params {:user_id id}}
             :success-event        [:logout-ok]}}))

@@ -1,7 +1,7 @@
 (ns soul-talk.dash.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db]]
             [ajax.core :refer [POST GET]]
-            [soul-talk.db :refer [site-uri]]))
+            [soul-talk.db :refer [api-url]]))
 
 (reg-event-db
   :set-dashboard
@@ -12,7 +12,7 @@
   :load-dashboard
   (fn [_ _]
     {:http {:method        GET
-            :url           (str site-uri "/dashboard")
+            :url           (str api-url "/dashboard")
             :success-event [:set-dashboard]}}))
 
 (reg-event-db

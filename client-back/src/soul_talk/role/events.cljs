@@ -1,6 +1,6 @@
 (ns soul-talk.role.events
   (:require [re-frame.core :as rf :refer [reg-event-fx reg-event-db]]
-            [soul-talk.db :refer [site-uri]]
+            [soul-talk.db :refer [api-url]]
             [ajax.core :refer [GET POST PATCH DELETE]]
             [soul-talk.utils :as utils]))
 
@@ -39,7 +39,7 @@
   :role/load-page
   (fn [_ [_ params]]
     {:http {:method GET
-            :url (str site-uri "/roles")
+            :url (str api-url "/roles")
             :ajax-map {:params params}
             :success-event [:role/load-page-ok]}}))
 
@@ -78,7 +78,7 @@
   :role/save
   (fn [_ [_ role]]
     {:http {:method        POST
-            :url           (str site-uri "/roles")
+            :url           (str api-url "/roles")
             :ajax-map      {:params role}
             :success-event [:set-success "保存成功"]}}))
 
@@ -91,14 +91,14 @@
   :role/load-role
   (fn [_ [_ id]]
     {:http {:method GET
-            :url (str site-uri "/roles/" id)
+            :url (str api-url "/roles/" id)
             :success-event [:role/load-role-ok]}}))
 
 (reg-event-fx
   :role/update
   (fn [_ [_ role]]
     {:http {:method        PATCH
-            :url           (str site-uri "/roles")
+            :url           (str api-url "/roles")
             :ajax-map      {:params role}
             :success-event [:set-success "保存成功"]}}))
 
@@ -114,7 +114,7 @@
   :role/delete
   (fn [_ [_ id]]
     {:http {:method  DELETE
-            :url (str site-uri "/roles/" id)
+            :url (str api-url "/roles/" id)
             :success-event [:role/delete-ok id]}}))
 
 (reg-event-db
@@ -126,7 +126,7 @@
   :role/load-role-menus
   (fn [_ [_ id]]
     {:http {:method GET
-            :url (str site-uri "/roles/" id "/menus")
+            :url (str api-url "/roles/" id "/menus")
             :success-event [:role/load-role-menus-ok]}}))
 
 (rf/reg-event-fx
@@ -140,7 +140,7 @@
   :role/load-menus
   (fn [_ [_ ids]]
     {:http {:method        GET
-            :url           (str site-uri "/roles/menus")
+            :url           (str api-url "/roles/menus")
             :ajax-map      {:params {:ids ids}}
             :success-event [:role/load-menus-ok]}}))
 

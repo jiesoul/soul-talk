@@ -2,7 +2,7 @@
   (:require [re-frame.core :refer [reg-event-fx reg-event-db]]
             [ajax.core :refer [GET POST DELETE PUT PATCH]]
             [clojure.string :as str]
-            [soul-talk.db :refer [site-uri]]))
+            [soul-talk.db :refer [api-url]]))
 
 (reg-event-db
   :tag/init
@@ -25,7 +25,7 @@
   :tag/load-page
   (fn [_ params]
     {:http {:method        GET
-            :url           (str site-uri "/tags")
+            :url           (str api-url "/tags")
             :ajax-map      {:params params}
             :success-event [:tag/load-page-ok]}}))
 
@@ -45,7 +45,7 @@
     (if (str/blank? name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        POST
-              :url           (str site-uri "/tags")
+              :url           (str api-url "/tags")
               :ajax-map      {:params tag}
               :success-event [:set-success "保存成功"]}})))
 
@@ -58,7 +58,7 @@
   :tag/load
   (fn [_ [_ id]]
     {:http {:method GET
-            :url (str site-uri "/tags/" id)
+            :url (str api-url "/tags/" id)
             :success-event [:tag/load-ok]}}))
 
 (reg-event-fx
@@ -67,7 +67,7 @@
     (if (str/blank? name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        PATCH
-              :url           (str site-uri "/tags/" id)
+              :url           (str api-url "/tags/" id)
               :ajax-map      {:params tag}
               :success-event [:set-success "保存成功"]}})))
 
@@ -83,5 +83,5 @@
   :tag/delete
   (fn [_ [_ id]]
     {:http {:method  DELETE
-            :url (str site-uri "/tags/" id)
+            :url (str api-url "/tags/" id)
             :success-event [:tag/delete-ok id]}}))

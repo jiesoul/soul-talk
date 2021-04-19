@@ -2,7 +2,7 @@
   (:require [re-frame.core :refer [reg-event-fx reg-event-db]]
             [ajax.core :refer [GET POST DELETE PUT PATCH]]
             [clojure.string :as str]
-            [soul-talk.db :refer [site-uri]]))
+            [soul-talk.db :refer [api-url]]))
 
 (reg-event-db
   :data-dic/init
@@ -35,7 +35,7 @@
   :data-dic/load-page
   (fn [_ [_ params]]
     {:http {:method        GET
-            :url           (str site-uri "/data-dices")
+            :url           (str api-url "/data-dices")
             :ajax-map      {:params params}
             :success-event [:data-dic/load-page-ok]}}))
 
@@ -48,7 +48,7 @@
   :data-dic/load-all
   (fn [_ [_ id]]
     {:http {:method GET
-            :url (str site-uri "/data-dices/all")
+            :url (str api-url "/data-dices/all")
             :success-event [:data-dic/load-all-ok]}}))
 
 (reg-event-db
@@ -60,7 +60,7 @@
   :data-dic/load-data-dic
   (fn [_ [_ id]]
     {:http {:method GET
-            :url (str site-uri "/data-dices/" id)
+            :url (str api-url "/data-dices/" id)
             :success-event [:data-dic/load-data-dic-ok]}}))
 
 (reg-event-db
@@ -77,7 +77,7 @@
   :data-dic/save
   (fn [_ [_ data-dic]]
     {:http {:method        POST
-            :url           (str site-uri "/data-dices")
+            :url           (str api-url "/data-dices")
             :ajax-map      {:params data-dic}
             :success-event [:set-success "保存成功"]}}))
 
@@ -85,7 +85,7 @@
   :data-dic/update
   (fn [_ [_ data-dic]]
     {:http {:method        PATCH
-            :url           (str site-uri "/data-dices")
+            :url           (str api-url "/data-dices")
             :ajax-map      {:params data-dic}
             :success-event [:set-success "保存成功"]}}))
 
@@ -101,6 +101,6 @@
   :data-dic/delete
   (fn [_ [_ id]]
     {:http {:method  DELETE
-            :url (str site-uri "/data-dices/" id)
+            :url (str api-url "/data-dices/" id)
             :success-event [:data-dic/delete-ok id]}}))
 
