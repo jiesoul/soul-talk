@@ -40,3 +40,19 @@ java -jar target/soul-talk.jar migrate
 # 执行
 java -jar target/soul-talk.jar
  ```
+
+
+Docker Jenkins Issue
+Make a new file if not existing..
+
+# vim /etc/default/docker
+ExecStart=/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:2375
+Edit service file
+
+# vim /lib/systemd/system/docker.service
+ExecStart=/usr/bin/dockerd -H fd://                <--- before
+ExecStart=/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:2375    <--- After
+Add additional hosts for Jenkins. and reload & restart docker service
+
+# systemctl daemon-reload
+# systemctl restart docker

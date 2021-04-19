@@ -12,5 +12,5 @@
  :optimizations   :simple
  :closure-defines {"goog.DEBUG"             false
                    cljs.core/*global*       "window"
-                   "soul-talk.db.site_url" "https://api.jiesoul.com"}
+                   "soul_talk.db.site_url" "https://api.jiesoul.com"}
  }

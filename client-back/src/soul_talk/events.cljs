@@ -1,7 +1,6 @@
 (ns soul-talk.events
   (:require [re-frame.core :refer [inject-cofx dispatch dispatch-sync reg-event-db reg-event-fx subscribe]]
             [soul-talk.db :refer [default-db]]
-            ["react-toastify" :refer [toast]]
             [soul-talk.common.local-storage :as storage]
             [soul-talk.site-info.events]
             [soul-talk.auth.events]

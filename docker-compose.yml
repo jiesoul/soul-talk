@@ -1,0 +1,45 @@
+# 配置文件版本
+version: '3'
+
+# 服务
+services:
+  # 数据
+  db:
+    # 镜像
+    image: postgres
+    # 存储 引用下面的
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    # 端口 前面的表示映射到宿主机端口，后面是容器内的端口
+    ports:
+      - "5432:5432"
+    # 环境变量配置 对应下面的数据库用户名、密码、数据库名称
+    environment:
+      POSTGRES_USER: jiesoul
+      POSTGRES_PASSWORD: soul1982
+      POSTGRES_DB: soul_talk
+
+  # api
+  api:
+    # 应用依赖上面的数据库服务
+    depends_on:
+      - db
+    image: jiesoul/soul-talk-api:latest
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: jdbc:postgresql://db/soul_talk?user=jiesoul&password=soul1982
+
+  # admin
+  admin:
+    depends_on:
+      - api
+    image: jiesoul/soul-talk-admin:latest
+    ports:
+      - "8090:80"
+
+  # home
+
+#存储
+volumes:
+  db-data:

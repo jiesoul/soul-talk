@@ -1,4 +1,8 @@
 #!/bin/sh
 
-java -jar /app/soul-talk.jar migrate
-exec java -jar /app/soul-talk.jar "$@"
+if [ "$1" = 'soul-talk-api' ] ; then
+    java -jar /app/soul-talk.jar migrate
+    exec java -jar /app/soul-talk.jar "$@"
+fi
+
+exec "$@"

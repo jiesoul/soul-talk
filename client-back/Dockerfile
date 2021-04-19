@@ -24,7 +24,8 @@ RUN apt-get install -y curl
 # install node yarn
 #RUN curl -fsSL https://deb.nodesource.com/setup_15.x | bash -
 RUN apt-get install -y nodejs
-RUN apt-get install -y yarn
+RUN curl -qL https://www.npmjs.com/install.sh | sh
+RUN npm install -g yarn
 
 RUN ls -a .
 
@@ -36,7 +37,7 @@ RUN yarn install
 RUN clj -A:prod
 
 
-FROM nginx
+FROM nginx:alpine
 
 LABEL creater="jiesoul" description="网站后台管理" version="1.0"
 
