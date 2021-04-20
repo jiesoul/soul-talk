@@ -47,7 +47,7 @@ RUN mkdir /app
 
 COPY --from=build  /code/resources/public/ /app/
 
-ADD /admin.jiesoul.com.conf /etc/nginx/conf.d/
+ADD admin.jiesoul.com.conf /etc/nginx/conf.d/
 
 EXPOSE 8080
 

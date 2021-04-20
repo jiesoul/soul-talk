@@ -8,7 +8,7 @@ target
 .rebel_readline_history
 .nrepl-port
 node_modules/
-client-back.iml
+soul-talk-admin.iml
 yarn*
 .calva/
 resources/public/js/
