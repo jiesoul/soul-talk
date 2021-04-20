@@ -18,5 +18,5 @@ pom.xml.asc
 .lein*
 /.lein-*
 /.nrepl-port
-soul-talk.iml
+soul-talk-api.iml
 log/
