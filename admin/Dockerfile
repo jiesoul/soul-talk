@@ -7,7 +7,6 @@ RUN mkdir /code
 # copy files
 COPY package.json /code
 COPY env /code/env
-COPY resources /code/resource
 COPY src /code/src
 COPY deps.edn /code
 COPY prod.cljs.edn /code
@@ -18,16 +17,9 @@ WORKDIR /code
 # update
 RUN apt update
 
-# curl
-RUN apt-get install -y curl
-
 # install node yarn
-#RUN curl -fsSL https://deb.nodesource.com/setup_15.x | bash -
-RUN apt-get install -y nodejs
-RUN curl -qL https://www.npmjs.com/install.sh | sh
+RUN apt-get install -y nodejs npm
 RUN npm install -g yarn
-
-RUN ls -a .
 
 # node build
 #RUN npm install
@@ -37,19 +29,20 @@ RUN yarn install
 RUN clj -A:prod
 
 
-FROM nginx:alpine
-
-LABEL creater="jiesoul" description="网站后台管理" version="1.0"
+FROM nginx
 
 MAINTAINER jiesoul <jiesoul@gmail.com>
 
-RUN mkdir /app
+WORKDIR /app
 
-COPY --from=build  /code/resources/public/ /app/
+COPY resources/public/css /app/css
+COPY resources/public/images /app/images
+COPY resources/public/index.html /app/index.html
+COPY --from=build  /code/js/main_bundle.js /app/js/main_bundle.js
 
-ADD admin.jiesoul.com.conf /etc/nginx/conf.d/
+COPY admin.jiesoul.com.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 8080
+EXPOSE 80
 
 
 

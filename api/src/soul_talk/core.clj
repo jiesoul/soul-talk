@@ -39,11 +39,13 @@
   (shutdown-agents))
 
 (defn start-app [args]
-  (doseq [component (-> (parse-opts args cli-options)
+  (do
+    (doseq [component (-> (parse-opts args cli-options)
                         mount/start-with-args
                         :started)]
-    (log/info component " started"))
-  (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
+      (log/info component " started"))
+    (migrations/migrate ["migrate"])
+    (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app))))
 
 (defn -main [& args]
   (cond

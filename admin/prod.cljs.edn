@@ -2,7 +2,7 @@
   :figwheel-core false}
 {:main            soul-talk.app
  :target          :bundle
- :output-dir      "resources/public/js"
+ :output-dir      "js"
  ;; 使用类 nix 系统请直接用 yarn
  :bundle-cmd      {:default ["yarn" "webpack" "--mode=production" :output-to
                              "--output-path" :final-output-dir
