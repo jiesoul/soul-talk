@@ -6,7 +6,7 @@ services:
   # 数据
   db:
     # 镜像
-    image: postgres
+    image: postgres:latest
     # 存储 引用下面的
     volumes:
       - db-data:/var/lib/postgresql/data
@@ -36,7 +36,7 @@ services:
       - api
     image: jiesoul/soul-talk-admin:latest
     ports:
-      - "8090:80"
+      - "8081:80"
 
   # home
 

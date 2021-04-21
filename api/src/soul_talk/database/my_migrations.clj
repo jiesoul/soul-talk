@@ -22,7 +22,7 @@
     opts - map of options specifying the database configuration.
     :database-url database url
     :migration-dir migration file directory"
-  [args & opts]
+  [args opts]
   (when-not (migrations? args)
     (throw
       (IllegalArgumentException.

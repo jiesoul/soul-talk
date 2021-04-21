@@ -1,7 +1,7 @@
 ;; 服务商配置文件 使用 leiningen 作用运行
-(defproject soul-talk "0.1.6"
-  :description "self site"
-  :url "http://github.com/jiesoul/soul-talk"
+(defproject soul-talk-api "0.2"
+  :description "self site api"
+  :url "http://github.com/jiesoul/soul-talk/api"
 
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/spec.alpha "0.2.187"]
@@ -53,15 +53,11 @@
 
   :main ^:skip-aot soul-talk.core
 
-  :plugins [[lein-ring "0.12.4"]]
-
   :ring {:handler soul-talk.handler/app}
 
   :source-paths ["src"]
   :resource-paths ["resources"]
   :test-paths ["test"]
-
-  :docker {:image-name "jiesoul/soul-talk"}
 
 :profiles
 {:uberjar
@@ -83,6 +79,6 @@
                         [com.jakemccrary/lein-test-refresh "0.24.1"]
                         [org.clojure/test.check "1.1.0"]]
        :plugins        [[mvxcvi/whidbey "2.2.1"]
-                        ;[venantius/ultra "0.6.0"]
+                        [lein-ring "0.12.4"]
                         [com.jakemccrary/lein-test-refresh "0.24.1"]
                         [pjstadig/humane-test-output "0.10.0"]]}})
