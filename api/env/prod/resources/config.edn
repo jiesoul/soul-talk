@@ -1,4 +1,4 @@
 {:production true
  :port 3000
- :database-url "jdbc:postgresql://127.0.0.1:5432/soul_talk?user=jiesoul&password=soul1982"
+ :database-url "jdbc:postgresql://172.17.0.1:5432/soul_talk?user=jiesoul&password=soul1982"
  :migrations "migrations"}
