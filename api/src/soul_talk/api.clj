@@ -18,7 +18,7 @@
   (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
 (def swagger-config
-  {:ui      "/api/v1/api-docs"
+  {:ui      "/v1/api-docs"
    :spec    "/swagger.json"
    :options {:ui {:validatorUrl nil}}
    :securityDefinitions {:apiAuth {:type "apiKey"
@@ -50,7 +50,7 @@
     (context "" []
       :tags ["api version 1"]
 
-      (context "/api/v1" []
+      (context "/v1" []
         site-info/api-routes
         data-dic/api-routes
         tag/public-routes

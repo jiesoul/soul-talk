@@ -7,6 +7,7 @@ services:
   db:
     # 镜像
     image: postgres:latest
+    container_name: postgres_dc
     # 存储 引用下面的
     volumes:
       - db-data:/var/lib/postgresql/data
