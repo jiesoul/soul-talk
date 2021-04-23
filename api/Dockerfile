@@ -6,7 +6,7 @@ COPY src /code/src
 COPY project.clj /code
 
 WORKDIR /code
-RUN lein uberjar
+RUN lein ring uberjar
 
 
 # 基础依赖

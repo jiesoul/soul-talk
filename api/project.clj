@@ -52,18 +52,21 @@
                  [cprop "0.1.13"]]
 
   :main ^:skip-aot soul-talk.core
-
+  :plugins [[lein-ring "0.12.5"]]
   :ring {:handler soul-talk.handler/app}
 
   :source-paths ["src"]
   :resource-paths ["resources"]
   :test-paths ["test"]
+  :injections [(:require 'clojure.pprint)]
+  :clean-targets [:target-path]
 
 :profiles
 {:uberjar
       {:omit-source    true
        :aot            :all
        :uberjar-name   "soul-talk.jar"
+       :jar-exclusions [#"(?:^|/).git/"]
        :source-paths   ["env/prod/clj"]
        :resource-paths ["env/prod/resources"]}
 
@@ -79,6 +82,5 @@
                         [com.jakemccrary/lein-test-refresh "0.24.1"]
                         [org.clojure/test.check "1.1.0"]]
        :plugins        [[mvxcvi/whidbey "2.2.1"]
-                        [lein-ring "0.12.4"]
                         [com.jakemccrary/lein-test-refresh "0.24.1"]
                         [pjstadig/humane-test-output "0.10.0"]]}})

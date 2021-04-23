@@ -1,13 +1,13 @@
 (ns soul-talk.core
   (:require [ring.adapter.jetty :as jetty]
             [soul-talk.handler :refer [app]]
-            [mount.core :as mount :refer [args defstate]]
             [soul-talk.env :refer [defaults]]
             [soul-talk.config :refer [conf]]
             [clojure.tools.cli :refer [parse-opts]]
             [cprop.core :refer [load-config]]
             [soul-talk.database.my-migrations :as migrations]
-            [taoensso.timbre :as log])
+            [taoensso.timbre :as log]
+            [mount.core :as mount :refer [args defstate]])
   (:gen-class))
 
 (def cli-options

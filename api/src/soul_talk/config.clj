@@ -1,6 +1,8 @@
 (ns soul-talk.config
-  (:require [mount.core :refer [args defstate]]
-            [cprop.core :refer [load-config]]))
+  (:require [cprop.core :refer [load-config]]
+            [cprop.source :refer [from-env]]
+            [mount.core :refer [args defstate]]))
 
 (defstate conf :start (load-config :resources "config.edn"
-                        :merge [(args)]))
+                        :merge [(from-env)
+                                (args)]))
