@@ -4,10 +4,10 @@
             [soul-talk.config :refer [conf]]
             [soul-talk.database.db :refer [*db*]]
             [soul-talk.core]
-            [mount.core :as mount]
             [mount-up.core :as mu]
             [soul-talk.database.my-migrations :as my-migrations]
-            [com.jakemccrary.test-refresh :as test-refresh]))
+            [com.jakemccrary.test-refresh :as test-refresh]
+            [mount.core :as mount]))
 
 (mu/on-upndown :info mu/log :before)
 

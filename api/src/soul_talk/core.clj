@@ -47,11 +47,6 @@
     (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app))))
 
 (defn -main [& args]
-  (cond
-    (some #{"migrate" "rollback"} args)
-    (do
-      (mount/start #'soul-talk.config/conf)
-      (migrations/migrate args (select-keys conf [:database-url :migrations]))
-      (System/exit 0))
-    :else
-    (start-app args)))
+  (start-app args)
+  (when (some #{"migrate" "rollback"} args)
+    (migrations/migrate args (select-keys conf [:database-url :migrations]))))

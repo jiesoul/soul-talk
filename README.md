@@ -2,11 +2,23 @@
 
 A Clojure library designed to ... well, that part is up to you.
 
-* server 网站服务端
-* client-back 网站管理后台
-* client 网站前端
+* api 网站api 服务
+* admin 网站管理后台
+* home 网站前端
 
 ## Usage
+
+```bash
+docker build -t api:latest ./api
+
+docker build -t admin:latest ./admin
+
+docker build -t home:latest ./home
+
+docker swarn init
+
+docker stack deploy -c docker-compose.yml soultalk
+```
 
 FIXME
 
