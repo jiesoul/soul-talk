@@ -1,5 +1,6 @@
 (ns soul-talk.core
   (:require [ring.adapter.jetty :as jetty]
+            ;[clojure.tools.nrepl.server :refer [start-server stop-server]]
             [soul-talk.handler :refer [app]]
             [soul-talk.env :refer [defaults]]
             [soul-talk.config :refer [conf]]
@@ -9,6 +10,17 @@
             [taoensso.timbre :as log]
             [mount.core :as mount :refer [args defstate]])
   (:gen-class))
+
+;;; example on creating a network REPL
+;(defn- start-nrepl [{:keys [host port]}]
+;  (start-server :bind host :port port))
+;
+;;; nREPL is just another simple state
+;(defstate nrepl :start (start-nrepl (:nrepl conf))
+;  :stop (stop-server nrepl))
+
+(defn update-db [conf]
+  (migrations/migrate ["migrate"] (select-keys conf [:database-url :migrations])))
 
 (def cli-options
   [["-p" "--port PORT" "Port number"
@@ -22,16 +34,15 @@
 
 (defn start-system [conf]
   (log/info "total config: " conf)
+  (update-db conf)
   (-> #'app
       (jetty/run-jetty
         (-> conf
           (update :port #(or (-> conf :options :port) %))
           (assoc :join? false)))))
 
-(defstate ^{:on-reload :noop}
-  system
-  :start (start-system conf)
-  :stop (.stop system))
+(defstate system  :start (start-system conf)
+                  :stop (.stop system))
 
 (defn stop-app []
   (doseq [component (:stopped (mount/stop))]
@@ -47,6 +58,4 @@
     (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app))))
 
 (defn -main [& args]
-  (start-app args)
-  (when (some #{"migrate" "rollback"} args)
-    (migrations/migrate args (select-keys conf [:database-url :migrations]))))
+  (start-app args))

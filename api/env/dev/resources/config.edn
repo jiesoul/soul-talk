@@ -1,4 +1,6 @@
-{:dev true
- :port 3001
+{:dev          true
+ :port         3001
  :database-url "jdbc:postgresql://localhost:5433/soul_talk_dev?user=jiesoul&password=12345678"
- :migrations "migrations"}
+ :migrations   "migrations"
+ :nrepl        {:host "0.0.0.0"
+                :port 7878}}

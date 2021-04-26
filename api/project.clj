@@ -51,9 +51,6 @@
                  [cheshire "5.10.0"]
                  [cprop "0.1.13"]]
 
-  :main ^:skip-aot soul-talk.core
-  :plugins [[lein-ring "0.12.5"]]
-  :ring {:handler soul-talk.handler/app}
 
   :source-paths ["src"]
   :resource-paths ["resources"]
@@ -61,10 +58,13 @@
   :injections [(:require 'clojure.pprint)]
   :clean-targets [:target-path]
 
+  :main ^:skip-aot soul-talk.core
+
 :profiles
 {:uberjar
       {:omit-source    true
        :aot            :all
+       :main soul-talk.core
        :uberjar-name   "soul-talk.jar"
        :jar-exclusions [#"(?:^|/).git/"]
        :source-paths   ["env/prod/clj"]

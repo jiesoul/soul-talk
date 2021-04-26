@@ -1,11 +1,13 @@
 # builder
-FROM clojure:openjdk-11-lein-slim-buster AS build
+FROM clojure AS build
+RUN mkdir -p /code
+WORKDIR /code
+COPY project.clj /code
+RUN lein deps
+
 COPY env /code/env
 COPY resources /code/resource
 COPY src /code/src
-COPY project.clj /code
-
-WORKDIR /code
 RUN lein uberjar
 
 
@@ -29,4 +31,4 @@ EXPOSE 3000
 # 入口
 ENTRYPOINT [ "/app/entrypoint.sh" ]
 # 运行命令
-CMD [ "soul-talk-api" ]
+CMD [ "soul-talk-api"]

@@ -18,7 +18,7 @@
   (contains? (set (keys migrations)) args))
 
 (defn migrate
-  "args - vector of arguments e.g: [\"migrate\" \"001\"]
+    "args - vector of arguments e.g: [\"migrate\" \"001\"]
     opts - map of options specifying the database configuration.
     :database-url database url
     :migration-dir migration file directory"
