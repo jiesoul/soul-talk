@@ -1,4 +1,4 @@
-(ns soul-talk.common.interceptors
+(ns soul-talk.interceptors
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
             [ajax.core :as ajax]))

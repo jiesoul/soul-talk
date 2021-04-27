@@ -1,15 +1,15 @@
 (ns soul-talk.core
   (:require [reagent.core :as r]
             [reagent.dom :as rd]
-            [soul-talk.common.interceptors :refer [load-interceptors!]]
+            [soul-talk.interceptors :refer [load-interceptors!]]
             [soul-talk.routes :refer [hook-browser-navigation! logged-in? navigate!]]
             [re-frame.core :refer [dispatch-sync dispatch]]
             ;;初始化处理器和订阅器
-            [soul-talk.common.coeffects]
-            [soul-talk.common.effects]
-            [soul-talk.routes]
+            [soul-talk.coeffects]
+            [soul-talk.effects]
             [soul-talk.subs]
             [soul-talk.events]
+            [soul-talk.routes]
             [soul-talk.views]))
 
 (set! *warn-on-infer* true)

@@ -141,4 +141,5 @@
        [c/lading]
        [c/success-portal]
        [c/error-portal]
+       [c/confirm]
        (pages @active-page)])))

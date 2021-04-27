@@ -1,6 +1,6 @@
 (ns soul-talk.subs
   (:require [re-frame.core :refer [reg-sub]]
-            [soul-talk.common.effects :refer [query]]
+            [soul-talk.effects :refer [query]]
             [soul-talk.site-info.subs]
             [soul-talk.auth.subs]
             [soul-talk.user.subs]
@@ -24,9 +24,19 @@
   (fn [db _]
     (not (empty? db))))
 
-(reg-sub :api-url query)
-
 (reg-sub :active-page query)
+
+(reg-sub :query-params query)
+
+(reg-sub :pagination query)
+
+(reg-sub :data-list query)
+
+(reg-sub :editing query)
+
+(reg-sub :modal query)
+
+(reg-sub :confirm query)
 
 (reg-sub :error query)
 

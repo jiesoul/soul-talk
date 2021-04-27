@@ -68,7 +68,6 @@
         tags (subscribe [:tag/list])
         tag-options (utils/data->options @tags :id :name :id)
         _ (dispatch [:article/set-attr {:update_by user-id}])]
-    (js/console.log "article-tags: " article-tags)
     [c/layout
      (let [{:keys [title body]} @article]
        [:> Form
@@ -99,7 +98,7 @@
           "保存"]]])]))
 
 (defn view []
-  [c/layout [:div "ddd"]])
+  [c/layout ])
 
 (defn publish-dialog []
   (let [open (subscribe [:article/publish-dialog])
@@ -115,19 +114,16 @@
        (str "确定发布文章吗？")])))
 
 (defn delete-dialog []
-  (let [open (subscribe [:article/delete-dialog])
-        article (subscribe [:article/edit])]
-    (if @open
-      [c/confirm {:open    @open
-                 :title    (str "删除文章: ")
-                 :ok-text  "确认"
-                 :on-close #(dispatch [:article/set-delete-dialog false])
-                 :on-ok    #(do (dispatch [:article/set-delete-dialog false])
-                                (dispatch [:article/delete (:id @article)]))}
-       (str "你确定要删 " (:title @article) " 吗?")])))
+  (let [article (subscribe [:article/edit])]
+    [c/confirm {:title    (str "删除文章: ")
+                :ok-text  "确认"
+                :on-close #(dispatch [:close-confirm])
+                :on-ok    #(do (dispatch [:close-confirm])
+                               (dispatch [:article/delete (:id @article)]))}
+     (str "你确定要删 " (:title @article) " 吗?")]))
 
 (defn query-form []
-  (let [query-params (subscribe [:article/query-params])
+  (let [query-params (subscribe [:query-params])
         data-dices (subscribe [:data-dices])
         publish-options (utils/data->options (filter #(= "11" (:pid %)) @data-dices) :id :name :id)]
     [:> Form {:name       "query-form"}
@@ -179,7 +175,8 @@
              ^{:key article}
              [:> Table.Row
               [:> Table.Cell (inc index)]
-              [:> Table.Cell id]
+              [:> Table.Cell
+               [:a {:href (str "/article/" id "/view")} id]]
               [:> Table.Cell title]
               [:> Table.Cell description]
               [:> Table.Cell create_by]
@@ -189,7 +186,7 @@
               [:> Table.Cell (du/to-date-time update_at)]
               [:> Table.Cell
                [:div.button-center
-                (when (zero? publish)
+                (when (= (:name (utils/get-data-dic-by-id publish)) "否")
                   [:> Button {:content  "发布"
                               :on-click #(do
                                            (dispatch [:article/set-attr {:id id :title title}])
@@ -199,11 +196,14 @@
                             :on-click #(navigate! (str "/article/" id "/edit"))}]
 
                 [:> Button {:color    "red"
-                            :icon "delete"
+                            :icon     "delete"
                             :on-click (fn []
                                         (do
                                           (dispatch [:article/set-attr {:id id :title title}])
-                                          (dispatch [:article/set-delete-dialog-open true])))}]]]])))]]
+                                          (dispatch [:open-confirm {:open true
+                                                                    :title "delete article"
+                                                                    :on-confirm (dispatch [:article/delete (:id @article)])
+                                                                    :content (str "你确定要删 " (:title @article) " 吗?")}])))}]]]])))]]
      (if @articles
        [c/table-page :article/load-page (merge @query-params @pagination)])]))
 

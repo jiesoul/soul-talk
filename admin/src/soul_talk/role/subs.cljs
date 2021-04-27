@@ -1,6 +1,6 @@
 (ns soul-talk.role.subs
   (:require [re-frame.core :as rf :refer [reg-sub]]
-            [soul-talk.common.effects :refer [query]]))
+            [soul-talk.effects :refer [query]]))
 
 (reg-sub :role/delete-dialog query)
 (reg-sub :role/query-params query)

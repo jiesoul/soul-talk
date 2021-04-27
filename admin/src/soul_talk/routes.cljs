@@ -172,7 +172,7 @@
 
 (defroute "/article" []
   (run-events-admin [[:set-breadcrumb ["文章管理" "文章查询"]]
-                     [:article/init]
+                     [:init]
                      [:set-active-page :article]]))
 
 (defroute "/article/new" []
@@ -193,7 +193,7 @@
 
 (defroute "*" []
   (run-events-admin [[:set-breadcrumb ["未找到页面"]]
-               [:set-active-page :default]]))
+                     [:set-active-page :default]]))
 
 (secretary/set-config! :prefix "#")
 

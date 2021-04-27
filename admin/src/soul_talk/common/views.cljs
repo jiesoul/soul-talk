@@ -63,6 +63,29 @@
                   :info true
                   :content @info}]]))
 
+(defn modal [header content action]
+  (let [open @(rf/subscribe [:modal])]
+    [:> Modal {:open open}
+     [:> Modal.Header header]
+     [:> Modal.Content {:image true
+                        :scrolling true}
+      content]
+     [:> Modal.Action
+      action]]))
+
+(defn confirm []
+  (let [{:keys [open title cancel-text ok-text on-confirm content]} @(rf/subscribe [:confirm])]
+    (when open
+      [:> Confirm {:open           open
+                   :key            (str "confirm" (random-uuid))
+                   :confirm-button (if ok-text ok-text "dqy")
+                   :cancel-button  (if cancel-text cancel-text "取消")
+                   :on-cancel      (rf/dispatch [:close-confirm])
+                   :on-confirm     (do (on-confirm)
+                                       (rf/dispatch [:close-confirm]))
+                   :header         title
+                   :content        content}])))
+
 (defn app-bar []
   (let [site-info (rf/subscribe [:site-info])
         user (rf/subscribe [:user])]
@@ -171,15 +194,7 @@
    [:> Grid.Column
     children]])
 
-(defn confirm [{:keys [open title cancel-text ok-text on-close on-ok] :as opts} & children]
-  [:> Confirm {:open     open
-               :key      (str "modal" (random-uuid))
-               :confirm-button (if ok-text ok-text "保存")
-               :cancel-button (if cancel-text cancel-text "取消")
-               :on-cancel on-close
-               :on-confirm on-ok
-               :header title
-               :content children}])
+
 
 (defn default-page []
   [layout

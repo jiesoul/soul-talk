@@ -32,19 +32,65 @@
     (assoc db :active-page page)))
 
 (reg-event-fx
+  :init
+  (fn [_ _]
+    {:dispatch-n [[:clean-error]
+                  [:clean-success]
+                  [:clean-query-params]
+                  [:clean-pagination]
+                  [:clean-editing]
+                  [:close-confirm]
+                  [:close-modal]]}))
+
+(reg-event-fx
   :navigate-to
   (fn [_ [_ url]]
     {:navigate url}))
 
 (reg-event-db
-  :set-dialog-status
-  (fn [db [_ [key ^boolean? value]]]
-    (assoc db key value)))
-
-(reg-event-db
   :set-drawer-status
   (fn [db [_ value]]
     (assoc db :drawer-status value)))
+
+(reg-event-db
+  :clean-query-params
+  (fn [db _]
+    (dissoc db :query-params)))
+
+(reg-event-db
+  :clean-pagination
+  (fn [db _]
+    (dissoc db :pagination)))
+
+(reg-event-db
+  :clean-data-list
+  (fn [db _]
+    (dissoc db :data-list)))
+
+(reg-event-db
+  :clean-editing
+  (fn [db _]
+    (dissoc db :editing)))
+
+(reg-event-db
+  :open-modal
+  (fn [db _]
+    (assoc db :modal true)))
+
+(reg-event-db
+  :close-modal
+  (fn [db _]
+    (assoc db :modal false)))
+
+(reg-event-db
+  :open-confirm
+  (fn [db [_ opts]]
+    (assoc db :confirm opts)))
+
+(reg-event-db
+  :close-confirm
+  (fn [db _]
+    (assoc-in db [:confirm :open] false)))
 
 (reg-event-db
   :clean-success
