@@ -1,7 +1,7 @@
 (ns soul-talk.article.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db subscribe ->interceptor] :as rf]
             [ajax.core :refer [POST GET DELETE PUT PATCH]]
-            [soul-talk.db :refer [api-uri]]))
+            [soul-talk.db :refer [api-url]]))
 
 (reg-event-db
   :articles/init
@@ -32,7 +32,7 @@
   :articles/load-page
   (fn [_ [_ pagination]]
     {:http {:method        GET
-            :url           (str api-uri "/articles")
+            :url           (str api-url "/articles")
             :ajax-map      {:params pagination}
             :success-event [:articles/load-page-ok]}}))
 
@@ -71,7 +71,7 @@
   [articles-validate]
   (fn [_ [_ {:keys [title] :as article}]]
     {:http {:method        POST
-            :url           (str api-uri "/articles")
+            :url           (str api-url "/articles")
             :ajax-map      {:params article}
             :success-event [:articles/new-ok article]}}))
 
@@ -84,7 +84,7 @@
   :articles/update
   (fn [_ [_ {:keys [id counter] :as article}]]
     {:http {:method        PATCH
-            :url           (str api-uri "/articles/" id)
+            :url           (str api-url "/articles/" id)
             :ajax-map      {:params article}
             :success-event [:articles/update-ok]}}))
 
@@ -97,7 +97,7 @@
   :articles/load-article
   (fn [_ [_ id]]
     {:http {:method        GET
-            :url           (str api-uri "/articles/" id)
+            :url           (str api-url "/articles/" id)
             :success-event [:articles/load-article-ok]}}))
 
 (reg-event-db
@@ -111,7 +111,7 @@
   :articles/delete
   (fn [_ [_ id]]
     {:http {:method        DELETE
-            :url           (str api-uri "/articles/" id)
+            :url           (str api-url "/articles/" id)
             :success-event [:articles/delete-ok id]}}))
 
 (reg-event-db
@@ -124,6 +124,6 @@
   (fn [_ [_ id]]
     (js/console.log "doing publish articles")
     {:http {:method PATCH
-            :url (str api-uri "/articles/" id "/publish")
+            :url (str api-url "/articles/" id "/publish")
             :success-event [:articles/publish-ok]}}))
 

@@ -3,4 +3,5 @@
 (def default-db
   {:active-page :home})
 
-(goog-define api-uri "http://localhost:3000/api/v1")
+(goog-define api-url "http://localhost:3001/v1")
+(goog-define app-key "")

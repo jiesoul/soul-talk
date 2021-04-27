@@ -2,7 +2,7 @@
   (:require [re-frame.core :refer [reg-event-fx reg-event-db]]
             [ajax.core :refer [GET POST DELETE PUT]]
             [clojure.string :as str]
-            [soul-talk.db :refer [api-uri]]))
+            [soul-talk.db :refer [api-url]]))
 
 (reg-event-db
   :tags/load-all-ok
@@ -13,7 +13,7 @@
   :tags/load-all
   (fn [_ params]
     {:http {:method        GET
-            :url           (str api-uri "/tags")
+            :url           (str api-url "/tags")
             :ajax-map      {:params params}
             :success-event [:tags/load-all-ok]}}))
 
@@ -28,7 +28,7 @@
     (if (str/blank? name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        POST
-              :url           (str api-uri "/tags")
+              :url           (str api-url "/tags")
               :ajax-map      {:params tag}
               :success-event [:tags/new-ok]}})))
 
@@ -43,7 +43,7 @@
   :tags/delete
   (fn [_ [_ id]]
     {:http {:method  DELETE
-            :url (str api-uri "/tags/" id)
+            :url (str api-url "/tags/" id)
             :success-event [:tags/delete-ok id]}}))
 
 (reg-event-db

@@ -1,6 +1,6 @@
 (ns soul-talk.subs
   (:require [re-frame.core :refer [reg-sub]]
-            [soul-talk.common.effects :refer [query]]
+            [soul-talk.effects :refer [query]]
             [soul-talk.site-info.subs]
             [soul-talk.series.subs]
             [soul-talk.article.subs]))
@@ -15,8 +15,6 @@
   :initialised?
   (fn [db _]
     (not (empty? db))))
-
-(reg-sub :api-url query)
 
 (reg-sub :app-key query)
 

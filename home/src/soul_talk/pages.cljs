@@ -13,20 +13,16 @@
 
 (defn home []
   [:<>
-   [:> Segment {:basic true
-                :inverted true
-                :style {:min-height "100vh"}}
-    [c/app-bar {:inverted true}]
-    [:> Segment {:basic true
-                 :inverted true
-                 :placeholder true}
-     [:> Header {:icon true}
-      [:> Icon {:name "pdf file outline"}]
-      "asdfasfasfasfasfasf"]
-     [:> Button {:content "more"}]]]
-   [:> Segment {:basic true}
-    [:> Container
-     "ssdfasfasf"]]
+   [c/app-bar]
+   [:> Segment {:placeholder true
+                :style {:min-height "80vh"}}
+    [:> Header {:icon true}
+     [:> Icon {:name "pdf file outline"}]
+     "asdfasfasfasfasfasf"]
+    [:> Button {:content "more"}]]
+   [:> Segment {
+                :placeholder true}
+    "ssdfasfasf"]
    [c/footer]])
 
 

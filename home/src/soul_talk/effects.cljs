@@ -1,4 +1,4 @@
-(ns soul-talk.common.effects
+(ns soul-talk.effects
   (:require [re-frame.core :as rf :refer [dispatch reg-fx reg-event-fx reg-event-db]]
             [accountant.core :as accountant]
             [ajax.core :as ajax]))

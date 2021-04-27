@@ -1,7 +1,7 @@
 {
   "name": "client-back",
   "version": "1.0.0",
-  "description": "网站管理后台",
+  "description": "网站",
   "main": "index.js",
   "directories": {
     "doc": "docs",
@@ -31,7 +31,6 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.0",
     "react-highlight.js": "^1.0.7",
-    "react-toastify": "^7.0.2",
     "semantic-ui-react": "^2.0.3"
   }
 }

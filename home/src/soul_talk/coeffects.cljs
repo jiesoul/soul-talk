@@ -1,4 +1,4 @@
-(ns soul-talk.common.coeffects
+(ns soul-talk.coeffects
   (:require [re-frame.core :as rf]
             [soul-talk.common.local-storage :as local-store]))
 

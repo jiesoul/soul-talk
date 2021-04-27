@@ -32,34 +32,34 @@
       "jiesoul"]
      (str " 2019-" year ".")]))
 
-(defn app-bar [& opts]
-  (let [active-page (rf/subscribe [:active-page])]
-    [:> Menu (merge {:secondary true
-                     :pointing true} (first opts))
-     [:> Container
-      [:> Menu.Item {:as   "h2"
-                     :name "jiesoul的个人网站"
+(defn app-bar []
+  (let [active-page (rf/subscribe [:active-page])
+        site-info @(rf/subscribe [:site-info])]
+    [:> Container
+     [:> Menu (merge {:secondary true})
+      [:> Menu.Item {:as     "h2"
+                     :name   (:name site-info)
                      :header true}]
       [:> Menu.Menu {:position "right"}
-       [:> Menu.Item {:as     "a"
-                      :name   "主页"
-                      :active (if (= :home @active-page) true false)
+       [:> Menu.Item {:as       "a"
+                      :name     "主页"
+                      :active   (if (= :home @active-page) true false)
                       :on-click #(navigate! "/")}]
-       [:> Menu.Item {:as "a"
-                      :name "文章"
-                      :active (if (= :articles @active-page) true false)
+       [:> Menu.Item {:as       "a"
+                      :name     "文章"
+                      :active   (if (= :articles @active-page) true false)
                       :on-click #(navigate! "/articles")}]
-       [:> Menu.Item {:as "a"
-                      :name "系列"
-                      :active (if (= :series @active-page) true false)
+       [:> Menu.Item {:as       "a"
+                      :name     "系列"
+                      :active   (if (= :series @active-page) true false)
                       :on-click #(navigate! "/series")}]
-       [:> Menu.Item {:as "a"
-                      :name "标签"
-                      :active (if (= :tags @active-page) true false)
+       [:> Menu.Item {:as       "a"
+                      :name     "标签"
+                      :active   (if (= :tags @active-page) true false)
                       :on-click #(navigate! "/tags")}]
-       [:> Menu.Item {:as "a"
-                      :name "关于"
-                      :active (if (= :about @active-page) true false)
+       [:> Menu.Item {:as       "a"
+                      :name     "关于"
+                      :active   (if (= :about @active-page) true false)
                       :on-click #(navigate! "/about")}]]]]))
 
 (defn footer []

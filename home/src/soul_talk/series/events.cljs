@@ -1,7 +1,7 @@
 (ns soul-talk.series.events
   (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
             [ajax.core :refer [GET POST PATCH PUT DELETE]]
-            [soul-talk.db :refer [api-uri]]
+            [soul-talk.db :refer [api-url]]
             [clojure.string :as str]))
 
 (reg-event-db
@@ -30,7 +30,7 @@
   :series/load-all
   (fn [_ params]
     {:http {:method        GET
-            :url           (str api-uri "/series")
+            :url           (str api-url "/series")
             :ajax-map      {:params params}
             :success-event [:series/load-all-ok]}}))
 
@@ -46,7 +46,7 @@
   (fn [_ params]
     (println "params: " params)
     {:http {:method GET
-            :url (str api-uri "/series")
+            :url (str api-url "/series")
             :ajax-map {:params params}
             :success-event [:series/load-page-ok]}}))
 
@@ -63,7 +63,7 @@
     (if (str/blank? name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        POST
-              :url           (str api-uri "/series")
+              :url           (str api-url "/series")
               :ajax-map      {:params series}
               :success-event [:series/new-ok]}})))
 
@@ -76,7 +76,7 @@
   :series/load
   (fn [_ [_ id]]
     {:http {:method GET
-            :url (str api-uri "/series/" id)
+            :url (str api-url "/series/" id)
             :success-event [:series/load-ok]}}))
 
 (reg-event-fx
@@ -85,7 +85,7 @@
     (if (str/blank? name)
       {:dispatch [:set-error "名称不能为空"]}
       {:http {:method        PATCH
-              :url           (str api-uri "/series")
+              :url           (str api-url "/series")
               :ajax-map      {:params series}
               :success-event [:set-success "保存成功"]}})))
 
@@ -101,7 +101,7 @@
   :series/delete
   (fn [_ [_ id]]
     {:http {:method  DELETE
-            :url (str api-uri "/series/" id)
+            :url (str api-url "/series/" id)
             :success-event [:series/delete-ok id]}}))
 
 (reg-event-db

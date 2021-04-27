@@ -1,18 +1,17 @@
-(ns soul-talk.common.interceptors
+(ns soul-talk.interceptors
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
-            [ajax.core :as ajax]))
+            [ajax.core :as ajax]
+            [soul-talk.db :refer [app-key]]))
 
 (defn request-headers [request]
-  (let [login-token (:token @(rf/subscribe [:user]))]
-    (-> request
-      (update
-        :headers
-        #(merge
-           %
-           {:Accept        "application/transit+json"
-            :Authorization (str "Token " login-token)
-            :X-CSRF-Token  @(rf/subscribe [:csrf-token])})))))
+  (-> request
+    (update
+      :headers
+      #(merge
+         %
+         {:Accept        "application/transit+json"
+          :Authorization (str "Token " app-key)}))))
 
 (defn load-interceptors! []
   (swap! ajax/default-interceptors
