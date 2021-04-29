@@ -11,7 +11,11 @@
 (def update-app-key spec/update-app-key)
 
 (defn auth-app-key [token]
-  (db/auth-app-key token))
+  (db/auth-token? token))
+
+(defn refresh-token [app-key]
+  (let [now (utils/now)]
+    (db/refresh-token! (assoc app-key :refresh_at now))))
 
 (defn save-app-key! [{:keys [app_name] :as app-key}]
   (let [app-key (db/save-app-key! app-key)]

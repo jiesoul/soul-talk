@@ -11,7 +11,6 @@
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.cors :refer [wrap-cors]]
             [taoensso.timbre :as log]
-            [soul-talk.env :refer [defaults]]
             [cognitect.transit :as transit]
             [compojure.api.middleware :as cm]
             [compojure.api.meta :refer [restructure-param]]
@@ -99,21 +98,18 @@
 
 
 (defn- parse-app-key [request token-name]
-  (some->> (some-> (resp/find-header request "X-API-Key")
-             (second))
-    (re-find (re-pattern (str "^" token-name " (.+)$")))
-    (second)))
+  (some-> (resp/find-header request "api-key")
+       (second)))
 
 ;; 验证APP key
 (defn wrap-app-key [handler rule]
   (fn [request]
-    (log/info "starting app-key auth, handler: " handler " rule: " rule)
-    (let [app-key (:app-key (:params request))
-          app-key (some-> app-key
-                    (app-key/auth-app-key))]
-      (if-not app-key
+    (let [api-key (app-key/auth-app-key (parse-app-key request "api-key"))]
+      (if-not api-key
         (utils/forbidden "无效的APP KEY")
-        (handler request)))))
+        (do
+          (app-key/refresh-token api-key)
+          (handler request))))))
 
 ;; 内部错误
 (defn wrap-internal-error [handler]
@@ -142,7 +138,7 @@
                       {"Instant" (transit/read-handler #(Instant/parse %))}}))))
 
 (defn wrap-base [handler]
-  (-> ((:middleware defaults) handler)
+  (-> handler
     (wrap-cors :access-control-allow-origin [#".*"]
       :access-control-allow-methods [:get :post :put :delete :patch :headers :options])
     wrap-defaults

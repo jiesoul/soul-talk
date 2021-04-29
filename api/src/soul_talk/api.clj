@@ -7,9 +7,7 @@
             [soul-talk.tag.routes :as tag]
             [soul-talk.article.routes :as article]
             [soul-talk.data-dic.routes :as data-dic]
-            [soul-talk.series.routes :as serials]
-            [soul-talk.collect-link.routes :as collect-link]
-            [soul-talk.collect-site.routes :as collect-site]))
+            [soul-talk.series.routes :as serials]))
 
 ; 多重方法用来注入中间件
 ;; 如果需要这里添加路由，请拷贝此方法到路由文件。
@@ -22,7 +20,7 @@
    :spec    "/swagger.json"
    :options {:ui {:validatorUrl nil}}
    :securityDefinitions {:apiAuth {:type "apiKey"
-                                   :name "Authorization"
+                                   :name "app-key"
                                    :in "header"}}
    :data    {:info {:version     "1.0.0"
                     :title       "个人网站公共API"
@@ -30,13 +28,14 @@
                     :contact     {:name  "jiesoul"
                                   :email "jiesoul@gmail.com"
                                   :url   "http://www.jiesoul.com"}}
+             :securityDefinitions {:api-key {:type "apiKey"
+                                             :name "api-key"
+                                             :in "header"}}
              :tags [{:name "网站信息" :description "网站基本信息"}
                     {:name "用户" :description "用户信息相关API"}
                     {:name "系列" :description "系列"}
                     {:name "标签" :description "标签相关API"}
-                    {:name "文章" :description "文章相关API"}
-                    {:name "网站" :description "收集的网站相关"}
-                    {:name "链接" :description "收集的链接"}]}})
+                    {:name "文章" :description "文章相关API"}]}})
 
 (def api-config
   {:exceptions m/exceptions-config
@@ -49,14 +48,12 @@
     api-config
     (context "" []
       :tags ["api version 1"]
-
       (context "/v1" []
+        :header-params [api-key :- string?]
         site-info/api-routes
         data-dic/api-routes
         tag/public-routes
         serials/api-routes
         user/public-routes
-        article/api-routes
-        collect-site/api-routes
-        collect-link/api-routes))))
+        article/api-routes))))
 

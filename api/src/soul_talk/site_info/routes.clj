@@ -18,6 +18,7 @@
     :tags ["网站信息"]
     (GET "/:id" []
       :summary "获取网站基本信息"
+      ;:header-params [appKey :- string?]
       :auth-app-key #{"admin"}
       :path-params [id :- int?]
       (handler/get-site-info id))

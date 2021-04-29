@@ -21,7 +21,6 @@
   (mount/start
     #'soul-talk.config/conf
     #'soul-talk.database.db/*db*
-    #'soul-talk.core/init-app
     #'soul-talk.core/system))
 
 (defn stop []

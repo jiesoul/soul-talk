@@ -1,10 +1,8 @@
 (ns soul-talk.core
   (:require [ring.adapter.jetty :as jetty]
-            ;[clojure.tools.nrepl.server :refer [start-server stop-server]]
             [soul-talk.handler :refer [app]]
-            [soul-talk.env :refer [defaults]]
             [soul-talk.config :refer [conf]]
-            [clojure.tools.cli :refer [parse-opts]]
+            [clojure.tools.cli :as ct]
             [cprop.core :refer [load-config]]
             [soul-talk.database.my-migrations :as migrations]
             [taoensso.timbre :as log]
@@ -28,10 +26,6 @@
     :parse-fn #(Integer/parseInt %)
     :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]])
 
-(defstate init-app
-  :start ((or (:init defaults) identity))
-  :stop  ((or (:stop defaults) identity)))
-
 (defn start-system [conf]
   (log/info "total config: " conf)
   (update-db conf)
@@ -51,7 +45,7 @@
 
 (defn start-app [args]
   (do
-    (doseq [component (-> (parse-opts args cli-options)
+    (doseq [component (-> (ct/parse-opts args cli-options)
                         mount/start-with-args
                         :started)]
       (log/info component ": started"))

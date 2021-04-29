@@ -11,9 +11,7 @@
             [soul-talk.user.routes :as user]
             [soul-talk.series.routes :as series]
             [soul-talk.tag.routes :as tag]
-            [soul-talk.article.routes :as article]
-            [soul-talk.collect-site.routes :as collect-site]
-            [soul-talk.collect-link.routes :as collect-link]))
+            [soul-talk.article.routes :as article]))
 
 ;; 多重方法用来注入中间件
 ;; 如果需要这里添加路由，请拷贝此方法到路由文件。
@@ -39,8 +37,6 @@
         user/private-routes
         series/site-routes
         tag/private-routes
-        article/site-routes
-        collect-link/site-routes
-        collect-site/site-routes)
+        article/site-routes)
       )))
 
