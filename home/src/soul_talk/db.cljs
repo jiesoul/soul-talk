@@ -4,4 +4,4 @@
   {:active-page :home})
 
 (goog-define api-url "http://localhost:3001/v1")
-(goog-define app-key "")
+(goog-define api-key "pmyzXOP27cbvyyqDuEWGM1WAy4Bw1UKK_qpYzfP63rk")

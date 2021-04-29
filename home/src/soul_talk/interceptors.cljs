@@ -2,7 +2,7 @@
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
             [ajax.core :as ajax]
-            [soul-talk.db :refer [app-key]]))
+            [soul-talk.db :refer [api-key]]))
 
 (defn request-headers [request]
   (-> request
@@ -10,8 +10,8 @@
       :headers
       #(merge
          %
-         {:Accept        "application/transit+json"
-          :Authorization (str "Token " app-key)}))))
+         {:Accept  "application/transit+json"
+          :api-key api-key}))))
 
 (defn load-interceptors! []
   (swap! ajax/default-interceptors

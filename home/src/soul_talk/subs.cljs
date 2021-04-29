@@ -3,6 +3,7 @@
             [soul-talk.effects :refer [query]]
             [soul-talk.site-info.subs]
             [soul-talk.series.subs]
+            [soul-talk.tag.subs]
             [soul-talk.article.subs]))
 
 ;; 获取当时全部数据
@@ -15,8 +16,6 @@
   :initialised?
   (fn [db _]
     (not (empty? db))))
-
-(reg-sub :app-key query)
 
 (reg-sub :active-page query)
 

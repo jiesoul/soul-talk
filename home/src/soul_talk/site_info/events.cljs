@@ -11,6 +11,7 @@
 (rf/reg-event-fx
   :site-info/load
   (fn [_ [_ id]]
+    (js/console.log "init site info")
     {:http {:method GET
             :url (str api-url "/site-info/" id)
             :success-event [:site-info/load-ok]}}))

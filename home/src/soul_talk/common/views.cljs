@@ -32,41 +32,36 @@
       "jiesoul"]
      (str " 2019-" year ".")]))
 
+(def menus [{:key :home :name "主页" :url "/"}
+            {:key :articles :name "文章" :url "/articles"}
+            {:key :about :name "关于" :url "/about"}])
+
+(defn header-links []
+  (let [active-page (rf/subscribe [:active-page])]
+    [:<>
+     (doall
+       (for [{:keys [key name url]} menus]
+         [:> Menu.Item {:as       "a"
+                        :name     name
+                        :active   (if (= key @active-page) true false)
+                        ;:color    (if (= key @active-page) "violet")
+                        :on-click #(navigate! url)}]))]))
+
 (defn app-bar []
-  (let [active-page (rf/subscribe [:active-page])
-        site-info @(rf/subscribe [:site-info])]
-    [:> Container
-     [:> Menu (merge {:secondary true})
-      [:> Menu.Item {:as     "h2"
-                     :name   (:name site-info)
-                     :header true}]
-      [:> Menu.Menu {:position "right"}
-       [:> Menu.Item {:as       "a"
-                      :name     "主页"
-                      :active   (if (= :home @active-page) true false)
-                      :on-click #(navigate! "/")}]
-       [:> Menu.Item {:as       "a"
-                      :name     "文章"
-                      :active   (if (= :articles @active-page) true false)
-                      :on-click #(navigate! "/articles")}]
-       [:> Menu.Item {:as       "a"
-                      :name     "系列"
-                      :active   (if (= :series @active-page) true false)
-                      :on-click #(navigate! "/series")}]
-       [:> Menu.Item {:as       "a"
-                      :name     "标签"
-                      :active   (if (= :tags @active-page) true false)
-                      :on-click #(navigate! "/tags")}]
-       [:> Menu.Item {:as       "a"
-                      :name     "关于"
-                      :active   (if (= :about @active-page) true false)
-                      :on-click #(navigate! "/about")}]]]]))
+  [:> Menu {:secondary true
+            :fixed true}
+   [:> Menu.Item {:as     "h2"
+                  :header true}
+    [logo]]
+   [:> Menu.Menu {:position "right"
+                  :pointing true}
+    [header-links]]])
 
 (defn footer []
-  [:> Segment {:inverted true}
+  [:> Segment {:inverted true
+               :vertical true
+               :placeholder true}
    [:> Container {:text-align "center"}
-    [:> Divider {:inverted true
-                 :section  true}]
     [:> List {:horizontal true
               :inverted   true
               :divided    true

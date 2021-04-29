@@ -30,9 +30,22 @@ div {
 /*    height: 100vh;*/
 /*}*/
 
-.login-image {
+.random-back-image {
+    background: no-repeat center/cover url(https://source.unsplash.com/user/jiesoul/likes/1600x900) ;
+    opacity: 0.4;
+    width: 100%;
     height: 100vh;
-    background: no-repeat center/cover url(https://source.unsplash.com/random) ;
+    z-index: 1;
+    position: relative;
+}
+
+.home-banner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background:rgba(255,255,255,0.3);
 }
 
 .site-layout-header h1 {

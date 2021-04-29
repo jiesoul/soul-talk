@@ -1,41 +1,106 @@
 (ns soul-talk.pages
   (:require [reagent.core :as r]
             [soul-talk.common.views :as c]
-            ["semantic-ui-react" :refer [Container Segment Header Image Button
-                                         List Divider Icon]]))
-
-(defn chart-styles [theme]
-  #js {:root #js {:backgroundColor "red"}})
-
-(defn chart []
-  [:div
-   "ssdasfasdfasdff"])
+            ["semantic-ui-react" :refer [Container Segment Header Image Button Menu Divider Grid Item
+                                         List Divider Icon Advertisement Card Statistic Comment]]))
 
 (defn home []
-  [:<>
-   [c/app-bar]
-   [:> Segment {:placeholder true
-                :style {:min-height "80vh"}}
-    [:> Header {:icon true}
-     [:> Icon {:name "pdf file outline"}]
-     "asdfasfasfasfasfasf"]
-    [:> Button {:content "more"}]]
-   [:> Segment {
-                :placeholder true}
-    "ssdfasfasf"]
-   [c/footer]])
+  (let [size "hege"]
+    [:> Segment.Group
+     [:div {:class-name "random-back-image"}
+      [:div {:text-align "center"
+             :class-name "home-banner"}
+       [c/app-bar]
+       [:div {:style {:padding-top "20vh"}}
+        [:> Header {:icon       true
+                    :as         "h1"
+                    :text-align "center"}
+         [:> Icon {:name     "user"
+                   :circular true
+                   :size     size}]
+         [:> Header.Content
+          "JIESOUL"]
+         [:> List {:horizontal true
+                   :inverted   true}
+          [:> List.Item {:size size}
+           [:> Icon {:name "github"
+                     :link true
+                     :size size}]]]]]]]
+     [:> Segment {:vertical    true}
+      "ssdfasfasf"]
+     [c/footer]]))
 
 
 (defn articles []
   [:<>
-   [c/app-bar]
    [:> Container
-    [:> List {:divided true
-              :relaxed true}
-     [:> List.Item
-      [:> List.Content
-       [:> List.Header {:as "a"} "文章1111111111111111111111111111111111"]
-       [:> List.Description {:as "a"} "2021-3-1 11:11:13 by jiesoul"]]]]]])
+    [c/app-bar]
+    [:> Divider]]
+   [:> Container {:style {:margin-top "10px"
+                          :min-height "80vh"}}
+    [:> Grid {:columns "equal"}
+     [:> Grid.Column
+      [:> Card
+       [:> Card.Content
+        [:> Card.Header "站点统计"]]
+       [:> Card.Content
+        [:> Card.Header "JIESOUL"]
+        [:> Card.Description
+         [:> Statistic.Group {:size "mini"}
+          [:> Statistic
+           [:> Statistic.Value "1121"]
+           [:> Statistic.Label "文章"]]
+          [:> Statistic
+           [:> Statistic.Value "1122"]
+           [:> Statistic.Label "浏览"]]
+          [:> Statistic
+           [:> Statistic.Value "1121"]
+           [:> Statistic.Label "评论"]]]]]]
+      [:> Card
+       [:> Card.Content
+        [:> Card.Header "最新评论"]]
+       [:> Card.Content
+        [:> Comment.Group {:size "mini"}
+         [:> Comment
+          [:> Comment.Avatar {:as "a"}]
+          [:> Comment.Content
+           [:> Comment.Author {:as "a"} "tt"]
+           [:> Comment.Metadata
+            [:span "Today at 5:42PM"]]
+           [:> Comment.Text "How artistic!"]]]]]]]
+     [:> Grid.Column {:width 8}
+      [:> Card {:style {:width "100%"}}
+       [:> Card.Content
+        [:> Card.Header "文章列表"]]
+       [:> Card.Content
+        [:> Item.Group {:divided true}
+         [:> Item
+          [:> Item.Content
+           [:> Item.Header {:as "a"} "文章1111111111111111111111111111111111"]
+           [:> Item.Meta
+            [:span {:class-name "author"} "tt"]
+            [:span {:class-name "date"} "2021..."]]]]
+         [:> Item
+          [:> Item.Content
+           [:> Item.Header {:as "a"} "文章1111111111111111111111111111111111"]
+           [:> Item.Meta
+            [:span {:class-name "author"} "tt"]
+            [:span {:class-name "date"} "2021..."]]]]
+         ]]]]
+     [:> Grid.Column
+      [:> Card
+       [:> Card.Content
+        [:> Card.Header "归档"]]
+       [:> Card.Content ]]
+      [:> Card
+       [:> Card.Content
+        [:> Card.Header "标签"]]
+       [:> Card.Content ]]
+      [:> Card
+       [:> Card.Content
+        [:> Card.Header "系列"]]
+       [:> Card.Content]]
+      ]]]])
 
 (defn series []
   [:<>
@@ -62,10 +127,10 @@
 
 (defn about []
   [:<>
-   [c/app-bar]
-   [:> Segment {:placeholder true
-                :basic true
-                :inverted true}
-    [:> Header {:icon true}
-     "About"]
-    [:> Button {:content "more"}]]])
+   [:> Container
+    [c/app-bar]
+    [:> Segment {:placeholder true
+                 :basic       true}
+     [:> Header {:icon true}
+      "About"]
+     [:> Button {:content "more"}]]]])

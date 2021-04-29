@@ -1,6 +1,8 @@
 (ns soul-talk.events
   (:require [re-frame.core :refer [inject-cofx dispatch dispatch-sync reg-event-db reg-event-fx subscribe]]
             [soul-talk.db :refer [default-db]]
+            [soul-talk.site-info.events]
+            [soul-talk.series.events]
             [soul-talk.article.events]
             [soul-talk.tag.events]))
 
@@ -43,6 +45,11 @@
     {:dispatch-later [{:ms 100 :dispatch [:set-loading-for-real-this-time]}]
      :db             (-> db
                        (assoc :should-be-loading? true))}))
+
+(reg-event-db
+  :set-error
+  (fn [db [_ message]]
+    (assoc db :error message)))
 
 
 
