@@ -1,16 +1,21 @@
 (ns soul-talk.pages
   (:require [reagent.core :as r]
             [soul-talk.common.views :as c]
+            [re-frame.core :as rf]
+            [soul-talk.routes :refer [navigate!]]
             ["semantic-ui-react" :refer [Container Segment Header Image Button Menu Divider Grid Item
                                          List Divider Icon Advertisement Card Statistic Comment]]))
 
 (defn home []
-  (let [size "hege"]
+  (let [size "hege"
+        color "violet"
+        contacts @(rf/subscribe [:contacts])
+        navs @(rf/subscribe [:navs])]
     [:> Segment.Group
      [:div {:class-name "random-back-image"}
       [:div {:text-align "center"
              :class-name "home-banner"}
-       [c/app-bar]
+       [c/app-bar {:color color}]
        [:div {:style {:padding-top "20vh"}}
         [:> Header {:icon       true
                     :as         "h1"
@@ -19,15 +24,19 @@
                    :circular true
                    :size     size}]
          [:> Header.Content
-          "JIESOUL"]
-         [:> List {:horizontal true
-                   :inverted   true}
-          [:> List.Item {:size size}
-           [:> Icon {:name "github"
-                     :link true
-                     :size size}]]]]]]]
-     [:> Segment {:vertical    true}
-      "ssdfasfasf"]
+          ""]
+         [:> List {:horizontal true}
+          (doall
+            (for [{:keys [name icon url]} contacts]
+              [:> List.Item {:size   size
+                             :href url
+                             :target "_blank"}
+               [:> Icon {:name icon
+                         :inverted true
+                         :size size}]]))]]]]]
+
+     ;[:> Segment {:vertical    true}
+     ; "ssdfasfasf"]
      [c/footer]]))
 
 
@@ -129,6 +138,7 @@
   [:<>
    [:> Container
     [c/app-bar]
+    [:> Divider]
     [:> Segment {:placeholder true
                  :basic       true}
      [:> Header {:icon true}

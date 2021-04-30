@@ -19,6 +19,10 @@
 
 (reg-sub :active-page query)
 
+(reg-sub :navs query)
+
+(reg-sub :contacts query)
+
 (reg-sub :loading? query)
 
 (reg-sub :pagination query)

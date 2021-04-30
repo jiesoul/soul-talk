@@ -32,44 +32,33 @@
       "jiesoul"]
      (str " 2019-" year ".")]))
 
-(def menus [{:key :home :name "主页" :url "/"}
-            {:key :articles :name "文章" :url "/articles"}
-            {:key :about :name "关于" :url "/about"}])
-
-(defn header-links []
-  (let [active-page (rf/subscribe [:active-page])]
-    [:<>
-     (doall
-       (for [{:keys [key name url]} menus]
-         [:> Menu.Item {:as       "a"
-                        :name     name
-                        :active   (if (= key @active-page) true false)
-                        ;:color    (if (= key @active-page) "violet")
-                        :on-click #(navigate! url)}]))]))
-
-(defn app-bar []
-  [:> Menu {:secondary true
-            :fixed true}
-   [:> Menu.Item {:as     "h2"
-                  :header true}
-    [logo]]
-   [:> Menu.Menu {:position "right"
-                  :pointing true}
-    [header-links]]])
+(defn app-bar [{:keys [color inverted] :as opts}]
+  (let [active-page (rf/subscribe [:active-page])
+        navs @(rf/subscribe [:navs])]
+    [:> Menu {:secondary true
+              :fixed     true
+              :inverted  inverted}
+     [:> Menu.Item {:as     "h2"
+                    :header true}
+      [logo]]
+     [:> Menu.Menu {:position "right"
+                    :pointing true}
+      (doall
+        (for [{:keys [key name url]} navs]
+          [:> Menu.Item {:as       "a"
+                         :name     name
+                         :color color
+                         :active   (if (= key @active-page) true false)
+                         :on-click #(navigate! url)}]))]]))
 
 (defn footer []
-  [:> Segment {:inverted true
-               :vertical true
-               :placeholder true}
+  [:> Segment {:inverted true}
    [:> Container {:text-align "center"}
     [:> List {:horizontal true
               :inverted   true
               :divided    true
-              :link       true
-              :size       "small"}
-     [:> List.Item {:as "a"} "text"]
-     [:> List.Item {:as "a"} "text"]
-     [:> List.Item {:as "a"} "text"]]]
+              :link       true}
+     [:> List.Item {:as "a"} ""]]]
    [copyright]])
 
 (defn out-breadcrumb [data]
