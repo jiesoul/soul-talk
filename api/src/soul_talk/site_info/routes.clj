@@ -26,6 +26,7 @@
 
 (def site-routes
   (context "/site-info" []
+    :tags ["网站"]
     (GET "/:id" []
       :summary "获取网站基本信息"
       :path-params [id :- int?]

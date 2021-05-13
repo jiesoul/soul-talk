@@ -10,7 +10,7 @@
 (deftest user-api-test
 
   (testing "get user profile"
-    (let [response (h/make-request-by-app-token :get "/api/v1/users/1/profile")]
+    (let [response (h/make-request-by-app-token :get "/v1/users/1/profile")]
       (is (= 200 (:status response)))))
   )
 

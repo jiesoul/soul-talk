@@ -14,6 +14,7 @@
 
 (def site-routes
   (context "/roles" []
+    :tags ["角色"]
 
     (POST "/" []
       :summary "保存角色"

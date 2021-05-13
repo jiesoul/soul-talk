@@ -19,17 +19,33 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
+(def swagger-config
+  {:ui                   "/api-private"
+   :spec                 "/swagger-private.json"
+   :options              {:ui {:validatorUrl nil}}
+
+   :data                 {:info {:version     "1.0.0"
+                                 :title       "私有API"
+                                 :description "后台管理网站 API"
+                                 :contact     {:name  "jiesoul"
+                                               :email "jiesoul@gmail.com"
+                                               :url   "http://www.jiesoul.com"}}
+                          :securityDefinitions {:basic-auth {:type "basic"}}}})
+
 (def site-config
   {:exceptions m/exceptions-config
-   :coercion :spec})
+   :coercion :spec
+   :swagger swagger-config})
 
 (def site-routes
   (->
     (api
       site-config
       (context "" []
+        auth/login-routes)
+      (context "" []
+        ;:header-params [token :- string?]
         site-info/site-routes
-        auth/login-routes
         data-dic/site-routes
         menu/site-routes
         role/site-routes

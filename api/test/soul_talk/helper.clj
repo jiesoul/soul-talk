@@ -14,7 +14,7 @@
 (use-fixtures :once start-states)
 
 (defn api-url [context & url ]
-  (apply str "/api/v1" context url))
+  (apply str "/v1" context url))
 
 (defn site-uri [context & url]
   (apply str context url))
@@ -39,7 +39,6 @@
                            (mock/json-body user)))
         body        (parse-body (:body response))
         login-token (str "Token " (get body :token))]
-    (log/info "===========" body)
     (reset! *login-token* login-token)
     login-token))
 
@@ -76,8 +75,6 @@
                         (mock/content-type "application/json")
                         (make-header header)
                         (mock/json-body body)))]
-    (log/info "response: " response)
-    (log/info "response body: " (body response))
     response))
 
 (defn make-request-by-login-token

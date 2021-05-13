@@ -14,7 +14,7 @@
 
 (def site-routes
   (context "/menus" []
-
+    :tags ["菜单"]
     (POST "/" []
       :summary "保存菜单"
       :auth-login #{"admin"}

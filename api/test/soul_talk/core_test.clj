@@ -4,7 +4,7 @@
             [soul-talk.handler :refer :all]
             [soul-talk.helper :as h]))
 
-(deftest default-test
+(deftest default-test ^:test-refresh/focus
   (testing "api "
-    (let [response (app (-> (mock/request :get "/api/v1/api-docs")))]
+    (let [response (app (-> (mock/request :get "/v1/api-docs")))]
       (is (= (:status response) 302)))))

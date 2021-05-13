@@ -59,12 +59,18 @@
 
 
 (def exceptions-config
-  {:handlers {::calm                   (exception-handler utils/enhance-your-calm :calm)
-              java.sql.SQLException    (exception-handler utils/internal-server-error :sql)
-              ::ex/request-validation  (request-validation-handler utils/bad-request :request)
-              ::ex/request-parsing     (request-parsing-handler utils/bad-request :request)
+  {:handlers {::calm             (exception-handler utils/enhance-your-calm :calm)
+              :schema.core/error ex/schema-error-handler
+
+              ;; log all request validation errors
+              ::ex/request-validation (ex/with-logging ex/request-parsing-handler :info)
+
+              java.sql.SQLException (exception-handler utils/internal-server-error :sql)
+
+              ;::ex/request-validation (request-validation-handler utils/bad-request :request)
+              ::ex/request-parsing (request-parsing-handler utils/bad-request :request)
               ::ex/response-validation (response-validation-handler utils/bad-request :response)
-              ::ex/default             (exception-handler utils/internal-server-error :unknown)}})
+              ::ex/default (exception-handler utils/internal-server-error :unknown)}})
 
 ;; ***** Auth implementation ****************************************************
 
@@ -80,7 +86,7 @@
                     "poweruser" #{"any" "user" "poweruser"}
                     "user"      #{"any" "user"}
                     #{})
-                    
+
         matched-roles (clojure.set/intersection has-roles required-roles)]
     (not (empty? matched-roles))))
 
@@ -88,8 +94,8 @@
 (defn wrap-auth [handler roles]
   (fn [request]
     (let [token (some-> (parse-header request "Token")
-                        (auth/auth-token)
-                        (auth/refresh-token))]
+                  (auth/auth-token)
+                  (auth/refresh-token))]
       (if-not token
         (utils/unauthorized)
         (if-not (has-role? "admin" roles)
@@ -99,7 +105,7 @@
 
 (defn- parse-app-key [request token-name]
   (some-> (resp/find-header request "api-key")
-       (second)))
+    (second)))
 
 ;; 验证APP key
 (defn wrap-app-key [handler rule]

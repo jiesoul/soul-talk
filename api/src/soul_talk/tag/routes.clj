@@ -39,7 +39,7 @@
 
 (def private-routes
   (context "/tags" []
-    :tags [""]
+    :tags ["标签"]
 
     (POST "/" []
       :auth-login #{"admin"}
