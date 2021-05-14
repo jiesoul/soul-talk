@@ -20,10 +20,9 @@
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
 (def swagger-config
-  {:ui                   "/api-private"
-   :spec                 "/swagger-private.json"
+  {:ui                   "/api-admin"
+   :spec                 "/swagger-admin.json"
    :options              {:ui {:validatorUrl nil}}
-
    :data                 {:info {:version     "1.0.0"
                                  :title       "私有API"
                                  :description "后台管理网站 API"

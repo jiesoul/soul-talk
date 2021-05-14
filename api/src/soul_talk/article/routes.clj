@@ -17,6 +17,7 @@
 (def api-routes
   (context "/articles/p" []
     :tags ["文章"]
+    :header-params ["api-key" :- string?]
 
     (GET "/" req
       :auth-app-key #{"admin"}

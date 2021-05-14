@@ -16,28 +16,26 @@
   (update-in acc [:middleware] conj [m/wrap-app-key rule]))
 
 (def swagger-config
-  {:ui                  "/v1/api-docs"
-   :spec                "/swagger.json"
-   :options             {:ui {:validatorUrl nil}}
+  {:ui      "/v1/api-docs"
+   :spec    "/swagger.json"
+   :options {:ui {:validatorUrl nil}}
    :securityDefinitions {:apiAuth {:type "apiKey"
                                    :name "app-key"
-                                   :in   "header"}}
-   :security [{:apiAuth []}]
-   :data                {:info                {:version     "1.0.0"
-                                               :title       "个人网站公共API"
-                                               :description "提供网站部分数据的API"
-                                               :contact     {:name  "jiesoul"
-                                                             :email "jiesoul@gmail.com"
-                                                             :url   "http://www.jiesoul.com"}}
-                         :securityDefinitions {:api-key-header {:type "apiKey"
-                                                                :name "api-key"
-                                                                :in   "header"}}
-                         ;:security            :api-key-header
-                         :tags [{:name "网站信息" :description "网站基本信息"}
-                                {:name "用户" :description "用户信息相关API"}
-                                {:name "系列" :description "系列"}
-                                {:name "标签" :description "标签相关API"}
-                                {:name "文章" :description "文章相关API"}]}})
+                                   :in "header"}}
+   :data    {:info {:version     "1.0.0"
+                    :title       "个人网站公共API"
+                    :description "提供网站部分数据的API"
+                    :contact     {:name  "jiesoul"
+                                  :email "jiesoul@gmail.com"
+                                  :url   "http://www.jiesoul.com"}}
+             :securityDefinitions {:api-key {:type "apiKey"
+                                             :name "api-key"
+                                             :in "header"}}
+             :tags [{:name "网站信息" :description "网站基本信息"}
+                    {:name "用户" :description "用户信息相关API"}
+                    {:name "系列" :description "系列"}
+                    {:name "标签" :description "标签相关API"}
+                    {:name "文章" :description "文章相关API"}]}})
 
 (def api-config
   {:exceptions m/exceptions-config

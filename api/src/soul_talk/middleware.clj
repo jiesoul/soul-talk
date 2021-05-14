@@ -60,14 +60,14 @@
 
 (def exceptions-config
   {:handlers {::calm             (exception-handler utils/enhance-your-calm :calm)
-              :schema.core/error ex/schema-error-handler
+              ;:schema.core/error ex/schema-error-handler
 
               ;; log all request validation errors
-              ::ex/request-validation (ex/with-logging ex/request-parsing-handler :info)
+              ;::ex/request-validation (ex/with-logging ex/request-parsing-handler :info)
 
               java.sql.SQLException (exception-handler utils/internal-server-error :sql)
 
-              ;::ex/request-validation (request-validation-handler utils/bad-request :request)
+              ::ex/request-validation (request-validation-handler utils/bad-request :request-validation)
               ::ex/request-parsing (request-parsing-handler utils/bad-request :request)
               ::ex/response-validation (response-validation-handler utils/bad-request :response)
               ::ex/default (exception-handler utils/internal-server-error :unknown)}})
@@ -110,6 +110,7 @@
 ;; 验证APP key
 (defn wrap-app-key [handler rule]
   (fn [request]
+    (log/info "request: " (:headers request))
     (let [api-key (app-key/auth-app-key (parse-app-key request "api-key"))]
       (if-not api-key
         (utils/forbidden "无效的APP KEY")

@@ -16,9 +16,10 @@
 (def api-routes
   (context "/site-info" []
     :tags ["网站信息"]
+    :header-params ["api-key" :- string?]
+
     (GET "/:id" []
       :summary "获取网站基本信息"
-      ;:header-params [appKey :- string?]
       :auth-app-key #{"admin"}
       :path-params [id :- int?]
       (handler/get-site-info id))
