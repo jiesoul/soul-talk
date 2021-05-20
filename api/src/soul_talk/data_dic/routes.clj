@@ -17,7 +17,7 @@
 (def api-routes
   (context "/data-dices" []
     :tags ["数据字典"]
-    :header-params ["api-key" :- string?]
+    :header-params [api-key :- string?]
 
     (GET "/:id" []
       :auth-app-key #{"admin"}

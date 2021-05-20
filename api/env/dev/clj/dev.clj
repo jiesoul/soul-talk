@@ -7,11 +7,15 @@
             [mount-up.core :as mu]
             [soul-talk.database.my-migrations :as my-migrations]
             [com.jakemccrary.test-refresh :as test-refresh]
+            [eftest.runner :refer [find-tests run-tests]]
             [mount.core :as mount]))
 
 (mu/on-upndown :info mu/log :before)
 
 (def test-refresh test-refresh/run-in-repl)
+
+(defn run-test [url & opt]
+  (run-tests (find-tests url) opt))
 
 (defn migrate [args]
   (my-migrations/migrate args (select-keys conf [:database-url :migrations])))

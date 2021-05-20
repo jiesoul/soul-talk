@@ -1,4 +1,4 @@
-(ns soul-talk.auth.auth-test
+(ns soul-talk.routes.site.auth-test
   (:require [clojure.test :refer :all]
             [soul-talk.helper :as h]
             [soul-talk.handler :refer :all]
@@ -11,8 +11,9 @@
       (let [response (app (-> (mock/request :post "/login")
                             (mock/content-type "application/json")
                             (mock/json-body h/user)))
-            body (h/body (:body response))]
-        (is (= 200 (:status response)))))))
+            body (h/body response)]
+        (is (= 200 (:status response)))
+        (is (string? (:token (:user body))))))))
 
 (deftest logout-test
 

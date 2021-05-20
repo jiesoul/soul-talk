@@ -1,4 +1,4 @@
-(ns soul-talk.tags.routes-test
+(ns soul-talk.routes.site.tag-test
   (:require [clojure.test :refer :all]
             [soul-talk.helper :as h]
             [soul-talk.tag.routes :refer :all]

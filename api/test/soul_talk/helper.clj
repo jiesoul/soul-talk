@@ -23,7 +23,7 @@
 (def ^:dynamic *app-token*  (atom (str "pmyzXOP27cbvyyqDuEWGM1WAy4Bw1UKK_qpYzfP63rk")))
 
 (def user {:email    "jiesoul@gmail.com"
-           :password "12345678"})
+           :password "123456789"})
 
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
@@ -37,8 +37,8 @@
   (let [response    (app (-> (mock/request :post "/login")
                            (mock/content-type "application/json")
                            (mock/json-body user)))
-        body        (parse-body (:body response))
-        login-token (str "Token " (get body :token))]
+        body        (body response)
+        login-token (:token (:user body))]
     (reset! *login-token* login-token)
     login-token))
 
@@ -80,12 +80,9 @@
 (defn make-request-by-login-token
   ([method uri] (make-request-by-login-token method uri {}))
   ([method uri body]
-   (let [login-token (login-token!)
-         header {:Authorization login-token}]
-     (make-request method uri header body))))
+   (make-request method uri {:Token (get-login-token!)} body)))
 
 (defn make-request-by-app-token
   ([method uri] (make-request-by-app-token method uri {}))
   ([method uri body]
-   (let [uri (str uri (if (s/includes? uri "?") "&" "?")  "app-key=" @*app-token*)]
-     (make-request method uri {} body))))
+   (make-request method uri {:api-key @*app-token*} body)))

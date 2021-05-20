@@ -2,7 +2,7 @@
 # 修改密码
 PATCH {{baseUrl}}/users/1/password
 Content-Type: application/json
-Authorization: {{token}}
+Token: {{token}}
 
 {"oldPassword" :  "123456789", "newPassword" :  "12345678", "confirmPassword" : "12345678"}
 

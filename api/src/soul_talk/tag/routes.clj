@@ -40,6 +40,7 @@
 (def private-routes
   (context "/tags" []
     :tags ["标签"]
+    :header-params [api-key :- string?]
 
     (POST "/" []
       :auth-login #{"admin"}

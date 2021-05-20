@@ -1,4 +1,4 @@
-(ns soul-talk.article.routes-test
+(ns soul-talk.routes.site.article-test
   (:require [clojure.test :refer :all]
             [soul-talk.helper :as h]
             [clojure.tools.logging :as log]))

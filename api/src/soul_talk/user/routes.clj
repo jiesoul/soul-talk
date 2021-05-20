@@ -17,6 +17,8 @@
 (def public-routes
   (context "/users" []
     :tags ["用户"]
+    :header-params [api-key :- string?]
+
     (GET "/:id/profile" []
       :auth-app-key #{"admin"}
       :return Result
@@ -29,17 +31,17 @@
   (context "/users" []
     :tags ["用户"]
 
-    (GET "/auth-keys" req
-      :auth-login #{"admin"}
-      :return Result 
-      :summary "查看登录记录"
-      (handler/load-users-auth-keys-page req))
-
     (GET "/" req
       :auth-login #{"admin"}
       :return Result
       :summary "查看所有用户"
       (handler/load-users-page req))
+
+    (GET "/auth-keys" req
+      :auth-login #{"admin"}
+      :return Result
+      :summary "查看登录记录"
+      (handler/load-users-auth-keys-page req))
 
     (context "/:id" []
       :path-params [id :- int?]
@@ -74,7 +76,10 @@
         :summary "获取用户角色"
         :auth-login #{"admin"}
         :return Result
-        (handler/get-user-roles id)))))
+        (handler/get-user-roles id)))
+
+
+    ))
 
       
 

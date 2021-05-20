@@ -16,7 +16,7 @@
 (def api-routes
   (context "/site-info" []
     :tags ["网站信息"]
-    :header-params ["api-key" :- string?]
+    :header-params [api-key :- string?]
 
     (GET "/:id" []
       :summary "获取网站基本信息"
@@ -28,14 +28,15 @@
 (def site-routes
   (context "/site-info" []
     :tags ["网站"]
-    (GET "/:id" []
-      :summary "获取网站基本信息"
+    (context "/:id" [id]
       :path-params [id :- int?]
-      (handler/get-site-info id))
+      (GET "/" []
+        :summary "获取网站基本信息"
+        (handler/get-site-info id))
 
-    (PATCH "/" []
-      :summary "更新网站信息"
-      :auth-login #{"admin"}
-      :body [site-info handler/update-site-info]
-      (handler/update-site-info! site-info))
-    ))
+      (PATCH "/" []
+        :summary "更新网站信息"
+        :return Result
+        :auth-login #{"admin"}
+        :body [site-info handler/update-site-info]
+        (handler/update-site-info! site-info)))))

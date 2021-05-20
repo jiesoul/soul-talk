@@ -1,4 +1,4 @@
-(ns soul-talk.data-dic.routes-test
+(ns soul-talk.routes.site.data-dic-test
   (:require [clojure.test :refer :all]
             [soul-talk.helper :as h]))
 

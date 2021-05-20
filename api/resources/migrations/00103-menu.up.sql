@@ -24,11 +24,10 @@ insert into menu (id, name, url, pid, note) VALUES (1202, '用户授权管理', 
 insert into menu (id, name, url, pid, note) VALUES (1203, 'APP key管理', '/app-key', 12, '');
 
 insert into menu (id, name, url, pid, note) VALUES (13, '数据管理', '', 0, '');
-insert into menu (id, name, url, pid, note) VALUES (1301, '系列管理', '/series', 13, '');
+insert into menu (id, name, url, pid, note) VALUES (1301, '分类管理', '/category', 13, '');
 insert into menu (id, name, url, pid, note) VALUES (1302, '标签管理', '/tag', 13, '');
 
 insert into menu (id, name, url, pid, note) VALUES (14, '文章管理', '', 0, '');
 insert into menu (id, name, url, pid, note) values (1401, '文章列表', '/article', 14, '');
-insert into menu (id, name, url, pid, note) values (1402, '文章标签管理', '/article/tag', 14, '');
-insert into menu (id, name, url, pid, note) values (1403, '文章评论管理', '/article/comment', 14, '');
+insert into menu (id, name, url, pid, note) values (1402, '文章评论管理', '/article/comment', 14, '');
 

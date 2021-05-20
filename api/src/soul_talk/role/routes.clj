@@ -15,6 +15,7 @@
 (def site-routes
   (context "/roles" []
     :tags ["角色"]
+    :header-params [app-key :- string?]
 
     (POST "/" []
       :summary "保存角色"

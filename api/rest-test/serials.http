@@ -1,7 +1,0 @@
-# 系列
-
-GET {{baseUrl}}/series
-Accept: application/json
-Authorization: {{token}}
-
-###

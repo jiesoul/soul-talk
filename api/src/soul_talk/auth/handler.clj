@@ -40,23 +40,18 @@
 (defn refresh-token [user-token]
   (auth-db/refresh-token! (assoc user-token :refresh_at (l/local-date-time))))
 
-(defn login!
-  [{:keys [remote-addr] :as req} {:keys [email password]}]
+(defn login! [{:keys [remote-addr] :as req} {:keys [email password]}]
   (if-let [{:keys [id ] :as user} (authenticate-local email password)]
     (do
       (-> user
         (assoc :last_login_at (l/local-date-time))
         (user-db/update-login-time!))
       (let [token (utils/gen-token)
-            user-token {:token token :user_id id}
-            user-roles (user-db/get-user-roles id)
-            roles-menus (role-db/get-role-menus-by-ids (map :role_id user-roles))
-            menus (menu-db/get-menus-by-ids (map :menu_id roles-menus))]
+            user-token {:token token :user_id id}]
         (auth-db/save-token! user-token)
         (log/info "user:" email " successfully logged from ip " remote-addr " Token: " token)
         (utils/ok "登录成功" {:user (-> user
                                   (dissoc :password)
-                                  (assoc :menus menus)
                                   (assoc :token token))})))
     (utils/unauthorized "email或密码错误,登录失败")))
 

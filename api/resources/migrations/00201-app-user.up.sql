@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS users
+CREATE TABLE IF NOT EXISTS app_user
 (id serial primary key,
  email VARCHAR(50) unique,
  name VARCHAR(50),
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users
 );
 
 -- 插入初始用户 密码为 12345678
-insert into users (name, email, admin, last_login_at, password, is_valid, create_by, update_by)
+insert into app_user (name, email, admin, last_login_at, password, is_valid, create_by, update_by)
 VALUES ('jiesoul', 'jiesoul@gmail.com', '1201', now(),
         'bcrypt+sha512$91735d27fa9797835267bb14e457ba5d$12$7d6efccba210c2be98c9b9cabe0e428344cc8f69e38867f1',
         '1001', 1, 1);

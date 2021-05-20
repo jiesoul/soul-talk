@@ -93,14 +93,16 @@
 ;; 验证和授权 token
 (defn wrap-auth [handler roles]
   (fn [request]
-    (let [token (some-> (parse-header request "Token")
-                  (auth/auth-token)
-                  (auth/refresh-token))]
+    (let [token (some-> (resp/find-header request "Token")
+                  (second)
+                  (auth/auth-token))]
       (if-not token
         (utils/unauthorized)
         (if-not (has-role? "admin" roles)
           (utils/forbidden)
-          (handler request))))))
+          (do
+            (auth/refresh-token token)
+            (handler request)))))))
 
 
 (defn- parse-app-key [request token-name]
