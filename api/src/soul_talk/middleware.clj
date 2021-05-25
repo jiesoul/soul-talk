@@ -17,7 +17,8 @@
             [soul-talk.auth.handler :as auth]
             [compojure.api.exception :as ex]
             [ring.util.http-response :as resp]
-            [soul-talk.app-key.handler :as app-key])
+            [soul-talk.app-key.handler :as app-key]
+            [clojure.string :as str])
   (:import [java.time Instant]))
 
 ;; 错误处理
@@ -35,7 +36,7 @@
                     :clojure.spec.alpha/problems
                     (map :reason)
                     (apply str))]
-      (f (if (nil? message) "请求参数验证错误" message)))))
+      (f (if (str/blank? message) "请求参数验证错误" message)))))
 
 (defn request-parsing-handler [f type]
   (fn [^Exception e data req]
@@ -45,7 +46,7 @@
                     :clojure.spec.alpha/problems
                     (map :reason)
                     (apply str))]
-      (f (if (nil? message) "请求参数处理错误" message)))))
+      (f (if (str/blank? message) "请求参数处理错误" message)))))
 
 (defn response-validation-handler [f type]
   (fn [^Exception e data resp]
@@ -55,7 +56,7 @@
                     :clojure.spec.alpha/problems
                     (map :reason)
                     (apply str))]
-      (f (if (nil? message) "响应错误" message)))))
+      (f (if (str/blank? message) "响应错误" message)))))
 
 
 (def exceptions-config
@@ -63,11 +64,11 @@
               ;:schema.core/error ex/schema-error-handler
 
               ;; log all request validation errors
-              ;::ex/request-validation (ex/with-logging ex/request-parsing-handler :info)
+              ::ex/request-validation (ex/with-logging ex/request-parsing-handler :info)
 
               java.sql.SQLException (exception-handler utils/internal-server-error :sql)
 
-              ::ex/request-validation (request-validation-handler utils/bad-request :request-validation)
+              ;::ex/request-validation (request-validation-handler utils/bad-request :request-validation)
               ::ex/request-parsing (request-parsing-handler utils/bad-request :request)
               ::ex/response-validation (response-validation-handler utils/bad-request :response)
               ::ex/default (exception-handler utils/internal-server-error :unknown)}})
@@ -152,6 +153,5 @@
       :access-control-allow-methods [:get :post :put :delete :patch :headers :options])
     wrap-defaults
     wrap-internal-error
-    mw/wrap-format-response
-    wrap-multipart-params))
+    (mw/wrap-format-response format-options)))
     

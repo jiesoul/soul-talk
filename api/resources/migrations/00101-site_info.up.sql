@@ -7,4 +7,4 @@ CREATE TABLE IF NOT EXISTS site_info (
     author varchar(50)
 );
 
-INSERT INTO site_info (name, description, tags, logo, author) VALUES ('不过如此', '个人网站','clojrue,java,C,C++,Blender, UE4', '', 'jiesoul');
+INSERT INTO site_info (name, description, tags, logo, author) VALUES ('JIESOUL的个从网站', '个人网站','clojrue, java, C, C++, Blender, UE4', '', 'jiesoul');

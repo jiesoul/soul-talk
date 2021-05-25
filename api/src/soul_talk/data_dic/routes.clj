@@ -46,7 +46,7 @@
     (GET "/" req
       :auth-login #{"admin"}
       :return Result
-      :summary "全部字典数据"
+      :summary "分页查询字典数据"
       (data-dic/load-data-dic-page req))
 
     (POST "/" []

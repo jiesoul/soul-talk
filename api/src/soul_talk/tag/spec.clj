@@ -10,5 +10,5 @@
             :reason "id "}))
 
 (def tag
-  (ds/spec {:name :core/tag
+  (ds/spec {:name :tag/add
             :spec {:name spec/username?}}))

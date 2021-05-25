@@ -17,7 +17,6 @@
 (def public-routes
   (context "/users" []
     :tags ["用户"]
-    :header-params [api-key :- string?]
 
     (GET "/:id/profile" []
       :auth-app-key #{"admin"}

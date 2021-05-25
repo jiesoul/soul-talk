@@ -6,8 +6,8 @@
 
 (def update-site-info spec/update-site-info)
 
-(defn update-site-info!
-  [site-info]
+(defn update-site-info! [site-info]
+  (log/info "site-info: " site-info)
   (let [id (:id site-info)
         _ (db/update! site-info)
         site-info (db/get-by-id id)]

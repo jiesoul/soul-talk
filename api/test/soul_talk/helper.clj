@@ -5,7 +5,8 @@
             [ring.mock.request :as mock]
             [soul-talk.utils :as utils]
             [clojure.tools.logging :as log]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [ring.util.codec :as codec]))
 
 (defn start-states [f]
   (mount.core/start)
@@ -23,7 +24,7 @@
 (def ^:dynamic *app-token*  (atom (str "pmyzXOP27cbvyyqDuEWGM1WAy4Bw1UKK_qpYzfP63rk")))
 
 (def user {:email    "jiesoul@gmail.com"
-           :password "123456789"})
+           :password "12345678"})
 
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
@@ -70,11 +71,18 @@
           request (mock/header request k v)]
       (make-header request (rest header)))))
 
+(defn encode-params
+  "Turn a map of parameters into a urlencoded string."
+  [params]
+  (if params
+    (codec/form-encode params)))
+
 (defn make-request [method uri header body]
   (let [response (app (-> (mock/request method uri)
                         (mock/content-type "application/json")
                         (make-header header)
                         (mock/json-body body)))]
+    (log/info "request body: " response)
     response))
 
 (defn make-request-by-login-token

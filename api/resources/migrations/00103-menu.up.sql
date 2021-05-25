@@ -31,3 +31,8 @@ insert into menu (id, name, url, pid, note) VALUES (14, '文章管理', '', 0, '
 insert into menu (id, name, url, pid, note) values (1401, '文章列表', '/article', 14, '');
 insert into menu (id, name, url, pid, note) values (1402, '文章评论管理', '/article/comment', 14, '');
 
+insert into menu (id, name, url, pid, note) VALUES (15, 'wiki管理', '', 0, '');
+insert into menu (id, name, url, pid, note) VALUES (1501, 'wiki设置', '', 15, '');
+insert into menu (id, name, url, pid, note) VALUES (1502, 'wiki页面', '', 15, '');
+insert into menu (id, name, url, pid, note) VALUES (1503, 'wiki内容', '', 15, '');
+

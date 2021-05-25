@@ -6,7 +6,4 @@
 
 (def update-site-info
   (ds/spec {:name :site-info/update
-            :spec {:name                 string?
-                   (ds/opt :description) string?
-                   (ds/opt :tags)        string?
-                   (ds/opt :author)      string?}}))
+            :spec {:name        spec/non-empty-string?}}))

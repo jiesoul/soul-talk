@@ -11,6 +11,8 @@
                  ;; 日志
                  [com.taoensso/timbre "5.1.2"]
                  [com.fzakaria/slf4j-timbre "0.3.21"]
+                 [org.clojure/tools.logging "1.1.0"]
+                 [ch.qos.logback/logback-classic "1.2.3"]
 
                  [clojure.java-time "0.3.2"]
 

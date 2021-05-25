@@ -3,7 +3,8 @@
             [soul-talk.utils :as utils]
             [soul-talk.pagination :as p]
             [java-time.local :as l]
-            [soul-talk.data-dic.spec :as spec]))
+            [soul-talk.data-dic.spec :as spec]
+            [taoensso.timbre :as log]))
 
 (def create-data-dic spec/create-data-dic)
 (def update-data-dic spec/update-data-dic)
@@ -18,6 +19,7 @@
     (if-let [dd (db/get-data-dic-by-id id)]
       (utils/bad-request (str "id: " id " 已经存在"))
       (let [data-dic (db/save-data-dic data-dic)]
+        (log/info "data-dic: " data-dic)
         (utils/ok {:data-dic data-dic})))))
 
 (defn update-data-dic [{:keys [id] :as data-dic}]

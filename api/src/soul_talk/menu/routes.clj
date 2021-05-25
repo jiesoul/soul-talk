@@ -15,7 +15,6 @@
 (def site-routes
   (context "/menus" []
     :tags ["菜单"]
-    :header-params [api-key :- string?]
 
     (POST "/" []
       :summary "保存菜单"

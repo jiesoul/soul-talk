@@ -1,5 +1,6 @@
 create table if not exists article (
     id int8 primary key,
+    category_id int default 0,
     image varchar(200) ,
     title varchar(200) not null,
     description text,

@@ -41,6 +41,4 @@
   (testing "delete app key"
     (let [app-key @*app-key*
           response (h/make-request-by-login-token :delete (context (str "/" (:id app-key))))]
-      (is (= 200 (:status response)))))
-
-  )
+      (is (= 200 (:status response))))))
