@@ -115,31 +115,31 @@
 (defn delete-article-tag-by-id [id]
   (sql/delete! *db* :article_tags ["id = ?" id]))
 
-;; series
+;; category
 
-(defn save-article-series! [article-series]
-  (sql/insert! *db* :article_series
-    article-series
+(defn save-article-category! [article-category]
+  (sql/insert! *db* :article_category
+    article-category
     {:builder-fn rs-set/as-unqualified-maps}))
 
-(defn save-article-series-all! [article-series-all]
+(defn save-article-category-all! [article-category-all]
   (sql/insert-multi! *db*
-    :article-series
-    [:article_id :series_id]
-    (map #([(:article_id %) (:series_id %)]) article-series-all
+    :article-category
+    [:article_id :category_id]
+    (map #([(:article_id %) (:category_id %)]) article-category-all
       {:builder-fn rs-set/as-unqualified-maps})))
 
 
-(defn get-article-series-by-article-id [article-id]
+(defn get-article-category-by-article-id [article-id]
   (sql/query *db*
-    ["select * from article_series where article_id = ?" article-id]
+    ["select * from article_category where article_id = ?" article-id]
     {:builder-fn rs-set/as-unqualified-maps}))
 
-(defn delete-article-series-by-article-id [article-id]
-  (sql/delete! *db* :article_series ["article_id = ?" article-id]))
+(defn delete-article-category-by-article-id [article-id]
+  (sql/delete! *db* :article_category ["article_id = ?" article-id]))
 
-(defn delete-article-series-by-id [id]
-  (sql/delete! *db* :article_series ["id = ?" id]))
+(defn delete-article-category-by-id [id]
+  (sql/delete! *db* :article_category ["id = ?" id]))
 
 ;; 评论
 (defn save-article-comment! [comment]

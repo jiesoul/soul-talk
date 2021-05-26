@@ -27,8 +27,7 @@
 
 (defn get-menus-by-ids [ids]
   (sql/query *db*
-    ["select * from menu where id = any(?)" (int-array ids)]
-    {:builder-fn rs-set/as-unqualified-maps}))
+    ["select * from menu where id = any(?)" (int-array ids)]))
 
 (defn gen-where [{:keys [id name pid]}]
   (let [[where-str coll] [(str " where 1=1 ") []]
@@ -57,4 +56,7 @@
 (defn get-all []
   (sql/query *db*
     ["select * from menu"]))
+
+(defn get-menu-by-pid [pid]
+  (sql/query *db* ["select * from menu where pid = ?" pid]))
 

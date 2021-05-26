@@ -28,10 +28,24 @@
       :body [menu menu/update-menu]
       (menu/update-menu! menu))
 
+    (GET "/" []
+      :summary "获取多个id"
+      :auth-login #{"admin"}
+      :query-params [ids :- string?]
+      (menu/get-menus-by-ids ids))
+
     (GET "/all" []
       :summary "所有菜单"
       :auth-login #{"admin"}
       (menu/load-menus-all))
+
+
+
+    (GET "/pid/:pid" []
+      :summary "查询子菜单"
+      :auth-login #{"admin"}
+      :path-params [pid :- int?]
+      (menu/load-menus-by-pid pid))
 
     (GET "/" req
       :summary "条件查询"
@@ -49,6 +63,4 @@
       (DELETE "/" []
         :summary "删除菜单"
         :auth-login #{"admin"}
-        (menu/delete-menu! id)))
-
-    ))
+        (menu/delete-menu! id)))))

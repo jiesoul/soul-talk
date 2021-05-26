@@ -2,8 +2,7 @@
   (:require [soul-talk.role.db :as role-db]
             [soul-talk.pagination :as p]
             [soul-talk.role.spec :as spec]
-            [soul-talk.utils :as utils]
-            [taoensso.timbre :as log]))
+            [soul-talk.utils :as utils]))
 
 (def create-role spec/create-role)
 (def update-role spec/update-role)

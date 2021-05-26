@@ -22,6 +22,12 @@
       :body [role role/create-role]
       (role/save-role! role))
 
+    (PATCH "/" []
+      :summary "更新角色"
+      :auth-login #{"admin"}
+      :body [role role/update-role]
+      (role/update-role! role))
+
     (GET "/" req
       :summary "条件查询"
       :auth-login #{"admin"}
@@ -41,11 +47,6 @@
         :path-params [id :- int?]
         (role/get-role id))
 
-      (PATCH "/" []
-        :summary "更新角色"
-        :auth-login #{"admin"}
-        :body [role role/update-role]
-        (role/update-role! role))
 
       (DELETE "/" []
         :summary "删除角色"

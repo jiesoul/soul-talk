@@ -9,7 +9,7 @@
       (is (= 200 (:status resp)))
       (is (= 1 (:id (:site-info body)))))))
 
-(def site-info {:name "个人网站" :description "个人网站" :tags "clojure java " :author "jiesoul"})
+(def site-info {:id 1 :name "个人网站" :description "个人网站" :tags "clojure java UE4 UE5 Blender" :author "jiesoul"})
 
 (deftest update-site-info
   (testing "update site info"

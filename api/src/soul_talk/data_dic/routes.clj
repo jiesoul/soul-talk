@@ -30,24 +30,11 @@
       :summary "通过父ID"
       :return Result
       :path-params [pid :- string?]
-      (data-dic/load-data-dices-by-pid pid))
-    ))
+      (data-dic/load-data-dices-by-pid pid))))
 
 (def site-routes
   (context "/data-dices" []
     :tags ["数据字典"]
-
-    (GET "/all" req
-      :auth-login #{"admin"}
-      :return Result
-      :summary "全部字典数据"
-      (data-dic/load-all-data-dices req))
-
-    (GET "/" req
-      :auth-login #{"admin"}
-      :return Result
-      :summary "分页查询字典数据"
-      (data-dic/load-data-dic-page req))
 
     (POST "/" []
       :auth-login #{"admin"}
@@ -63,11 +50,17 @@
       :body [data-dic data-dic/update-data-dic]
       (data-dic/update-data-dic data-dic))
 
-    (GET "/:id" []
+    (GET "/" req
       :auth-login #{"admin"}
-      :path-params [id :- string?]
       :return Result
-      (data-dic/get-data-dic-by-id id))
+      :summary "分页查询字典数据"
+      (data-dic/load-data-dic-page req))
+
+    (GET "/all" req
+      :auth-login #{"admin"}
+      :return Result
+      :summary "全部字典数据"
+      (data-dic/load-all-data-dices req))
 
     (GET "/pid/:pid" []
       :auth-login #{"admin"}
@@ -76,12 +69,19 @@
       :path-params [pid :- string?]
       (data-dic/load-data-dices-by-pid pid))
 
+    (context "/:id" []
 
-    (DELETE "/:id" []
-      :auth-login #{"admin"}
-      :summary "删除"
-      :return Result
-      :path-params [id :- string?]
-      (data-dic/delete-data-dic-by-id id))
+      (GET "/" []
+        :auth-login #{"admin"}
+        :path-params [id :- string?]
+        :return Result
+        (data-dic/get-data-dic-by-id id))
+
+      (DELETE "/" []
+        :auth-login #{"admin"}
+        :summary "删除"
+        :return Result
+        :path-params [id :- string?]
+        (data-dic/delete-data-dic-by-id id)))
 
     ))

@@ -9,7 +9,7 @@
 (def create-article spec/create-article)
 (def update-article spec/update-article)
 (def article-tag spec/article-tag)
-(def article-series spec/article-series)
+(def article-category spec/article-category)
 (def article-comment spec/article-comment)
 
 (def format-id (java-time.format/formatter "yyyyMMddHHmmssSSS"))
@@ -104,22 +104,22 @@
   (let [rs (article-db/delete-article-tag-by-id id)]
     (utils/ok "删除成功")))
 
-(defn save-article-series! [article-series]
-  (let [article-series (article-db/save-article-series! article-series)]
-    (utils/ok "保存成功" {:article-series article-series})))
+(defn save-article-category! [article-category]
+  (let [article-category (article-db/save-article-category! article-category)]
+    (utils/ok "保存成功" {:article-category article-category})))
 
-(defn save-article-series-all! [article-series-all]
-  (let [article-series-all (article-db/save-article-series-all! article-series-all)]
-    (utils/ok "保存成功" {:article-series article-series-all})))
+(defn save-article-category-all! [article-category-all]
+  (let [article-category-all (article-db/save-article-category-all! article-category-all)]
+    (utils/ok "保存成功" {:article-category article-category-all})))
 
-(defn get-article-series [article-id]
-  (let [article-series (article-db/get-article-series-by-article-id article-id)]))
+(defn get-article-category [article-id]
+  (let [article-category (article-db/get-article-category-by-article-id article-id)]))
 
-(defn delete-article-series-by-article-id! [article-id]
-  (let [rs (article-db/delete-article-series-by-article-id article-id)]))
+(defn delete-article-category-by-article-id! [article-id]
+  (let [rs (article-db/delete-article-category-by-article-id article-id)]))
 
-(defn delete-article-series-by-id! [id]
-  (let [rs (article-db/delete-article-series-by-id id)]
+(defn delete-article-category-by-id! [id]
+  (let [rs (article-db/delete-article-category-by-id id)]
     (utils/ok "删除成功")))
 
 (defn save-article-comment! [article-comment]

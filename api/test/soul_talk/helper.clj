@@ -6,7 +6,8 @@
             [soul-talk.utils :as utils]
             [clojure.tools.logging :as log]
             [clojure.string :as s]
-            [ring.util.codec :as codec]))
+            [ring.util.codec :as codec]
+            [cheshire.core :as json]))
 
 (defn start-states [f]
   (mount.core/start)
@@ -81,8 +82,7 @@
   (let [response (app (-> (mock/request method uri)
                         (mock/content-type "application/json")
                         (make-header header)
-                        (mock/json-body body)))]
-    (log/info "request body: " response)
+                        (mock/body (json/generate-string body {:escape-non-ascii true}))))]
     response))
 
 (defn make-request-by-login-token

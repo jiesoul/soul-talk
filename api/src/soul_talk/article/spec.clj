@@ -31,10 +31,10 @@
                    :tag_id int?}}))
 
 
-(def article-series
-  (ds/spec {:name :article/article-series
+(def article-category
+  (ds/spec {:name :article/article-category
             :spec {:article_id string?
-                   :series_id int?}}))
+                   :category_id int?}}))
 
 (def article-comment
   (ds/spec {:name :article/create-comment

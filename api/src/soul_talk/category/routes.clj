@@ -1,8 +1,8 @@
-(ns soul-talk.series.routes
+(ns soul-talk.category.routes
   (:require [compojure.api.sweet :refer :all]
             [compojure.api.meta :refer [restructure-param]]
             [soul-talk.spec.core :refer [Result]]
-            [soul-talk.series.handler :as series]
+            [soul-talk.category.handler :as category]
             [soul-talk.middleware :as m]))
 
 (defmethod restructure-param :auth-app-key
@@ -15,59 +15,58 @@
 
 
 (def api-routes
-  (context "/series" []
+  (context "/category" []
     :tags ["系列"]
     :header-params [api-key :- string?]
 
     (GET "/" req
       :auth-app-key #{"admin"}
-      :summary "query series by attribute"
+      :summary "query category by attribute"
       :return Result
-      (series/load-series-page req))
+      (category/load-category-page req))
 
     (GET "/:id" []
       :auth-app-key #{"admin"}
-      :summary "get a series by id"
+      :summary "get a category by id"
       :path-params [id :- int?]
       :return Result
-      (series/get-series-by-id id))
-
+      (category/get-category-by-id id))
     ))
 
 (def site-routes
-  (context "/series" []
+  (context "/category" []
     :tags ["系列"]
 
     (POST "/" []
       :auth-login #{"admin"}
       :summary "保存系列"
       :return Result
-      :body [series series/create-series]
-      (series/save-series series))
+      :body [category category/create-category]
+      (category/save-category category))
 
     (PATCH "/" []
       :auth-login #{"admin"}
       :summary "更新"
-      :body [series series/update-series]
-      (series/update-series series))
+      :body [category category/update-category]
+      (category/update-category category))
 
     (GET "/:id" []
       :auth-login #{"admin"}
-      :summary "get a series by id"
+      :summary "get a category by id"
       :path-params [id :- int?]
       :return Result
-      (series/get-series-by-id id))
+      (category/get-category-by-id id))
 
     (GET "/" req
       :auth-login #{"admin"}
       :summary "所有系列"
       :return Result
-      (series/load-series-page req))
+      (category/load-category-page req))
 
     (DELETE "/:id" []
       :auth-login #{"admin"}
       :summary "删除"
       :path-params [id :- int?]
-      (series/delete-series id))
+      (category/delete-category id))
 
     ))

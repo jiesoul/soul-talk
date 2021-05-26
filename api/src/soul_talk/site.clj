@@ -9,7 +9,7 @@
             [soul-talk.role.routes :as role]
             [soul-talk.auth.routes :as auth]
             [soul-talk.user.routes :as user]
-            [soul-talk.series.routes :as series]
+            [soul-talk.category.routes :as category]
             [soul-talk.tag.routes :as tag]
             [soul-talk.article.routes :as article]))
 
@@ -46,8 +46,8 @@
         data-dic/site-routes
         menu/site-routes
         role/site-routes
-        app-key/site-routes
         user/private-routes
+        app-key/site-routes
         tag/private-routes
         article/site-routes)
       )))

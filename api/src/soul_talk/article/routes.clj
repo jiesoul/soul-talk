@@ -52,12 +52,12 @@
         :path-params [id :- string?]
         (article/get-article-tags id))
 
-      (GET "/series" []
+      (GET "/category" []
         :auth-app-key #{"admin"}
         :summary "查看所属系列"
         :return Result
         :path-params [id :- string?]
-        (article/get-article-series id))
+        (article/get-article-category id))
 
       (POST "/comments" []
         :auth-app-key #{"admin"}

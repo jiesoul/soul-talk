@@ -7,7 +7,7 @@
             [soul-talk.tag.routes :as tag]
             [soul-talk.article.routes :as article]
             [soul-talk.data-dic.routes :as data-dic]
-            [soul-talk.series.routes :as serials]))
+            [soul-talk.category.routes :as category]))
 
 ; 多重方法用来注入中间件
 ;; 如果需要这里添加路由，请拷贝此方法到路由文件。
@@ -52,7 +52,6 @@
         site-info/api-routes
         data-dic/api-routes
         tag/public-routes
-        serials/api-routes
         user/public-routes
         article/api-routes))))
 

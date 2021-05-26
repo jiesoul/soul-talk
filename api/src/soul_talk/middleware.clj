@@ -113,7 +113,6 @@
 ;; 验证APP key
 (defn wrap-app-key [handler rule]
   (fn [request]
-    (log/info "request: " (:headers request))
     (let [api-key (app-key/auth-app-key (parse-app-key request "api-key"))]
       (if-not api-key
         (utils/forbidden "无效的APP KEY")
