@@ -5,20 +5,21 @@
             [clojure.string :as str]))
 
 (defn add-role-menus! [role-id menus]
-  (when (not-empty menus)
-    (sql/insert-multi! *db* :role_menu [:role_id :menu_id] (map vector (repeat role-id) (map :id menus)))))
+  (when (seq menus)
+    (sql/insert-multi! *db* :role_menu [:role_id :menu_id] (map vector (repeat role-id) menus))))
 
 (defn delete-role-menus! [role-id]
   (sql/delete! *db* :role_menu ["role_id = ?" role-id]))
 
-(defn save-role! [{:keys [id menus] :as role}]
-  (add-role-menus! id menus)
-  (sql/insert! *db* :role (dissoc role :menus)))
+(defn save-role! [{:keys [id menus-ids] :as role}]
+  (let [role (sql/insert! *db* :role (dissoc role :menus-ids))
+        _ (add-role-menus! (:id role) menus-ids)]
+    role))
 
-(defn update-role! [{:keys [id menus] :as role}]
+(defn update-role! [{:keys [id menus-ids] :as role}]
   (delete-role-menus! id)
-  (add-role-menus! id menus)
-  (sql/update! *db* :role (select-keys role [:name :note]) [" id = ? " (:id role)]))
+  (add-role-menus! id menus-ids)
+  (sql/update! *db* :role (select-keys role [:name :note :update_by :update_at]) [" id = ? " id]))
 
 (defn delete-role! [id]
   (delete-role-menus! id)

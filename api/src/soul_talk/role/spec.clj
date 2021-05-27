@@ -4,13 +4,15 @@
 
 (def create-role
   (ds/spec {:name :role/create
-            :spec {:name spec/non-empty-string?
-                   :create_by int?
-                   (ds/opt :note) (ds/maybe spec/non-empty-string?)}}))
+            :spec {:name               spec/non-empty-string?
+                   :create_by          int?
+                   (ds/opt :note)      string?
+                   (ds/opt :menus-ids) coll?}}))
 
 (def update-role
   (ds/spec {:name :role/update
-            :spec {:id spec/id
-                   :update_by int?
-                   :name spec/non-empty-string?
-                   (ds/opt :note) (ds/maybe spec/non-empty-string?)}}))
+            :spec {:id                 spec/id
+                   :update_by          int?
+                   :name               spec/non-empty-string?
+                   (ds/opt :note)      string?
+                   (ds/opt :menus-ids) coll?}}))

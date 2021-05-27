@@ -7,13 +7,13 @@
             [mount.core :as mount]
             [soul-talk.database.my-migrations :as migrations]))
 
-(use-fixtures
-  :once
-  (fn [f]
-    (mount/start
-      #'soul-talk.config/conf
-      #'soul-talk.database.db/*db*)
-    (f)))
+;(use-fixtures
+;  :once
+;  (fn [f]
+;    (mount/start
+;      #'soul-talk.config/conf
+;      #'soul-talk.database.db/*db*)
+;    (f)))
 
 (deftest test-db
   (jdbc/with-transaction [t-conn *db*]

@@ -34,6 +34,7 @@
       (role/load-roles-page req))
 
     (GET "/menus" []
+      :summary "根据多个角色 ID 查询对应所有菜单"
       :query-params [ids :- string?]
       :auth-login #{"admin"}
       (role/get-role-menus-by-ids ids))
@@ -44,21 +45,14 @@
       (GET "/" []
         :summary "获取角色"
         :auth-login #{"admin"}
-        :path-params [id :- int?]
         (role/get-role id))
-
 
       (DELETE "/" []
         :summary "删除角色"
         :auth-login #{"admin"}
-        :path-params [id :- int?]
         (role/delete-role! id))
-
 
       (GET "/menus" []
         :summary "获取角色权限菜单"
         :auth-login #{"admin"}
-        :path-params [id :- int?]
-        (role/get-role-menus id)))
-
-    ))
+        (role/get-role-menus id)))))

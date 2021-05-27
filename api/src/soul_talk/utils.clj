@@ -62,7 +62,6 @@
 
 (defn log-error
   [^Exception e data request-or-response type]
-  (log/error "error header and body: " (:headers request-or-response) " " (:body request-or-response))
   (log/error "error data: " data)
   (log/error "error type: " type)
   (log/error "error case： -- " (.getMessage e)))
