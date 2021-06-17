@@ -12,8 +12,9 @@
 ;    (let [response (h/make-request-by-app-token :get "/v1/users/1/profile")]
 ;      (is (= 200 (:status response)))))
 ;  )
+(def user-id 1)
 
-(deftest get-all-users
+(deftest user-test
 
   (testing "get users all"
     (let [response (h/make-request-by-login-token :get
@@ -25,32 +26,26 @@
                      "/users?name=sss")
           body     (parse-body (:body response))]
       (test
-        (is (= 200 (:status response)))))))
+        (is (= 200 (:status response))))))
 
-(def user-id 1)
-
-(deftest load-user
   (testing "load user by id"
     (let [response (h/make-request-by-login-token :get (str "/users/" user-id))
-          body (h/body response)]
+          body     (h/body response)]
       (test (is (= 200 (:status response))))
-      (test (is (= user-id (:id (:user body))))))))
+      (test (is (= user-id (:id (:user body)))))))
 
-(deftest update-user
   (testing "update user profile"
     (let [name "test"
-          resp (h/make-request-by-login-token :patch (str "/users/" user-id) {:id user-id
+          resp (h/make-request-by-login-token :patch (str "/users/" user-id) {:id   user-id
                                                                               :name name})
           body (h/body resp)]
-      (test (is (= 200 (:status resp)))))))
+      (test (is (= 200 (:status resp))))))
 
-(deftest load-user-roles
   (testing "load user roles"
     (let [resp (h/make-request-by-login-token :get (str "/users/" user-id "/roles"))
           body (h/body resp)]
-      (test (is (= 200 (:status resp)))))))
-
-(deftest load-user-auth-keys
+      (test (is (= 200 (:status resp))))))
+  
   (testing "load user auth keys page"
     (let [resp (h/make-request-by-login-token :get (str "/users/auth-keys"))
           body (h/body resp)]

@@ -42,13 +42,13 @@
       (context "" []
         auth/login-routes)
       (context "" []
-        site-info/site-routes
-        data-dic/site-routes
-        menu/site-routes
-        role/site-routes
+        site-info/private-routes
+        data-dic/private-routes
+        menu/private-routes
+        role/private-routes
         user/private-routes
-        app-key/site-routes
+        app-key/private-routes
         tag/private-routes
-        article/site-routes)
-      )))
+        category/private-routes
+        article/private-routes))))
 

@@ -13,7 +13,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
-(def site-routes
+(def private-routes
   (context "/app-keys" []
     :tags ["app-key"]
 
@@ -36,21 +36,22 @@
       :return Result
       (app-key/save-app-key! app-key))
 
-    (GET "/:id" []
-      :auth-login #{"admin"}
-      :return Result
-      :path-params [id :- int?]
-      (app-key/get-app-key id))
-
     (PATCH "/" []
       :auth-login #{"admin"}
       :return Result
       :body [app-key app-key/update-app-key]
       (app-key/update-app-key! app-key))
 
-    (DELETE "/:id" []
-      :auth-login #{"admin"}
-      :return Result
+    (context "/:id" []
       :path-params [id :- int?]
-      :summary "删除key"
-      (app-key/delete-app-key! id))))
+
+      (GET "/" []
+        :auth-login #{"admin"}
+        :return Result
+        (app-key/get-app-key id))
+
+      (DELETE "/" []
+        :auth-login #{"admin"}
+        :return Result
+        :summary "删除key"
+        (app-key/delete-app-key! id)))))

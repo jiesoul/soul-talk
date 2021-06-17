@@ -7,23 +7,25 @@
   (ds/spec {:name :article/create-article
             :spec {:title                string?
                    :body                 spec/non-empty-string?
-                   :create_by            int?
-                   :update_by             int?}}))
+                   :category_id              spec/id
+                   :create_by            spec/id
+                   :update_by             spec/id}}))
 
 (def update-article
   (ds/spec {:name :article/update-article
             :spec {:id                   spec/non-empty-string?
                    :update_by            int?
                    :title                spec/non-empty-string?
-                   :body                 spec/non-empty-string?}}))
+                   :body                 spec/non-empty-string?
+                   :category_id              spec/id}}))
 
 (def article
   (ds/spec {:name :article/article
             :spec {:id               spec/non-empty-string?
                    :title            spec/non-empty-string?
                    :body             spec/non-empty-string?
-                   :update_by        int?
-                   :create_by        int?}}))
+                   :update_by        spec/id
+                   :create_by        spec/id}}))
 
 (def article-tag
   (ds/spec {:name :article/article-tag

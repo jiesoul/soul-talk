@@ -9,7 +9,7 @@
   (st/spec {:spec        (s/and string? #(<= 32 (count %)))
             :type        :string
             :description "key"
-            :reason      "api Key 必须大于等于64位"}))
+            :reason      "api Key 必须大于等于32位"}))
 
 (def app-name
   (st/spec {:spec        (s/and string? #(not (str/blank? %)))

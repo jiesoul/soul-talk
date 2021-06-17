@@ -24,7 +24,7 @@
       (handler/get-site-info id))
     ))
 
-(def site-routes
+(def private-routes
   (context "/site-info" []
     :tags ["网站"]
 

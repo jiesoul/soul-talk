@@ -5,24 +5,22 @@
             [ring.mock.request :as mock]
             [clojure.tools.logging :as log]))
 
-(deftest login-test
+(deftest auth-test
+
   (testing "login"
     (test
       (let [response (app (-> (mock/request :post "/login")
                             (mock/content-type "application/json")
                             (mock/json-body h/user)))
-            body (h/body response)]
+            body     (h/body response)]
         (is (= 200 (:status response)))
-        (is (string? (:token (:user body))))))))
-
-(deftest logout-test
+        (is (string? (:token (:user body)))))))
 
   (testing "logout"
     (test
-      (let [req {:user_id 1}
+      (let [req      {:user_id 1}
             response (app (-> (mock/request :post "/logout")
                             (mock/content-type "application/json")
                             (mock/json-body req)))]
-        (is (= 200 (:status response))))))
-  )
+        (is (= 200 (:status response)))))))
 

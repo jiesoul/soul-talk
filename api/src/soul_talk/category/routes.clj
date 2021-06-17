@@ -15,8 +15,8 @@
 
 
 (def api-routes
-  (context "/category" []
-    :tags ["系列"]
+  (context "/categories" []
+    :tags ["分类"]
     :header-params [api-key :- string?]
 
     (GET "/" req
@@ -33,13 +33,13 @@
       (category/get-category-by-id id))
     ))
 
-(def site-routes
-  (context "/category" []
-    :tags ["系列"]
+(def private-routes
+  (context "/categories" []
+    :tags ["分类"]
 
     (POST "/" []
       :auth-login #{"admin"}
-      :summary "保存系列"
+      :summary "保存分类"
       :return Result
       :body [category category/create-category]
       (category/save-category category))
@@ -50,23 +50,22 @@
       :body [category category/update-category]
       (category/update-category category))
 
-    (GET "/:id" []
-      :auth-login #{"admin"}
-      :summary "get a category by id"
-      :path-params [id :- int?]
-      :return Result
-      (category/get-category-by-id id))
-
     (GET "/" req
       :auth-login #{"admin"}
-      :summary "所有系列"
+      :summary "所有分类"
       :return Result
       (category/load-category-page req))
 
-    (DELETE "/:id" []
-      :auth-login #{"admin"}
-      :summary "删除"
+    (context "/:id" []
       :path-params [id :- int?]
-      (category/delete-category id))
 
-    ))
+      (GET "/" []
+        :auth-login #{"admin"}
+        :summary "get a category by id"
+        :return Result
+        (category/get-category-by-id id))
+
+      (DELETE "/" []
+        :auth-login #{"admin"}
+        :summary "删除"
+        (category/delete-category id)))))

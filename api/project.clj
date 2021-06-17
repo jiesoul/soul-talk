@@ -46,6 +46,7 @@
 
                  ;; formats clojure.spec error messages
                  [expound "0.7.1"]
+                 [flake "0.4.5"]
 
                  ;;other
                  [environ "1.2.0"]

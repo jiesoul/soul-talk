@@ -1,7 +1,14 @@
 (ns soul-talk.utils.id-util
-  (:require [clj-time.coerce :as chronos]))
+  (:require [clj-time.coerce :as chronos]
+            [soul-talk.utils :as utils]
+            [flake.core :as flake]
+            [taoensso.timbre :as log]))
 
-(defonce bit-lengths {:timestamp 32 :cluster 5 :machine 5 :sequence-number 12})
+(defn generate-id! []
+  (flake/init!)
+  (flake/flake->bigint (flake/generate!)))
+
+(defonce bit-lengths {:timestamp 16 :cluster 2 :machine 2 :sequence-number 12})
 
 (defonce bit-positions {:timestamp (+ (:cluster bit-lengths) (:machine bit-lengths) (:sequence-number bit-lengths))
                         :cluster (+ (:machine bit-lengths) (:sequence-number bit-lengths))
@@ -29,7 +36,8 @@
 
 (def sequence-number (ref 0))
 
-(defn- now-real [] (System/currentTimeMillis))
+(defn now-real []
+  (System/currentTimeMillis))
 
 (defn- now-test []
   epoch)
@@ -39,7 +47,8 @@
         time-chunk (bit-shift-left time-id (:timestamp bit-positions))]
     (+ time-chunk full-machine-chunk sequence-number-id)))
 
-(defn generate-id [now]
+(defn generate-id
+  [now]
   (dosync
     (let [current-timestamp (now)]
       (if (= current-timestamp (ensure real-timestamp))
@@ -58,3 +67,6 @@
           (ref-set sequence-number 1)
           (ref-set real-timestamp current-timestamp)
           (create-id current-timestamp 0))))))
+
+(defn gen-id! []
+  (generate-id now-real))

@@ -73,9 +73,7 @@
       :return Result
       (article/load-articles-comments-page req))))
 
-    
-
-(def site-routes
+(def private-routes
   (context "/articles" []
     :tags ["文章"]
     ;; auth
@@ -93,24 +91,23 @@
       :summary "添加文章"
       (article/insert-article! article))
 
-    (context "/:id" []
+    (PATCH "/" []
+      :auth-login #{"admin"}
+      :return Result
+      :body [article article/update-article]
+      :summary "更新文章"
+      (article/update-article! article))
 
-      (GET "/" [id]
+    (context "/:id" []
+      :path-params [id :- string?]
+      (GET "/" []
         :auth-login #{"admin"}
         :return Result
         :summary "查看文章"
         (article/get-article id))
 
-      (PATCH "/" []
-        :auth-login #{"admin"}
-        :return Result
-        :body [article article/update-article]
-        :summary "更新文章"
-        (article/update-article! article))
-
       (PATCH "/publish" []
         :auth-login #{"admin"}
-        :path-params [id :- string?]
         :return Result
         :summary "发布文章"
         (article/publish-article! id))

@@ -11,14 +11,14 @@
 (defn load-category-page [req]
   (let [params (:params req)
         pagination (p/create req)
-        [category total] (db/load-category-page pagination params)
+        [categories total] (db/load-category-page pagination params)
         pagination (p/create-total pagination total)]
-    (utils/ok {:category category
+    (utils/ok {:categories categories
                :pagination pagination
                :query-params params})))
 
 (defn save-category [category]
-  (let [now (l/local-date-time)
+  (let [now (utils/now)
         category (db/save-category (assoc category :create_at now :update_at now))]
     (utils/ok {:category category})))
 

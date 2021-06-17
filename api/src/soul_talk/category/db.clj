@@ -30,4 +30,4 @@
   (sql/delete! *db* :category ["id = ?" id]))
 
 (defn get-category-by-id [id]
-  (sql/get-by-id *db* :category id {:builder-fn rs-set/as-unqualified-maps}))
+  (sql/get-by-id *db* :category id))

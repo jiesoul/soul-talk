@@ -12,7 +12,7 @@
   [_ rule acc]
   (update-in acc [:middleware] conj [m/wrap-auth rule]))
 
-(def site-routes
+(def private-routes
   (context "/roles" []
     :tags ["角色"]
 

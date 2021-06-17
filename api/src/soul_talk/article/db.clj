@@ -10,7 +10,7 @@
   (sql/insert! *db* :article article))
 
 (defn add-article-tags! [article-id tags]
-  (when (not-empty tags)
+  (when (seq? tags)
     (let [input (map vector (repeat article-id) tags)]
       (sql/insert-multi! *db* :article_tag
         [:article_id :tag_id]

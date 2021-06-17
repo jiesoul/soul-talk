@@ -32,7 +32,7 @@
       :path-params [pid :- string?]
       (data-dic/load-data-dices-by-pid pid))))
 
-(def site-routes
+(def private-routes
   (context "/data-dices" []
     :tags ["数据字典"]
 
