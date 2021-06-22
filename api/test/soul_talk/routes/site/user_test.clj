@@ -45,7 +45,7 @@
     (let [resp (h/make-request-by-login-token :get (str "/users/" user-id "/roles"))
           body (h/body resp)]
       (test (is (= 200 (:status resp))))))
-  
+
   (testing "load user auth keys page"
     (let [resp (h/make-request-by-login-token :get (str "/users/auth-keys"))
           body (h/body resp)]

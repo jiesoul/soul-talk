@@ -21,14 +21,14 @@
     (GET "/" request
       :auth-login #{"admin"}
       :return Result
-      :summary "查看所有文章"
+      :summary "查看所有回复"
       (reply/load-replies-page request))
 
     (POST "/" []
       :auth-login #{"admin"}
       :return Result
       :body [reply reply/create-reply]
-      :summary "添加文章"
+      :summary "添加回复"
       (reply/insert-reply! reply))
 
     (context "/:id" []
@@ -36,27 +36,27 @@
       (GET "/" [id]
         :auth-login #{"admin"}
         :return Result
-        :summary "查看文章"
+        :summary "查看回复"
         (reply/get-reply id))
 
       (PATCH "/" []
         :auth-login #{"admin"}
         :return Result
         :body [reply reply/update-reply]
-        :summary "更新文章"
+        :summary "更新回复"
         (reply/update-reply! reply))
 
       (PATCH "/publish" []
         :auth-login #{"admin"}
         :path-params [id :- string?]
         :return Result
-        :summary "发布文章"
+        :summary "发布回复"
         (reply/publish-reply! id))
 
       (DELETE "/" [id]
         :auth-login #{"admin"}
         :return Result
-        :summary "删除文章"
+        :summary "删除回复"
         (reply/delete-reply! id))
 
       (context "/comments" []
@@ -76,6 +76,6 @@
 
         (DELETE "/" []
           :auth-login #{"admin"}
-          :summary "删除文章所有评论"
+          :summary "删除回复所有评论"
           :path-params [id :- string?]
           (reply/delete-reply-comments-by-reply-id! id))))))

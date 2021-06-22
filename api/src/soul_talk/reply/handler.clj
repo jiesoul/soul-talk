@@ -9,10 +9,6 @@
 (def create-reply spec/create-reply)
 (def update-reply spec/update-reply)
 (def reply-tag spec/reply-tag)
-(def reply-category spec/reply-category)
-(def reply-comment spec/reply-comment)
-
-(def format-id (java-time.format/formatter "yyyyMMddHHmmssSSS"))
 
 (def publish-false "1102")
 (def publish-true "1101")
