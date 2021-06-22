@@ -5,17 +5,9 @@
 
 (def create-reply
   (ds/spec {:name :reply/create-reply
-            :spec {:title                string?
-                   :body                 spec/non-empty-string?
-                   :create_by            int?
-                   :update_by             int?}}))
-
-(def update-reply
-  (ds/spec {:name :reply/update-reply
-            :spec {:id                   spec/non-empty-string?
-                   :update_by            int?
-                   :title                spec/non-empty-string?
-                   :body                 spec/non-empty-string?}}))
+            :spec {:topic_id spec/non-empty-string?
+                   :user_name             spec/non-empty-string?
+                   :content                 spec/non-empty-string?}}))
 
 (def reply
   (ds/spec {:name :reply/reply
