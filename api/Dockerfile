@@ -2,12 +2,12 @@
 FROM clojure AS build
 RUN mkdir -p /code
 WORKDIR /code
-COPY project.clj /code
+COPY project.clj .
 RUN lein deps
 
-COPY env /code/env
-COPY resources /code/resource
-COPY src /code/src
+COPY env ./env
+COPY resources ./resource
+COPY src ./src
 RUN lein uberjar
 
 
@@ -19,11 +19,11 @@ MAINTAINER jiesoul <jiesoul@gmail.com>
 WORKDIR /app
 
 # 项目 jar 复制到容器下
-COPY --from=build /code/target/soul-talk.jar /app/soul-talk.jar
+COPY --from=build /code/target/soul-talk.jar .
 # 复制启动脚本
-COPY entrypoint.sh /app/entrypoint.sh
+COPY entrypoint.sh .
 # 给启动脚本加可执行权限
-RUN chmod +x /app/entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
 # 端口
 EXPOSE 3000

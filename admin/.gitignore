@@ -13,3 +13,4 @@ yarn*
 .calva/
 resources/public/js/
 .lsp/
+admin.iml
