@@ -6,7 +6,7 @@ COPY project.clj .
 RUN lein deps
 
 COPY env ./env
-COPY resources ./resource
+COPY resources ./resources
 COPY src ./src
 RUN lein uberjar
 
