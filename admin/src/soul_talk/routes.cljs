@@ -140,20 +140,20 @@
                      [:set-breadcrumb ["基础数据" "标签列表"]]
                      [:set-active-page :tag/edit]]))
 
-(defroute "/series" []
-  (run-events-admin [[:series/init]
-                     [:set-breadcrumb ["基础数据" "系列列表"]]
-                     [:set-active-page :series]]))
+(defroute "/category" []
+  (run-events-admin [[:category/init]
+                     [:set-breadcrumb ["基础数据" "分类管理"]]
+                     [:set-active-page :category]]))
 
-(defroute "/series/new" []
-  (run-events-admin [[:series/clean-edit]
-                     [:set-breadcrumb ["基础数据" "系列列表" "新增"]]
-                     [:set-active-page :series/new]]))
+(defroute "/category/new" []
+  (run-events-admin [[:category/clean-edit]
+                     [:set-breadcrumb ["基础数据" "分类管理" "新增"]]
+                     [:set-active-page :category/new]]))
 
-(defroute "/series/:id/edit" [id]
-  (run-events-admin [[:series/load id]
-                     [:set-breadcrumb ["基础数据" "系列列表" "编辑"]]
-                     [:set-active-page :series/edit]]))
+(defroute "/category/:id/edit" [id]
+  (run-events-admin [[:category/load id]
+                     [:set-breadcrumb ["基础数据" "分类管理" "编辑"]]
+                     [:set-active-page :category/edit]]))
 
 (defroute "/app-key" []
   (run-events-admin [[:app-key/init]

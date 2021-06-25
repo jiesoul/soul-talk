@@ -10,9 +10,9 @@
         :headers
         #(merge
            %
-           {:Accept        "application/transit+json"
-            :Authorization (str "Token " login-token)
-            :X-CSRF-Token  @(rf/subscribe [:csrf-token])})))))
+           {:Accept "application/transit+json"
+            :Token login-token
+            :X-CSRF-Token @(rf/subscribe [:csrf-token])})))))
 
 (defn load-interceptors! []
   (swap! ajax/default-interceptors

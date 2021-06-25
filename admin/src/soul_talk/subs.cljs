@@ -7,7 +7,7 @@
             [soul-talk.role.subs]
             [soul-talk.menu.subs]
             [soul-talk.app-key.subs]
-            [soul-talk.series.subs]
+            [soul-talk.category.subs]
             [soul-talk.data-dic.subs]
             [soul-talk.dash.subs]
             [soul-talk.tag.subs]

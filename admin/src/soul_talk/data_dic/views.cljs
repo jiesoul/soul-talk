@@ -102,13 +102,13 @@
      [:> Form.Group {:inline true}
       [:> Form.Input {:name      "id"
                       :label     "id"
-                      :on-change #(dispatch [:data-dic/set-query-params :id (-> % .-target .-value)])}]
+                      :on-change #(dispatch [:data-dic/set-query-params {:id (-> % .-target .-value)}])}]
       [:> Form.Input {:name      "name"
                       :label     "名称"
-                      :on-change #(dispatch [:data-dic/set-query-params :name (-> % .-target .-value)])}]
+                      :on-change #(dispatch [:data-dic/set-query-params {:name (-> % .-target .-value)}])}]
       [:> Form.Input {:name      "pid"
                       :label     "父id"
-                      :on-change #(dispatch [:data-dic/set-query-params :pid (-> % .-target .-value)])}]]
+                      :on-change #(dispatch [:data-dic/set-query-params {:pid (-> % .-target .-value)}])}]]
 
      [:div {:style {:text-align "center"}}
       [:> Button {:on-click #(dispatch [:data-dic/load-page (merge @params @pagination)])}

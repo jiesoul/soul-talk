@@ -117,8 +117,8 @@
   (doall
     (for [menu menus]
       (let [{:keys [children id pid url name]} menu]
-        ^{:key menu}
         (if (empty? children)
+          ^{:key menu}
           [:> Menu.Item {:name     name
                          :active   (= id (:id selected-menu))
                          :on-click #(do
@@ -127,6 +127,7 @@
            name]
           [:<>
            [:> Divider {:style {:margin "0"}}]
+           ^{:key menu}
            [:> Menu.Item {:key name}
             [:> Menu.Header {:as "h5"} name]
             [:> Menu.Menu {:style {:padding-left "10px"}}

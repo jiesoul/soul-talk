@@ -35,6 +35,6 @@
   :site-info/update
   (fn [_ [_ site-info]]
     {:http {:method        PATCH
-            :url           (str api-url "/site-info")
+            :url           (str api-url "/site-info/" (:id site-info))
             :ajax-map      {:params site-info}
             :success-event [:set-success "保存成功"]}}))

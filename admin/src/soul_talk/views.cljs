@@ -11,7 +11,7 @@
             [soul-talk.data-dic.views :as data-dic]
             [soul-talk.menu.views :as menu]
             [soul-talk.role.views :as role]
-            [soul-talk.series.views :as series]))
+            [soul-talk.category.views :as category]))
 
 ;;多重方法  响应对应的页面
 (defmulti pages (fn [page _] page))
@@ -105,15 +105,15 @@
 
 (defmethod pages :app-key/edit [_ _]
   (admin app-key/edit))
-;; 系列
-(defmethod pages :series [_ _]
-  (admin series/home))
+;; 分类
+(defmethod pages :category [_ _]
+  (admin category/home))
 
-(defmethod pages :series/new [_ _]
-  (admin series/new))
+(defmethod pages :category/new [_ _]
+  (admin category/new))
 
-(defmethod pages :series/edit [_ _]
-  (admin series/edit))
+(defmethod pages :category/edit [_ _]
+  (admin category/edit))
 
 ;; article
 (defmethod pages :article [_ _]

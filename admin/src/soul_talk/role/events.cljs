@@ -2,7 +2,8 @@
   (:require [re-frame.core :as rf :refer [reg-event-fx reg-event-db]]
             [soul-talk.db :refer [api-url]]
             [ajax.core :refer [GET POST PATCH DELETE]]
-            [soul-talk.utils :as utils]))
+            [soul-talk.utils :as utils]
+            [clojure.string :as str]))
 
 (rf/reg-event-db
   :role/init
@@ -131,10 +132,9 @@
 
 (rf/reg-event-fx
   :role/load-menus-ok
-  (fn [{:keys [db]} [_ {:keys [role-roles]}]]
-    (let [menu-ids (map :menu_id role-roles)]
-      {:db         (assoc-in db [:user :role-roles] role-roles)
-       :dispatch-n (list [:role/load-roles menu-ids])})))
+  (fn [_ [_ {:keys [role-menus]}]]
+    (let [menu-ids (str/join "," (map :menu_id role-menus))]
+      {:dispatch-n (list [:menu/load-menus menu-ids])})))
 
 (rf/reg-event-fx
   :role/load-menus

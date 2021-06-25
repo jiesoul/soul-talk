@@ -8,7 +8,7 @@
             [soul-talk.role.events]
             [soul-talk.menu.events]
             [soul-talk.app-key.events]
-            [soul-talk.series.events]
+            [soul-talk.category.events]
             [soul-talk.data-dic.events]
             [soul-talk.dash.events]
             [soul-talk.article.events]
@@ -22,8 +22,8 @@
     (let [user (get-in cofx [:local-store storage/login-user-key])
           db (:db cofx)]
       {:db (merge db (assoc default-db :user (js->clj user :keywordize-keys true)))
-       :dispatch-n [[:site-info/load 1]
-                    [:data-dic/load-all]]})))
+       :dispatch-n [[:user/load-menus (:id user)]
+                    [:site-info/load 1]]})))
 
 ;; 设置当前页
 (reg-event-db

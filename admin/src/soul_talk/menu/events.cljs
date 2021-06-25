@@ -19,13 +19,13 @@
 (rf/reg-event-db
   :menu/load-menus-ok
   (fn [db [_ {:keys [menus]}]]
-    (assoc db :menus menus)))
+    (assoc-in db [:user :menus] menus)))
 
 (rf/reg-event-fx
   :menu/load-menus
   (fn [_ [_ ids]]
     {:http {:method GET
-            :url (str api-url "/menus?ids=" ids)
+            :url (str api-url "/menus/ids?ids=" ids)
             :success-event [:menu/load-menus-ok]}}))
 
 (reg-event-db

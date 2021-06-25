@@ -2,30 +2,27 @@
   (:require [soul-talk.db :refer [api-url] :as db]
             [re-frame.core :refer [reg-event-fx reg-event-db dispatch inject-cofx reg-fx]]
             [ajax.core :refer [POST GET DELETE PUT]]
-            [soul-talk.common.local-storage :refer [login-user-key login-token-key]]
-            [soul-talk.common.local-storage :as storage]))
+            [soul-talk.common.local-storage :refer [set-item! remove-item! login-user-key login-token-key]]))
 
 (reg-fx
-  :set-login-token!
-  (fn [login-token]
-    (storage/set-item! login-token-key login-token)))
+  :set-login-user!
+  (fn [user-identity]
+    (set-item! login-user-key user-identity)))
 
 (reg-fx
-  :clean-login-token
+  :clean-user!
   (fn []
-    (storage/remove-item! login-token-key)))
+    (remove-item! login-user-key)))
 
 ;; 处理login ok
 (reg-event-fx
   :login-ok
   (fn [{:keys [db]} [_ {:keys [user] :as resp}]]
-    (let [login-events (:login-events db)]
-      {:db               (assoc db :user user)
-       :dispatch-n       (list
-                           [:navigate-to "#/dash"]
-                           [:data-dic/load-all]
-                           [:run-login-events])
-       :set-user!        user})))
+    {:db         (assoc db :user user)
+     :dispatch-n (list
+                   [:user/load-menus (:id user)]
+                   [:navigate-to "#/dash"])
+     :set-login-user!  user}))
 
 (reg-event-db
   :login-error
@@ -48,8 +45,7 @@
     {:dispatch-n       (list
                          [:navigate-to "#/login"]
                          [:site-info/load 1])
-     :set-user!        nil
-     :set-login-token! nil
+     :set-login-user!        nil
      :db               db/default-db}))
 
 (reg-event-fx

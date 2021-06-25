@@ -8,6 +8,6 @@
                           "--output-path" :final-output-dir
                           "--output-filename" :final-output-filename]}
 
- :closure-defines {soul-talk.db/api-url "http://localhost:3001"}
+ :closure-defines {soul-talk.db/api-url "http://localhost:3000"}
  :preloads        [re-frisk.preload devtools.preload]
  }

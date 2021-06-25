@@ -5,15 +5,7 @@
             [soul-talk.common.local-storage :as storage]
             [clojure.string :as str]))
 
-(reg-fx
-  :set-user!
-  (fn [user-identity]
-    (storage/set-item! storage/login-user-key user-identity)))
 
-(reg-fx
-  :clean-user!
-  (fn []
-    (storage/remove-item! storage/login-user-key)))
 
 (reg-event-db
   :user/init
@@ -33,7 +25,7 @@
   (fn [{:keys [db]} [_ {:keys [user-roles]}]]
     (let [role-ids (map :role_id user-roles)]
       {:db         (assoc-in db [:user :user-roles] user-roles)
-       :dispatch-n (list [:roles/load-menus role-ids])})))
+       :dispatch-n (list [:role/load-menus role-ids])})))
 
 (reg-event-fx
   :user/load-roles
@@ -41,6 +33,11 @@
     {:http {:method        GET
             :url           (str api-url "/users/" id "/roles")
             :success-event [:user/load-roles-ok]}}))
+
+(reg-event-fx
+  :user/load-menus
+  (fn [_ [_ id]]
+    {:dispatch-n [[:user/load-roles id]]}))
 
 (reg-event-db
   :user/load-all-ok

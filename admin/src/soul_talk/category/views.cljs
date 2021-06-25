@@ -1,4 +1,4 @@
-(ns soul-talk.series.views
+(ns soul-talk.category.views
   (:require [soul-talk.common.views :as c]
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
@@ -11,30 +11,30 @@
 (defn new []
   (let [user (subscribe [:user])
         user-id (:id @user)
-        series (subscribe [:series/edit])
-        _ (dispatch [:series/set-attr {:create_by user-id :update_by user-id}])]
+        series (subscribe [:category/edit])
+        _ (dispatch [:category/set-attr {:create_by user-id :update_by user-id}])]
     [c/layout
      [c/form-layout
       [:> Form
        [:> Form.Input {:title     "name"
                        :label     "名称"
                        :required  true
-                       :on-change #(dispatch [:series/set-attr {:name (du/event-value %)}])}]
+                       :on-change #(dispatch [:category/set-attr {:name (du/event-value %)}])}]
        [:> Form.Input {:label     "简介"
                        :required  true
-                       :on-change #(dispatch [:series/set-attr {:description (du/event-value %)}])}]
+                       :on-change #(dispatch [:category/set-attr {:description (du/event-value %)}])}]
        [:div.button-center
         [:> Button {:content  "返回"
-                    :on-click #(navigate! (str "/series"))}]
+                    :on-click #(navigate! (str "/categories"))}]
         [:> Button {:content  "保存"
                     :positive true
-                    :on-click #(dispatch [:series/save @series])}]]
+                    :on-click #(dispatch [:category/save @series])}]]
        ]]]))
 
 (defn edit []
   (let [user (subscribe [:user])
-        series (subscribe [:series/edit])
-        _ (dispatch [:series/set-attr {:update_by (:id @user)}])]
+        series (subscribe [:category/edit])
+        _ (dispatch [:category/set-attr {:update_by (:id @user)}])]
     [c/layout
      [c/form-layout
       [:> Form
@@ -42,55 +42,55 @@
                        :label         "name"
                        :required      true
                        :default-value (:name @series)
-                       :on-change     #(dispatch [:series/set-attr {:name (du/event-value %)}])}]
+                       :on-change     #(dispatch [:category/set-attr {:name (du/event-value %)}])}]
        [:> Form.Input {:label         "简介"
                        :required      true
                        :default-value (:description @series)
-                       :on-change     #(dispatch [:series/set-attr {:description (du/event-value %)}])}]
+                       :on-change     #(dispatch [:category/set-attr {:description (du/event-value %)}])}]
        [:div.button-center
         [:> Button {:content  "返回"
-                    :on-click #(navigate! (str "/series"))}]
+                    :on-click #(navigate! (str "/categories"))}]
         [:> Button {:content  "保存"
                     :positive true
-                    :on-click #(dispatch [:series/update @series])}]]
+                    :on-click #(dispatch [:category/update @series])}]]
        ]]]))
 
 (defn- delete-modal []
-  (let [series (subscribe [:series/edit])
-        delete-status (subscribe [:series/delete-dialog])]
-    (if @series
-      (let [{:keys [id name]} @series]
-        ^{:key "delete-series-dialog"}
+  (let [category (subscribe [:category/edit])
+        delete-status (subscribe [:category/delete-dialog])]
+    (if @category
+      (let [{:keys [id name]} @category]
+        ^{:key "delete-category-dialog"}
         [c/confirm {:open   @delete-status
-                  :title    "删除菜单"
+                  :title    "删除分类"
                   :ok-text  "确认"
-                  :on-close #(dispatch [:series/set-delete-dialog false])
+                  :on-close #(dispatch [:category/set-delete-dialog false])
                   :on-ok    #(do
-                               (dispatch [:series/set-delete-dialog false])
-                               (dispatch [:series/delete id]))}
+                               (dispatch [:category/set-delete-dialog false])
+                               (dispatch [:category/delete id]))}
          (str "你确定要删除系列 " name " 吗？")]))))
 
 (defn query-form []
-  (let [params (subscribe [:series/query-params])]
+  (let [params (subscribe [:category/query-params])]
     [:> Form
      [:> Form.Group
       [:> Form.Input {:label       "名称"
                       :inline      true
-                      :on-change   #(reset! name (-> % .-target .-value))}]]
+                      :on-change   #(dispatch [:category/set-query-params {:name (du/event-value %)}])}]]
      [:div.button-center
       [:> Button {:basic    true
                   :icon "search"
                   :content  "查询"
-                  :on-click #(dispatch [:series/load-page @params])}]
+                  :on-click #(dispatch [:category/load-page @params])}]
       [:> Button {:color "green"
                   :icon "add"
                   :content  "新增"
-                  :on-click #(navigate! "/series/new")}]]]))
+                  :on-click #(navigate! "/category/new")}]]]))
 
 (defn list-table []
-  (let [series-list (subscribe [:series/list])
-        query-params (subscribe [:series/query-params])
-        pagination (subscribe [:series/pagination])]
+  (let [series-list (subscribe [:category/list])
+        query-params (subscribe [:category/query-params])
+        pagination (subscribe [:category/pagination])]
     [:div
      [:> Table {:celled     true
                 :text-align "center"}
@@ -117,15 +117,15 @@
               [:> Button {:color "green"
                           :alt      "修改"
                           :icon     "edit"
-                          :on-click #(navigate! (str "/series/" id "/edit"))}]
+                          :on-click #(navigate! (str "/category/" id "/edit"))}]
               [:> Button {:color    "red"
                           :alt      "删除"
                           :icon     "delete"
-                          :on-click #(do
-                                      (dispatch [:series/set-attr {:id id :name name}])
-                                      (dispatch [:series/set-delete-dialog true]))}]]]]))]]
+                          :on-click (fn []
+                                      (dispatch [:category/set-attr {:id id :name name}])
+                                      (dispatch [:category/set-delete-dialog true]))}]]]]))]]
      (if @series-list
-       [c/table-page :series/load-page (merge @query-params @pagination)])]))
+       [c/table-page :category/load-page (merge @query-params @pagination)])]))
 
 (defn home []
   [c/layout
