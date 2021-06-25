@@ -28,7 +28,7 @@
       :body [menu menu/update-menu]
       (menu/update-menu! menu))
 
-    (GET "/" []
+    (GET "/ids" []
       :summary "获取多个id"
       :auth-login #{"admin"}
       :query-params [ids :- string?]
@@ -38,8 +38,6 @@
       :summary "所有菜单"
       :auth-login #{"admin"}
       (menu/load-menus-all))
-
-
 
     (GET "/pid/:pid" []
       :summary "查询子菜单"
