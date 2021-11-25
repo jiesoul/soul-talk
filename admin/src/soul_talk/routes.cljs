@@ -177,6 +177,7 @@
 
 (defroute "/article/new" []
   (run-events-admin [[:article/clear-edit]
+                     [:category/load-page]
                      [:set-breadcrumb ["文章管理" "添加文章"]]
                      [:set-active-page :article/new]]))
 
