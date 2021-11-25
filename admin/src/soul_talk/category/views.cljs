@@ -28,8 +28,7 @@
                     :on-click #(navigate! (str "/categories"))}]
         [:> Button {:content  "保存"
                     :positive true
-                    :on-click #(dispatch [:category/save @series])}]]
-       ]]]))
+                    :on-click #(dispatch [:category/save @series])}]]]]]))
 
 (defn edit []
   (let [user (subscribe [:user])
@@ -52,8 +51,7 @@
                     :on-click #(navigate! (str "/categories"))}]
         [:> Button {:content  "保存"
                     :positive true
-                    :on-click #(dispatch [:category/update @series])}]]
-       ]]]))
+                    :on-click #(dispatch [:category/update @series])}]]]]]))
 
 (defn- delete-modal []
   (let [category (subscribe [:category/edit])

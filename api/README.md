@@ -53,6 +53,11 @@ GRANT ALL PRIVILEGES ON DATABASE exampledb TO dbuser;
 sudo systemctl restart postgresql
 ```
 
+## docker 模式 postgresql
+```docker
+docker run -it --name pg-dev -p 5433:5432 -e POSTGRES_USER=jiesoul -e POSTGRES_PASSWORD=12345678 -e POSTGRES_DB=soul_talk -d postgres
+```
+
 ## 开发模式
 
 ```bash

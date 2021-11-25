@@ -16,6 +16,12 @@
   [:> Button {:content "返回"
               :on-click #(navigate! (str "/article"))}])
 
+(defn search-categories [e d]
+  (dispatch [:category/load-page {:name (.-searchQuery d)}]))
+
+(defn change-category [e d]
+  (dispatch [:article/set-attr {:category (.-value d)}]))
+
 (defn search-tags [e d]
   (dispatch [:tag/load-page {:name (.-searchQuery d)}]))
 
@@ -26,38 +32,55 @@
   (let [article    (subscribe [:article/edit])
         user    (subscribe [:user])
         user-id (:id @user)
+        categories (subscribe [:category/list])
+        categories-options (utils/data->options @categories :id :name :id)
         tags (subscribe [:tag/list])
         tag-options (utils/data->options @tags :id :name :id)
         _ (dispatch [:article/set-attr {:update_by user-id :create_by user-id :publish 0}])]
     [c/layout
      [:> Form
-      [:> Form.Input {:name        "name"
-                      :label "标题"
-                      :placeholder "请输入标题"
-                      :required    true
-                      :on-change   #(dispatch [:article/set-attr {:title (utils/event-value %)}])}]
-      [:> TextArea {:label "内容"
-                    :rows        18
-                    :cols        10
-                    :placeholder "内容"
-                    :on-change   #(dispatch [:article/set-attr {:body (utils/event-value %)}])}]
-      [:> Dropdown {:placeholder      "标签"
-                    :label "标签"
-                    :multiple         true
-                    :fluid            true
-                    :search           true
-                    :selection        true
-                    :on-change        change-tags
-                    :on-search-change search-tags
-                    :options          tag-options}]
-      [:div.button-center
-       [cancel-button]
-       [:> Button {:color    "green"
-                   :content  "保存"
-                   :on-click #(dispatch [:article/save @article])}]
-       [:> Button {:content  "上传文件"
-                   :color    "orange"
-                   :on-click #()}]]]]))
+      [:> Form.Group
+       [:> Form.Input {:name        "name"
+                       :label "标题"
+                       :placeholder "请输入标题"
+                       :required    true
+                       :fluid true
+                       :selection true
+                       :on-change   #(dispatch [:article/set-attr {:title (utils/event-value %)}])}]]
+      [:> Form.Group
+       [:> Dropdown {
+                    :placeholder      "分类"
+                     :label "分类"
+                     :selection        true
+                     :clearable true
+                     :on-search-change search-categories
+                     :on-change        change-category
+                     :options          tag-options}]]
+      [:> Form.Group
+       [:> TextArea {:label "内容"
+                     :rows        18
+                     :cols        10
+                     :placeholder "内容"
+                     :on-change   #(dispatch [:article/set-attr {:body (utils/event-value %)}])}]]
+      [:> Form.Group
+       [:> Dropdown {:placeholder      "标签"
+                     :label "标签"
+                     :multiple         true
+                     :fluid            true
+                     :search           true
+                     :selection        true
+                     :on-change        change-tags
+                     :on-search-change search-tags
+                     :options          tag-options}]]
+      [:> Form.Group
+       [:div.button-center
+        [cancel-button]
+        [:> Button {:color    "green"
+                    :content  "保存"
+                    :on-click #(dispatch [:article/save @article])}]
+        [:> Button {:content  "上传文件"
+                    :color    "orange"
+                    :on-click #()}]]]]]))
 
 (defn edit []
   (let [article (subscribe [:article/edit])
