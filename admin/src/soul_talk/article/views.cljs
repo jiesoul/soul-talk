@@ -16,11 +16,8 @@
   [:> Button {:content "返回"
               :on-click #(navigate! (str "/article"))}])
 
-(defn search-categories [e d]
-  (dispatch [:category/load-page {:name (.-searchQuery d)}]))
-
 (defn change-category [e d]
-  (dispatch [:article/set-attr {:category (.-value d)}]))
+  (dispatch [:article/set-attr {:category_id (.-value d)}]))
 
 (defn search-tags [e d]
   (dispatch [:tag/load-page {:name (.-searchQuery d)}]))
@@ -39,30 +36,23 @@
         _ (dispatch [:article/set-attr {:update_by user-id :create_by user-id :publish 0}])]
     [c/layout
      [:> Form
-      [:> Form.Group
-       [:> Form.Input {:name        "name"
-                       :label "标题"
-                       :placeholder "请输入标题"
-                       :required    true
-                       :fluid true
-                       :selection true
-                       :on-change   #(dispatch [:article/set-attr {:title (utils/event-value %)}])}]]
-      [:> Form.Group
-       [:> Dropdown {
-                    :placeholder      "分类"
-                     :label "分类"
-                     :selection        true
-                     :clearable true
-                     :on-search-change search-categories
-                     :on-change        change-category
-                     :options          tag-options}]]
-      [:> Form.Group
+      [:> Form.Input {:name        "name"
+                      :label "标题"
+                      :placeholder "请输入标题"
+                      :required    true
+                      :selection true
+                      :on-change   #(dispatch [:article/set-attr {:title (utils/event-value %)}])}]
+      
+       [:> Form.Select {:label "分类"
+                        :on-change        change-category
+                        :options          categories-options}]
+      
        [:> TextArea {:label "内容"
                      :rows        18
                      :cols        10
                      :placeholder "内容"
-                     :on-change   #(dispatch [:article/set-attr {:body (utils/event-value %)}])}]]
-      [:> Form.Group
+                     :on-change   #(dispatch [:article/set-attr {:body (utils/event-value %)}])}]
+      
        [:> Dropdown {:placeholder      "标签"
                      :label "标签"
                      :multiple         true
@@ -71,8 +61,7 @@
                      :selection        true
                      :on-change        change-tags
                      :on-search-change search-tags
-                     :options          tag-options}]]
-      [:> Form.Group
+                     :options          tag-options}]
        [:div.button-center
         [cancel-button]
         [:> Button {:color    "green"
@@ -80,25 +69,31 @@
                     :on-click #(dispatch [:article/save @article])}]
         [:> Button {:content  "上传文件"
                     :color    "orange"
-                    :on-click #()}]]]]]))
+                    :on-click #()}]]]]))
 
 (defn edit []
   (let [article (subscribe [:article/edit])
         article-tags (->> (:tags @article)
-                       (map #(:tag_id %)))
+                          (map #(:tag_id %)))
         user (subscribe [:user])
         user-id  (:id @user)
+        categories (subscribe [:category/list])
+        categories-options (utils/data->options @categories :id :name :id)
         tags (subscribe [:tag/list])
         tag-options (utils/data->options @tags :id :name :id)
         _ (dispatch [:article/set-attr {:update_by user-id}])]
     [c/layout
-     (let [{:keys [title body]} @article]
+     (let [{:keys [title body category_id]} @article]
        [:> Form
         [:> Form.Input {:name          "name"
                         :required      true
                         :default-value title
                         :on-change     #(let [value (-> % .-target .-value)]
                                           (dispatch [:article/set-attr {:title value}]))}]
+        [:> Form.Select{:label "分类"
+                        :default-value category_id
+                        :on-change        change-category
+                        :options          categories-options}]
         [:> TextArea {:rows          18
                       :cols          10
                       :placeholder   "内容"

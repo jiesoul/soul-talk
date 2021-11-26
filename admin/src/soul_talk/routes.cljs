@@ -176,13 +176,15 @@
                      [:set-active-page :article]]))
 
 (defroute "/article/new" []
-  (run-events-admin [[:article/clear-edit]
-                     [:category/load-page]
+  (run-events-admin [[:init]
                      [:set-breadcrumb ["文章管理" "添加文章"]]
+                     [:article/clear-edit]
+                     [:category/load-page]
                      [:set-active-page :article/new]]))
 
 (defroute "/article/:id/edit" [id]
   (run-events-admin [[:set-breadcrumb ["文章管理" "添加文章"]]
+                     [:category/load-page]
                      [:article/clear-edit]
                      [:article/load id]
                      [:set-active-page :article/edit]]))
