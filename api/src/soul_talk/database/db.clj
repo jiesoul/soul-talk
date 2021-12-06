@@ -33,7 +33,7 @@
 (defn- disconnect!
   [conf conn]
   (let [uri (get conf :database-url)]
-    (log/info "disconnecting from " uri)
+    (log/info {:module "database"} "disconnecting from ")
     (when (and (instance? HikariDataSource conn)
             (not (.isClosed conn)))
       (.close conn))))
