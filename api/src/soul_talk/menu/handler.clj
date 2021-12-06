@@ -4,7 +4,7 @@
             [soul-talk.menu.spec :as spec]
             [soul-talk.utils :as utils]
             [java-time.local :as l]
-            [taoensso.timbre :as log]
+            [cambium.core :as log]
             [clojure.string :as str]))
 
 (def create-menu spec/create-menu)

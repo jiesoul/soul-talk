@@ -1,6 +1,6 @@
 (ns soul-talk.base.common
   (:require [ring.util.http-response :refer [internal-server-error]]
-            [taoensso.timbre :as log]))
+            [cambium.core :as log]))
 
 (defmacro handler
   {:style/indent :defn}

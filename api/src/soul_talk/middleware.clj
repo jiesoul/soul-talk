@@ -10,7 +10,7 @@
             [ring.middleware.defaults :as ring-defaults]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.cors :refer [wrap-cors]]
-            [taoensso.timbre :as log]
+            [cambium.core :as log]
             [cognitect.transit :as transit]
             [compojure.api.middleware :as cm]
             [compojure.api.meta :refer [restructure-param]]

@@ -4,7 +4,7 @@
             [next.jdbc.connection :as connection]
             [next.jdbc.result-set :as rs]
             [soul-talk.config :refer [conf]]
-            [taoensso.timbre :as log]
+            [cambium.core :as log]
             [next.jdbc :as jdbc])
   (:import (java.sql Date Timestamp PreparedStatement)
            (com.zaxxer.hikari HikariDataSource)
@@ -33,7 +33,7 @@
 (defn- disconnect!
   [conf conn]
   (let [uri (get conf :database-url)]
-    (log/info {:module "database"} "disconnecting from ")
+    (log/info "disconnecting from " uri)
     (when (and (instance? HikariDataSource conn)
             (not (.isClosed conn)))
       (.close conn))))

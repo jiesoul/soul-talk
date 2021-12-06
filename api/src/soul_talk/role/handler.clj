@@ -4,7 +4,7 @@
             [soul-talk.role.spec :as spec]
             [soul-talk.utils :as utils]
             [clojure.string :as str]
-            [taoensso.timbre :as log]))
+            [cambium.core :as log]))
 
 (def create-role spec/create-role)
 (def update-role spec/update-role)
