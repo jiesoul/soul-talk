@@ -4,7 +4,7 @@
             [buddy.hashers :as hashers]
             [soul-talk.user.spec :as spec]
             [soul-talk.pagination :as p]
-            [cambium.core :as log]))
+            [taoensso.timbre :as log]))
 
 (def update-user spec/update-user)
 (def user spec/user)

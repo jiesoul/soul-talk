@@ -5,7 +5,7 @@
             [clojure.tools.cli :as ct]
             [cprop.core :refer [load-config]]
             [soul-talk.database.my-migrations :as migrations]
-            [cambium.core :as log]
+            [taoensso.timbre :as log]
             [mount.core :as mount :refer [args defstate]])
   (:gen-class))
 

@@ -4,7 +4,7 @@
             [soul-talk.pagination :as p]
             [java-time.local :as l]
             [soul-talk.data-dic.spec :as spec]
-            [cambium.core :as log]))
+            [taoensso.timbre :as log]))
 
 (def create-data-dic spec/create-data-dic)
 (def update-data-dic spec/update-data-dic)

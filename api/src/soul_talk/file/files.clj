@@ -1,5 +1,5 @@
 (ns soul-talk.file.files
-  (:require [cambium.core :as log]
+  (:require [taoensso.timbre :as log]
             [ring.util.http-response :as resp]
             [clojure.java.io :as io]))
 

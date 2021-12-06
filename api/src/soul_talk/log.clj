@@ -1,5 +1,5 @@
 (ns soul-talk.log
-  (:require [cambium.core :as timbre]
+  (:require [taoensso.timbre :as timbre]
             [cheshire.core :as json]
             [clojure.spec.alpha :as s]))
 

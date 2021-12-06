@@ -4,7 +4,7 @@
             [next.jdbc.result-set :as rs-set]
             [soul-talk.database.db :refer [*db*]]
             [crypto.random :refer [base64]]
-            [cambium.core :as log]))
+            [taoensso.timbre :as log]))
 
 (defn find-by [query-map]
   (let [users (sql/find-by-keys *db* :app_user query-map)]

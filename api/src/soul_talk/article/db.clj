@@ -3,7 +3,7 @@
             [next.jdbc.sql :as sql]
             [soul-talk.database.db :refer [*db*]]
             [next.jdbc.result-set :as rs-set]
-            [cambium.core :as log]
+            [taoensso.timbre :as log]
             [clojure.string :as str]))
 
 (defn insert-article! [article]

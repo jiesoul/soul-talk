@@ -2,7 +2,7 @@
   (:require [ring.util.http-response :as resp]
             [crypto.random :refer [url-part]]
             [java-time.local :as l]
-            [cambium.core :as log]))
+            [taoensso.timbre :as log]))
 
 (defn now []
   (l/local-date-time))

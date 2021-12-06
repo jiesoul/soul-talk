@@ -2,7 +2,7 @@
   (:require [clj-time.coerce :as chronos]
             [soul-talk.utils :as utils]
             [flake.core :as flake]
-            [cambium.core :as log]))
+            [taoensso.timbre :as log]))
 
 (defn generate-id! []
   (flake/init!)

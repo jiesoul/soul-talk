@@ -2,7 +2,7 @@
   (:require [soul-talk.database.db :refer [*db* coll-to-in-str]]
             [next.jdbc.result-set :as rs-set]
             [next.jdbc.sql :as sql]
-            [cambium.core :as log]))
+            [taoensso.timbre :as log]))
 
 (defn save-tag! [tag]
   (sql/insert! *db* :tag tag

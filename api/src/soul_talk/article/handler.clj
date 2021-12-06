@@ -6,7 +6,7 @@
             [java-time.format :as f]
             [soul-talk.pagination :as p]
             [soul-talk.article.spec :as spec]
-            [cambium.core :as log]))
+            [taoensso.timbre :as log]))
 
 (def create-article spec/create-article)
 (def update-article spec/update-article)

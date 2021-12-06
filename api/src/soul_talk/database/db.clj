@@ -4,7 +4,7 @@
             [next.jdbc.connection :as connection]
             [next.jdbc.result-set :as rs]
             [soul-talk.config :refer [conf]]
-            [cambium.core :as log]
+            [taoensso.timbre :as log]
             [next.jdbc :as jdbc])
   (:import (java.sql Date Timestamp PreparedStatement)
            (com.zaxxer.hikari HikariDataSource)
